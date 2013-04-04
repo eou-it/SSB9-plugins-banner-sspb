@@ -1,0 +1,86 @@
+{
+   "type": "page",
+   "name": "EmployeePage",
+   "title": "Employ Details page",
+   "components": [
+       {
+           "type": "resource",
+           "name": "Empdept",
+           "binding": "rest",
+           "resource": "/StudentRegistrationSsb/ssb/virt/empdept"
+       },
+       {
+           "type": "resource",
+           "name": "Dept",
+           "binding": "rest",
+           "resource": "/StudentRegistrationSsb/ssb/virt/department"
+       },
+       {
+         "type": "form",
+         "name": "SelectDepartment",
+         "label": "Search a Department",
+         "components": [
+             {
+                 "type":"select",
+                 "name":"SelectDept",
+                 "label":"Department",
+                 "sourceModel":"Dept",
+                 "labelKey": "DNAME",
+                 "valueKey": "DEPTNO"
+             },
+             {
+                 "type":"button",
+                 "name":"ApplyDepartment",
+                 "label":"Apply",
+                 "onClick": "$EmployeeDetails.$load()"
+             },
+             {
+                 "type":"button",
+                 "name":"ResetDepartment",
+                 "label":"Show All Departments",
+                 "onClick": "$EmployeeDetails.$loadAll()"
+             }
+         ]
+      },
+      {
+         "type": "form",
+         "name": "EditEmpList",
+          "label" : "Edit Employees",
+         "components": [
+             {
+               "type": "grid",
+               "model": "Empdept",
+                "parameters" : {"DEPTNO":"$SelectDept"},
+               "name": "EmployeeDetails",
+                "allowNew" : false,
+                "allowModify" : true,
+                "allowDelete" : true,
+                 "allowReload": true,
+                "pageSize" : 5,
+               "components": [
+                  {
+                     "type": "display",
+                     "model": "id",
+                     "label": "Id"
+                  },
+                  {
+                     "type": "text",
+                     "model": "ENAME",
+                     "label": "Employee Name"
+                  },
+                   {
+                      "type": "text",
+                      "model": "DNAME",
+                      "label": "Department Name"
+                   },
+                   {
+                      "type": "datetime",
+                      "model": "HIREDATE",
+                      "label": "Hire Date"
+                   }
+               ]
+            }
+         ]
+      }
+   ]
+}

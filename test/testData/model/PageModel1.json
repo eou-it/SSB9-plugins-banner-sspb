@@ -1,0 +1,130 @@
+{
+   "type": "page",
+   "name": "Todo-master-detail",
+   "title": "Todo Master Detail page",
+    "label": "Todo Page",
+   "components": [
+        {
+            "type": "resource",
+            "name": "Todo",
+            "binding": "rest",
+            "resource": "/StudentRegistrationSsb/ssb/todo"
+        },
+       {
+         "type":"select",
+         "name":"showSelect",
+           "label":"Select Gender",
+          "sourceValue":[{"label":"Female", "sex":"F"}, {"label":"Male", "sex":"M"}],
+           "labelKey":"label",
+           "valueKey":"sex"
+       },
+       {
+           "type":"literal",
+           "value":"Selected sex is: $showSelect"
+       },
+      {
+         "type": "form",
+         "name": "SelectForm",
+         "label": "Search Forms to show",
+         "components": [
+             {
+                 "type":"boolean",
+                 "name":"showSearchTodo",
+                 "label":"Show Search Todo Form"
+
+             },
+             {
+                 "type":"boolean",
+                 "name":"showEditTodoList",
+                 "label":"Show Edit Todos Form"
+             },
+             {
+                 "type":"button",
+                 "name":"applyFormVisibilityChanges",
+                 "label":"Apply Changes",
+                 "onClick":"$SearchTodo.$visible=$showSearchTodo; $EditTodoList.$visible = $showEditTodoList;"
+             }
+         ]
+      },
+       {
+         "type": "form",
+         "name": "SearchTodo",
+         "label": "Search Todo",
+         "components": [
+             {
+                 "type":"text",
+                 "name":"SelectedId",
+                 "label":"Search Todo by index",
+                 "onUpdate":"$SelectedTodoDesc.$load();"
+             },
+            {
+                "type":"text",
+                "name":"SelectedTodoDesc",
+                "model":"Todo.description",
+                "parameters": {"id": "parseInt($SelectedId)+1"},
+                "label":"Selected Todo Description:"
+            }
+         ]
+      },
+      {
+         "type": "form",
+         "name": "EditTodoList",
+          "label" : "Edit Todos",
+         "components": [
+            {
+                "type":"block",
+                "name":"TodoFilter",
+                "components": [
+                    {
+                       "type": "boolean",
+                       "name" : "filt_complete",
+                       "value": false,
+                       "label": "Is Complete"
+                    },
+                    {
+                       "type": "button",
+                       "name": "apply_filt_complete",
+                       "label": "Apply Filter",
+                       "onClick":"$EditTodo.$load();"
+                    },
+                    {
+                       "type": "button",
+                       "name": "remove_filt_complete",
+                       "label": "Remove Filter",
+                       "onClick": "$filt_complete=null; $EditTodo.$load();"
+                    }
+
+                ]
+            },
+            {
+               "type": "grid",
+               "model": "Todo",
+                "parameters" : {"complete":"$filt_complete"},
+               "name": "EditTodo",
+                "allowNew" : true,
+                "allowModify" : true,
+                "allowDelete" : true,
+                "allowReload" : true,
+                "pageSize" : 5,
+               "components": [
+                  {
+                     "type": "display",
+                     "model": "id",
+                     "label": "Id"
+                  },
+                  {
+                     "type": "text",
+                     "model": "description",
+                     "label": "Description"
+                  },
+                  {
+                     "type": "boolean",
+                     "model": "complete",
+                     "label": "Is Complete"
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}

@@ -1,0 +1,37 @@
+{
+    "name":"ellucian Page Builder Model",
+    "date":"2013-04-01",
+    "version":"0.1",
+    "definition": {
+        "type":"component",
+        "definition": [
+            {
+                "componentType":"all",
+                "requiredAttributes":["type"],
+                "optionalAttributes":["name", "documentation"],
+                "documentation":"attributes required or optional for all component types"
+            },
+            {
+                "componentType":"page",
+                "requiredAttributes":["name"],
+                "optionalAttributes":["title", "scriptingLanguage", "label", "style"],
+                "requiredChildren":[],
+                "optionalChildren":["flow", "form", "block", "grid", "select", "list", "detail", "data", "resource", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button"]
+            },
+            {
+                "componentType":"block",
+                "requiredAttributes":[],
+                "optionalAttributes":["label", "style"],
+                "requiredChildren":[],
+                "optionalChildren":["form", "grid", "select", "list", "detail", "data", "resource", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
+            },
+            {
+                "componentType":"form",
+                "requiredAttributes":[],
+                "optionalAttributes":["label", "style"],
+                "requiredChildren":[],
+                "optionalChildren":["form", "grid", "select", "list", "detail", "data", "resource", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
+            }
+        ]
+    }
+}

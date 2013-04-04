@@ -1,0 +1,116 @@
+{
+   "type": "page",
+   "name": "AddressPage",
+   "title": "Address Change Page",
+   "components": [
+       {
+           "type": "resource",
+           "name": "CountryData",
+           "binding": "rest",
+           "resource": "/StudentRegistrationSsb/ssb/virt/stvnation",
+           "documentation":"Retrieve nation desc and code"
+       },
+       {
+           "type": "resource",
+           "name": "StateData",
+           "binding": "rest",
+           "resource": "/StudentRegistrationSsb/ssb/virt/stvstat"
+       },
+       {
+           "type": "resource",
+           "name": "PRAddressData",
+           "binding": "rest",
+           "resource": "/StudentRegistrationSsb/ssb/virt/PRAddress"
+       },
+       {    "type": "form",
+             "name": "AddressForm",
+             "label": "Permanent Address",
+             "components": [
+                 {
+                     "type":"literal",
+                     "value":"Please confirm or correct the address information below. This form shows the current home (permanent) address and your current term time address that we have recorded for you. <p>If you have not yet moved in and / or you know the date that you are leaving please enter the appropriate dates.<br>If you need to make changes please enter the details and press the appropriate Submit button.</p>"
+                 },
+                 {    "type": "detail",
+                       "name": "AddressDetails",
+                       "model": "PRAddressData",
+                       "label":"Address Details",
+                       "allowModify": true,
+                        "allowReload":true,
+                       "parameters" : {"pidm":"$$pidm"},
+                       "components": [
+                           {
+                               "type":"display",
+                               "label":"Address Type",
+                               "model":"STVATYP_DESC"
+                           },
+                           {
+                               "type":"text",
+                               "label":"Date the address is valid from",
+                               "model":"SPRADDR_FROM_DATE"
+                           },
+                           {
+                               "type":"text",
+                               "label":"Date (if any) you are planning to move",
+                               "model":"SPRADDR_TO_DATE"
+                           },
+                           {
+                               "type":"text",
+                               "label":"House Number",
+                               "model":"SPRADDR_HOUSE_NUMBER"
+                            },
+                           {
+                               "type":"text",
+                               "label":"Address line 1",
+                               "model":"SPRADDR_STREET_LINE1"
+                            },
+                           {
+                               "type":"text",
+                               "label":"Address line 2",
+                               "model":"SPRADDR_STREET_LINE2"
+                            },
+                           {
+                               "type":"text",
+                               "label":"Address line 3",
+                               "model":"SPRADDR_STREET_LINE3"
+                            },
+                           {
+                               "type":"text",
+                               "label":"Address line 4",
+                               "model":"SPRADDR_STREET_LINE4"
+                            },
+                           {
+                               "type":"text",
+                               "label":"Town / City",
+                               "model":"SPRADDR_CITY"
+                            },
+                           {
+                               "type":"text",
+                               "label":"Zip Code",
+                               "model":"SPRADDR_ZIP"
+                            },
+                           {
+                               "type":"select",
+                               "name":"selectState",
+                               "label":"State",
+                               "model":"SPRADDR_STAT_CODE",
+                               "sourceModel":"StateData",
+                               "sourceParameters":{"countrycode":"$selectCountry"},
+                               "labelKey": "STVSTAT_DESC",
+                               "valueKey": "STVSTAT_CODE"
+                            },
+                           {
+                               "type":"select",
+                               "name":"selectCountry",
+                               "label":"Country",
+                               "model":"SPRADDR_NATN_CODE",
+                               "sourceModel":"CountryData",
+                               "labelKey": "STVNATN_NATION",
+                               "valueKey": "STVNATN_CODE",
+                               "onUpdate": "$selectState.$populateSource();"
+                            }
+                       ]
+                 }
+             ]
+       }
+    ]
+}
