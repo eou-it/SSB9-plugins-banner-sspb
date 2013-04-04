@@ -20,10 +20,10 @@ class CompileServiceTest extends GroovyTestCase  {
     void testCompileAll() {
         // test all page model compilation
         def maxModelId = 6
-        def modelPath = "C:/projects/grails_apps/banner-sspb/test/testData/model/PageModel"
+        def modelPath = "test/testData/model/PageModel"
         def getModelPath = { id -> return modelPath + id + '.json' }
 
-        def pagePath = "C:/projects/grails_apps/banner-sspb/target/compiledPage/page"
+        def pagePath = "target/compiledPage/page"
         def getPagePath = { id -> return pagePath + id + '.html' }
 
         for (i in (1..maxModelId)) {
