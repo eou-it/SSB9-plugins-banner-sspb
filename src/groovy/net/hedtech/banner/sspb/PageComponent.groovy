@@ -504,7 +504,9 @@ class PageComponent {
 """\
 <head>
 <!-- sitemesh -->
-<meta name="layout" content="customAngularJSSelfServicePage"/>
+<meta name="layout" content="BannerXECustomPage"/>
+
+<!--meta name="layout" content="simple"/-->
 
 <title>$title</title>
 
@@ -548,13 +550,22 @@ var pageID = "$name"
     $CONTROLLER_PLACEHOLDER
 </script>
 
-<link rel="stylesheet" href="/StudentRegistrationSsb/custom/css/main.css" type="text/css">
+
 <style type="text/css">
     .scrollable {  overflow-y:scroll; overflow-x:auto;  }
 </style>
 </head>
 <body>
-   <div ng-controller="CustomPageController"  class="scrollable">
+<style>
+    *.margin
+    {
+        margin-top: 10px;
+        margin-left:10px;
+        margin-right:10px;
+    }
+</style>
+
+   <div ng-controller="CustomPageController"  class="margin">
    ${label?"<h1>$label</h1>":""}
  """
     }

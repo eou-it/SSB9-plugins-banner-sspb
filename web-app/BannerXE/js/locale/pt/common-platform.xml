@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceBundle>
+    <Resource key="areas_label_browse" value="Página principal"/>
+    <Resource key="areas_label_opened" value="Ir para..."/>
+    <Resource key="areas_label_tools" value="Ferramentas"/>
+    <Resource key="areas_label_browse_shortcut" value="Navegar Alt+M"/>
+    <Resource key="areas_label_home_shortcut" value="Página principal Ctrl+Home"/>
+    <Resource key="areas_label_opened_shortcut" value="Ir para Alt+G"/>
+    <Resource key="areas_label_tools_shortcut" value="Ferramentas Alt+L"/>
+    <Resource key="areas_label_addtab" value="Adicionar guia"/>
+    <Resource key="areas_label_addtabWithPlusSymbol" value="+ Adicionar guia"/>
+    <Resource key="areas_label_edittab" value="Editar guia"/>
+    <Resource key="common_ok" value="Ok"/>
+    <Resource key="common_no" value="Não"/>
+    <Resource key="common_save" value="Salvar"/>
+    <Resource key="common_cancel" value="Cancelar"/>
+    <Resource key="common_reset" value="Reiniciar"/>
+    <Resource key="common_remove" value="Remover"/>
+    <Resource key="common_yes" value="Sim"/>
+    <Resource key="confirmation_label_title" value="Confirmação"/>
+    <Resource key="errorwindow_label_title" value="Ocorreu um erro"/>
+    <Resource key="openitems_label_closeSelected" value="Fechar selecionado"/>
+    <Resource key="openitems_label_closeAll" value="Fechar tudo"/>
+    <Resource key="preferences_label_title" value="Preferências do usuário"/>
+    <Resource key="preferences_label" value="Preferências"/>
+    <Resource key="preferences_localize" value="Localizar"/>
+    <Resource key="preferences_language" value="Idioma"/>
+    <Resource key="preferences_lang_direction" value="Direção do idioma"/>
+    <Resource key="preferences_theme" value="Tema"/>
+    <Resource key="preferences_color_primary" value="Principal"/>
+    <Resource key="preferences_color_secondary" value="Secundário"/>
+    <Resource key="preferences_color_selection" value="Seleção"/>
+    <Resource key="preferences_color_interaction" value="Interação"/>
+    <Resource key="preferences_text" value="Texto"/>
+    <Resource key="search_title" value="Ir para..."/>
+    <Resource key="tab_label_name" value="Nome da guia"/>
+    <Resource key="tab_label_addContent" value="Adicionar conteúdo"/>
+    <Resource key="tab_label_bookmarkThisPage" value="Marcar esta página"/>
+    <Resource key="tab_label_findOtherPage" value="Localizar outra página"/>
+    <Resource key="tab_label_setAsHome" value="Definir como principal"/>
+    <Resource key="tab_label_newWorkspace" value="Nova guia"/>
+	<Resource key="userdetails_signin" value="Entrar"/>
+    <Resource key="userdetails_signout" value="Sair"/>
+    <Resource key="userdetails_help" value="Ajuda"/>
+	<!-- Cascade specific strings --> 	<Resource key="userdetails_close" value="FECHAR"/>
+	<Resource key="default_document_title" value="Menu principal"/>
+	<Resource key="help_title" value="Ajuda Alt+F1"/>
+	<Resource key="find_a_page" value="Localizar uma página..."/>
+	<Resource key="crumb_label_home" value="Página principal"/>
+</ResourceBundle>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceBundle>
+    <Resource key="areas_label_browse" value="Inicio"/>
+    <Resource key="areas_label_opened" value="Ir a..."/>
+    <Resource key="areas_label_tools" value="Herramientas"/>
+    <Resource key="areas_label_browse_shortcut" value="Navegar Alt+M"/>
+    <Resource key="areas_label_home_shortcut" value="Inicio Ctrl+Inicio"/>
+    <Resource key="areas_label_opened_shortcut" value="Ir a Alt+G"/>
+    <Resource key="areas_label_tools_shortcut" value="Herramientas Alt+L"/>
+    <Resource key="areas_label_addtab" value="Agregar Pestaña"/>
+    <Resource key="areas_label_addtabWithPlusSymbol" value="+ Agregar Pestaña"/>
+    <Resource key="areas_label_edittab" value="Editar Pestaña"/>
+    <Resource key="common_ok" value="Ok"/>
+    <Resource key="common_no" value="No"/>
+    <Resource key="common_save" value="Guardar"/>
+    <Resource key="common_cancel" value="Anular"/>
+    <Resource key="common_reset" value="Restablecer"/>
+    <Resource key="common_remove" value="Eliminar"/>
+    <Resource key="common_yes" value="Sí"/>
+    <Resource key="confirmation_label_title" value="Confirmación"/>
+    <Resource key="errorwindow_label_title" value="Ocurrió un error"/>
+    <Resource key="openitems_label_closeSelected" value="Cerrar Seleccionado"/>
+    <Resource key="openitems_label_closeAll" value="Cerrar Todo"/>
+    <Resource key="preferences_label_title" value="Preferencias del Usuario"/>
+    <Resource key="preferences_label" value="Preferencias"/>
+    <Resource key="preferences_localize" value="Localizar"/>
+    <Resource key="preferences_language" value="Idioma"/>
+    <Resource key="preferences_lang_direction" value="Dirección del Idioma"/>
+    <Resource key="preferences_theme" value="Tema"/>
+    <Resource key="preferences_color_primary" value="Principal"/>
+    <Resource key="preferences_color_secondary" value="Secundario"/>
+    <Resource key="preferences_color_selection" value="Selección"/>
+    <Resource key="preferences_color_interaction" value="Interacción"/>
+    <Resource key="preferences_text" value="Texto"/>
+    <Resource key="search_title" value="Ir a..."/>
+    <Resource key="tab_label_name" value="Nombre de Pestaña"/>
+    <Resource key="tab_label_addContent" value="Agregar Contenido"/>
+    <Resource key="tab_label_bookmarkThisPage" value="Marcar Esta Página"/>
+    <Resource key="tab_label_findOtherPage" value="Encontrar Otra Página"/>
+    <Resource key="tab_label_setAsHome" value="Establecer como Inicio"/>
+    <Resource key="tab_label_newWorkspace" value="Nueva Pestaña"/>
+	<Resource key="userdetails_signin" value="Acceder"/>
+    <Resource key="userdetails_signout" value="Salir"/>
+    <Resource key="userdetails_help" value="Ayuda"/>
+	<!-- Cascade specific strings --> 	<Resource key="userdetails_close" value="CERRAR"/>
+	<Resource key="userdetails_close" value="CERRAR"/>
+	<Resource key="default_document_title" value="Menú Principal"/>
+	<Resource key="help_title" value="Ayuda Alt+F1"/>
+	<Resource key="find_a_page" value="Encontrar una página..."/>
+	<Resource key="crumb_label_home" value="Inicio"/>
+</ResourceBundle>

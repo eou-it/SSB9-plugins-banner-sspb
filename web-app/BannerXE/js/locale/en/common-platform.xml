@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceBundle>
+    <Resource key="areas_label_browse" value="Home"/>
+    <Resource key="areas_label_opened" value="Go To..."/>
+    <Resource key="areas_label_tools" value="Tools"/>
+    <Resource key="areas_label_browse_shortcut" value="Browse Alt+M"/>
+    <Resource key="areas_label_home_shortcut" value="Home Ctrl+Home"/>
+    <Resource key="areas_label_opened_shortcut" value="Go To Alt+G"/>
+    <Resource key="areas_label_tools_shortcut" value="Tools Alt+L"/>
+    <Resource key="areas_label_addtab" value="Add Tab"/>
+    <Resource key="areas_label_addtabWithPlusSymbol" value="+ Add Tab"/>
+    <Resource key="areas_label_edittab" value="Edit Tab"/>
+    <Resource key="common_ok" value="Ok"/>
+    <Resource key="common_no" value="No"/>
+    <Resource key="common_save" value="Save"/>
+    <Resource key="common_cancel" value="Cancel"/>
+    <Resource key="common_reset" value="Reset"/>
+    <Resource key="common_remove" value="Remove"/>
+    <Resource key="common_yes" value="Yes"/>
+    <Resource key="confirmation_label_title" value="Confirmation"/>
+    <Resource key="errorwindow_label_title" value="An error has occurred"/>
+    <Resource key="openitems_label_closeSelected" value="Close Selected"/>
+    <Resource key="openitems_label_closeAll" value="Close All"/>
+    <Resource key="preferences_label_title" value="User Preferences"/>
+    <Resource key="preferences_label" value="Preferences"/>
+    <Resource key="preferences_localize" value="Localize"/>
+    <Resource key="preferences_language" value="Language"/>
+    <Resource key="preferences_lang_direction" value="Language Direction"/>
+    <Resource key="preferences_theme" value="Theme"/>
+    <Resource key="preferences_color_primary" value="Primary"/>
+    <Resource key="preferences_color_secondary" value="Secondary"/>
+    <Resource key="preferences_color_selection" value="Selection"/>
+    <Resource key="preferences_color_interaction" value="Interaction"/>
+    <Resource key="preferences_text" value="Text"/>
+    <Resource key="search_title" value="Go To..."/>
+    <Resource key="tab_label_name" value="Tab Name"/>
+    <Resource key="tab_label_addContent" value="Add Content"/>
+    <Resource key="tab_label_bookmarkThisPage" value="Bookmark This Page"/>
+    <Resource key="tab_label_findOtherPage" value="Find Other Page"/>
+    <Resource key="tab_label_setAsHome" value="Set as Home"/>
+    <Resource key="tab_label_newWorkspace" value="New Tab"/>
+	<Resource key="userdetails_signin" value="Sign In"/>
+    <Resource key="userdetails_signout" value="Sign Out"/>
+    <Resource key="userdetails_help" value="Help"/>
+	<!-- Cascade specific strings -->
+	<Resource key="userdetails_close" value="CLOSE"/>
+	<Resource key="default_document_title" value="Main Menu"/>
+	<Resource key="help_title" value="Help Alt+F1"/>
+	<Resource key="find_a_page" value="Find a page..."/>
+	<Resource key="crumb_label_home" value="Home"/>
+</ResourceBundle>
+
