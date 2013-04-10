@@ -42,8 +42,10 @@
 
         <!-- load angular JS here -->
         <!-- TODO utilize Grails Resource Management here -->
+
         <script src="/banner-sspb/BannerXE/lib/angular/angular.js"></script>
         <script src="/banner-sspb/BannerXE/lib/angular/angular-resource.js"></script>
+
 
 <%
  /* TODO integrate with Banner Session
@@ -68,6 +70,10 @@
   //}
 
 %>
+
+        <script type="text/javascript">
+            var rootWebApp = ${createLink(uri: '/')};  //use in controller restful interface
+        </script>
         <!-- r:layoutResources/ -->
 
         <g:layoutHead />

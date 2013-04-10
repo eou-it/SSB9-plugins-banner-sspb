@@ -1,23 +1,24 @@
 package net.hedtech.banner.sspb
 
-/**
- * Created with IntelliJ IDEA.
- * User: jzhong
- * Date: 4/4/13
- * Time: 10:41 AM
- * To change this template use File | Settings | File Templates.
- */
 class Page {
-    String name
+    String constantName
     String modelView
     String compiledView
-    String compiledController
-    String controller
-    String action
+    //String compiledController
     static constraints = {
-        name nullable: false, unique: true, maxSize: 30
-        modelView maxSize: 65000, widget: 'textarea'
-        compiledView maxSize: 65000, widget: 'textarea'
-        compiledController maxSize: 65000, widget: 'textarea'
+        constantName nullable: false, unique: true, maxSize: 60
+        modelView    widget: 'textarea'  ,  nullable: false ,  maxSize: 1000000
+        compiledView widget: 'textarea'  ,  nullable: true  ,  maxSize: 1000000
+        //compiledController nullable:  true, widget: 'textarea'
     }
+      //uncomment first time if db object is created
+    static mapping = {
+        modelView type: "clob"
+        compiledView type: "clob"
+        //compiledController type: "clob"
+
+        datasource 'sspb'
+    }
+
+
 }

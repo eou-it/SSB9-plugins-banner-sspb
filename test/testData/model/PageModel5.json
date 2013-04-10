@@ -7,7 +7,7 @@
            "type": "resource",
            "name": "EmployeeRes",
            "binding": "rest",
-           "resource": "/StudentRegistrationSsb/ssb/virt/employee"
+           "resource": "/banner-sspb/virt/employee"
        },
        {
             "type":"flow",

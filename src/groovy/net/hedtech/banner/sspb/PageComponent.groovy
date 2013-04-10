@@ -516,6 +516,15 @@ var pageID = "$name"
 
  // inject services and controller modules to be registered with the global ng-app
  var myCustomServices = ['ngResource'];
+
+//function to avoid undefined
+function nvl(val,def){
+  if ( (val == undefined) || (val == null ) ) {
+    return def
+  }
+  return val
+}
+
 </script>
 
 <!-- inject global functions -->

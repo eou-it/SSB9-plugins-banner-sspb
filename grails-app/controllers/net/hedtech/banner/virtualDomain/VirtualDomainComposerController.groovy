@@ -1,46 +1,46 @@
 package net.hedtech.banner.virtualDomain
 
 class VirtualDomainComposerController {
+    static defaultAction = "loadVirtualDomain"
+    def virtualDomainService
 
     def composeVirtualDomain = {
-        def pageInstance = new VirtualDomainPage(params)
-
+        def pageInstance = params
         render (view:"virtualDomainComposer", model: [pageInstance: pageInstance])
-
     }
 
     def saveVirtualDomain = {
-        def pageInstance = new VirtualDomainPage(params)
-        if (pageInstance.vdName)  {
-            def saveResult =  virtualDomainService.saveVirtualDomain(pageInstance.vdName,
-                    pageInstance.vdQueryView, pageInstance.vdSaveView, pageInstance.vdDeleteView)
+        def pageInstance = params
+        if (pageInstance.vdServiceName)  {
+            def saveResult =  virtualDomainService.saveVirtualDomain(pageInstance.vdServiceName,
+                    pageInstance.vdQueryView, pageInstance.vdPostView, pageInstance.vdPutView, pageInstance.vdDeleteView)
             pageInstance.saveSuccess = saveResult.success
             pageInstance.updated = saveResult.updated
             pageInstance.error = saveResult.error
             pageInstance.id = saveResult.id
             pageInstance.version = saveResult.version
-
             pageInstance.submitted = true
         }
-
         render (view:"virtualDomainComposer", model: [pageInstance: pageInstance])
     }
 
     def loadVirtualDomain = {
-        def pageInstance = new VirtualDomainPage(params)
-        if (pageInstance.loadVdName)  {
-            def loadResult =  virtualDomainService.loadVirtualDomain(pageInstance.loadVdName)
+        def pageInstance = params
+        if (pageInstance.vdServiceName)  {
+            def loadResult =  virtualDomainService.loadVirtualDomain(pageInstance.vdServiceName)
             pageInstance.loadSuccess = loadResult.success
             pageInstance.error = loadResult.error
             pageInstance.loadSubmitted = true
             if (loadResult.success) {
-                pageInstance.vdQueryView = loadResult.vd.codeGet
-                pageInstance.vdSaveView = loadResult.vd.codePost
-                pageInstance.vdDeleteView = loadResult.vd.codeDelete
+                pageInstance.vdQueryView  = loadResult.virtualDomain.codeGet
+                pageInstance.vdPostView   = loadResult.virtualDomain.codePost
+                pageInstance.vdPutView   = loadResult.virtualDomain.codePut
+                pageInstance.vdDeleteView = loadResult.virtualDomain.codeDelete
             }
         }
 
         render (view:"virtualDomainComposer", model: [pageInstance: pageInstance])
     }
+
 
 }

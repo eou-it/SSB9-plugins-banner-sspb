@@ -100,9 +100,15 @@ class CompileService {
 
         // first handle data binding
         if (dataComponent.binding == PageComponent.BINDING_REST) {
+            // can specify resource relative to current application like:
+            // $rootWebApp/rest/emp
+            def resString="'${dataComponent.resource}'".replace("'\$rootWebApp/","rootWebApp+'")
+            if (resString.startsWith("'/\$rootWebApp")) {
+                throw new Exception( "Compiling Reource: Expected \$rootWebApp/relativePath, got /\$rootWebApp/relativePath")
+            }
             // create a class for
             def classDef = """
-        var $dataComponent.name = \$resource('$dataComponent.resource');
+        var $dataComponent.name = \$resource($resString);
         """
             functions << classDef
         }
@@ -124,7 +130,8 @@ class CompileService {
 
                     // concatenate all map entries to a string
                     component.parameters.each { key, value->
-                        paramMap +=  "$key : $value,"
+                        //paramMap +=  "$key : $value,"
+                        paramMap +=  "$key : nvl($value,\"\"),"
                     }
                     // remove trailing comma
                     if (paramMap?.endsWith(","))
@@ -139,7 +146,8 @@ class CompileService {
 
                     // concatenate all map entries to a string
                     component.sourceParameters?.each { key, value->
-                        sourceParamMap +=  "$key : $value,"
+                        //sourceParamMap +=  "$key : $value,"
+                        sourceParamMap +=  "$key : nvl($value,\"\"),"
                     }
                     // remove trailing comma
                     if (sourceParamMap?.endsWith(","))

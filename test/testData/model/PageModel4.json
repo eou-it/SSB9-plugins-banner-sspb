@@ -7,20 +7,20 @@
            "type": "resource",
            "name": "CountryData",
            "binding": "rest",
-           "resource": "/StudentRegistrationSsb/ssb/virt/stvnation",
+           "resource": "/banner-sspb/virt/stvnation",
            "documentation":"Retrieve nation desc and code"
        },
        {
            "type": "resource",
            "name": "StateData",
            "binding": "rest",
-           "resource": "/StudentRegistrationSsb/ssb/virt/stvstat"
+           "resource": "/banner-sspb/virt/stvstat"
        },
        {
            "type": "resource",
            "name": "PRAddressData",
            "binding": "rest",
-           "resource": "/StudentRegistrationSsb/ssb/virt/PRAddress"
+           "resource": "/banner-sspb/virt/PRAddress"
        },
        {    "type": "form",
              "name": "AddressForm",

@@ -7,13 +7,13 @@
            "type": "resource",
            "name": "Empdept",
            "binding": "rest",
-           "resource": "/StudentRegistrationSsb/ssb/virt/empdept"
+           "resource": "$rootWebApp/virt/empdept"
        },
        {
            "type": "resource",
            "name": "Dept",
            "binding": "rest",
-           "resource": "/StudentRegistrationSsb/ssb/virt/department"
+           "resource": "$rootWebApp/virt/department"
        },
        {
          "type": "form",
