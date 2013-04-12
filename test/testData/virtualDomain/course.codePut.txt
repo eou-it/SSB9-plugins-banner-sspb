@@ -1,0 +1,33 @@
+              declare
+			    l_cnt integer;
+			    l_rowid_c varchar2(30):=substr(:id,1, instr(:id,':')-1);
+			    l_rowid_d varchar2(30):=substr(:id,instr(:id,':')+1);
+			  begin
+			    update SCBCRSE set SCBCRSE_TITLE=nvl(:courseTitle, SCBCRSE_TITLE)
+			    where ROWID=l_rowid_c;
+			    --raise_application_error(-20000,'rowid_c='||l_rowid_c||' rowid_d='||l_rowid_d||' Updated rows: '||sql%rowcount);
+                if l_rowid_d is null and :courseText is not null  then
+                  insert into scbdesc
+                  ( scbdesc_subj_code,
+                    scbdesc_crse_numb,
+                    scbdesc_term_code_eff,
+                    scbdesc_activity_date,
+                    scbdesc_user_id,
+                    scbdesc_text_narrative)
+                  values (
+                    :subjectCode,
+                    :courseNumber,
+                    :termEffective,
+                    sysdate,
+                    user,
+                    :courseText
+                  );
+                else
+                  update scbdesc
+                    set scbdesc_activity_date=sysdate,
+                        scbdesc_user_id=user,
+                        scbdesc_text_narrative=nvl(:courseText,null)
+                  where rowid=l_rowid_d;
+                end if;
+			  end;
+            

@@ -1,0 +1,1 @@
+ select 'hallo world' from dual where 1/0>0

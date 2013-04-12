@@ -1,0 +1,9 @@
+            select empno||','||deptno  "id", q.*
+            from
+            (select * from emp natural join dept) q
+             where (empno = :empno  or :empno is null)
+               and ename like nvl(:ename,'%')
+               and (deptno = :deptno  or :deptno is null)
+               and dname like nvl(:dname,'%')
+               and (substr(:id,1, instr(:id,',')-1) is null or empno=substr(:id,1, instr(:id,',')-1) )
+               and (substr(:id,instr(:id,',')+1)   is null  or deptno=substr(:id,instr(:id,',')+1) )

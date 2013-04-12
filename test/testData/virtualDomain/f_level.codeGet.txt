@@ -1,0 +1,39 @@
+SELECT   DISTINCT STVLEVL_CODE, STVLEVL_DESC
+  FROM   STVLEVL, SMRPRLE,    SMBPGEN PGEN1
+                           LEFT OUTER JOIN
+                              SOBCURR
+                           ON SOBCURR_PROGRAM = SMBPGEN_PROGRAM
+                              AND SOBCURR_TERM_CODE_INIT <= :TERM                        
+ WHERE       STVLEVL_CODE = NVL (SOBCURR_LEVL_CODE, SMRPRLE_LEVL_CODE)
+         AND SMRPRLE_PROGRAM = SMBPGEN_PROGRAM
+         AND SMBPGEN_ACTIVE_IND = 'Y'
+         AND SMBPGEN_TERM_CODE_EFF = (SELECT   MAX (PGEN2.SMBPGEN_TERM_CODE_EFF)
+                                        FROM   SMBPGEN PGEN2
+                                       WHERE   PGEN2.SMBPGEN_PROGRAM = PGEN1.SMBPGEN_PROGRAM
+                                               AND PGEN2.SMBPGEN_TERM_CODE_EFF <= :TERM)
+         AND NVL (NVL (SOBCURR_CAMP_CODE, SMRPRLE_CAMP_CODE), '****') = NVL (:campus, NVL (NVL (SOBCURR_CAMP_CODE, SMRPRLE_CAMP_CODE), '****'))
+         AND NVL (NVL (SOBCURR_COLL_CODE, SMRPRLE_COLL_CODE), '****') = NVL (:college, NVL (NVL (SOBCURR_COLL_CODE, SMRPRLE_COLL_CODE), '****'))
+         AND (EXISTS (SELECT   1
+                        FROM   SORWDSP
+                       WHERE   SORWDSP_TABLE_NAME = 'STVLEVL'
+                               AND SORWDSP_CODE = NVL (NVL (SOBCURR_LEVL_CODE, SMRPRLE_LEVL_CODE), SORWDSP_CODE))
+              OR NOT EXISTS (SELECT   1
+                               FROM   SORWDSP
+                              WHERE   SORWDSP_TABLE_NAME = 'STVLEVL'))
+         AND (EXISTS (SELECT   1
+                        FROM   SORWDSP
+                       WHERE   SORWDSP_TABLE_NAME = 'STVCAMP'
+                               AND SORWDSP_CODE = NVL (NVL (SOBCURR_CAMP_CODE, SMRPRLE_CAMP_CODE), SORWDSP_CODE))
+              OR NOT EXISTS (SELECT   1
+                               FROM   SORWDSP
+                              WHERE   SORWDSP_TABLE_NAME = 'STVCAMP'))
+         AND (EXISTS (SELECT   1
+                        FROM   SORWDSP
+                       WHERE   SORWDSP_TABLE_NAME = 'STVCOLL'
+                               AND SORWDSP_CODE = NVL (NVL (SOBCURR_COLL_CODE, SMRPRLE_COLL_CODE), SORWDSP_CODE))
+              OR NOT EXISTS (SELECT   1
+                               FROM   SORWDSP
+                              WHERE   SORWDSP_TABLE_NAME = 'STVCOLL'))
+UNION
+SELECT   NULL, G$_NLS.GET ('ESC_PROGCAT_S_FINDPR-0011', 'SSEN', ' all levels') FROM DUAL
+ORDER BY   2

@@ -1,0 +1,22 @@
+              declare
+			    l_cnt integer;
+			  begin
+			    select count(*) into l_cnt from dept where deptno=:DEPTNO;
+				if l_cnt=0 then
+                  insert into dept (deptno,dname,loc) values (:DEPTNO,:DNAME,:LOC );
+				else
+				  update dept set dname=:DNAME, loc=:LOC
+                  where deptno=:DEPTNO;
+				end if;
+                select count(*) into l_cnt from emp where empno=:EMPNO;
+                if l_cnt=0 then
+                    insert into emp (empno,ename,job,mgr,hiredate,sal,comm,deptno)
+                    values (:EMPNO, :ENAME, :JOB, :MGR, :HIREDATE, :SAL, :COMM, :DEPTNO );
+                else
+                    update emp set ename=nvl(:ENAME,null), job=nvl(:JOB,null), mgr=nvl(:MGR,null), hiredate=:HIREDATE,
+                    sal=nvl(:SAL,null), comm=nvl(:COMM,0), deptno=nvl(:DEPTNO,null)
+                    where empno=:EMPNO;
+                end if;
+                --Update this (colon)id on the client - if we created a new record it will not be set
+                --(colon)id=(colon)EMPNO||','||(colon)DEPTNO;
+			  end;

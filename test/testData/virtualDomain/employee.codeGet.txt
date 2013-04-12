@@ -1,0 +1,2 @@
+select * from emp
+where (:empno IS NULL or empno=:empno)
