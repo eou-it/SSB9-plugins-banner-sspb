@@ -60,7 +60,6 @@ class CompileServiceTests extends GroovyTestCase  {
                 println "modelFilePath validation error:\n" + validateResult.errors.join('\n')
                 assert (false)
             }
-
         }
         assert(true)
 

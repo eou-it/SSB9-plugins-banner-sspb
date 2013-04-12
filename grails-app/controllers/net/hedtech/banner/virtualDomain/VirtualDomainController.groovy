@@ -6,7 +6,11 @@ class VirtualDomainController {
     def virtualDomainService
 
     private def invalidResource = { e ->
-        render(status: 404, text: "Resource not found - $e")
+        render(status: 404, text: e)
+    }
+
+    private def serverError = { e ->
+        render(status:  500, text: e)
     }
 
     def get = {
@@ -20,8 +24,10 @@ class VirtualDomainController {
             render groovy.json.JsonOutput.toJson(result.rows)  //json date  ends with +0000
             //render rows.encodeAsJSON() //json date ends with Z
         } else {
-            if (params.debug == "true")
+            if (params.debug == "true") //should also check user has SSPB privileges
                 render result.error.replace("\n", "<br/>")
+            else
+                serverError
         }
     }
 
@@ -33,7 +39,7 @@ class VirtualDomainController {
             return
         }
         def data =  request.JSON
-        virtualDomainSqlService.create(vd,params,data)
+        virtualDomainSqlService.create(vd.virtualDomain,params,data)
         render ""
         //Should really be querying the record again so any database trigger changes get reflected in client
         //render data.encodeAsJSON()
@@ -47,7 +53,7 @@ class VirtualDomainController {
             return
         }
         def data =  request.JSON
-        virtualDomainSqlService.update(vd,params,data)
+        virtualDomainSqlService.update(vd.virtualDomain,params,data)
         render ""
         //Should really be querying the record again so any database trigger changes get reflected in client
         //render data.encodeAsJSON()
@@ -60,7 +66,7 @@ class VirtualDomainController {
             invalidResource
             return
         }
-        virtualDomainSqlService.delete(vd,params)
+        virtualDomainSqlService.delete(vd.virtualDomain,params)
         render ""
     }
 

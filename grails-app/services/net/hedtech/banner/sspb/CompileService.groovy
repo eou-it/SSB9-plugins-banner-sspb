@@ -11,7 +11,6 @@ class CompileService {
     // output
     def static compile2page(pageComponent) {
         def pageTxt=pageComponent.compileComponent("")
-        //println pageTxt
         return pageTxt
     }
 

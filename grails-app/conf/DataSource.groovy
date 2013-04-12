@@ -43,9 +43,31 @@ environments {
 
     }
     test {
+        //Banner database (default)
         dataSource {
-            dbCreate = "update"
-            url = "jdbc:h2:mem:testDb;MVCC=TRUE"
+            pooled = true
+            driverClassName = "oracle.jdbc.OracleDriver"
+            dialect = "org.hibernate.dialect.Oracle10gDialect"
+            username = "baninst1"
+            password = "u_pick_it"
+            url = "jdbc:oracle:thin:@oracledb:1521:ban83"
+            dbCreate = "none" //"validate"
+            //loggingSql = true
+            //logSql =true
+
+        }
+
+        //Database with sspb
+        dataSource_sspb {
+            pooled = true
+            driverClassName = "oracle.jdbc.OracleDriver"
+            dialect = "org.hibernate.dialect.Oracle10gDialect"
+            username = "sspbmgr"
+            password = "u_pick_it"
+            url = "jdbc:oracle:thin:@oracledb:1521:ban83"
+            //url = "jdbc:oracle:thin:@149.24.229.150:1521:orcl"
+            dbCreate = "none" //"validate"
+            loggingSql = false //true
         }
     }
     production {

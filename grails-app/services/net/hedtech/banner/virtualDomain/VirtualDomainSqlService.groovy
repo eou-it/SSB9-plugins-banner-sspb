@@ -53,14 +53,14 @@ class VirtualDomainSqlService {
         def statement = "select * from (${vd.codeGet}) where (1=1 or :x is null) $debugStatement"
 
         def metaData = { meta ->
-            logmsg += "\nColumns: $meta.columnCount"
+            logmsg += "\nNumber of columns: $meta.columnCount"
         }
         def rows
         try {
             rows = sql.rows(statement,params,metaData)
             rows = idEncodeRows(rows)
             rows = handleClobRows(rows)
-            logmsg += " Rows: ${rows.size()}"
+            logmsg += " Number of rows fetched: ${rows.size()}"
         } catch(e) {
             logmsg +="\n***ERROR*** ${e.getMessage()}\nStatement: \n $statement"
             errorMessage=logmsg

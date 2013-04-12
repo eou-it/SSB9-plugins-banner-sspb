@@ -530,10 +530,10 @@ function nvl(val,def){
 <!-- inject global functions -->
 
  <script type="text/javascript">
-     // utility functions
-    /* build a sub list from elements of "sourceList" as identified by indices in "indexList"
-       Return - the sub list
-    */
+     //utility functions
+     //build a sub list from elements of "sourceList" as identified by indices in "indexList"
+     //Return - the sub list
+
     function buildList(sourceList, indexList) {
         var newList = new Array();
         for (var i = 0; i < indexList.length; i++) {
