@@ -30,7 +30,7 @@
 <body>
 <div class="customPage" >
 <g:form name="SelectForm" action="loadPageModel">
-    <label>Load Virtual Domain Definition</label>
+    <label>Load Page</label>
     <g:select name="constantName"
               from="${Page.list().sort {it.constantName}}"
               value="${pageModel.pageInstance?.constantName}"
@@ -43,7 +43,7 @@
 <br/>
 
 <g:form name="ComposeForm" action="compile">
-    <label>Save Virtual Domain Definition</label>
+    <label>Unique Page Name</label>
     <input type="text" name="constantName" value="${pageModel.pageInstance?.constantName}" required/>
     <g:actionSubmit action="compile" value="Compile & Save"/>
     <input type="hidden" name="id" value="${pageModel.pageInstance?.id}"/>

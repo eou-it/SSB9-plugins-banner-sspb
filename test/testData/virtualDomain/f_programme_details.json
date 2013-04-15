@@ -1,0 +1,11 @@
+{
+   "codePost": null,
+   "id": 12,
+   "dataSource": "B",
+   "codePut": null,
+   "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
+   "codeDelete": null,
+   "codeGet": "select \r\nrowidtochar(smrprle.rowid) \"id\"\n,stvlevl_desc\r\n,stvcamp_desc\r\n,stvcoll_desc\r\n,stvdegc_desc\r\n,smrprle.*\r\nfrom smrprle ,stvlevl , stvcamp, stvcoll, stvdegc\r\nwhere stvlevl_code=smrprle_levl_code\r\n  and stvcamp_code(+)=smrprle_camp_code\r\n  and stvcoll_code(+)=smrprle_coll_code\r\n  and stvdegc_code(+)=smrprle_degc_code\r\n  and smrprle_program like nvl(:programme,'%')\r\n",
+   "typeOfCode": "S",
+   "serviceName": "f_programme_details"
+}

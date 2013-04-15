@@ -1,0 +1,11 @@
+{
+   "codePost": null,
+   "id": 2,
+   "dataSource": "B",
+   "codePut": null,
+   "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
+   "codeDelete": null,
+   "codeGet": "SELECT   stvterm_code, stvterm_desc FROM stvterm, sobterm WHERE sobterm_term_code=stvterm_code and SOBTERM_DYNAMIC_SCHED_TERM_IND = 'Y'\r\n",
+   "typeOfCode": "S",
+   "serviceName": "f_term"
+}
