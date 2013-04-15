@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
   <component name="FacetManager">
@@ -35,41 +34,3 @@
   </component>
 </module>
 
-=======
-<?xml version="1.0" encoding="UTF-8"?>
-<module type="JAVA_MODULE" version="4">
-  <component name="FacetManager">
-    <facet type="hibernate" name="Hibernate">
-      <configuration>
-        <datasource-map />
-      </configuration>
-    </facet>
-  </component>
-  <component name="NewModuleRootManager" inherit-compiler-output="true">
-    <exclude-output />
-    <content url="file://$USER_HOME$/.grails/2.2.1/projects/banner-sspb/plugins/hibernate-2.2.1">
-      <sourceFolder url="file://$USER_HOME$/.grails/2.2.1/projects/banner-sspb/plugins/hibernate-2.2.1/grails-app/i18n" isTestSource="false" />
-    </content>
-    <content url="file://$USER_HOME$/.grails/2.2.1/projects/banner-sspb/plugins/release-2.2.0">
-      <sourceFolder url="file://$USER_HOME$/.grails/2.2.1/projects/banner-sspb/plugins/release-2.2.0/src/java" isTestSource="false" />
-      <sourceFolder url="file://$USER_HOME$/.grails/2.2.1/projects/banner-sspb/plugins/release-2.2.0/src/groovy" isTestSource="false" />
-    </content>
-    <content url="file://$USER_HOME$/.grails/2.2.1/projects/banner-sspb/plugins/rest-client-builder-1.0.3">
-      <sourceFolder url="file://$USER_HOME$/.grails/2.2.1/projects/banner-sspb/plugins/rest-client-builder-1.0.3/src/groovy" isTestSource="false" />
-    </content>
-    <content url="file://$USER_HOME$/.grails/2.2.1/projects/banner-sspb/plugins/tomcat-2.2.1" />
-    <orderEntry type="inheritedJdk" />
-    <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="PROVIDED" name="ojdbc6" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="grails-2.2.1" level="application" />
-    <orderEntry type="module-library" exported="">
-      <library name="Grails User Library (Banner-sspb-grailsPlugins)">
-        <CLASSES />
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-  </component>
-</module>
-
->>>>>>> origin/master
