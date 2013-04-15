@@ -1,4 +1,0 @@
-              begin
- 			    raise_application_error(-20000,'Delete is not allowed.');
- 			  end;
-			
