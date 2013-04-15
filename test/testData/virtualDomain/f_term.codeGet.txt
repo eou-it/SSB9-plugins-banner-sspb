@@ -1,1 +1,0 @@
-SELECT   stvterm_code, stvterm_desc FROM stvterm, sobterm WHERE sobterm_term_code=stvterm_code and SOBTERM_DYNAMIC_SCHED_TERM_IND = 'Y'

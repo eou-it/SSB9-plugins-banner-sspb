@@ -70,7 +70,7 @@ class PageIntegrationTests {
                     page.modelView = pageSource
                     page.compiledView = compiledView
                     page.compiledController = compiledJSCode
-                    page = page.save()
+                    page = page.save(flush: true)
                 }
                 page = Page.get(page.id)
                 if (page) {

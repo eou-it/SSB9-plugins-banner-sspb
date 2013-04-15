@@ -1,0 +1,11 @@
+{
+   "codePost": null,
+   "id": 7,
+   "dataSource": "B",
+   "codePut": null,
+   "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
+   "codeDelete": null,
+   "codeGet": "select * from dept",
+   "typeOfCode": "S",
+   "serviceName": "department"
+}

@@ -1,0 +1,11 @@
+{
+   "codePost": null,
+   "id": 6,
+   "dataSource": "B",
+   "codePut": null,
+   "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
+   "codeDelete": null,
+   "codeGet": "select * from emp\r\nwhere (:empno IS NULL or empno=:empno)",
+   "typeOfCode": "S",
+   "serviceName": "employee"
+}
