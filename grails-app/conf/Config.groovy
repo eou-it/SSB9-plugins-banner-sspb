@@ -1,5 +1,15 @@
 // configuration for plugin testing - will not be included in the plugin zip
 
+// load data source definition from external configuration file. File folder is specified in Java property SSPB_CONFIG_DIR
+// the file name is banner-sspb-config.properties
+def extConfig = System.getProperties().get('SSPB_CONFIG_DIR');
+
+if (extConfig) {
+    println "Using configuration file $extConfig/${appName}-config.properties"
+    grails.config.locations = [ "file:${extConfig}/${appName}-config.properties"]
+} else
+    println "SSPB_CONFIG_DIR environment variable not defined. Using default settings."
+
 log4j = {
     // Example of changing the log pattern for the default console
     // appender:
