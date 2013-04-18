@@ -42,6 +42,14 @@ class VirtualDomainSqlService {
             p.id = urlPathDecode(p.id)
     }
 
+    /*
+    get will return an array of objects satisfying the parameters
+    refactoring to support paging:
+      input max: number of rows to return
+      input offset: offset within total number of rows
+
+    */
+
     def get(vd, params) {
         changeParamsGet(params) // some tweaks and work arounds
         def logmsg="Converted params for get: $params"

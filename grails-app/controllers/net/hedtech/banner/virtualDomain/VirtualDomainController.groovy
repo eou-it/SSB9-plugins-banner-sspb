@@ -13,6 +13,15 @@ class VirtualDomainController {
         render(status:  500, text: e)
     }
 
+/*
+    response headers:
+    * X-hedtech-totalCount.  Returned with list responses and contains the total count of objects.
+    * X-hedtech-pageOffset.  Returned with list responses.
+    * X-hedtech-pageMaxSize. Returned with list responses.
+    * X-hedtech-Media-Type.  Returned with all (sucess) responses, and contains the exact type of the response.
+    * X-hedtech-message.  May optionally be returned with any response.  Contains a localized message for the response.
+    * X-Status-Reason.  Optionally returned with a 400 response to provide additional information on why the request could not be understood.
+*/
     def get = {
         def vd = virtualDomainService.loadVirtualDomain(params.virtualDomain)
         if (vd.error) {
@@ -20,6 +29,8 @@ class VirtualDomainController {
             return
         }
         def result = virtualDomainSqlService.get(vd.virtualDomain, params)
+        ResponseHolder holder = new ResponseHolder()
+
         if (result.error == "") {
             render groovy.json.JsonOutput.toJson(result.rows)  //json date  ends with +0000
             //render rows.encodeAsJSON() //json date ends with Z
