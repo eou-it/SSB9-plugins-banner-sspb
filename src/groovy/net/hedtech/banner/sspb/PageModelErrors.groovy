@@ -18,6 +18,8 @@ class PageModelErrors {
     def static MODEL_ATTR_INVALID_ERR = [code: 4, message: "attribute '{0}' is not allowed for component type '{1}'"]
     def static MODEL_REQUIRED_CHILD_MISSING_ERR = [code: 5, message: "child component '{0}' is missing"]
     def static MODEL_CHILD_INVALID_ERR = [code: 6, message: "child component of type '{0}' is not allowed"]
+    def static MODEL_NAME_CONFLICT_ERR = [code: 7, message: "component name '{0}' already exists"]
+    def static MODEL_UNKNOWN_ERR = [code: 100, message: "Unknown model validation error caused by exception {0}"]
 
 
 

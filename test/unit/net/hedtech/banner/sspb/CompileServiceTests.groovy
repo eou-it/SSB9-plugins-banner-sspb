@@ -57,7 +57,7 @@ class CompileServiceTests extends GroovyTestCase  {
                 htmlOutput.text = combinedView
 
             } else {
-                println "modelFilePath validation error:\n" + validateResult.errors.join('\n')
+                println "modelFilePath validation error:\n" + validateResult.error.join('\n')
                 assert (false)
             }
         }

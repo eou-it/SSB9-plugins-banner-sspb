@@ -17,8 +17,9 @@ class PageModelValidatorTests extends GrailsUnitTestCase   {
 
     public void setUp() {
         super.setUp()
-        def defPath = "PageModelDefinition.json"
-        def pageDefText = new File(defPath).getText()
+        def defPath = "resource/PageModelDefinition.json"
+        def pageDefText = this.class.classLoader.getResourceAsStream( 'PageModelDefinition.json' ).text
+        //def pageDefText = new File(defPath).getText()
         def slurper = new groovy.json.JsonSlurper()
         def pageBuilderModel = slurper.parseText(pageDefText)
         pageModelValidator = new PageModelValidator()

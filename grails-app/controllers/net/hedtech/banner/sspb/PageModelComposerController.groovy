@@ -12,7 +12,7 @@ class PageModelComposerController {
         } else {
             pageInstance = new Page()
         }
-        def pageModel=[status: "", pageInstance: pageInstance]
+        def pageModel=[status: "", pageInstance: pageInstance, modelView: pageInstance.modelView, compiledView: pageInstance.compiledView, compiledController: pageInstance.compiledController  ]
         render (view:"composer", model: [pageModel: pageModel])
     }
 
@@ -20,15 +20,13 @@ class PageModelComposerController {
         def pageInstance
         def statusMessage=""
         pageInstance = Page.findByConstantName(params.constantName)
-        if (pageInstance) {
-            pageInstance.modelView=params.modelView
-        } else {
+        if (!pageInstance) {
             pageInstance = new Page(params)
         }
         def pageModel
         //println "Page ModelView = " + pageInstance.modelView
-        if (pageInstance.modelView)  {
-            def validateResult =  compileService.preparePage(pageInstance.modelView)
+        if (params.modelView)  {
+            def validateResult =  compileService.preparePage(params.modelView)
             if (validateResult.valid) {
                 def compiledJSCode=compileService.compileController(validateResult.pageComponent)
                 statusMessage="JavaScript is compiled\n"
@@ -37,13 +35,17 @@ class PageModelComposerController {
                 def combinedView = compileService.assembleFinalPage(compiledView, compiledJSCode)
                 //validateHtml(combinedView)
                 println "Page is compiled\n"
+                pageInstance.modelView=params.modelView
                 pageInstance.compiledView = compiledView
                 pageInstance.compiledController=compiledJSCode
+                pageInstance=pageInstance.save()
+                pageModel=[status:statusMessage, pageInstance: pageInstance, modelView: pageInstance.modelView, compiledView: pageInstance.compiledView, compiledController: pageInstance.compiledController]
             } else {
-                pageInstance.compiledView="Page model validation error:\n" + validateResult.errors.join('\n')
+                pageModel=[status:statusMessage, pageInstance: pageInstance, modelView: params.modelView, compiledView: "Page model validation error (model not saved):\n" + validateResult.error.join('\n'),
+                        compiledController:""]
             }
-            pageInstance=pageInstance.save()
-            pageModel=[status:statusMessage, pageInstance: pageInstance]
+
+
         }
         render (view:"composer", model: [pageModel: pageModel])
         println "finished compile on ${new Date()}"

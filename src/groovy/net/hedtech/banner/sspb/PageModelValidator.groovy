@@ -121,7 +121,7 @@ class PageModelValidator {
         // recurse into children
         component?.components.each {
             def childRes = validateComponent(it, path)
-            res.valid = res.valid & childRes.valid
+            res.valid = res.valid && childRes.valid
             if (!childRes.valid)
                 res.error += childRes.error
         }
