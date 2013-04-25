@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Banner-sspb.iml" filepath="$PROJECT_DIR$/Banner-sspb.iml" />
       <module fileurl="file://$PROJECT_DIR$/Banner-sspb-grailsPlugins.iml" filepath="$PROJECT_DIR$/Banner-sspb-grailsPlugins.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Banner-sspb-grailsPlugins.iml" filepath="$PROJECT_DIR$/Banner-sspb-grailsPlugins.iml" />
     </modules>
   </component>
 </project>
