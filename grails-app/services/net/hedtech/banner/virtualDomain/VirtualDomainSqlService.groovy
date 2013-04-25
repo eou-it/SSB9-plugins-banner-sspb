@@ -44,12 +44,11 @@ class VirtualDomainSqlService {
 
     /*
     get will return an array of objects satisfying the parameters
-    refactoring to support paging:
+    refactoring to support paging/pagination:
       input max: number of rows to return
       input offset: offset within total number of rows
 
     */
-
     def get(vd, params) {
         changeParamsGet(params) // some tweaks and work arounds
         def logmsg="Converted params for get: $params"
@@ -59,16 +58,32 @@ class VirtualDomainSqlService {
         // Add a dummy bind variable to Groovy SQL to workaround an issue related to passing a map
         // to a query without bind variables
         def statement = "select * from (${vd.codeGet}) where (1=1 or :x is null) $debugStatement"
+        def countStatement="select count(*) COUNT from (${vd.codeGet}) where (1=1 or :x is null) $debugStatement"
 
         def metaData = { meta ->
             logmsg += "\nNumber of columns: $meta.columnCount"
         }
         def rows
+        def totalCount=-1
         try {
-            rows = sql.rows(statement,params,metaData)
-            rows = idEncodeRows(rows)
-            rows = handleClobRows(rows)
-            logmsg += " Number of rows fetched: ${rows.size()}"
+            def max=params.max?params.max.toInteger():-1
+            def offset=params.offset?params.offset.toInteger():-1
+            if (max>=0 || offset>=0)  {
+                // determine the total count
+                rows = sql.rows(countStatement,params)
+                totalCount = rows[0].COUNT
+            }
+            if (totalCount == 0 ) { //no need to query again if 0
+                rows = []
+            }  else {
+                rows = sql.rows(statement,params,offset,max,metaData)
+                rows = idEncodeRows(rows)
+                rows = handleClobRows(rows)
+                if (totalCount<=0)
+                    totalCount=rows.size
+            }
+
+            logmsg += " Fetched: ${rows?.size()} of  $totalCount with offset $offset  "
         } catch(e) {
             logmsg +="\n***ERROR*** ${e.getMessage()}\nStatement: \n $statement"
             errorMessage=logmsg
@@ -76,7 +91,7 @@ class VirtualDomainSqlService {
             sql.close()
         }
         println logmsg
-        return [error: errorMessage, rows:rows]
+        return [error: errorMessage, rows:rows, totalCount:totalCount]
     }
 
     def update(vd, params, data) {
