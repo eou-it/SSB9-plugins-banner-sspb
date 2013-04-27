@@ -1,6 +1,8 @@
 package net.hedtech.banner.virtualDomain
 
-class VirtualDomainController {
+
+
+class VirtualDomainController  {
     //inject the service:
     def virtualDomainSqlService
     def virtualDomainService
@@ -29,9 +31,14 @@ class VirtualDomainController {
             return
         }
         def result = virtualDomainSqlService.get(vd.virtualDomain, params)
-        ResponseHolder holder = new ResponseHolder()
+
+
+
 
         if (result.error == "") {
+            response.addHeader('X-hedtech-totalCount', result.totalCount.toString()) //need to get total count
+            response.addHeader('X-hedtech-pageOffset', params.offset ? params?.offset : 0.toString())
+            response.addHeader('X-hedtech-pageMaxSize', params.max ? params?.max : result.rows.size().toString())
             render groovy.json.JsonOutput.toJson(result.rows)  //json date  ends with +0000
             //render rows.encodeAsJSON() //json date ends with Z
         } else {

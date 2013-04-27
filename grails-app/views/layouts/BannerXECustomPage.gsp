@@ -26,7 +26,7 @@
         <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'demo_page.css')}">
         <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'demo_table.css')}">
         <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'demo_table_jui.css')}">
-    -->
+-->
 
         <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'anish-app.css')}">
         <link rel="stylesheet" href="${resource(dir: 'BannerXE/lib/jquery/plugins/jstree/themes/classic', file: 'style.css')}">
@@ -36,8 +36,14 @@
 
 <!--
         <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'select2.css')}">
-    -->
-
+-->
+        <%-- Added Harry --%>
+        <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'ng-grid.css')}" type="text/css">
+        <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'angular-ui.css')}" type="text/css">
+        <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'jquery-ui.css')}" type="text/css">
+        <script src="/banner-sspb/BannerXE/lib/jquery/jquery-1.8.2.js"></script>
+        <script src="/banner-sspb/BannerXE/lib/jquery/jquery-ui-1.8.24.custom.js"></script>
+        <%-- end Added Harry --%>
 
 
         <!-- load angular JS here -->
@@ -45,6 +51,13 @@
 
         <script src="/banner-sspb/BannerXE/lib/angular/angular.js"></script>
         <script src="/banner-sspb/BannerXE/lib/angular/angular-resource.js"></script>
+
+        <%-- Added Harry --%>
+        <script src="/banner-sspb/BannerXE/lib/ng-grid/ng-grid.js"></script>
+        <script src="/banner-sspb/BannerXE/lib/angular-ui/angular-ui.js"></script>
+
+        <%--    <g:javascript src="sspbCommon.js"/>
+        end Added Harry --%>
 
 
 <%
@@ -57,6 +70,15 @@
     } else {         */
       out << """
         <script>
+
+         //function to avoid undefined
+            function nvl(val,def){
+                if ( (val == undefined) || (val == null ) ) {
+                    return def;
+                }
+                return val;
+            }
+
          // TODO retrieve user login information from XE session
             var __isUserAuthenticated = true;
             var __userFullName = 'Catherine S. Miller';

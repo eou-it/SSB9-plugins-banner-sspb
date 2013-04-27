@@ -517,43 +517,12 @@ var pageID = "$name"
  // inject services and controller modules to be registered with the global ng-app
  var myCustomServices = ['ngResource'];
 
-//function to avoid undefined
-function nvl(val,def){
-  if ( (val == undefined) || (val == null ) ) {
-    return def
-  }
-  return val
-}
 
 </script>
 
 <!-- inject global functions -->
 
  <script type="text/javascript">
-     //utility functions
-     //build a sub list from elements of "sourceList" as identified by indices in "indexList"
-     //Return - the sub list
-
-    function buildList(sourceList, indexList) {
-        var newList = new Array();
-        for (var i = 0; i < indexList.length; i++) {
-            newList.push(sourceList[indexList[i]]);
-        }
-        return newList;
-    }
-
-    /*
-      build an expression by replacing tokens on the "statement" with values passed in the "paramList"
-        usage - buildExpression("select * from table where col1=? and col2=?", "?", ["'val1'", "'val2'"])
-      Return - new statement with tokens replaced. e.g. "select * from table where col1='val1' and col2='val2'"
-
-      TODO - escape ? if it is in the statement e.g.  in the subsitute variables
-    */
-    function buildExpression(statement, token, paramList) {
-            for (var i=0; i < paramList.length; i++)
-                statement = statement.replace(token, paramList[i]);
-        return statement;
-    }
 
     // Inject controller code here
     $CONTROLLER_PLACEHOLDER

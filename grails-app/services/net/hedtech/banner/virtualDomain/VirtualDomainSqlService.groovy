@@ -149,7 +149,10 @@ class VirtualDomainSqlService {
     }
 
     private def urlPathDecode = {
-        new String( it.decodeHex())
+        if (it)
+            new String( it.decodeHex())
+        else
+            ""
     }
 
     private def idEncodeRows = {

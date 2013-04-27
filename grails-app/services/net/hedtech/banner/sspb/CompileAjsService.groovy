@@ -12,10 +12,10 @@ class CompileAjsService {
     static def uiControls=[]
 
     static def dataSetComponentTypes =
-        [PageComponent.COMP_TYPE_GRID, PageComponent.COMP_TYPE_LIST, PageComponent.COMP_TYPE_SELECT, PageComponent.COMP_TYPE_DETAIL];
+        [PageComponent.COMP_TYPE_GRID, PageComponent.COMP_TYPE_LIST, PageComponent.COMP_TYPE_SELECT,
+                PageComponent.COMP_TYPE_DETAIL, PageComponent.COMP_TYPE_DATA];
 
-    static def uiCtrlComponentTypes =
-        [PageComponent.COMP_TYPE_GRID, PageComponent.COMP_TYPE_LIST, PageComponent.COMP_TYPE_SELECT, PageComponent.COMP_TYPE_DETAIL];
+    static def uiCtrlComponentTypes = dataSetComponentTypes //not sure if they ever will be different
 
 
 
@@ -142,7 +142,88 @@ class CompileAjsService {
 //    methods and closures for major steps 1. to 3.    //
 /////////////////////////////////////////////////////////
 
+    private def static getQueryParameters (component,dataComponent) {
+        def buildParameters = {parameters -> // concatenate all map entries to a string
+            def res = ""
+            parameters?.each { key, value->
+                def v=value.replace("\$scope.","")    //fix for evaluate expression
+                res +=  "$key : $v,"
+            }
+            if (res?.endsWith(","))   // remove trailing comma
+                res = res.substring(0, res.length() - 1)
+            res = "'{$res}'"
+        }
 
+        def queryParameters = "{}"
+        if (dataComponent.binding == PageComponent.BINDING_REST) {
+            if (component.parameters)
+                queryParameters = buildParameters(component.parameters)
+            if (component.sourceParameters)
+                queryParameters = buildParameters(component.sourceParameters)
+        }
+        println "Query parameters: $queryParameters"
+        return queryParameters
+    }
+
+    private def static getUIControlCode (component,dataComponent) {
+        def result = ""
+        def dataSource
+        def queryParameters = "null"
+        def staticData =""
+        //should only COMP_TYPE_DATA have loadInitially?
+        def autoPopulate = "true"
+        if (component.type == PageComponent.COMP_TYPE_DATA
+                && !component.loadInitially) {
+            autoPopulate = "false"
+        }
+
+
+        // first handle data binding
+        if (dataComponent.binding == PageComponent.BINDING_REST) {
+            // can specify resource relative to current application like $rootWebApp/rest/emp
+            dataSource = "'${dataComponent.resource}'".replace("'\$rootWebApp/", "rootWebApp+'")
+            if (dataSource.startsWith("'/\$rootWebApp")) {
+                throw new Exception("Compiling Reource: Expected \$rootWebApp/relativePath, got /\$rootWebApp/relativePath")
+            }
+            // transform parameters to angular $scope variable
+            queryParameters = getQueryParameters(component, dataComponent)
+            dataSource =  "resourceURL: $dataSource"
+        } else {
+            dataSource =  "data: $dataComponent.data"
+            autoPopulate = "false"
+        }
+
+
+
+        def dataSetName = "${component.ID}DS"
+        def uiControlName = "${component.ID}UICtrl"
+        def postQuery = component.onLoad ? parseExpression(component.onLoad) : ""
+
+        result =
+            """
+            \$scope.$component.ID=[];
+            \$scope.$dataSetName = new CreateDataSet (
+                {
+                    modelName: "$component.ID",
+                    $dataSource,
+                    queryParams: $queryParameters,
+                    autoPopulate: $autoPopulate,
+                    postQuery: function() {$postQuery},
+                    selectValueKey: ${component.valueKey ? "\"$component.valueKey\"" : null},
+                    selectInitialValue: ""
+                });
+
+            \$scope.$uiControlName = new CreateUICtrl (
+                {
+                    name: "$uiControlName",
+                    dataSet: \$scope.$dataSetName,
+                    pageSize: $component.pageSize,
+                    onUpdate: function() {${parseOnEventFunction(component.onUpdate, component)} }
+                });
+            """
+
+        return result
+    }
 
     private def static parseOnEventFunction(expr, pageComponent) {
         // $SelectCollege.$populateSource(); $SelectCampus.$populateSource(); $SelectLevel.$populateSource();
@@ -165,7 +246,6 @@ class CompileAjsService {
                 }
             }
         }
-
         return result
     }
 
@@ -175,153 +255,33 @@ class CompileAjsService {
      */
     private def static buildCode(dataComponent) {
         def functions = []
-        def resourceURL
-        // first handle data binding
-        if (dataComponent.binding == PageComponent.BINDING_REST) {
-            // can specify resource relative to current application like $rootWebApp/rest/emp
-            resourceURL="'${dataComponent.resource}'".replace("'\$rootWebApp/","rootWebApp+'")
-            if (resourceURL.startsWith("'/\$rootWebApp")) {
-                throw new Exception( "Compiling Reource: Expected \$rootWebApp/relativePath, got /\$rootWebApp/relativePath")
-            }
-        }
-
         // generate all scope variables / arrays for each component that uses the model
         // append component name to the variable name
         // TODO recursive to find all children
         def referenceComponents = findUsageComponents(dataComponent.parent, dataComponent)
-
-        // use lower case for all instance definition on page
-        def dataVarName = "_"+dataComponent.name.toLowerCase()
-
-        def buildParameters = {parameters -> // concatenate all map entries to a string
-            def res = ""
-            parameters?.each { key, value->
-                def v=value.replace("\$scope.","")    //fix for evaluate expression
-                res +=  "$key : $v,"
-            }
-            if (res?.endsWith(","))   // remove trailing comma
-                res = res.substring(0, res.length() - 1)
-            res = "'{$res}'"
-        }
-
-
+        // use lower case for all instance definition on page (
 
         // generate variable declarations for each usage of this model
         referenceComponents.each {component->
-            // transform parameters to angular $scope variable
-            def queryParameters = "{}"
-            if (dataComponent.binding == PageComponent.BINDING_REST) {
-                if (component.parameters)
-                    queryParameters = buildParameters(component.parameters)
-                if (component.sourceParameters)
-                    queryParameters = buildParameters(component.sourceParameters)
-            }
-            println "parameters: $queryParameters"
-
-
             if (dataSetComponentTypes.contains(component.type)) {
-                // for grid use add an array
-                //  modified index array, added array, deleted array,
-                // pagination data
-                // TODO fill in page size etc. from page model
-
-                def dataSetName = "${component.ID}DS"
-                def uiControlName =  "${component.ID}UICtrl"
-                def postQuery = component.onLoad?parseExpression(component.onLoad):"null"
-                def uiControlCode =
-        """
-        \$scope.$component.ID=[];
-        \$scope.$dataSetName = new CreateDataSet (
-            {
-                modelName: "$component.ID",
-                resourceURL: $resourceURL,
-                queryParams: $queryParameters,
-                autoPopulate: true,
-                postQuery: $postQuery,
-                selectValueKey: ${component.valueKey?"\"$component.valueKey\"":null}
-            });
-
-        \$scope.$uiControlName = new CreateUICtrl (
-            {
-                name: "$uiControlName",
-                dataSet: \$scope.$dataSetName,
-                pageSize: $component.pageSize,
-                onUpdate: function() {${parseOnEventFunction(component.onUpdate, component)} }
-            });
-        """
-
+                def uiControlCode =  getUIControlCode (component, dataComponent)
                 functions << uiControlCode
                 dataSetIDsIncluded<<component.ID   //remember  - used to replace variable names
                 uiControlIDsIncluded<<component.ID
-
-            } else if (component.type==PageComponent.COMP_TYPE_DETAIL) {
-                // for detail type we only need the first row
-                def arrayName = "${dataVarName}s_${component.ID}"
-                def arrayFuncName = "${component.ID}"
-                def functionDef = """
-        \$scope.$arrayName = [];
-
-        // load item using any query parameters specified
-        \$scope.${arrayFuncName}_load = function() {
-            \$scope.$arrayName = ${dataComponent.name}.query($queryParameters);
-        }
-
-        // load item using any query parameters specified
-        \$scope.${arrayFuncName}_save = function() {
-            \$scope.$arrayName[0].\$save();
-            // load updated data
-            \$scope.${arrayFuncName}_load();
-        }
-
-        // when we first start up, populate items
-        \$scope.${arrayFuncName}_load();
-        """
-                functions << functionDef
-            } else if (component.type==PageComponent.COMP_TYPE_DATA) {
-                // for data type we only need the first row
-                def arrayName = "${dataVarName}s_${component.ID}"
-                def arrayFuncName = component.ID
-                def dataName = component.name
-                def functionDef = """
-        \$scope.${arrayFuncName}_onLoad = function() {
-            ${parseExpression(component.onLoad)}
-        }
-
-        \$scope.$arrayName = [];
-
-        // load item using any query parameters specified
-        // call the onLoad function after loading is completed
-        \$scope.${arrayFuncName}_load = function() {
-            \$scope.$arrayName = ${dataComponent.name}.query($queryParameters, function(){
-            \$scope.$dataName = \$scope.$arrayName[0];
-            \$scope.${arrayFuncName}_onLoad(); }
-            );
-        }
-
-        // when we first start up, populate items if specified
-        ${component.loadInitially?"\$scope.${arrayFuncName}_load();":""}
-        """
-                functions << functionDef
             } else if (dataComponent.binding != "page"){
-
-
-                    //println "params = $p"
-                    // implicitly define a $scope variable  ${dataVarName}_${component.ID}
-                    def functionDef = """
+                //TODO HvT- find out for what use case this is needed still
+                def dataVarName = "_"+dataComponent.name.toLowerCase()
+                println "****WARNING**** generating control $component.name $component.type - validate generator"
+                // implicitly define a $scope variable  ${dataVarName}_${component.ID}
+                def queryParameters = getQueryParameters(component,dataComponent)
+                def functionDef = """
             // initialize value
-
-    \$scope.${component.ID}_load = function() {
+            \$scope.${component.ID}_load = function() {
             \$scope.${dataVarName}_${component.ID} = ${dataComponent.name}.get($queryParameters);
-    };
-
-
-            """
+            };\n"""
                 functions << functionDef
             }
-
-
         }
-
         return functions.join("\n")
     }
 
@@ -458,42 +418,46 @@ class CompileAjsService {
             if (pageComponent.onClick) {
                 // handle variable and constant in expression
                 def expr = parseExpression(pageComponent.onClick)
-                //TODO - is this OK?
+                //TODO HvT - is this OK?
                 dataSetIDsIncluded.each {
                     expr=expr.replace(".${it}_",".${it}DS.")
                 }
                 def arg = pageComponent.type==PageComponent.COMP_TYPE_LIST?PageComponent.CURRENT_ITEM:""
-                code += """
-    \$scope.${pageComponent.name}_onClick = function($arg) {
-        $expr
-        };
-                """
+                code += """\$scope.${pageComponent.name}_onClick = function($arg) { $expr}; """
                 println "onClick expression for $pageComponent.name $pageComponent.onClick -> $expr"
             }
 
-        } else  if (pageComponent.type == PageComponent.COMP_TYPE_SELECT && pageComponent.sourceValue) {
-                // handle sourceValue for select
-                 // sourceValue is already in javascript format
+         } else if (pageComponent.type == PageComponent.COMP_TYPE_SELECT && pageComponent.sourceValue) {
+             // handle sourceValue for select
+             // sourceValue is already in javascript format
              // internally assign a source model name as the component name
-                pageComponent.sourceModel = pageComponent.name
-                 def arrayName = "_${pageComponent.sourceModel?.toLowerCase()}s_${pageComponent.name}_source"
-                 code += """
-    \$scope.$arrayName = ${groovy.json.JsonOutput.toJson(pageComponent.sourceValue)};
-                 """
+             pageComponent.sourceModel = pageComponent.name
+             //def arrayName = "_${pageComponent.sourceModel?.toLowerCase()}s_${pageComponent.name}_source"
+             //code += """\$scope.$arrayName = ${groovy.json.JsonOutput.toJson(pageComponent.sourceValue)};\n """
 
-            } else if (pageComponent.submit) {
+             def dataComponent = [static: true, data: groovy.json.JsonOutput.toJson(pageComponent.sourceValue)]
+             def uiControlCode =  getUIControlCode (pageComponent, dataComponent)
+             //functions << uiControlCode
+             dataSetIDsIncluded<<pageComponent.ID   //remember  - used to replace variable names
+             uiControlIDsIncluded<<pageComponent.ID
+             code += uiControlCode
+
+
+
+         } else if (pageComponent.submit) {
              // parse submit action
              // do not need $scope. prefix or {{ }}
              pageComponent.submit = parseVariable(pageComponent.submit)
 
          } else if (pageComponent.onUpdate && !uiControlIDsIncluded.contains(pageComponent.ID)) {
+            //TODO HvT - is this dead code now? //
             // handle input field update
             // generate a ng-change function
             def  expr = parseExpression(pageComponent.onUpdate)
             def duplicateExpr =""
             if (pageComponent.type == PageComponent.COMP_TYPE_SELECT &&
                     (pageComponent.parent.type == PageComponent.COMP_TYPE_DETAIL
-                            || pageComponent.parent.type == PageComponent.COMP_TYPE_GRID) )
+                     || pageComponent.parent.type == PageComponent.COMP_TYPE_GRID) )
                 // if a select is used in a grid or detail control its model is bound to parent model, we need to copy the model to $<selectName>
                 // in order for it to be referenced by other controls
                 duplicateExpr =

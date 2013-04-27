@@ -50,7 +50,7 @@ function CreatePostQuery(instanceIn, userFunction) {
         var uf=userFunction;
         console.log("Executing Post for DataSet="+instance.modelName+" size="+it.length) ;
         instance.currentRecord=instance.data[0];  //set the current record
-        instance.setCurrentRecord();
+        instance.setInitialRecord();
         if (uf) { uf(); }
     };
     return this;
@@ -66,6 +66,7 @@ function CreateDataSet(params){//nameIn,  resourceURLIn, autoPopulate, paramMap,
     this.Resource=$resource(params.resourceURL);
     this.queryParams=params.queryParams;
     this.selectValueKey=params.selectValueKey;
+    this.selectInitialValue=params.selectInitialValue;
 
     this.currentRecord=null;
     this.selectedRecords=[];
@@ -86,7 +87,8 @@ function CreateDataSet(params){//nameIn,  resourceURLIn, autoPopulate, paramMap,
     this.load = function() {
         this.init;
         var params =  $scope.$eval(this.queryParams);
-        console.log(params) ;
+        console.log("Query Parameters:") ;
+        console.log( params);
         this.data = this.Resource.query(params, post.go  );
     }
 
@@ -95,21 +97,49 @@ function CreateDataSet(params){//nameIn,  resourceURLIn, autoPopulate, paramMap,
         this.data = this.Resource.query({}, post.go  );
     }
 
-    // some work needed here, if we keep currentRecord inside the
-    // dataset, we need to change it if the model changes
-    // other issue is with select lists... should assign a value not a record
-    this.setCurrentRecord = function ()   {
+    this.setInitialRecord = function () {
         var model = $parse(this.modelName);
         //a grid has model.name noop and cannot be assigned a value
         if (model.name != "noop")  {
-
-            console.log("Set current record");
+            if (this.selectValueKey) {  //we have a select
+                var iVal=this.selectInitialValue;
+                if (iVal == null || iVal == undefined){
+                    iVal = this.currentRecord[this.selectValueKey];
+                }
+                model.assign($scope, iVal);
+            }  else {
+                model.assign($scope, this.currentRecord);
+            }
+            console.log("Set initial record ");
+        }
+    }
+    this.setCurrentRecord = function ( item )   {
+        var model = $parse(this.modelName);
+        //a grid has model.name noop and cannot be assigned a value
+        if (model.name != "noop")  {
+            if (item )   {
+                if (typeof(item) == "string" && this.selectValueKey ) {
+                    // assume item is a selected string and we are in the DataSet for a select item
+                    // Do we have to do a linear search like done below?
+                    var len = this.data.length, found=false;
+                    for (var i = 0; i < len && !found; i++ ){
+                        if (item == this.data[i][this.selectValueKey]) {
+                            found=true;
+                            this.currentRecord=this.data[i];
+                        }
+                    }
+                } else {
+                    //assume item is of the right type
+                    this.currentRecord=item;
+                }
+            }
             console.log(this.currentRecord);
-            if (this.selectValueKey) {
+            if (this.selectValueKey) {  //we have a select
                 model.assign($scope, this.currentRecord[this.selectValueKey]);
             }  else {
                 model.assign($scope, this.currentRecord);
             }
+            console.log("Set current record "+ this.currentRecord);
         }
     }
 
