@@ -54,15 +54,15 @@
         </tr>
         <tr height="90%">
         <td>
-            <g:textArea name="modelView" value="${pageModel.pageInstance?.modelView}"
+            <g:textArea name="modelView" value="${pageModel?.modelView}"
                         rows="32" cols="60" style="width:100%; height:100%" required="true"/>
 
         </td>
         <td>
-            <g:textArea name="compiledView" readonly="true" value="${pageModel.pageInstance?.compiledView}"
+            <g:textArea name="compiledView" readonly="true" value="${pageModel?.compiledView}"
                         rows="16" cols="60" style="width:100%; height:50%"/>
             <br/>
-            <g:textArea name="compiledController" readonly="true" value="${pageModel.pageInstance?.compiledController}"
+            <g:textArea name="compiledController" readonly="true" value="${pageModel?.compiledController}"
                         rows="16" cols="60" style="width:100%; height:50%"/>
         </td>
         </tr>

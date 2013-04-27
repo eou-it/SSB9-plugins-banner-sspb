@@ -1,0 +1,120 @@
+{
+    "name":"ellucian Page Builder Model",
+    "date":"2013-04-01",
+    "version":"0.1",
+    "definitions": {
+        "componentTypeDefinition": [
+            {
+                "componentType":["all"],
+                "requiredAttributes":["type"],
+                "optionalAttributes":["name", "documentation"],
+                "documentation":"attributes required or optional for all component types"
+            },
+            {
+                "componentType":["page"],
+                "requiredAttributes":["name"],
+                "optionalAttributes":["title", "scriptingLanguage", "label", "style"],
+                "requiredChildren":[],
+                "optionalChildren":["flow", "form", "block", "grid", "select", "list", "detail", "data", "resource", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button"]
+            },
+            {
+                "componentType":["block"],
+                "requiredAttributes":[],
+                "optionalAttributes":["label", "style", "showInitially"],
+                "requiredChildren":[],
+                "optionalChildren":["form", "grid", "select", "list", "detail", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
+            },
+            {
+                "componentType":["form"],
+                "requiredAttributes":[],
+                "optionalAttributes":["label", "style", "submit","submitLabel", "nextButtonLabel", "showInitially"],
+                "requiredChildren":[],
+                "optionalChildren":["block", "grid", "select", "list", "detail", "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
+            },
+            {
+                "componentType":["grid"],
+                "requiredAttributes":["model", "parameters"],
+                "optionalAttributes":["label", "style", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize"],
+                "requiredChildren":[],
+                "optionalChildren":["select", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean" ]
+            },
+            {
+                "componentType":["detail"],
+                "requiredAttributes":["model", "parameters"],
+                "optionalAttributes":["label", "style", "allowModify", "allowDelete", "allowReload"],
+                "requiredChildren":[],
+                "optionalChildren":["select", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean" ]
+            },
+            {
+                "componentType":["display"],
+                "requiredAttributes":[],
+                "optionalAttributes":["label", "style", "value", "model"],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            },
+            {
+                "componentType":["text", "textArea", "number", "datetime", "email", "tel"],
+                "requiredAttributes":[],
+                "optionalAttributes":["label", "style", "value", "model", "parameters", "validation", "placeholder", "required", "onUpdate"],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            },
+            {
+                "componentType":["literal"],
+                "requiredAttributes":["value"],
+                "optionalAttributes":["style"],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            },
+            {
+                "componentType":["button"],
+                "requiredAttributes":["label", "onClick"],
+                "optionalAttributes":[],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            },
+            {
+                "componentType":["select"],
+                "requiredAttributes":[],
+                "optionalAttributes":["label", "style", "sourceModel", "sourceParameters", "sourceValue", "labelKey", "valueKey", "model", "onUpdate", "required"],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            },
+            {
+                "componentType":["list"],
+                "requiredAttributes":["model", "parameters", "value"],
+                "optionalAttributes":["label", "style", "allowReload", "onUpdate", "required", "onClick", "pageSize"],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            },
+            {
+                "componentType":["boolean"],
+                "requiredAttributes":[],
+                "optionalAttributes":["label", "style", "value", "booleanTrueValue", "booleanFalseValue", "readonly", "onUpdate", "model"],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            },
+            {
+                "componentType":["resource"],
+                "requiredAttributes":["binding", "resource"],
+                "optionalAttributes":[],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            },
+            {
+                "componentType":["data"],
+                "requiredAttributes":["model"],
+                "optionalAttributes":["onLoad", "parameters", "loadInitially"],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            },
+            {
+                "componentType":["flow"],
+                "requiredAttributes":["sequence"],
+                "optionalAttributes":["activated"],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            }
+        ]
+    }
+}

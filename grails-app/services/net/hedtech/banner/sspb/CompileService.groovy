@@ -6,6 +6,7 @@ class CompileService {
 
     // TODO configure Hibernate
     def transactional = false
+
     // compile the page
     // accept a normalized page level pageComponent
     // output
@@ -772,30 +773,45 @@ class CompileService {
         def pageValidation = [:]
 
         try {
+            // first validate the raw JSON page model
+            def pageModelValidator = new PageModelValidator()
+            def pageDefText = CompileService.class.classLoader.getResourceAsStream( 'PageModelDefinition.json' ).text
+            slurper = new groovy.json.JsonSlurper()
+            def pageBuilderModel = slurper.parseText(pageDefText)
+            pageModelValidator.setPageBuilderModel(pageBuilderModel)
+            // validate the raw Page JSON data
+            def validateResult =  pageModelValidator.validatePage(json)
+
+            // validate the unmarshalled page model
+            if (!validateResult.valid)
+                return  [valid:false, pageComponent:page, error:validateResult.error]
+
             def jsonResult = slurper.parseText(json)
             page = new PageComponent(jsonResult)
             page = normalizeComponent(page)
+            // run second validation
             pageValidation = validateComponent(page)
             valid = pageValidation.valid
-            errors += pageValidation.errors
+            errors += pageValidation.error
         } catch (Exception e) {
             println "Parsing page model exception: " + e
-            errors << "Page Model parsing error: " + e.message
+            errors << [code: PageModelErrors.MODEL_UNKNOWN_ERR, message : "Unknown model validation error caused by exception: $e.message", path:null]
             valid = false
         }
 
-        return [valid:valid, pageComponent:page, errors:errors]
+        return [valid:valid, pageComponent:page, error:errors]
     }
 
     // validate a component and all its children
-    def static validateComponent(pageComponent, nameSet = []) {
+    def static validateComponent(pageComponent, path = "", nameSet = []) {
         def valid = true
         def errors = []
+        path += "/$pageComponent.name(type=$pageComponent.type)"
         // validate this component first
         // check if name already exists on the page
         if (nameSet.contains(pageComponent.name)) {
             valid = false
-            errors << "Name conflict at ${getComponentNamePath(pageComponent)}: $pageComponent.name (of type $pageComponent.type) already exists."
+            errors << [code:PageModelErrors.MODEL_NAME_CONFLICT_ERR.code, path: path, message: "component name $pageComponent.name already exists."]
         } else
             nameSet << pageComponent.name
 
@@ -807,15 +823,15 @@ class CompileService {
             // 'it' is a map, convert to PageComponent
             def child=new PageComponent(it)
             componentList.push(child)
-            def ret = validateComponent(child, nameSet)
+            def ret = validateComponent(child, path, nameSet)
             valid = valid && ret.valid
-            errors = errors + ret.errors
+            errors = errors + ret.error
             nameSet = ret.nameSet
         }
         // attached the converted components list
         pageComponent.components = componentList
 
-        return [valid:valid, errors:errors, nameSet:nameSet]
+        return [valid:valid, error:errors, nameSet:nameSet]
     }
 
     /* return a string representing the concanated names of the given component starting from the top level page
