@@ -75,8 +75,8 @@
             },
             {
                 "componentType":["select"],
-                "requiredAttributes":[],
-                "optionalAttributes":["label", "style", "sourceModel", "sourceParameters", "sourceValue", "labelKey", "valueKey", "model", "onUpdate", "required"],
+                "requiredAttributes":["labelKey", "valueKey" ],
+                "optionalAttributes":["label", "style", "sourceModel", "sourceParameters", "sourceValue", "model", "onUpdate", "required"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
