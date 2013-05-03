@@ -129,6 +129,14 @@ class VirtualDomainSqlService {
                 } catch (e) {
                     //do nothing it is not a date so it should be ok
                 }
+            }  else if (  (it.value instanceof String)  && it.value.endsWith('Z')) {
+                //not really needed to use a regular expression - as parseDateTime should raise exception
+                try {
+                    def date = javax.xml.bind.DatatypeConverter.parseDateTime(it.value)
+                    it.value=new java.sql.Date(date.getTime().time)
+                } catch (e) {
+                    //do nothing it is not a date so it should be ok
+                }
             }
             if (it.value.getClass().toString().endsWith("JSONObject\$Null") ) {
                 it.value=""

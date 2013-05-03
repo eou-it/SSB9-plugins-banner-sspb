@@ -391,10 +391,13 @@ class PageComponentAjs {
                     validateStr = validation.collect { k,v -> "$k=\"$v\"" }.join(' ')
                 }
                 def attributes = "$validateStr ${required?"required":""} ${placeholder?"placeholder=\"$placeholder\"":""}".trim()
+                def typeString= "type=\"$t\""
+                if (type == COMP_TYPE_DATETIME)
+                    typeString=" ui-date "
                 if (attributes) println "Attributes: $attributes"
                 if (parent.type==COMP_TYPE_GRID)
                     txt = """
-                          <input type="$t"   name="${name?name:model}" id="${name?name:model}" ${parent.allowModify?"":"readonly"}
+                          <input $typeString   name="${name?name:model}" id="${name?name:model}" ${parent.allowModify?"":"readonly"}
                           ng-model="$GRID_ITEM.${model}"
                           ng-change="\$parent.${parent.name}DS.setModified($GRID_ITEM)" $attributes />
                           """
@@ -516,7 +519,7 @@ class PageComponentAjs {
 var pageID = "$name"
 
  // inject services and controller modules to be registered with the global ng-app
- var myCustomServices = ['ngResource'];
+ var myCustomServices = ['ngResource','ngGrid','ui'];
 
 
 </script>
