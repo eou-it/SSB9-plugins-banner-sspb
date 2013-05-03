@@ -44,11 +44,11 @@ function nvl(val,def){
 // Use function to create a post query function associated with
 // a DataSet instance
 function CreatePostQuery(instanceIn, userFunction) {
-    console.log("Post Query Constructor for DataSet " + instanceIn.modelName);
+    console.log("Post Query Constructor for DataSet " + instanceIn.componentId);
     this.go = function(it) {
         var instance=instanceIn;
         var uf=userFunction;
-        console.log("Executing Post for DataSet="+instance.modelName+" size="+it.length) ;
+        console.log("Executing Post for DataSet="+instance.componentId+" size="+it.length) ;
         instance.currentRecord=instance.data[0];  //set the current record
         instance.setInitialRecord();
         if (uf) { uf(); }
@@ -60,14 +60,14 @@ function CreatePostQuery(instanceIn, userFunction) {
 // The DataSet should encapsulate all the model functions query, create, update, delete
 // for large datasets, we should have some sort of cursor feature to scroll through the set
 //TODO refactor so we don't need to inject this into the controller
-function CreateDataSet(params){//nameIn,  resourceURLIn, autoPopulate, paramMap, dataIn ) {
-    this.modelName=params.modelName;
+function CreateDataSet(params){
+    this.componentId=params.componentId;
     this.data=params.data;
     this.Resource=$resource(params.resourceURL);
     this.queryParams=params.queryParams;
     this.selectValueKey=params.selectValueKey;
     this.selectInitialValue=params.selectInitialValue;
-
+    this.useGet=nvl(params.useGet,false);
     this.currentRecord=null;
     this.selectedRecords=[];
     this.modified = [];
@@ -84,12 +84,28 @@ function CreateDataSet(params){//nameIn,  resourceURLIn, autoPopulate, paramMap,
 
     var post = new CreatePostQuery(this,params.postQuery) ;  //remember this
 
-    this.load = function() {
+    this.get = function() {
         this.init;
-        var params =  $scope.$eval(this.queryParams);
+        var params;
+        eval("params="+this.queryParams+";");
         console.log("Query Parameters:") ;
         console.log( params);
-        this.data = this.Resource.query(params, post.go  );
+        this.data=[];
+        this.data[0] = this.Resource.get(params, post.go  );
+    }
+
+    this.load = function() {
+        this.init;
+        var params;
+        eval("params="+this.queryParams+";");
+        console.log("Query Parameters:") ;
+        console.log( params);
+        if (this.useGet)  {
+            this.data=[];
+            this.data[0] = this.Resource.get(params, post.go  );
+        }
+        else
+            this.data = this.Resource.query(params, post.go  );
     }
 
     this.loadAll = function() {
@@ -98,7 +114,7 @@ function CreateDataSet(params){//nameIn,  resourceURLIn, autoPopulate, paramMap,
     }
 
     this.setInitialRecord = function () {
-        var model = $parse(this.modelName);
+        var model = $parse(this.componentId);
         //a grid has model.name noop and cannot be assigned a value
         if (model.name != "noop")  {
             if (this.selectValueKey) {  //we have a select
@@ -114,7 +130,7 @@ function CreateDataSet(params){//nameIn,  resourceURLIn, autoPopulate, paramMap,
         }
     }
     this.setCurrentRecord = function ( item )   {
-        var model = $parse(this.modelName);
+        var model = $parse(this.componentId);
         //a grid has model.name noop and cannot be assigned a value
         if (model.name != "noop")  {
             if (item )   {

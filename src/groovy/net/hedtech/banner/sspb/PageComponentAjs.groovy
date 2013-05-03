@@ -33,6 +33,15 @@ class PageComponentAjs {
     final static COMP_TYPE_FLOW = "flow"
     //final static COMP_TYPE_FUNCTION = "function"
 
+    // Types that can represent a single field
+    final static COMP_ITEM_TYPES = [COMP_TYPE_LITERAL,COMP_TYPE_DISPLAY,COMP_TYPE_TEXT,COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER,
+                                    COMP_TYPE_DATETIME,COMP_TYPE_EMAIL,COMP_TYPE_TEL,COMP_TYPE_LINK,COMP_TYPE_BOOLEAN ]
+
+    // Types that have a DataSet associated  - not completely orthogonal yet. COMP_ITEM_TYPES can have it too
+    final static COMP_DATASET_TYPES = [COMP_TYPE_GRID,COMP_TYPE_LIST,COMP_TYPE_SELECT,COMP_TYPE_DETAIL,COMP_TYPE_DATA]
+
+    final static COMP_UICTRL_TYPES = COMP_DATASET_TYPES //not sure if they ever will be different
+
     final static BINDING_REST = "rest"
     final static BINDING_SQL = "sql"
     final static BINDING_PAGE = "page"
@@ -381,8 +390,8 @@ class PageComponentAjs {
                 if (validation) {
                     validateStr = validation.collect { k,v -> "$k=\"$v\"" }.join(' ')
                 }
-                def attributes = " $validateStr ${required?"required":""} ${placeholder?"placeholder=\"$placeholder\"":""}"
-                println "attributes: $attributes"
+                def attributes = "$validateStr ${required?"required":""} ${placeholder?"placeholder=\"$placeholder\"":""}".trim()
+                if (attributes) println "Attributes: $attributes"
                 if (parent.type==COMP_TYPE_GRID)
                     txt = """
                           <input type="$t"   name="${name?name:model}" id="${name?name:model}" ${parent.allowModify?"":"readonly"}
@@ -405,7 +414,8 @@ class PageComponentAjs {
                               $attributes """
                     if (model && !readonly) {
                         if (binding != BINDING_PAGE)
-                            txt+= "ng-model=\"_${modelRoot.toLowerCase()}_${ID}"
+                            //txt+= "ng-model=\"_${modelRoot.toLowerCase()}_${ID}"
+                            txt+="ng-model=\"${ID}DS.currentRecord"    // use DataSet current record
                         else
                             // there may be a value instead of a model
                             txt+= """ng-model="$modelRoot"""
@@ -416,7 +426,7 @@ class PageComponentAjs {
                     // handle change event
                     if (onUpdate) {
                         txt += """ng-change="${name}_onUpdate()"  """
-                        println "**** WARNING **** probably need to modify ng-change property *_onUpdate()"
+                        println "****WARNING**** check if  property ${name}_onUpdate() is generated - possibly an inconsistency in generator"
                     }
                     txt+="/>\n"
                 }
@@ -426,13 +436,13 @@ class PageComponentAjs {
                            ${booleanTrueValue?"ng-true-value=\"$booleanTrueValue\"":""}  ${booleanFalseValue?"ng-false-value=\"$booleanFalseValue\"":""}
                            ${value?"value=\"{{$value}}\"":"" } """
                 // add change event handler for items in a table so the item can be marked dirty for save
-                if (parent.type==COMP_TYPE_GRID)
+                if (parent.type==COMP_TYPE_GRID || parent.type==COMP_TYPE_DETAIL )
                     return txt + """ ng-change="\$parent.${parent.name}DS.setModified($GRID_ITEM)" ${(parent.allowModify && !readonly)?"":"readonly"} ng-model="$GRID_ITEM.${model}"/> """
                 else  {
                     // handle change event
                     if (onUpdate) {
                         txt += """ng-change="${name}_onUpdate()"  """
-                        println "**** WARNING **** probably need to modify ng-change property *_onUpdate()"
+                        println "****WARNING**** check if  property ${name}_onUpdate() is generated - possibly an inconsistent"
                     }
                     // if not in a table, add label for checkbox
                     return txt +  """ng-model="$model" ${readonly?"readonly":""} /> <label for="${name?name:model}">$label</label>

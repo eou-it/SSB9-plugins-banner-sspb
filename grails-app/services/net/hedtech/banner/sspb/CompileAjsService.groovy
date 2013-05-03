@@ -8,18 +8,18 @@ class CompileAjsService {
     static def dataSetIDsIncluded =[]
     static def uiControlIDsIncluded = []
 
-    static def dataSets=[]
+    //static def dataSets=[]
     static def uiControls=[]
-
-    static def dataSetComponentTypes =
-        [PageComponent.COMP_TYPE_GRID, PageComponent.COMP_TYPE_LIST, PageComponent.COMP_TYPE_SELECT,
-                PageComponent.COMP_TYPE_DETAIL, PageComponent.COMP_TYPE_DATA];
-
-    static def uiCtrlComponentTypes = dataSetComponentTypes //not sure if they ever will be different
-
 
 
 //major step 1.
+    //TODO develop page validation
+    /*  parse, normalize and validate page model
+        check all required field for each component recursively
+        check name and data uniqueness
+        return validation and a normalized page component
+        or error messages with component tree
+    */
     def static preparePage(String json) {
         def slurper = new groovy.json.JsonSlurper()
         def page
@@ -39,10 +39,40 @@ class CompileAjsService {
             errors << "Page Model parsing error: " + e.message
             valid = false
         }
+
+        try {
+            // first validate the raw JSON page model
+            def pageModelValidator = new PageModelValidator()
+            def pageDefText = CompileService.class.classLoader.getResourceAsStream( 'PageModelDefinition.json' ).text
+            slurper = new groovy.json.JsonSlurper()
+            def pageBuilderModel = slurper.parseText(pageDefText)
+            pageModelValidator.setPageBuilderModel(pageBuilderModel)
+            // validate the raw Page JSON data
+            def validateResult =  pageModelValidator.validatePage(json)
+
+            // validate the unmarshalled page model
+            if (!validateResult.valid)
+                return  [valid:false, pageComponent:page, error:validateResult.error]
+
+            def jsonResult = slurper.parseText(json)
+            page = new PageComponentAjs(jsonResult)
+            page = normalizeComponent(page)
+            // run second validation
+            pageValidation = validateComponent(page)
+            valid = pageValidation.valid
+            errors += pageValidation.error
+        } catch (Exception e) {
+            println "Parsing page model exception: " + e
+            errors << [code: PageModelErrors.MODEL_UNKNOWN_ERR, message : "Unknown model validation error caused by exception: $e.message", path:null]
+            valid = false
+        }
+
+
         //populate components to be used in name resolution
-        dataSets=page.findComponents(dataSetComponentTypes)
-        uiControls=page.findComponents(uiCtrlComponentTypes)
-        return [valid:valid, pageComponent:page, errors:errors]
+        //dataSets=page.findComponents(PageComponentAjs.COMP_DATASET_TYPES)
+        //uiControls=page.findComponents(PageComponentAjs.COMP_UICTRL_TYPES)
+        //return results
+        return [valid:valid, pageComponent:page, error:errors]
     }
 
 //major step 2.
@@ -70,13 +100,16 @@ class CompileAjsService {
             - per grid - list of retrieved objects from list, modified, added and deleted object list
             - initial load function
             - keys for query
-        for top level SQL resource:
+        for top level SQL resource:   //TODO remove, we don't have direct SQL support
             - functions to get, list, update, create and delete
             - per grid - list of retrieved objects from list, modified, added and deleted object list
             - initial load
             - keys for query
 
          */
+        modelComponents.each {
+            preBuildCode(it)  // populates   dataSetIDsIncluded and  uiControlIDsIncluded
+        }
         // is order important?
         modelComponents.each {
             codeList << buildCode(it)
@@ -98,8 +131,6 @@ class CompileAjsService {
 
         result = """
     function CustomPageController( \$scope, \$http, \$resource, \$parse) {
-
-
         // copy global var to scope
         \$scope._isUserAuthenticated = __isUserAuthenticated;
         \$scope._userFullName = __userFullName;
@@ -107,7 +138,7 @@ class CompileAjsService {
         \$scope._userLastName = __userLastName;
         \$scope._pidm = __pidm;
         \$scope._userRoles = __userRoles;
-
+        // page specific code
         $result
         //common code TODO - move out of this controller
         $common
@@ -116,7 +147,7 @@ class CompileAjsService {
         return result
     }
 
-//major step 2. (done in pageComponent)
+//major step 3. (done in pageComponent)
     // compile the page
     // accept a normalized page level pageComponent
     // output
@@ -126,7 +157,7 @@ class CompileAjsService {
     }
 
 
-//major step 3.
+// public function used in rendering.
     /*
     Inject the JavaScript controller to the HTML page
     Return the combined page
@@ -139,14 +170,15 @@ class CompileAjsService {
 
 
 /////////////////////////////////////////////////////////
-//    methods and closures for major steps 1. to 3.    //
+//    methods and closures for major steps 1. to 4.    //
 /////////////////////////////////////////////////////////
 
     private def static getQueryParameters (component,dataComponent) {
         def buildParameters = {parameters -> // concatenate all map entries to a string
             def res = ""
             parameters?.each { key, value->
-                def v=value.replace("\$scope.","")    //fix for evaluate expression
+                //def v=value.replace("\$scope.","")    //fix for evaluate expression - not needed if we use js eval
+                def v=value
                 res +=  "$key : $v,"
             }
             if (res?.endsWith(","))   // remove trailing comma
@@ -154,7 +186,7 @@ class CompileAjsService {
             res = "'{$res}'"
         }
 
-        def queryParameters = "{}"
+        def queryParameters = "'{}'"
         if (dataComponent.binding == PageComponent.BINDING_REST) {
             if (component.parameters)
                 queryParameters = buildParameters(component.parameters)
@@ -172,12 +204,11 @@ class CompileAjsService {
         def staticData =""
         //should only COMP_TYPE_DATA have loadInitially?
         def autoPopulate = "true"
-        if (component.type == PageComponent.COMP_TYPE_DATA
-                && !component.loadInitially) {
+        if ( (component.type == PageComponent.COMP_TYPE_DATA ||
+              PageComponentAjs.COMP_ITEM_TYPES.contains(component.type) )
+            && !component.loadInitially) {
             autoPopulate = "false"
         }
-
-
         // first handle data binding
         if (dataComponent.binding == PageComponent.BINDING_REST) {
             // can specify resource relative to current application like $rootWebApp/rest/emp
@@ -193,24 +224,26 @@ class CompileAjsService {
             autoPopulate = "false"
         }
 
-
-
         def dataSetName = "${component.ID}DS"
         def uiControlName = "${component.ID}UICtrl"
         def postQuery = component.onLoad ? parseExpression(component.onLoad) : ""
 
+        def optionalParams=""
+        if  (PageComponentAjs.COMP_ITEM_TYPES.contains(component.type)) //items don't support arrays, use the get
+            optionalParams+=",useGet: true"
         result =
             """
-            \$scope.$component.ID=[];
+            //\$scope.$component.ID=[];
             \$scope.$dataSetName = new CreateDataSet (
                 {
-                    modelName: "$component.ID",
+                    componentId: "$component.ID",
                     $dataSource,
                     queryParams: $queryParameters,
                     autoPopulate: $autoPopulate,
                     postQuery: function() {$postQuery},
                     selectValueKey: ${component.valueKey ? "\"$component.valueKey\"" : null},
                     selectInitialValue: ""
+                   $optionalParams
                 });
 
             \$scope.$uiControlName = new CreateUICtrl (
@@ -231,15 +264,16 @@ class CompileAjsService {
         //  $scope.SelectCollegeDS.load(); ...
 
         def patterns = [[from:".\$populateSource", to:"DS.load"],
-                        [from: ".\$load"          ,to:"DS.load"]]
+                        [from: ".\$load"          ,to:"DS.load"],
+                        [from: ".\$get"           ,to:"DS.get"]   ]
         def result=expr
         if (result) {
                 //populateSource corresponds to DataSet.load
             patterns.each {pattern ->
-                dataSets.each { pc ->
-                    result=result.replace("\$${pc.ID}$pattern.from","\$scope.${pc.ID}$pattern.to" )
+                dataSetIDsIncluded.each { pcId ->
+                    result=result.replace("\$${pcId}$pattern.from","\$scope.${pcId}$pattern.to" )
                 }
-                if (uiControls.contains(pageComponent))  {
+                if (uiControlIDsIncluded.contains(pageComponent.ID))  {
                     println "onEvent expression for $pageComponent.ID $expr -> $result"
                 } else {
                     println "Warning: onEvent expression for $pageComponent.ID not changed."
@@ -249,6 +283,24 @@ class CompileAjsService {
         return result
     }
 
+    // prepare build Code
+    // determine which DataSets we are going to build so we can replace references appropriately
+    // use the same logic as in buildCode
+    private def static preBuildCode(dataComponent) {
+        def referenceComponents = findUsageComponents(dataComponent.parent, dataComponent)
+        referenceComponents.each {component->
+            if (PageComponentAjs.COMP_DATASET_TYPES.contains(component.type)) {
+                dataSetIDsIncluded<<component.ID   //remember  - used to replace variable names
+                uiControlIDsIncluded<<component.ID
+            } else if (dataComponent.binding != "page"){
+                if ( PageComponentAjs.COMP_ITEM_TYPES.contains(component.type)){
+                    dataSetIDsIncluded<<component.ID   //remember  - used to replace variable names
+                    uiControlIDsIncluded<<component.ID
+                }
+            }
+        }
+    }
+
     /* build JS function and models based on data definition
         input: pageComponent - data definirion
         return a string of the variables and JS function
@@ -256,30 +308,33 @@ class CompileAjsService {
     private def static buildCode(dataComponent) {
         def functions = []
         // generate all scope variables / arrays for each component that uses the model
-        // append component name to the variable name
         // TODO recursive to find all children
         def referenceComponents = findUsageComponents(dataComponent.parent, dataComponent)
-        // use lower case for all instance definition on page (
-
         // generate variable declarations for each usage of this model
         referenceComponents.each {component->
-            if (dataSetComponentTypes.contains(component.type)) {
+            // following same logic as in preBuildCode
+            if (PageComponentAjs.COMP_DATASET_TYPES.contains(component.type)) {
                 def uiControlCode =  getUIControlCode (component, dataComponent)
                 functions << uiControlCode
-                dataSetIDsIncluded<<component.ID   //remember  - used to replace variable names
-                uiControlIDsIncluded<<component.ID
-            } else if (dataComponent.binding != "page"){
-                //TODO HvT- find out for what use case this is needed still
-                def dataVarName = "_"+dataComponent.name.toLowerCase()
-                println "****WARNING**** generating control $component.name $component.type - validate generator"
-                // implicitly define a $scope variable  ${dataVarName}_${component.ID}
-                def queryParameters = getQueryParameters(component,dataComponent)
-                def functionDef = """
-            // initialize value
-            \$scope.${component.ID}_load = function() {
-            \$scope.${dataVarName}_${component.ID} = ${dataComponent.name}.get($queryParameters);
-            };\n"""
-                functions << functionDef
+            } else if (dataComponent.binding != "page") {
+                if ( PageComponentAjs.COMP_ITEM_TYPES.contains(component.type)){
+                    // try to make consistent with DS  - possibly should add something to enforce get instead of query
+                    // when loading the data  possibly
+                    def uiControlCode =  getUIControlCode (component, dataComponent)
+                    functions << uiControlCode
+                } else {
+                    //TODO HvT- find out for what use case this is needed still
+                    def dataVarName = "_"+dataComponent.name.toLowerCase()
+                    println "****WARNING**** generating control $component.name $component.type - check generator"
+                    // implicitly define a $scope variable  ${dataVarName}_${component.ID}
+                    def queryParameters = getQueryParameters(component,dataComponent)
+                    def functionDef = """
+                        // initialize value
+                        \$scope.${component.ID}_load = function() {
+                        \$scope.${dataVarName}_${component.ID} = ${dataComponent.name}.get($queryParameters);
+                        };\n"""
+                    functions << functionDef
+                }
             }
         }
         return functions.join("\n")
@@ -410,69 +465,60 @@ class CompileAjsService {
 
 
     def static buildControlVar(pageComponent, depth = 0) {
-        // for form or block visibility control
         def code = ""
-         if ( [PageComponent.COMP_TYPE_BUTTON,PageComponent.COMP_TYPE_LIST]
-                 .contains( pageComponent.type ) ) {
+         if ( [PageComponent.COMP_TYPE_BUTTON,PageComponent.COMP_TYPE_LIST].contains( pageComponent.type ) ) {
             // generate a control function for each button/list 'click' property
             if (pageComponent.onClick) {
                 // handle variable and constant in expression
                 def expr = parseExpression(pageComponent.onClick)
-                //TODO HvT - is this OK?
-                dataSetIDsIncluded.each {
+                dataSetIDsIncluded.each {   //TODO HvT - is this OK always?
                     expr=expr.replace(".${it}_",".${it}DS.")
                 }
                 def arg = pageComponent.type==PageComponent.COMP_TYPE_LIST?PageComponent.CURRENT_ITEM:""
                 code += """\$scope.${pageComponent.name}_onClick = function($arg) { $expr}; """
                 println "onClick expression for $pageComponent.name $pageComponent.onClick -> $expr"
             }
-
          } else if (pageComponent.type == PageComponent.COMP_TYPE_SELECT && pageComponent.sourceValue) {
-             // handle sourceValue for select
-             // sourceValue is already in javascript format
-             // internally assign a source model name as the component name
+             // static select: handle sourceValue for select sourceValue is already in javascript format
              pageComponent.sourceModel = pageComponent.name
-             //def arrayName = "_${pageComponent.sourceModel?.toLowerCase()}s_${pageComponent.name}_source"
-             //code += """\$scope.$arrayName = ${groovy.json.JsonOutput.toJson(pageComponent.sourceValue)};\n """
-
              def dataComponent = [static: true, data: groovy.json.JsonOutput.toJson(pageComponent.sourceValue)]
              def uiControlCode =  getUIControlCode (pageComponent, dataComponent)
-             //functions << uiControlCode
              dataSetIDsIncluded<<pageComponent.ID   //remember  - used to replace variable names
              uiControlIDsIncluded<<pageComponent.ID
+             //TODO - could be added too late to the *Included  collections?
              code += uiControlCode
-
-
-
          } else if (pageComponent.submit) {
              // parse submit action
              // do not need $scope. prefix or {{ }}
              pageComponent.submit = parseVariable(pageComponent.submit)
 
          } else if (pageComponent.onUpdate && !uiControlIDsIncluded.contains(pageComponent.ID)) {
-            //TODO HvT - is this dead code now? //
             // handle input field update
             // generate a ng-change function
             def  expr = parseExpression(pageComponent.onUpdate)
+             dataSetIDsIncluded.each { //replace with dataSetIDs
+                 expr=expr.replace(".${it}_",".${it}DS.")
+             }
             def duplicateExpr =""
             if (pageComponent.type == PageComponent.COMP_TYPE_SELECT &&
                     (pageComponent.parent.type == PageComponent.COMP_TYPE_DETAIL
-                     || pageComponent.parent.type == PageComponent.COMP_TYPE_GRID) )
-                // if a select is used in a grid or detail control its model is bound to parent model, we need to copy the model to $<selectName>
-                // in order for it to be referenced by other controls
+                     || pageComponent.parent.type == PageComponent.COMP_TYPE_GRID) ) {
+                // if a select is used in a grid or detail control its model is bound to parent model, we need to copy
+                // the model to $<selectName> in order for it to be referenced by other controls
+                println "****WARNING**** using duplicate - is this still needed?"
                 duplicateExpr =
                     "//duplicate\n"+
                     "\$scope.$pageComponent.name = \$scope._${pageComponent.parent.model.toLowerCase()}s_${pageComponent.parent.name}[0].$pageComponent.model;"
 
-
+            }
+            //next code is used for non-DataSet items with an onUpdate, i.e. an input field to set a filter
             code += """
-    \$scope.${pageComponent.name}_onUpdate = function() {
-        $duplicateExpr
-        // handle undefined value
-        if (\$scope.${pageComponent.name} == null || \$scope.${pageComponent.name} ==undefined)
-            \$scope.${pageComponent.name} = ""
-        $expr
-        };
+            \$scope.${pageComponent.name}_onUpdate = function() {
+                 $duplicateExpr
+                 // handle undefined value
+                 \$scope.${pageComponent.name} = nvl(\$scope.${pageComponent.name}, "");
+                 $expr
+                 };
             """
         }
         pageComponent.components.each { child ->
@@ -594,7 +640,8 @@ class CompileAjsService {
     def static normalizeComponent(pageComponent) {
         // type of input (except button or submit)
         def inputTypes = [PageComponent.COMP_TYPE_BOOLEAN, PageComponent.COMP_TYPE_TEXT, PageComponent.COMP_TYPE_TEXTAREA,
-        PageComponent.COMP_TYPE_EMAIL,PageComponent.COMP_TYPE_NUMBER, PageComponent.COMP_TYPE_DATETIME, PageComponent.COMP_TYPE_TEL, PageComponent.COMP_TYPE_SELECT]
+                          PageComponent.COMP_TYPE_EMAIL, PageComponent.COMP_TYPE_NUMBER, PageComponent.COMP_TYPE_DATETIME,
+                          PageComponent.COMP_TYPE_TEL, PageComponent.COMP_TYPE_SELECT]
 
         if (pageComponent.type == PageComponent.COMP_TYPE_PAGE) {
             pageComponent.parent = null
@@ -693,7 +740,7 @@ class CompileAjsService {
         return [valid:valid, errors:errors, nameSet:nameSet]
     }
 
-    /* return a string representing the concanated names of the given component starting from the top level page
+    /* return a string representing the concatenated names of the given component starting from the top level page
          names are separated by "."
      */
     def static getComponentNamePath(pageComponent) {
