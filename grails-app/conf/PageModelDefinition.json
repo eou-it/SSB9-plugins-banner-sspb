@@ -41,7 +41,7 @@
             {
                 "componentType":["detail"],
                 "requiredAttributes":["model", "parameters"],
-                "optionalAttributes":["label", "style", "allowModify", "allowDelete", "allowReload"],
+                "optionalAttributes":["label", "style", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize"],
                 "requiredChildren":[],
                 "optionalChildren":["select", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean" ]
             },
@@ -76,7 +76,7 @@
             {
                 "componentType":["select"],
                 "requiredAttributes":["labelKey", "valueKey" ],
-                "optionalAttributes":["label", "style", "sourceModel", "sourceParameters", "sourceValue", "model", "onUpdate", "required"],
+                "optionalAttributes":["label", "style", "sourceModel", "sourceParameters", "sourceValue", "model", "onUpdate", "required", "placeholder"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
