@@ -405,7 +405,7 @@ class PageComponentAjs {
                 else if (parent.type==COMP_TYPE_DETAIL) {
                     txt = """<tr><td style="text-align:right; width: 15%"><strong>${label?"$label:":""}</strong></td>"""
                     txt+= """<td style="text-align:left;">
-                          <input type="$t"   name="${name?name:model}" id="${name?name:model}" ${parent.allowModify?"":"readonly"}
+                          <input $typeString   name="${name?name:model}" id="${name?name:model}" ${parent.allowModify?"":"readonly"}
                           ng-model="$GRID_ITEM.${model}"
                           ng-change="\$parent.${parent.name}DS.setModified($GRID_ITEM)" $attributes />
                           </td></tr>
