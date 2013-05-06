@@ -392,8 +392,9 @@ class PageComponentAjs {
                 }
                 def attributes = "$validateStr ${required?"required":""} ${placeholder?"placeholder=\"$placeholder\"":""}".trim()
                 def typeString= "type=\"$t\""
-                if (type == COMP_TYPE_DATETIME)
-                    typeString=" ui-date "
+                if (type == COMP_TYPE_DATETIME)  //TODO localize format
+                    typeString=" ui-date=\"{dateFormat:'dd-M-yy', changeMonth: true, changeYear: true}\" "
+                //Cannot choose format with time, but lots of options. See http://jqueryui.com/datepicker/
                 if (attributes) println "Attributes: $attributes"
                 if (parent.type==COMP_TYPE_GRID)
                     txt = """
@@ -404,7 +405,7 @@ class PageComponentAjs {
                 else if (parent.type==COMP_TYPE_DETAIL) {
                     txt = """<tr><td style="text-align:right; width: 15%"><strong>${label?"$label:":""}</strong></td>"""
                     txt+= """<td style="text-align:left;">
-                          <input type="$t"   name="${name?name:model}" id="${name?name:model}" ${parent.allowModify?"":"readonly"}
+                          <input $typeString   name="${name?name:model}" id="${name?name:model}" ${parent.allowModify?"":"readonly"}
                           ng-model="$GRID_ITEM.${model}"
                           ng-change="\$parent.${parent.name}DS.setModified($GRID_ITEM)" $attributes />
                           </td></tr>

@@ -44,12 +44,12 @@
                                "model":"STVATYP_DESC"
                            },
                            {
-                               "type":"text",
+                               "type":"datetime",
                                "label":"Date the address is valid from",
                                "model":"SPRADDR_FROM_DATE"
                            },
                            {
-                               "type":"text",
+                               "type":"datetime",
                                "label":"Date (if any) you are planning to move",
                                "model":"SPRADDR_TO_DATE"
                            },

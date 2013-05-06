@@ -1,0 +1,11 @@
+{
+   "codePost": null,
+   "id": 10301,
+   "dataSource": "B",
+   "codePut": null,
+   "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
+   "codeDelete": null,
+   "codeGet": "select  STVSTAT_CODE, STVSTAT_DESC from stvstat, stvnatn where stvstat_statscan_cde=stvnatn_edi_equiv and stvnatn_code like NVL(:countrycode, '%') union\r\nselect null, '- select' from dual\r\norder by 2\r\n",
+   "typeOfCode": "S",
+   "serviceName": "stvstat"
+}
