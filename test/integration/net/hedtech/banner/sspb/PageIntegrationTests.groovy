@@ -1,6 +1,5 @@
 package net.hedtech.banner.sspb
 
-import static org.junit.Assert.*
 import org.junit.*
 
 class PageIntegrationTests {
@@ -110,22 +109,22 @@ class PageIntegrationTests {
             def pageSource = new File(modelFilePath).getText()
 
             // parse, normalize and validate page model
-            def validateResult = CompileAjsService.preparePage(pageSource)
+            def validateResult = CompileService.preparePage(pageSource)
             if (validateResult.valid) {
                 // generate JS first because it will set the binding correctly for some components
-                def compiledJSCode = CompileAjsService.compileController(validateResult.pageComponent)
+                def compiledJSCode = CompileService.compileController(validateResult.pageComponent)
                 //println "Compiled Controller = $compiledJSCode\n"
                 println "JavaScript is compiled"
                 def htmlOutput = new File('TestJS.js')
                 htmlOutput.text = compiledJSCode
 
-                def compiledView = CompileAjsService.compile2page(validateResult.pageComponent)
+                def compiledView = CompileService.compile2page(validateResult.pageComponent)
                 //println "Compiled View = $compiledView\n"
                 println "HTML is compiled"
                 htmlOutput = new File('TestHtml.html')
                 htmlOutput.text = compiledView
 
-                def combinedView = CompileAjsService.assembleFinalPage(compiledView, compiledJSCode)
+                def combinedView = CompileService.assembleFinalPage(compiledView, compiledJSCode)
                 //println "Compbined View = $combinedView\n"
                 println "Page is compiled"
                 htmlOutput = new File(pageFilePath)

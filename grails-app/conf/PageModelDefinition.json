@@ -15,40 +15,47 @@
                 "requiredAttributes":["name"],
                 "optionalAttributes":["title", "scriptingLanguage", "label", "style"],
                 "requiredChildren":[],
-                "optionalChildren":["flow", "form", "block", "grid", "select", "list", "detail", "data", "resource", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button"]
+                "optionalChildren":["flow", "form", "block", "grid", "select", "radio", "list", "detail", "data", "resource", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button"]
             },
             {
                 "componentType":["block"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "style", "showInitially"],
                 "requiredChildren":[],
-                "optionalChildren":["form", "grid", "select", "list", "detail", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
+                "optionalChildren":["form", "grid", "select", "radio", "list", "detail", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
             },
             {
                 "componentType":["form"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "style", "submit","submitLabel", "nextButtonLabel", "showInitially"],
                 "requiredChildren":[],
-                "optionalChildren":["block", "grid", "select", "list", "detail", "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
+                "optionalChildren":["block", "grid", "select", "radio", "list", "detail", "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
             },
             {
                 "componentType":["grid"],
                 "requiredAttributes":["model", "parameters"],
                 "optionalAttributes":["label", "style", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize"],
                 "requiredChildren":[],
-                "optionalChildren":["select", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean" ]
+                "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean" ]
             },
             {
                 "componentType":["detail"],
                 "requiredAttributes":["model", "parameters"],
                 "optionalAttributes":["label", "style", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize"],
                 "requiredChildren":[],
-                "optionalChildren":["select", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean" ]
+                "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean" ]
             },
             {
                 "componentType":["display"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "style", "value", "model"],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            },
+            {
+                "componentType":["link"],
+                "requiredAttributes":["url"],
+                "optionalAttributes":["label", "style", "description", "imageUrl"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
@@ -77,6 +84,13 @@
                 "componentType":["select"],
                 "requiredAttributes":["labelKey", "valueKey" ],
                 "optionalAttributes":["label", "style", "sourceModel", "sourceParameters", "sourceValue", "model", "onUpdate", "required", "placeholder"],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            },
+            {
+                "componentType":["radio"],
+                "requiredAttributes":["labelKey", "valueKey" ],
+                "optionalAttributes":["label", "style", "sourceModel", "sourceParameters", "sourceValue", "model", "onUpdate", "required", "value"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },

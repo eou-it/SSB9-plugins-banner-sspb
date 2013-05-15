@@ -19,14 +19,14 @@ class CompileServiceTests extends GroovyTestCase  {
 
     void testCompileAll() {
         // test all page model compilation
-        def maxModelId = 6
+        def modelIds = 1..6
         def modelPath = "test/testData/model/PageModel"
         def getModelPath = { id -> return modelPath + id + '.json' }
 
         def pagePath = "target/compiledPage/page"
         def getPagePath = { id -> return pagePath + id + '.html' }
 
-        for (i in (1..maxModelId)) {
+        for (i in modelIds) {
             def modelFilePath = getModelPath(i)
             def pageFilePath = getPagePath(i)
 

@@ -31,6 +31,7 @@ class PageComponentAjs {
     final static COMP_TYPE_BUTTON = "button"
     final static COMP_TYPE_BLOCK = "block"
     final static COMP_TYPE_FLOW = "flow"
+    final static COMP_TYPE_RADIO = "radio"
     //final static COMP_TYPE_FUNCTION = "function"
 
     // Types that can represent a single field
@@ -38,7 +39,7 @@ class PageComponentAjs {
                                     COMP_TYPE_DATETIME,COMP_TYPE_EMAIL,COMP_TYPE_TEL,COMP_TYPE_LINK,COMP_TYPE_BOOLEAN ]
 
     // Types that have a DataSet associated  - not completely orthogonal yet. COMP_ITEM_TYPES can have it too
-    final static COMP_DATASET_TYPES = [COMP_TYPE_GRID,COMP_TYPE_LIST,COMP_TYPE_SELECT,COMP_TYPE_DETAIL,COMP_TYPE_DATA]
+    final static COMP_DATASET_TYPES = [COMP_TYPE_GRID,COMP_TYPE_LIST,COMP_TYPE_SELECT,COMP_TYPE_DETAIL,COMP_TYPE_DATA, COMP_TYPE_RADIO]
 
     final static COMP_UICTRL_TYPES = COMP_DATASET_TYPES //not sure if they ever will be different
 
@@ -115,6 +116,11 @@ class PageComponentAjs {
     // boolean type properties
     String booleanTrueValue     // by default if these values are omitted JS will assume true and false (not quotes around) as they can be transferred in JSON as true/false
     String booleanFalseValue
+
+    // link property
+    String description
+    String url
+    String imageUrl
 
     String style        // TODO add styling support
 
@@ -285,6 +291,45 @@ class PageComponentAjs {
         return txt
     }
 
+    def radioCompile(int depth=0) {
+        def arrayName = "${name}DS.data"
+        def result
+        def ngModel = name
+        def labelTxt = label? """<label for="${name?name:model}">$label</label>""":""
+        def updateTxt = ""
+        //def placeholderStr = placeholder?"""<option value="">$placeholder</option>""":""
+        def initTxt = value?"""ng-init="\$parent.$ngModel='$value'" """:""
+        def nameTxt = name
+
+        if(parent.type == COMP_TYPE_DETAIL) {
+            ngModel =  "\$parent.$GRID_ITEM.${model}"
+            updateTxt +="\$parent.\$parent.${parent.name}DS.setModified(\$parent.$GRID_ITEM);"
+            nameTxt += "{{'${name}_' + \$parent.\$index}}"
+        } else if (parent.type == COMP_TYPE_GRID) {
+            ngModel =  "\$parent.$GRID_ITEM.${model}"
+            updateTxt +="\$parent.\$parent.${parent.name}DS.setModified(\$parent.$GRID_ITEM);"
+            nameTxt = "{{'${name}_' + \$parent.\$index}}"
+        } else {
+            ngModel =  "\$parent.$ngModel"
+        }
+        updateTxt += onUpdate?"${name}UICtrl.onUpdate();":""
+        updateTxt = updateTxt?"ng-change=\"$updateTxt\"":""
+
+        def radio = """<div ng-repeat="$SELECT_ITEM in $arrayName" $initTxt>
+            <input type="radio"   ng-model=$ngModel name="$nameTxt" $updateTxt
+                value="{{$SELECT_ITEM.$valueKey}}"/> {{$SELECT_ITEM.$labelKey}}
+        </div>"""
+        if(parent.type == COMP_TYPE_DETAIL) {
+            result = """<tr><td style="text-align:right; width: 15%"><strong>${label?"$label:":""}</strong></td><td style="text-align:left;">
+                             $radio
+                             </td></tr>"""
+        } else {
+            // TODO model for select is used for data input, not output - resolve model ambiguity
+            result = """$labelTxt $radio """
+        }
+        return result
+
+    }
     // ?
     def flowCompile() {
 
@@ -343,6 +388,9 @@ class PageComponentAjs {
             case COMP_TYPE_LIST:
                 return listCompile((depth+1))
 
+            case COMP_TYPE_RADIO:
+                return radioCompile((depth+1))
+
             case COMP_TYPE_BLOCK:
 
                 return """<div  id="$name" ng-show="${name}_visible"> $heading
@@ -378,13 +426,22 @@ class PageComponentAjs {
                     // TODO is parseVariable still working after using DataSet as generic data object?
                     ret += label?"<label>$label:</label>":"" + value?"value=\"{{${CompileService.parseVariable(value)}}}\"":""
                 return ret
+            case COMP_TYPE_LINK:
+                def ret = "<div>"
+                def desc = description?description:url
+                // otherwise the value is used
+                // TODO consolidate value and sourceModel?
+                // TODO is parseVariable still working after using DataSet as generic data object?
+                ret += label?"<label>$label</label>":""
+                ret +=  """<a href="$url">$desc</a></div>"""
+                return ret
+
             case COMP_TYPE_TEXT:
             case COMP_TYPE_TEXTAREA:
             case COMP_TYPE_NUMBER:
             case COMP_TYPE_DATETIME:
             case COMP_TYPE_EMAIL:
             case COMP_TYPE_TEL:
-            case COMP_TYPE_LINK:
                 def txt = ""
                 def validateStr = ""
                 if (validation) {
