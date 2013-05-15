@@ -8,7 +8,7 @@
  */
 package net.hedtech.banner.sspb
 
-class PageComponentAjs {
+class PageComponent {
     final static COMP_TYPE_PAGE = "page"
     final static COMP_TYPE_FORM = "form"
     final static COMP_TYPE_GRID = "grid"
@@ -135,11 +135,11 @@ class PageComponentAjs {
     String ID           // generated ID, do we need this?
     String documentation    // for page development documentation purpose, not used by code generator
 
-    List<PageComponentAjs> components    // child components
+    List<PageComponent> components    // child components
 
     // internal use properties
-    PageComponentAjs parent    // record parent component for special code generation in grid, etc.
-    PageComponentAjs root      // the root (page) component
+    PageComponent parent    // record parent component for special code generation in grid, etc.
+    PageComponent root      // the root (page) component
 
     def flowDefs = []       // global flow definitions, a list of map {flowName:"", sequence:["form1","form2"], condition, ""}
     def activeFlow = ""     // the initially activated flow
@@ -235,7 +235,7 @@ class PageComponentAjs {
         result +="""<table ng-repeat="$repeat | startFrom:${uiControl}.currentPage * ${uiControl}.pageSize | limitTo:${uiControl}.pageSize" >\n"""
 
         // add a delete checkbox column if allowDelete is true
-        // def PageComponentAjs delete = new PageComponentAjs()
+        // def PageComponent delete = new PageComponent()
         //*
         if (allowDelete) {
             result += """
