@@ -75,9 +75,14 @@
         <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
       </library>
     </orderEntry>
+<<<<<<< HEAD
     <orderEntry type="library" name="grails-2.2.1" level="application" />
     <orderEntry type="library" name="grails-2.2.1 (2)" level="application" />
     <orderEntry type="module" module-name="Banner-sspb-grailsPlugins" />
+=======
+    <orderEntry type="module" module-name="Banner-sspb-grailsPlugins" />
+    <orderEntry type="library" name="grails-2.2.1" level="application" />
+>>>>>>> cae5c790ee4bdc0d0f74fc97f455f0dcf753441a
   </component>
 </module>
 
