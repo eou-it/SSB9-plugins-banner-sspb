@@ -235,7 +235,8 @@ angular.module('ui.directives').directive('uiDate', [
             var date;
             date = controller.$viewValue;
             if (!(date instanceof Date)) {
-              date = new Date(date);
+			  if (date != null) //HvT we want to allow null dates
+				date = new Date(date);
             }
             return element.datepicker("setDate", date);
           };

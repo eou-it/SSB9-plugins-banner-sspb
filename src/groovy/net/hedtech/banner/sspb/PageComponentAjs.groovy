@@ -393,7 +393,7 @@ class PageComponentAjs {
                 def attributes = "$validateStr ${required?"required":""} ${placeholder?"placeholder=\"$placeholder\"":""}".trim()
                 def typeString= "type=\"$t\""
                 if (type == COMP_TYPE_DATETIME)  //TODO localize format
-                    typeString=" ui-date=\"{dateFormat:'dd-M-yy', changeMonth: true, changeYear: true}\" "
+                    typeString=" ui-date=\"{dateFormat:'dd-M-yy', changeMonth: true, changeYear: true, defaultDate:null}\" "
                 //Cannot choose format with time, but lots of options. See http://jqueryui.com/datepicker/
                 if (attributes) println "Attributes: $attributes"
                 if (parent.type==COMP_TYPE_GRID)

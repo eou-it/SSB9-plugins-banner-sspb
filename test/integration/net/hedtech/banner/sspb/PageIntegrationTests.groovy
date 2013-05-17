@@ -17,6 +17,22 @@ class PageIntegrationTests {
 
     //CompileServiceTests + saving the page
     @Test
+    void testImport() {
+        def pageUtilService = new PageUtilService()
+        def pagePath = "test/testData/model"
+        pageUtilService.importAllFromFile(pagePath)
+
+    }
+
+    @Test
+    void testExport() {
+        def pageUtilService = new PageUtilService()
+        def pagePath = "test/testData/model"
+        pageUtilService.exportAllToFile(pagePath)
+    }
+
+    //CompileServiceTests + saving the page
+    @Test
     void testCompileAndCreate() {
         // test all page model compilation
         def maxModelId = 6

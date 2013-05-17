@@ -2,6 +2,103 @@ package net.hedtech.banner.virtualDomain
 
 class VirtualDomainService {
 
+    def virtualDomainSqlService
+
+    // Interface for restful API - TODO may choose to put this in a separate service or move to VirtualDomainSqlService
+    // if the service name can be configured, which fails now.
+    def list(Map params) {
+        def queryResult
+        def result
+        def vd = loadVirtualDomain(params.virtualDomain)
+        if (vd.error) {
+            throw new Exception( "Error: service does not exist" )//TODO  how should we handle with restful API?, i18n
+        }
+        queryResult = virtualDomainSqlService.get(vd.virtualDomain, params)
+        if (queryResult.error == "") {
+            result = queryResult.rows
+        } else {
+            throw queryResult.error
+        }
+        result
+    }
+
+    def show(Map params) {
+        def queryResult
+        def result
+        def vd = loadVirtualDomain(params.virtualDomain)
+        if (vd.error) {
+            throw new Exception( "Error: service does not exist" )//TODO  how should we handle with restful API?, i18n
+        }
+        queryResult = virtualDomainSqlService.get(vd.virtualDomain, params)
+        if (queryResult.error == "") {
+            result = queryResult.rows
+        } else {
+            throw queryResult.error
+        }
+        result[0]
+    }
+
+    def count(Map params) {
+        def queryResult
+        def result
+        def vd = loadVirtualDomain(params.virtualDomain)
+        if (vd.error) {
+            throw new Exception( "Error: service does not exist" )//TODO  how should we handle errors with restful API?, i18n
+        }
+        queryResult = virtualDomainSqlService.count(vd.virtualDomain, params)
+        if (queryResult.error == "") {
+            result = queryResult.totalCount
+        } else {
+            throw queryResult.error
+        }
+        result
+    }
+
+    //TODO
+    //missing methods show
+
+    def create (Map data) {
+        println "Data for post/save/create:" + data
+        //required param virtualDomain is added to data as a work around to deal with the rest API
+        def params = [:]
+        params.virtualDomain=data.virtualDomain
+        def vd = loadVirtualDomain(params.virtualDomain)
+        if (vd.error) {
+            throw new Exception( "Error: service does not exist")
+        }
+        virtualDomainSqlService.create(vd.virtualDomain,params,data)
+        //data
+        //Should really be querying the record again so any database trigger changes get reflected in client
+    }
+
+    def update (def id, Map data) {
+        println "Data for put/update:" + data
+        def params = [:]
+        params.virtualDomain=data.virtualDomain
+        def vd = loadVirtualDomain(params.virtualDomain)
+        if (vd.error) {
+            throw new Exception( "Error: service does not exist")
+        }
+        virtualDomainSqlService.update(vd.virtualDomain,params,data)
+        //data
+        //Should really be querying the record again so any database trigger changes get reflected in client
+    }
+
+    def delete (def id, Map data) {
+        println "Data for DELETE:" + data
+        def params = [:]
+        params.virtualDomain = data.virtualDomain
+        params.id = id
+        def vd = loadVirtualDomain(params.virtualDomain)
+        if (vd.error) {
+            throw new Exception( "Error: service does not exist")
+        }
+        virtualDomainSqlService.delete(vd.virtualDomain,params)
+    }
+
+
+
+
     // Services to retrieve and save a VirtualDomain
 
     def saveVirtualDomain(vdServiceName, vdQuery, vdPost, vdPut, vdDelete) {
