@@ -7,20 +7,20 @@
            "type": "resource",
            "name": "CountryData",
            "binding": "rest",
-           "resource": "/banner-sspb/virt/stvnation",
+           "resource": "$rootWebApp/api/virtualDomains.stvnation",
            "documentation":"Retrieve nation desc and code"
        },
        {
            "type": "resource",
            "name": "StateData",
            "binding": "rest",
-           "resource": "/banner-sspb/virt/stvstat"
+           "resource": "$rootWebApp/api/virtualDomains.stvstat"
        },
        {
            "type": "resource",
            "name": "PRAddressData",
            "binding": "rest",
-           "resource": "/banner-sspb/virt/PRAddress"
+           "resource": "$rootWebApp/api/virtualDomains.PRAddress"
        },
        {    "type": "form",
              "name": "AddressForm",

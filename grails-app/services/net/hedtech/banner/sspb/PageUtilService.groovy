@@ -19,14 +19,15 @@ class PageUtilService {
         }
     }
 
+    /* TODO fix
     void importAllFromFile(String path) {
         new File(path).eachFileMatch(~/.*.json/) {   file ->
             def modelView = file.getText()
             def pageName = file.name.substring(0,file.name.lastIndexOf(".json"))
             def page = new Page(pageName: pageName, modelView: modelView)
-            if (Page.findByconstantName(pageName)) {
+            if (Page.findByConstantName(pageName)) {
                 page.constantName+=".imp.dup"
-                def page1=Page.findByconstantName(page.constantName)
+                def page1=Page.findByConstantName(page.constantName)
                 if (page1) //if we have already saved a duplicate, get rid of it.
                     page1.delete(flush: true)
                 println "WARN: Page already exists. Imported as ${page.constantName}."
@@ -36,6 +37,7 @@ class PageUtilService {
             page = page.save(flush: true)
         }
     }
+    */
 
     void compileAll(String pattern) {
         def pat = pattern?pattern:"%"
