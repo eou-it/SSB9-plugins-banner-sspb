@@ -15,31 +15,33 @@ class VirtualDomainSqlService {
     def dataSource
     def dataSource_sspb
 
+
     private def getSql =  { ds ->
         new Sql(ds =="B"?dataSource:dataSource_sspb)
     }
 
-    private def changeParamsGet = {  p ->
-        def modifyKeys = []
+    // copy params rather than changing params itself
+    //changing param pluralizedResourceName made the restful api fail
+    private def getNormalized = {  p ->
+        Map result = [:]
         p.each { key, value ->
-            if (key != "action" && key != "virtualDomain" && key!="controller" )  {
-                modifyKeys << key
+            def k=key
+            def v=value
+            if ( !["action","virtualDomain","controller","pluralizedResourceName"].contains(key) )  {
+                if (key=="id")
+                    v = urlPathDecode(value)
+                else
+                    k = k.toLowerCase()
+                // unmarshall null from JS - if it is undefined change to null
+                // HvT: This leads to issues if user wants to pass string undefined in a parameter.
+                //      Is it possible to fix this in AngularJS?
+                //      An empty value seems fine. Oracle does not distinguish between null and undefined.
+                if (v == "undefined")
+                    v = null
             }
+            result.put(k,v)
         }
-        modifyKeys.each {
-            def value = p[it]
-            // unmarshall null from JS - if it is undefined change to null
-            // HvT: This leads to issues if user wants to pass string undefined in a parameter.
-            //      Is it possible to fix this in AngularJS?
-            //      An empty value seems fine. Oracle does not distinguish between null and undefined.
-            if (value=="undefined")
-                value = null
-            p.remove(it)
-            // set parameter key name to lower case to workaround a groovy parameter replacement issue
-            p.put(it.toLowerCase(), value)
-        }
-        if (p.id)
-            p.id = urlPathDecode(p.id)
+        result
     }
 
     /*
@@ -50,40 +52,25 @@ class VirtualDomainSqlService {
 
     */
     def get(vd, params) {
-        changeParamsGet(params) // some tweaks and work arounds
-        def logmsg="Converted params for get: $params"
+        def parameters = getNormalized(params) // some tweaks and work arounds
+        def logmsg="Converted params for get: $parameters"
         def sql = getSql(vd.dataSource)
-        def debugStatement = (params.debug == "true")?" and rownum<6":""
+        def debugStatement = (parameters.debug == "true")?" and rownum<6":""
         def errorMessage = ""
         // Add a dummy bind variable to Groovy SQL to workaround an issue related to passing a map
         // to a query without bind variables
         def statement = "select * from (${vd.codeGet}) where (1=1 or :x is null) $debugStatement"
-        def countStatement="select count(*) COUNT from (${vd.codeGet}) where (1=1 or :x is null) $debugStatement"
-
         def metaData = { meta ->
             logmsg += "\nNumber of columns: $meta.columnCount"
         }
         def rows
-        def totalCount=-1
         try {
-            def max=params.max?params.max.toInteger():-1
-            def offset=params.offset?params.offset.toInteger():-1
-            if (max>=0 || offset>=0)  {
-                // determine the total count
-                rows = sql.rows(countStatement,params)
-                totalCount = rows[0].COUNT
-            }
-            if (totalCount == 0 ) { //no need to query again if 0
-                rows = []
-            }  else {
-                rows = sql.rows(statement,params,offset,max,metaData)
-                rows = idEncodeRows(rows)
-                rows = handleClobRows(rows)
-                if (totalCount<=0)
-                    totalCount=rows.size
-            }
-
-            logmsg += " Fetched: ${rows?.size()} of  $totalCount with offset $offset  "
+            def max=parameters.max?parameters.max.toInteger():-1
+            def offset=parameters.offset?parameters.offset.toInteger():-1
+            rows = sql.rows(statement,parameters,offset,max,metaData)
+            rows = idEncodeRows(rows)
+            rows = handleClobRows(rows)
+            logmsg += " Fetched: ${rows?.size()} with offset $offset  "
         } catch(e) {
             logmsg +="\n***ERROR*** ${e.getMessage()}\nStatement: \n $statement"
             errorMessage=logmsg
@@ -91,7 +78,34 @@ class VirtualDomainSqlService {
             sql.close()
         }
         println logmsg
-        return [error: errorMessage, rows:rows, totalCount:totalCount]
+        return [error: errorMessage, rows:rows, totalCount: rows.size()]
+    }
+
+    def count(vd, params) {
+        def parameters = getNormalized(params) // some tweaks and work arounds
+        def logmsg="Converted params for get: $parameters"
+        def sql = getSql(vd.dataSource)
+        def debugStatement = (parameters.debug == "true")?" and rownum<6":""
+        def errorMessage = ""
+        // Add a dummy bind variable to Groovy SQL to workaround an issue related to passing a map
+        // to a query without bind variables
+        def countStatement="select count(*) COUNT from (${vd.codeGet}) where (1=1 or :x is null) $debugStatement"
+        def rows
+        def totalCount=-1
+        try {
+            def max=parameters.max?parameters.max.toInteger():-1
+            def offset=parameters.offset?parameters.offset.toInteger():-1
+            // determine the total count
+            rows = sql.rows(countStatement,parameters)
+            totalCount = rows[0].COUNT
+        } catch(e) {
+            logmsg +="\n***ERROR*** ${e.getMessage()}\nStatement: \n $countStatement"
+            errorMessage=logmsg
+        } finally {
+            sql.close()
+        }
+        println logmsg
+        return [error: errorMessage, totalCount:totalCount]
     }
 
     def update(vd, params, data) {
@@ -99,6 +113,7 @@ class VirtualDomainSqlService {
         def sql = getSql(vd.dataSource)
         sql.execute(vd.codePut, data)
         sql.close()
+        //data
     }
 
     def create(vd, params, data) {

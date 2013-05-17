@@ -1,0 +1,3 @@
+[submodule "plugins/restful-api.git"]
+	path = plugins/restful-api.git
+	url = ssh://git@devgit1/framework/plugins/restful-api.git

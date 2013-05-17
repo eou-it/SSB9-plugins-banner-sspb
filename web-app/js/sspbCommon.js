@@ -63,7 +63,12 @@ function CreatePostQuery(instanceIn, userFunction) {
 function CreateDataSet(params){
     this.componentId=params.componentId;
     this.data=params.data;
-    this.Resource=$resource(params.resourceURL);
+    this.Resource=$resource(params.resourceURL+'/:id',
+                           {id:'@id'}, //parameters
+                           {//custom methods
+                            update: {method:'PUT', params: {id:'@id'}}
+                          }
+                         );
     this.queryParams=params.queryParams;
     this.selectValueKey=params.selectValueKey;
     this.selectInitialValue=params.selectInitialValue;
@@ -160,13 +165,13 @@ function CreateDataSet(params){
     }
 
     this.setModified = function(item) {
-        if (this.modified.indexOf(item) == -1)
+        if (this.modified.indexOf(item) == -1 && this.added.indexOf(item) == -1)
             this.modified.push(item);
     }
 
     this.add = function(item) {
         var newItem = new this.Resource(item);
-        //this.added.push(newItem);
+        this.added.push(newItem);
         // add the new item to the beginning of the array so they show up on the top of the table
         this.data.unshift(newItem);
         // TODO - clear the add control content
@@ -184,10 +189,12 @@ function CreateDataSet(params){
         });
         this.added = [];
         this.modified.forEach( function(item)  {
-            item.$save();
+            //item.$save();
+            item.$update(); // should we add id param here or not
         });
         this.modified = [];
         this.deleted.forEach( function(item)  {
+            //item.$delete({id:item.id});
             item.$delete({id:item.id});
         });
         this.deleted = [];

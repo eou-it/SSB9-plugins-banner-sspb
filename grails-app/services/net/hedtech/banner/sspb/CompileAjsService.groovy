@@ -2,8 +2,11 @@ package net.hedtech.banner.sspb
 
 class CompileAjsService {
 
+    static def servletContext //injected by Spring
     // TODO configure Hibernate
     def transactional = false
+
+
 
     static def dataSetIDsIncluded =[]
     static def uiControlIDsIncluded = []
@@ -127,7 +130,15 @@ class CompileAjsService {
         def result = codeList.join("\n")
         // inject common code into controller
         // TODO: refactor so it can be in a separate js.
-        def common =  new File("web-app/js/sspbCommon.js").getText()
+        def common
+
+        try {
+            //try to get from application server
+            common = servletContext.getResourceAsStream("/js/sspbCommon.js").text
+        } catch (e) {
+            // try to get from file - possibly needed in unit test
+            common = new File("web-app/js/sspbCommon.js").getText()
+        }
 
         result = """
     function CustomPageController( \$scope, \$http, \$resource, \$parse) {
