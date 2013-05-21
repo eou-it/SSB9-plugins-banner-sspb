@@ -19,8 +19,11 @@
     <li>
         <g:link controller="pageModelComposer" >  Page Composer</g:link>
     </li>
+<li>
+    <g:link controller="visualPageModelComposer" > Visual Page Composer</g:link>
+</li>
 
-    <g:each in="${Page.list()}">
+<g:each in="${Page.list()}">
         <li>
             <g:link controller="customPage" id="${it.constantName}" >Run ${it.constantName}</g:link>
         </li>
