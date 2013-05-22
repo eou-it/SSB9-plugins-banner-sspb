@@ -7,37 +7,37 @@
            "type": "resource",
            "name": "TermData",
            "binding": "rest",
-           "resource": "/banner-sspb/virt/f_term"
+           "resource": "$rootWebApp/api/virtualDomains.f_term"
        },
        {
            "type": "resource",
            "name": "CampusData",
            "binding": "rest",
-           "resource": "/banner-sspb/virt/f_campus"
+           "resource": "$rootWebApp/api/virtualDomains.f_campus"
        },
        {
            "type": "resource",
            "name": "CollegeData",
            "binding": "rest",
-           "resource": "/banner-sspb/virt/f_college"
+           "resource": "$rootWebApp/api/virtualDomains.f_college"
        },
        {
            "type": "resource",
            "name": "LevelData",
            "binding": "rest",
-           "resource": "/banner-sspb/virt/f_level"
+           "resource": "$rootWebApp/api/virtualDomains.f_level"
        },
        {
            "type": "resource",
            "name": "ProgrammeData",
            "binding": "rest",
-           "resource": "/banner-sspb/virt/f_programme"
+           "resource": "$rootWebApp/api/virtualDomains.f_programme"
        },
        {
            "type": "resource",
            "name": "ProgrammeDetailsData",
            "binding": "rest",
-           "resource": "/banner-sspb/virt/f_programme_details"
+           "resource": "$rootWebApp/api/virtualDomains.f_programme_details"
        },
        {
            "type":"literal",

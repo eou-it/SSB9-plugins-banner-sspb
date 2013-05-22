@@ -32,3 +32,37 @@ log4j = {
     warn   'org.mortbay.log'
     debug  'net.hedtech.banner'
 }
+
+restfulApiConfig = {
+    resource {
+        name = 'virtualDomains'    // common service to handle all virtual domain
+        /*
+        representation {
+            mediaType = "text/plain"
+            // AngularJS delete doesn't include a body and mediaType will default to text/plain (?)
+            //can we omit marshallers and extractors - there is nothing to extract or marchal here
+        }
+        media type must be xml or json
+        */
+        representation {
+            mediaType = "application/json"
+            addMarshaller {
+                marshaller = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
+                priority = 100
+            }
+            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
+        }
+        representation {
+            mediaType = "application/xml"
+            jsonAsXml = true
+            addMarshaller {
+                marshaller = new net.hedtech.restfulapi.marshallers.xml.JSONObjectMarshaller()
+                priority = 200
+            }
+            extractor = new net.hedtech.restfulapi.extractors.xml.JSONObjectExtractor()
+        }
+    }
+}
+
+//seems not to work well with virtual domains yet - updates are not being picked up
+cache.headers.enabled = false
