@@ -53,6 +53,9 @@ function CreatePageComponent(params){
     this.components = params.components;
 
     this.get = function () {
+        // return a hardcoded page source
+        pageSource = "";
+
 
     }
 }

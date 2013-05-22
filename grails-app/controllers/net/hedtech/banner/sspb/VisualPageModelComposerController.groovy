@@ -16,6 +16,24 @@ class VisualPageModelComposerController {
         render (view:"visualComposer", model: [pageModel: pageModel])
     }
 
+    // TODO replace with REST API
+    def page = {
+        println "in page, params = $params"
+        def pageInstance
+        if (params.pageName) {
+            pageInstance = Page.findByConstantName(params.pageName)
+            render pageInstance.modelView
+        } else
+            render ""
+    }
+
+    // TODO replace with REST API
+    def pageModelDef = {
+        println "in pageModel, params = $params"
+        def pageDefText = CompileService.class.classLoader.getResourceAsStream( 'PageModelDefinition.json' ).text
+        render pageDefText
+    }
+
     def compile = {
         def pageInstance
         def statusMessage=""

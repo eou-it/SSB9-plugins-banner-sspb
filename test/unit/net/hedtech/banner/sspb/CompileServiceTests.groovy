@@ -19,7 +19,7 @@ class CompileServiceTests extends GroovyTestCase  {
 
     void testCompileAll() {
         // test all page model compilation
-        def modelIds = 1..6
+        def modelIds = 1..1
         def modelPath = "test/testData/model/PageModel"
         def getModelPath = { id -> return modelPath + id + '.json' }
 
