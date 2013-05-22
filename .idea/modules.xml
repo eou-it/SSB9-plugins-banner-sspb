@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/Banner-sspb.iml" filepath="$PROJECT_DIR$/Banner-sspb.iml" />
       <module fileurl="file://$PROJECT_DIR$/Banner-sspb-grailsPlugins.iml" filepath="$PROJECT_DIR$/Banner-sspb-grailsPlugins.iml" />
       <module fileurl="file://$PROJECT_DIR$/Banner-sspb-grailsPlugins.iml" filepath="$PROJECT_DIR$/Banner-sspb-grailsPlugins.iml" />
+      <module fileurl="file://$PROJECT_DIR$/restfulApi-inplacePlugin.iml" filepath="$PROJECT_DIR$/restfulApi-inplacePlugin.iml" />
     </modules>
   </component>
 </project>
