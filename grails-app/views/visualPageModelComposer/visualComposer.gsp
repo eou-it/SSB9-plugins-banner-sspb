@@ -123,9 +123,6 @@
             $scope.pageSourceView = JSON.stringify($scope.pageSource[0], JSONFilter, 6);
         }
 
-        // add a watcher for re-formatting the JSON output
-        //$scope.$watch('pageSource[0]', $scope.handlePageTreeChange);
-
         //
         $scope.resetSelected = function() {
             $scope.dataHolder.selectedComponent = undefined;
@@ -175,13 +172,18 @@
         };
 
         $scope.addChild = function(data) {
-            console.log("addChild");
+            //console.log("addChild");
             $scope.validChildTypes = $scope.findAllChildrenTypes(data.type);
-            $scope.openTypeSelectionModal(data);
+            $scope.openTypeSelectionModal(data, -1);
             // delay adding node until the type selection is made
         };
 
-        // debugging
+        $scope.insertSibling = function(data, index) {
+            //console.log("addChild");
+            $scope.validChildTypes = $scope.findAllChildrenTypes(data.type);
+            $scope.openTypeSelectionModal(data, index);
+        }
+
         $scope.selectData = function(data, index) {
             //alert("scope = " + $scope.$id + ", data = " + data.type);
             $scope.dataHolder.selectedComponent = data;
@@ -189,24 +191,36 @@
             //console.log("scope = " + $scope.$id);
         };
 
+        $scope.toggleShowChildren = function() {
+            $scope.showChildren = !$scope.showChildren;
+        }
+
         // type selection modal dialog functions
-          $scope.openTypeSelectionModal = function (data) {
+        /*
+        Note! use console.log() immediately before, during & after modal dialog is displayed will prevent the dialog to show on IE 9
+         unless the developer tool window is opened.
+         */
+          $scope.openTypeSelectionModal = function (data, index) {
             $scope.shouldBeOpen = true;
-            $scope.data = data;
+            $scope.newData = data;
+            $scope.newIndex = index;
           };
 
           $scope.closeTypeSelectionModal = function () {
             //$scope.closeMsg = 'I was closed at: ' + new Date();
             $scope.shouldBeOpen = false;
             // add the child component
-            var data = $scope.data;
+            var data = $scope.newData;
             if (data.components==undefined)
                 data.components=[];
             var post = data.components.length + 1;
             var newName = data.name + '_child_' + post;
-            console.log("Adding child =" + newName);
+            //console.log("Adding child =" + newName);
             var newComp = {name: newName, type: $scope.selectedType};
-            data.components.push(newComp);
+            if ($scope.newIndex==-1)
+                data.components.push(newComp);
+            else
+                data.components.splice($scope.newIndex, 0, newComp);
             // open the new component for editing - the new component always get an incremented index number
             $scope.selectData(newComp, $scope.index+1);
             // modal dialog is associated with parent scope
@@ -259,32 +273,37 @@
         <tr height="90%">
             <td>
                 <g:textArea name="modelView" ng-model="pageSourceView"
-                            rows="32" cols="60" style="width:100%; height:100%" required="true"/>
+                            rows="32" cols="60" style="width:100%; height:500px;" required="true"/>
 
             </td>
 
             <td>
 
                 <script type="text/ng-template"  id="tree_item_renderer.html">
-
-                    <input type="checkbox" ng-model="showChildren" ng-show="data.components!=undefined && data.type!=undefined"/>
+                    <span  ng-show="data.components!=undefined && data.components.length>0">
+                        <button style="background:none;border:none; font-size:100%; color:gray;" ng-click="showChildren=!showChildren;"  ng-show="showChildren">&#8211;</button>
+                        <button style="background:none;border:none; font-size:100%; color:gray;" ng-click="showChildren=!showChildren;"  ng-show="!showChildren">+</button>
+                    </span>
+                    <!-- align text if there is no expand/collapse button-->
+                    <span  ng-show="data.components==undefined || data.components.length==0" style="background:none;border:none; font-size:100%">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </span>
+                    <!--input type="checkbox" ng-model="showChildren" ng-show="data.components!=undefined && data.type!=undefined"/-->
                     <span ng-init="index=nextIndex()" ng-click="selectData(data, index)" style="{{componentLabelStyle(index == statusHolder.selectedIndex)}}">{{data.name}} [{{data.type}}]</span>
-                    <button  class="btn btn-mini" ng-click="addChild(data)" ng-show="findAllChildrenTypes(data.type).length>0">+</button>
-                    <button  class="btn btn-mini" ng-click="deleteComponent($parent.$parent.data, $index, index)">-</button>
+                    <button  class="btn btn-mini" style="background:none;" ng-click="addChild(data)" ng-show="findAllChildrenTypes(data.type).length>0">+</button>
+                    <button  class="btn btn-mini" style="background:none;" ng-click="insertSibling($parent.$parent.data, $index)" ng-show="data.type!='page'">&larr;</button>
+                    <button  class="btn btn-mini" style="background:none;" ng-click="deleteComponent($parent.$parent.data, $index, index)"  ng-show="data.type!='page'">-</button>
                     <!--button  class="btn btn-mini" ng-click="deleteChildren(data)" ng-show="data.components.length > 0">--</button-->
                     <!--input type="checkbox" ng-model="(index == statusHolder.selectedIndex)" ng-init="index=index+1" /-->
 
-                    <ul ng-show="showChildren">
+                    <ul ng-show="showChildren" style="list-style: none;">
                         <li ng-repeat="data in data.components"   ng-include="'tree_item_renderer.html'"></li>
                     </ul>
                 </script>
 
-                <div style="width:100%;  overflow-y: scroll; height:500px;" ng-show="pageName != '' && pageName != 'null'">
-                    <input type="checkbox" ng-model="showChildren">
-                    <span ng-show="!showChildren">Expand Page Component Tree for {{pageName}}</span>
-                    <span ng-show="showChildren">Collapse Page Component Tree for {{pageName}}</span>
-                <ul ng-show="showChildren">
-                    <li ng-repeat="data in pageSource"  ng-include="'tree_item_renderer.html'"></li>
+                <div style="width:80%;  overflow-y: auto; height:500px;" ng-show="pageName != '' && pageName != 'null'">
+                <ul style="list-style: none;" ng-init="showChildren=true;">
+                    <li ng-repeat="data in pageSource"   ng-include="'tree_item_renderer.html'"></li>
                 </ul>
                 </div>
             </td>
@@ -294,7 +313,7 @@
                     <div>Selected Component = {{dataHolder.selectedComponent.type}}</div>
                     -->
                     <div ng-repeat="attrName in findRequiredAttrs(dataHolder.selectedComponent.type)">
-                        <label style="text-align:right; width: 30%">{{attrName}}*</label></s></label><input style="text-align:left;" type="text" ng-change="handlePageTreeChange()" ng-model="dataHolder.selectedComponent[attrName]"/>
+                        <label style="text-align:right; width: 30%">{{attrName}}*</label></s></label><input style="text-align:left;" type="text" ng-change="handlePageTreeChange()" ng-readonly="attrName=='type'" ng-model="dataHolder.selectedComponent[attrName]"/>
                     </div>
                     <div ng-repeat="attrName in findOptionalAttrs(dataHolder.selectedComponent.type)">
                         <label style="text-align:right; width: 30%">{{attrName}}</label></s></label><input style="text-align:left;" type="text" ng-change="handlePageTreeChange()" ng-model="dataHolder.selectedComponent[attrName]"/>
