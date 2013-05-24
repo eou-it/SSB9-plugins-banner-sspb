@@ -55,7 +55,11 @@
         <%-- Added Harry --%>
         <script src="/banner-sspb/BannerXE/lib/ng-grid/ng-grid.js"></script>
         <script src="/banner-sspb/BannerXE/lib/angular-ui/angular-ui.js"></script>
-
+        <!-- for modal dialog -->
+        <script src="/banner-sspb/BannerXE/lib/angular-ui/ui-bootstrap-tpls-0.3.0.js"></script>
+        <!--
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
+            -->
         <%--    <g:javascript src="sspbCommon.js"/>
         end Added Harry --%>
 
