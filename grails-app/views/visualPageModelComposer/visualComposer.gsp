@@ -45,6 +45,8 @@
             return $scope.index;
         }
 
+        // used to highlight the selected component in the component tree
+        // TODO this does not work with IE 9
         $scope.componentLabelStyle = function(selected) {
         if (selected)
             return "text-decoration:underline;";
@@ -174,6 +176,8 @@
         $scope.addChild = function(data) {
             //console.log("addChild");
             $scope.validChildTypes = $scope.findAllChildrenTypes(data.type);
+            // TODO make sure the children are expanded if appending a new component
+            //$scope.showChildren = true;
             $scope.openTypeSelectionModal(data, -1);
             // delay adding node until the type selection is made
         };
@@ -281,18 +285,18 @@
 
                 <script type="text/ng-template"  id="tree_item_renderer.html">
                     <span  ng-show="data.components!=undefined && data.components.length>0">
-                        <button style="background:none;border:none; font-size:100%; color:gray;" ng-click="showChildren=!showChildren;"  ng-show="showChildren">&#8211;</button>
-                        <button style="background:none;border:none; font-size:100%; color:gray;" ng-click="showChildren=!showChildren;"  ng-show="!showChildren">+</button>
+                        <button title="Collapse tree" style="background:none;border:none; font-size:100%; color:gray;" ng-click="showChildren=!showChildren;"  ng-show="showChildren">&#x229f;</button>
+                        <button title="Expand tree" style="background:none;border:none; font-size:100%; color:gray;" ng-click="showChildren=!showChildren;"  ng-show="!showChildren">&#x229e;</button>
                     </span>
                     <!-- align text if there is no expand/collapse button-->
                     <span  ng-show="data.components==undefined || data.components.length==0" style="background:none;border:none; font-size:100%">
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     </span>
                     <!--input type="checkbox" ng-model="showChildren" ng-show="data.components!=undefined && data.type!=undefined"/-->
                     <span ng-init="index=nextIndex()" ng-click="selectData(data, index)" style="{{componentLabelStyle(index == statusHolder.selectedIndex)}}">{{data.name}} [{{data.type}}]</span>
-                    <button  class="btn btn-mini" style="background:none;" ng-click="addChild(data)" ng-show="findAllChildrenTypes(data.type).length>0">+</button>
-                    <button  class="btn btn-mini" style="background:none;" ng-click="insertSibling($parent.$parent.data, $index)" ng-show="data.type!='page'">&larr;</button>
-                    <button  class="btn btn-mini" style="background:none;" ng-click="deleteComponent($parent.$parent.data, $index, index)"  ng-show="data.type!='page'">-</button>
+                    <button  title="Insert a sibling component before this component" class="btn btn-mini" style="background:none;" ng-click="insertSibling($parent.$parent.data, $index)" ng-show="data.type!='page'">&larr;</button>
+                    <button  title="Append a child component" class="btn btn-mini" style="background:none;" ng-click="addChild(data)" ng-show="findAllChildrenTypes(data.type).length>0">+</button>
+                    <button  title="Delete this component" class="btn btn-mini" style="background:none;" ng-click="deleteComponent($parent.$parent.data, $index, index)"  ng-show="data.type!='page'">-</button>
                     <!--button  class="btn btn-mini" ng-click="deleteChildren(data)" ng-show="data.components.length > 0">--</button-->
                     <!--input type="checkbox" ng-model="(index == statusHolder.selectedIndex)" ng-init="index=index+1" /-->
 
@@ -301,7 +305,7 @@
                     </ul>
                 </script>
 
-                <div style="width:80%;  overflow-y: auto; height:500px;" ng-show="pageName != '' && pageName != 'null'">
+                <div style="width:80%;  overflow-y: auto; overflow-x: auto; white-space:nowrap; height:500px;" ng-show="pageName != '' && pageName != 'null'">
                 <ul style="list-style: none;" ng-init="showChildren=true;">
                     <li ng-repeat="data in pageSource"   ng-include="'tree_item_renderer.html'"></li>
                 </ul>

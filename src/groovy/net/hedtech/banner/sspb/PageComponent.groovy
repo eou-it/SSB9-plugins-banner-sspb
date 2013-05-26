@@ -605,7 +605,7 @@ var pageID = "$name"
     }
 </style>
 
-   <div ng-controller="CustomPageController"  class="margin">
+   <div ng-controller="CustomPageController"  class="margin" style="height:600px; width:90%; overflow-y: auto; overflow-x: auto;">
    ${label?"<h1>$label</h1>":""}
  """
     }
