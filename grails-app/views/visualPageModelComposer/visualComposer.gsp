@@ -49,7 +49,8 @@
         // TODO this does not work with IE 9
         $scope.componentLabelStyle = function(selected) {
         if (selected)
-            return "text-decoration:underline;";
+            //return "text-decoration:underline;";
+            return "border-style:ridge; border-width:2px;";
         else
             return "";
         }
@@ -244,10 +245,24 @@
 
     </script>
 
+<style>
+div.customPage {
+    overflow-x: auto;
+    overflow-y: auto;
+    margin: 4px;
+    padding: 0;
+    width:99%;
+
+    position: absolute;
+    top: 110px;
+    bottom: 30px;
+    left:0;	/* rtl fix for ie */    }
+</style>
+
 </head>
 <body>
 
-<div ng-controller="VisualPageComposerController">
+<div ng-controller="VisualPageComposerController" class="customPage">
 
     <label>Load Page</label>
     <g:select name="constantName"
@@ -268,16 +283,16 @@
 
     <input type="button" ng-click="getPageSource()" value="Reload Page Source" />
     <input type="hidden" name="id" value="${pageModel.pageInstance?.id}"/>
-    <table>
+    <table style="height:80%;">
         <tr>
             <th align = left style="width:30%">Page Source View</th>
-            <th align = left style="width:40%">Component Tree View</th>
-            <th align = left style="width:30%">Component Property View</th>
+            <th align = left style="width:30%">Component Tree View</th>
+            <th align = left style="width:40%">Component Property View</th>
         </tr>
-        <tr height="90%">
+        <tr height="99%">
             <td>
                 <g:textArea name="modelView" ng-model="pageSourceView"
-                            rows="32" cols="60" style="width:100%; height:500px;" required="true"/>
+                            cols="60" rows="30" style="width:100%; height:auto;" required="true"/>
 
             </td>
 
@@ -305,7 +320,7 @@
                     </ul>
                 </script>
 
-                <div style="width:80%;  overflow-y: auto; overflow-x: auto; white-space:nowrap; height:500px;" ng-show="pageName != '' && pageName != 'null'">
+                <div style="width:100%;  overflow-y: auto; overflow-x: auto; white-space:nowrap;" ng-show="pageName != '' && pageName != 'null'">
                 <ul style="list-style: none;" ng-init="showChildren=true;">
                     <li ng-repeat="data in pageSource"   ng-include="'tree_item_renderer.html'"></li>
                 </ul>
@@ -343,7 +358,7 @@
     </div>
 
     <g:textArea name="statusMessage" readonly="true" value="${pageModel.status}"
-                rows="3" cols="120" style="width:99%; height:50%"/>
+                rows="3" cols="120" style="width:99%; height:10%"/>
 
 </div>
 </body>

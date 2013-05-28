@@ -591,9 +591,20 @@ var pageID = "$name"
 </script>
 
 
-<style type="text/css">
-    .scrollable {  overflow-y:scroll; overflow-x:auto;  }
+<style>
+div.customPage {
+    overflow-x: auto;
+    overflow-y: auto;
+    margin: 4px;
+    padding: 0;
+    width:99%;
+
+    position: absolute;
+    top: 110px;
+    bottom: 30px;
+    left:0;	/* rtl fix for ie */    }
 </style>
+
 </head>
 <body>
 <style>
@@ -605,7 +616,7 @@ var pageID = "$name"
     }
 </style>
 
-   <div ng-controller="CustomPageController"  class="margin" style="height:600px; width:90%; overflow-y: auto; overflow-x: auto;">
+   <div ng-controller="CustomPageController"  class="customPage">
    ${label?"<h1>$label</h1>":""}
  """
     }
