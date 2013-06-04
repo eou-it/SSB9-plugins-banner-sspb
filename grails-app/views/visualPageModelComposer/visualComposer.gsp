@@ -16,8 +16,11 @@
     <meta name="menuBaseURL" content="/sspb/sspb"/>
     <meta name="menuDefaultBreadcrumbId" content=""/>
 
+
+    <script src="/banner-sspb/js/pbDirectives.js"></script>
+
     <script type="text/javascript">
-     var myCustomServices = ['ngResource', 'ui.bootstrap'];
+     var myCustomServices = ['ngResource', 'ui.bootstrap', 'pagebuilder.directives'];
 
     // remove additional properties added by Angular resource when pretty print page source
     function JSONFilter(key, value) {
@@ -88,6 +91,23 @@
             return attrs;
         }
 
+        // return all attributes (required and optional) for a given component type
+        // return a array of map of {name:"", required: isRequired}
+        $scope.findAllAttrs = function(type) {
+            $scope.dataHolder.allAttrs =[];
+            // insert required attributes
+            var attrs = $scope.findRequiredAttrs(type);
+            angular.forEach(attrs, function(attrName) {
+                $scope.dataHolder.allAttrs.push({name:attrName, required:true});
+            });
+
+            // insert optional attributes
+            var optAttrs = $scope.findOptionalAttrs(type);
+            angular.forEach(optAttrs, function(attrName) {
+                $scope.dataHolder.allAttrs.push({name:attrName, required: false} );
+            });
+        }
+
         $scope.findRequiredChildrenTypes = function(type) {
             var children = [];
             // add required attribute for all components
@@ -130,6 +150,7 @@
         $scope.resetSelected = function() {
             $scope.dataHolder.selectedComponent = undefined;
             $scope.statusHolder.selectedIndex = 0;
+            $scope.dataHolder.allAttrs = [];
         }
 
         // recursively check if component1 is a direct or indirect child of component
@@ -193,6 +214,9 @@
             //alert("scope = " + $scope.$id + ", data = " + data.type);
             $scope.dataHolder.selectedComponent = data;
             $scope.statusHolder.selectedIndex = index;
+            // update the current selected component's property list
+            $scope.findAllAttrs(data.type);
+
             //console.log("scope = " + $scope.$id);
         };
 
@@ -241,6 +265,8 @@
             backdropFade: true,
             dialogFade:true
           };
+
+          $scope.tMap={a:'1', b:'2'};
      }
 
     </script>
@@ -282,6 +308,7 @@ div.customPage {
     <input type="text" name="constantName" ng-model="pageName" required/>
 
     <input type="button" ng-click="getPageSource()" value="Reload Page Source" />
+    <button ng-click='handlePageTreeChange()'>Refresh Tree View</button>
     <input type="hidden" name="id" value="${pageModel.pageInstance?.id}"/>
     <table style="height:80%;">
         <tr>
@@ -331,16 +358,25 @@ div.customPage {
                     <!--
                     <div>Selected Component = {{dataHolder.selectedComponent.type}}</div>
                     -->
-                    <div ng-repeat="attrName in findRequiredAttrs(dataHolder.selectedComponent.type)">
-                        <label style="text-align:right; width: 30%">{{attrName}}*</label></s></label><input style="text-align:left;" type="text" ng-change="handlePageTreeChange()" ng-readonly="attrName=='type'" ng-model="dataHolder.selectedComponent[attrName]"/>
-                    </div>
-                    <div ng-repeat="attrName in findOptionalAttrs(dataHolder.selectedComponent.type)">
-                        <label style="text-align:right; width: 30%">{{attrName}}</label></s></label><input style="text-align:left;" type="text" ng-change="handlePageTreeChange()" ng-model="dataHolder.selectedComponent[attrName]"/>
+
+                    <div ng-repeat="attr in dataHolder.allAttrs">
+                        <label style="text-align:right; width: 30%">{{attr.name}}<span ng-show="attr.required">*</span></label>
+                        <span ng-switch on="attr.name" >
+                            <pb-Map ng-switch-when="parameters" label='Edit parameters for {{dataHolder.selectedComponent.name}}' map='dataHolder.selectedComponent[attr.name]' pb-change="handlePageTreeChange()"></pb-Map>
+                            <input ng-switch-default style="text-align:left;" type="text" ng-change="handlePageTreeChange()" ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
+                        </span>
                     </div>
                 </div>
-            </td>
+             </td>
         </tr>
+
+
+
     </table>
+
+
+
+
 
     <!-- type selection modal body-->
     <div modal="shouldBeOpen"  options="typeSelectionModalOpts">
