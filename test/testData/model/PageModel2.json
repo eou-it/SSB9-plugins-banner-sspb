@@ -55,6 +55,7 @@
                     "allowNew" : true,
                     "allowModify" : true,
                     "allowReload":true,
+                    "allowDelete":true,
                     "pageSize" : 3,
                     "components": [
                         {

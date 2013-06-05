@@ -8,10 +8,6 @@ class CompileService {
     static def dataSetIDsIncluded =[]
     static def uiControlIDsIncluded = []
 
-    //static def dataSets=[]
-    static def uiControls=[]
-
-
 //major step 1.
     //TODO develop page validation
     /*  parse, normalize and validate page model
@@ -26,6 +22,9 @@ class CompileService {
         def errors=[]
         def valid = true
         def pageValidation = [:]
+        //reset global arrays
+        dataSetIDsIncluded =[]
+        uiControlIDsIncluded = []
      /*
         try {
             def jsonResult = slurper.parseText(json)
@@ -277,11 +276,11 @@ class CompileService {
                 dataSetIDsIncluded.each { pcId ->
                     result=result.replace("\$${pcId}$pattern.from","\$scope.${pcId}$pattern.to" )
                 }
-                if (uiControlIDsIncluded.contains(pageComponent.ID))  {
-                    println "onEvent expression for $pageComponent.ID $expr -> $result"
-                } else {
-                    println "Warning: onEvent expression for $pageComponent.ID not changed."
-                }
+            }
+            if (result == expr) {
+                println "Warning: onEvent expression for $pageComponent.ID not changed."
+            } else {
+                println "onEvent expression for $pageComponent.ID $expr -> $result"
             }
         }
         return result

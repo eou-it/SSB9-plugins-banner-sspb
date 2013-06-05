@@ -7,7 +7,6 @@ import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
 
 class PageUtilService {
 
-    def compileService
     def extData = System.getProperties().get('SSPB_DATA_DIR')
 
     void exportAllToFile(String path) {
@@ -23,12 +22,12 @@ class PageUtilService {
         }
     }
 
-    /* TODO fix
     void importAllFromFile(String path) {
         new File(path).eachFileMatch(~/.*.json/) {   file ->
             def modelView = file.getText()
             def pageName = file.name.substring(0,file.name.lastIndexOf(".json"))
-            def page = new Page(pageName: pageName, modelView: modelView)
+            println "Importing $pageName"
+            def page = new Page(constantName: pageName, modelView: modelView)
             if (Page.findByConstantName(pageName)) {
                 page.constantName+=".imp.dup"
                 def page1=Page.findByConstantName(page.constantName)
@@ -41,23 +40,29 @@ class PageUtilService {
             page = page.save(flush: true)
         }
     }
-    */
 
-    void compileAll(String pattern) {
+    def compileAll(String pattern) {
         def pat = pattern?pattern:"%"
-        Page.findByConstantNameIlike(pat).each { page ->
-            def validateResult =  compileService.preparePage(page.modelView)
+        def pages = Page.findAllByConstantNameLike(pat)
+        def errors =[]
+        pages.each { page ->
+            println "Compiling $page.constantName"
+            def validateResult =  CompileService.preparePage(page.modelView)
             def statusMessage
+
             if (validateResult.valid) {
-                page.compiledController=compileService.compileController(validateResult.pageComponent)
-                page.compiledView = compileService.compile2page(validateResult.pageComponent)
+                page.compiledController=CompileService.compileController(validateResult.pageComponent)
+                page.compiledView = CompileService.compile2page(validateResult.pageComponent)
                 statusMessage = "Page is compiled\n"
                 page=page.save(flush: true)
             }  else {
-                statusMessage = "Page compiled with Errors:\n ${validateResult.error.join('\n')}"
+                def error = [pageName: page.constantName, errorMessage:validateResult.error.join('\n')]
+                statusMessage = "Page compiled with Errors:\n ${error.errorMessage}"
+                errors <<error
             }
             println statusMessage
         }
+        errors
     }
 
     void updateProperties( Map properties, String baseName){

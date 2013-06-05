@@ -7,7 +7,7 @@
            "type": "resource",
            "name": "EmployeeRes",
            "binding": "rest",
-           "resource": "/banner-sspb/virt/employee"
+           "resource": "$rootWebApp/api/virtualDomains.employee"
        },
        {
             "type":"flow",
