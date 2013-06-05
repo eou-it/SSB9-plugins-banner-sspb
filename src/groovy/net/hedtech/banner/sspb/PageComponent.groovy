@@ -8,6 +8,8 @@
  */
 package net.hedtech.banner.sspb
 
+import javax.annotation.PostConstruct
+
 class PageComponent {
     final static COMP_TYPE_PAGE = "page"
     final static COMP_TYPE_FORM = "form"
@@ -56,7 +58,9 @@ class PageComponent {
     final static VAR_PRE = '$'  //page model variable prefix
     final static VAR_RES = '$$' // page model reserved variable prefix
 
+    final static NEXT_BUTTON_DEFAULT_LABEL = "Next"
 
+    final static translatableAttributes = ["title","label","submitLabel","nextButtonLabel","placeholder","value"]
 
     String type        // -> Generic property for component type
     String name        // -> Generic property. Maybe use componentId?
@@ -81,8 +85,8 @@ class PageComponent {
     // flow control
     String sequence
     Boolean activated = false
-    def nextButtonLabel="Next"
-    def lastButtonLabel="Finish"
+    def nextButtonLabel=NEXT_BUTTON_DEFAULT_LABEL //"Next"    //translated in tranGlobalInit
+    //def lastButtonLabel=USE_DEFAULT //"Finish"  //seems not to be in use
     def submitLabel = ""
     //String condition
 
@@ -145,8 +149,63 @@ class PageComponent {
     def activeFlow = ""     // the initially activated flow
     def formSet = []        // the set of all form names on this page
 
+    def rootProperties = [:]    // the key/value properties (set on page component)
+    def globalProperties = [:]  // properties shared in pages
+
     // map the validation key to angular attributes ? use HTML 5 validation instead with form
     // def validationKeyMap = ["minlength":"ngMinlength", "maxlength":"ngMaxlength", "pattern":"ngPattern"]
+
+    def tranSourceValue() {
+        def result = sourceValue
+        result.each {
+            def key ="${CompileService.getComponentNamePath(this)}.sourceValue.${it."$valueKey"}"
+            def label=it."$labelKey"
+            label = tran(key,label)
+            //println "$key = $label"
+            it."$labelKey"=label
+        }
+    }
+
+    def tran(String prop, Boolean useTag=false) {
+        def defTranslation = this[prop]
+        if (defTranslation && translatableAttributes.contains(prop))  {
+            def key ="${CompileService.getComponentNamePath(this)}.$prop"
+            root.rootProperties[key] = defTranslation
+            if (useTag)
+                return " <g:message code=\"$key\" default: \"$defTranslation\"/>"
+            else
+                return "\${message(code: '$key', default: '$defTranslation')}"
+        }
+        return ""
+    }
+
+    def tran(String key, String message, List args=[]) {
+        root.rootProperties[key] = message
+        if (args.empty)
+            return "\${message(code: '$key', default: '$message')}"
+        else
+            return "\${message(code: '$key', args: $args, default: '$message')}"
+    }
+
+
+    def tranGlobal(String key, String text = null, List args = [], Boolean useTag = false) {
+        key = "global.$key"
+        if (text)
+            root.globalProperties[key] = text
+        else
+            text = root.globalProperties[key]
+        if (text) {
+            if (useTag)
+                return " <g:message code=\"$key\" default: \"$text\"/>"
+            else
+            if (args.empty)
+                return "\${message(code: '$key', default: '$text')}"
+            else
+                return "\${message(code: '$key', args: $args, default: '$text')}"
+        }
+        return ""
+    }
+
 
     def recordControlPanel()  {
         def dataSet    =  "${name}DS"
@@ -157,22 +216,22 @@ class PageComponent {
         """
         <!-- pagination -->
         <button ng-disabled="${uiControl}.currentPage == 0" ng-click="${uiControl}.currentPage=${uiControl}.currentPage - 1">
-                Previous
+                ${tranGlobal("page.previous.label","Previous")}
         </button>
             {{${uiControl}.currentPage+1}}/{{${uiControl}.numberOfPages()}}
         <button ng-disabled="${uiControl}.currentPage >= ${arrayName}.length/${uiControl}.pageSize - 1" ng-click="${uiControl}.currentPage=${uiControl}.currentPage + 1">
-                Next
+                ${tranGlobal("page.next.label","Next")}
         </button><br>
         """
 
         if (allowNew) {
-            result += """ <button ng-click="${dataSet}.add()"> Add New  </button>"""
+            result += """ <button ng-click="${dataSet}.add()"> ${tranGlobal("newRecord.label","Add New")}  </button>"""
         }
         if (allowModify || allowDelete) {
-            result += """ <button ng-click="${dataSet}.save()"> Save </button>"""
+            result += """ <button ng-click="${dataSet}.save()"> ${tranGlobal("save.label","Save")} </button>"""
         }
         if (allowReload) {
-            result += """ <button ng-click="${dataSet}.load()"> Refresh </button> """
+            result += """ <button ng-click="${dataSet}.load()"> ${tranGlobal("refresh.label","Refresh")} </button> """
         }
         return result
     }
@@ -191,7 +250,7 @@ class PageComponent {
 
         // add a delete checkbox column if allowDelete is true
         if (allowDelete) {
-            thead = "<th>Delete</th>"
+            thead = "<th>${tranGlobal("delete.label","Delete")}</th>"
             items = """
             <td>
              <input ng-click="${dataSet}.delete($GRID_ITEM)" type="checkbox" style="width:20%"/>
@@ -202,7 +261,7 @@ class PageComponent {
         components.each { child ->
             child.parent = this
             //get the labels from child components
-            thead+="<th>$child.label</th>"
+            thead+="<th>${child.tran("label")}</th>"
             //get the child components
             child.label=""
             items+="<td>${child.compileComponent("", depth)}</td>\n"
@@ -231,28 +290,21 @@ class PageComponent {
 
         def result = ""
         if (label)
-            result += "<label>$label</label>\n"
+            result += "<label>${tran("label")}</label>\n"
         result +="""<table ng-repeat="$repeat | startFrom:${uiControl}.currentPage * ${uiControl}.pageSize | limitTo:${uiControl}.pageSize" >\n"""
 
-        // add a delete checkbox column if allowDelete is true
-        // def PageComponent delete = new PageComponent()
-        //*
         if (allowDelete) {
             result += """
             <tr>
                 <td style="text-align:right">
                     <input ng-click="${dataSet}.delete($GRID_ITEM)" type="checkbox" />
                 </td>
-                <td style="text-align:left"> <strong>Delete</strong></td>
+                <td style="text-align:left"> <strong>${tranGlobal("delete.label","Delete")}</strong></td>
              </tr>
             """
         }
-        //*/
         // generate all table columns from the data model
         components.each { child ->
-            //def child=new PageComponent(it)
-            //child.parent = this
-            //get the labels from child components
             //get the child components
             result+="${child.compileComponent("", depth)}\n"
         }
@@ -275,7 +327,7 @@ class PageComponent {
         def repeat = "$LIST_ITEM in ${dataSet}.data"
 
         if (label)
-            txt += "<label>$label</label>"
+            txt += "<label>${tran("label")}</label>"
         // handle click event
         def click_txt=""
         if (onClick)
@@ -295,7 +347,7 @@ class PageComponent {
         def arrayName = "${name}DS.data"
         def result
         def ngModel = name
-        def labelTxt = label? """<label for="${name?name:model}">$label</label>""":""
+        def labelTxt = label? """<label for="${name?name:model}">${tran("label")}</label>""":""
         def updateTxt = ""
         //def placeholderStr = placeholder?"""<option value="">$placeholder</option>""":""
         def initTxt = value?"""ng-init="\$parent.$ngModel='$value'" """:""
@@ -320,7 +372,7 @@ class PageComponent {
                 value="{{$SELECT_ITEM.$valueKey}}"/> {{$SELECT_ITEM.$labelKey}}
         </div>"""
         if(parent.type == COMP_TYPE_DETAIL) {
-            result = """<tr><td style="text-align:right; width: 15%"><strong>${label?"$label:":""}</strong></td><td style="text-align:left;">
+            result = """<tr><td style="text-align:right; width: 15%"><strong>${tran("label")}</strong></td><td style="text-align:left;">
                              $radio
                              </td></tr>"""
         } else {
@@ -341,7 +393,7 @@ class PageComponent {
         def MAX_HEADING = 6
         if (label) {
             def headingLevel = (depth < MAX_HEADING-1)? depth+1: MAX_HEADING
-            heading = "<h$headingLevel>$label</h$headingLevel><br>"
+            heading = "<h$headingLevel>${tran("label")}</h$headingLevel><br>"
         }
 
 
@@ -356,9 +408,9 @@ class PageComponent {
                 def arrayName = "${name}DS.data"
                 def result
                 def ngModel = name
-                def labelTxt = label? """<label for="${name?name:model}">$label</label>""":""
+                def labelTxt = label? """<label for="${name?name:model}">${tran("label")}</label>""":""
                 def updateTxt = ""
-                def placeholderStr = placeholder?"""<option value="">$placeholder</option>""":""
+                def placeholderStr = placeholder?"""<option value="">${tran("placeholder")}</option>""":""
 
                 if(parent.type == COMP_TYPE_DETAIL) {
                     ngModel =  "$GRID_ITEM.${model}"
@@ -374,7 +426,7 @@ class PageComponent {
                                    $placeholderStr
                                 </select>"""
                 if(parent.type == COMP_TYPE_DETAIL) {
-                    result = """<tr><td style="text-align:right; width: 15%"><strong>${label?"$label:":""}</strong></td><td style="text-align:left;">
+                    result = """<tr><td style="text-align:right; width: 15%"><strong>${tran("label")}</strong></td><td style="text-align:left;">
                              $select
                              </td></tr>"""
                 } else {
@@ -409,13 +461,14 @@ class PageComponent {
                 """
                 return txt
             case COMP_TYPE_LITERAL:
-                return CompileService.parseLiteral(value) + "\n"
+                //println tran(CompileService.getComponentNamePath(this)+".value",CompileService.parseLiteral(value) ) + "\n"
+                return tran(CompileService.getComponentNamePath(this)+".value",CompileService.parseLiteral(value) ) + "\n"
             case COMP_TYPE_DISPLAY:
                 def ret = ""
                 if (parent.type == COMP_TYPE_DETAIL) {
                     ret += "<tr>"
                     // for display in detail control take the parent model, and make a table row
-                    ret += """<td  style="text-align:right; width: 15%"><strong> ${label?"$label:":""}</strong></td><td style="text-align:left;">
+                    ret += """<td  style="text-align:right; width: 15%"><strong> ${tran("label")}</strong></td><td style="text-align:left;">
                               {{$GRID_ITEM.${model}}}</td>"""
                     ret += "</tr>"
                 } else if (parent.type == COMP_TYPE_GRID) {
@@ -424,7 +477,7 @@ class PageComponent {
                     // otherwise the value is used
                     // TODO consolidate value and sourceModel?
                     // TODO is parseVariable still working after using DataSet as generic data object?
-                    ret += label?"<label>$label:</label>":"" + value?"value=\"{{${CompileService.parseVariable(value)}}}\"":""
+                    ret += label?"<label>${tran("label")}</label>":"" + value?"value=\"{{${CompileService.parseVariable(value)}}}\"":""
                 return ret
             case COMP_TYPE_LINK:
                 def ret = "<div>"
@@ -432,7 +485,7 @@ class PageComponent {
                 // otherwise the value is used
                 // TODO consolidate value and sourceModel?
                 // TODO is parseVariable still working after using DataSet as generic data object?
-                ret += label?"<label>$label</label>":""
+                ret += label?"<label>${tran("label")}</label>":""
                 ret +=  """<a href="$url">$desc</a></div>"""
                 return ret
 
@@ -447,7 +500,7 @@ class PageComponent {
                 if (validation) {
                     validateStr = validation.collect { k,v -> "$k=\"$v\"" }.join(' ')
                 }
-                def attributes = "$validateStr ${required?"required":""} ${placeholder?"placeholder=\"$placeholder\"":""}".trim()
+                def attributes = "$validateStr ${required?"required":""} ${placeholder?"placeholder=\"${tran("placeholder")}\"":""}".trim()
                 def typeString= "type=\"$t\""
                 if (type == COMP_TYPE_DATETIME)  //TODO localize format
                     typeString=" ui-date=\"{dateFormat:'dd-M-yy', changeMonth: true, changeYear: true}\" "
@@ -460,7 +513,7 @@ class PageComponent {
                           ng-change="\$parent.${parent.name}DS.setModified($GRID_ITEM)" $attributes />
                           """
                 else if (parent.type==COMP_TYPE_DETAIL) {
-                    txt = """<tr><td style="text-align:right; width: 15%"><strong>${label?"$label:":""}</strong></td>"""
+                    txt = """<tr><td style="text-align:right; width: 15%"><strong>${tran("label")}</strong></td>"""
                     txt+= """<td style="text-align:left;">
                           <input $typeString   name="${name?name:model}" id="${name?name:model}" ${parent.allowModify?"":"readonly"}
                           ng-model="$GRID_ITEM.${model}"
@@ -470,12 +523,11 @@ class PageComponent {
                 } else {
                     // TODO do we need a value field if ng-model is defined?
                     attributes += " ${readonly?"readonly":""}"
-                    txt =  """<label for="${name?name:model}">$label</label>
+                    txt =  """<label for="${name?name:model}">${tran("label")}</label>
                               <input type="$t"   name="${name?name:model}" id="${name?name:model}" ${value?"value=\"{{${CompileService.parseVariable(value)}}}\"":"" }
                               $attributes """
                     if (model && !readonly) {
                         if (binding != BINDING_PAGE)
-                            //txt+= "ng-model=\"_${modelRoot.toLowerCase()}_${ID}"
                             txt+="ng-model=\"${ID}DS.currentRecord"    // use DataSet current record
                         else
                             // there may be a value instead of a model
@@ -506,16 +558,16 @@ class PageComponent {
                         println "****WARNING**** check if  property ${name}_onUpdate() is generated - possibly an inconsistent"
                     }
                     // if not in a table, add label for checkbox
-                    return txt +  """ng-model="$model" ${readonly?"readonly":""} /> <label for="${name?name:model}">$label</label>
+                    return txt +  """ng-model="$model" ${readonly?"readonly":""} /> <label for="${name?name:model}">${tran("label")}</label>
                     """
                 }
             case COMP_TYPE_SUBMIT:
-                return """<input type="submit" value="$label"/>
+                return """<input type="submit" value="${tran("label")}"/>
                 """
             case COMP_TYPE_BUTTON:
                 // TODO for SQL generate the action ID for each method, assign ID to each click action
                 if (onClick)
-                    return """<button ng-click="${name}_onClick()">$label</button>\n"""
+                    return """<button ng-click="${name}_onClick()">${tran("label")}</button>\n"""
 
             case COMP_TYPE_RESOURCE:      //fall through
             case COMP_TYPE_DATA:
@@ -538,10 +590,21 @@ class PageComponent {
                 def nextTxt = ""
                 if (root.flowDefs || submit) {
                     def labelStr = ""
-                    if (submitLabel)
-                        labelStr+=submitLabel
-                    if (root.flowDefs)
-                        labelStr += labelStr?" and $nextButtonLabel":nextButtonLabel
+                    if (root.flowDefs) {
+                        if (submitLabel) {
+                            def key ="${CompileService.getComponentNamePath(this)}.submitAndNextLabel"
+                            labelStr = "$submitLabel and $nextButtonLabel"
+                            tran(key,labelStr)
+                        } else {
+                            if ( nextButtonLabel == NEXT_BUTTON_DEFAULT_LABEL)
+                                labelStr = tranGlobal("flow.next.label",NEXT_BUTTON_DEFAULT_LABEL)
+                            else
+                                labelStr = tran("nextButtonLabel")
+                        }
+                        //labelStr += labelStr?" and $nextButtonLabel":nextButtonLabel
+                    } else {
+                        labelStr = tran('submitLabel')
+                    }
                     nextTxt += """<div>
                     <input type="submit" value="$labelStr"/>
                     </div>
@@ -569,7 +632,7 @@ class PageComponent {
 
 <!--meta name="layout" content="simple"/-->
 
-<title>$title</title>
+<title>${tran("title")}</title>
 
 <script>
 //Test New Compile
@@ -602,11 +665,13 @@ var pageID = "$name"
         margin-top: 10px;
         margin-left:10px;
         margin-right:10px;
+        overflow-y:scroll;
+        overflow-x:auto;
     }
 </style>
 
    <div ng-controller="CustomPageController"  class="margin">
-   ${label?"<h1>$label</h1>":""}
+   ${label?"<h1>${tran("label")}</h1>":""}
  """
     }
 

@@ -1,10 +1,14 @@
 package net.hedtech.banner.sspb
 
-import net.hedtech.banner.sspb.Page
+
+import org.springframework.context.ApplicationContext
+import org.codehaus.groovy.grails.web.context.ServletContextHolder
+import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
 
 class PageUtilService {
 
-    def compileAjsService
+    def compileService
+    def extData = System.getProperties().get('SSPB_DATA_DIR')
 
     void exportAllToFile(String path) {
         Page.findAll().each { page ->
@@ -42,11 +46,11 @@ class PageUtilService {
     void compileAll(String pattern) {
         def pat = pattern?pattern:"%"
         Page.findByConstantNameIlike(pat).each { page ->
-            def validateResult =  compileAjsService.preparePage(page.modelView)
+            def validateResult =  compileService.preparePage(page.modelView)
             def statusMessage
             if (validateResult.valid) {
-                page.compiledController=compileAjsService.compileController(validateResult.pageComponent)
-                page.compiledView = compileAjsService.compile2page(validateResult.pageComponent)
+                page.compiledController=compileService.compileController(validateResult.pageComponent)
+                page.compiledView = compileService.compile2page(validateResult.pageComponent)
                 statusMessage = "Page is compiled\n"
                 page=page.save(flush: true)
             }  else {
@@ -55,4 +59,22 @@ class PageUtilService {
             println statusMessage
         }
     }
+
+    void updateProperties( Map properties, String baseName){
+        def bundleLocation = "$extData/${baseName}.properties"
+        def bundle = new File(bundleLocation)
+        def temp = new Properties()
+        if (bundle.exists())
+            new org.springframework.util.DefaultPropertiesPersister().load(temp, new InputStreamReader( new FileInputStream(bundle), "UTF-8"))
+        temp.putAll(properties)
+        new org.springframework.util.DefaultPropertiesPersister().store( temp, new OutputStreamWriter( new FileOutputStream(bundle),"UTF-8" ), "")
+    }
+
+    def reloadBundles = {
+        ApplicationContext applicationContext = (ApplicationContext) ServletContextHolder.getServletContext()
+                                                .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT);
+        def messageSource = applicationContext.getBean("messageSource")
+        messageSource.clearCache()
+    }
+
 }

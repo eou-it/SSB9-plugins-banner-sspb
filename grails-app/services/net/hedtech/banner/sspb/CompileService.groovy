@@ -153,6 +153,10 @@ class CompileService {
     // output
     def static compile2page(pageComponent) {
         def pageTxt=pageComponent.compileComponent("")
+        def pageUtilService = new PageUtilService()
+        pageUtilService.updateProperties(pageComponent.rootProperties,"pages")
+        pageUtilService.updateProperties(pageComponent.globalProperties,"pageGlobal")
+        pageUtilService.reloadBundles()
         return pageTxt
     }
 
@@ -214,7 +218,7 @@ class CompileService {
             // can specify resource relative to current application like $rootWebApp/rest/emp
             dataSource = "'${dataComponent.resource}'".replace("'\$rootWebApp/", "rootWebApp+'")
             if (dataSource.startsWith("'/\$rootWebApp")) {
-                throw new Exception("Compiling Reource: Expected \$rootWebApp/relativePath, got /\$rootWebApp/relativePath")
+                throw new Exception("Compiling Resource: Expected \$rootWebApp/relativePath, got /\$rootWebApp/relativePath")
             }
             // transform parameters to angular $scope variable
             queryParameters = getQueryParameters(component, dataComponent)
@@ -481,7 +485,7 @@ class CompileService {
          } else if ((pageComponent.type == PageComponent.COMP_TYPE_SELECT || pageComponent.type == PageComponent.COMP_TYPE_RADIO) && pageComponent.sourceValue) {
              // static select: handle sourceValue for select sourceValue is already in javascript format
              pageComponent.sourceModel = pageComponent.name
-             def dataComponent = [static: true, data: groovy.json.JsonOutput.toJson(pageComponent.sourceValue)]
+             def dataComponent = [static: true, data: groovy.json.JsonOutput.toJson(pageComponent.tranSourceValue())]
              def uiControlCode =  getUIControlCode (pageComponent, dataComponent)
              dataSetIDsIncluded<<pageComponent.ID   //remember  - used to replace variable names
              uiControlIDsIncluded<<pageComponent.ID

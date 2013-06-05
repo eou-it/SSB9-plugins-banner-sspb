@@ -10,6 +10,17 @@ if (extConfig) {
 } else
     println "SSPB_CONFIG_DIR environment variable not defined. Using default settings."
 
+// maintain properties for custom pages external to application
+def extData = System.getProperties().get('SSPB_DATA_DIR');
+
+if (extData) {
+    println "Using data directory $extData"
+} else  {
+    println "SSPB_DATA_DIR System variable not defined. Please define."
+    throw new Exception("Please set SSPB_DATA_DIR as location for external properties. E.g. add -DSSPB_DATA_DIR=\"C:/temp\" in JAVA_OPT")
+}
+
+
 log4j = {
     // Example of changing the log pattern for the default console
     // appender:
