@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {
     "type": "page",
     "name": "EmployeePage",
@@ -56,6 +55,7 @@
                     "allowNew" : true,
                     "allowModify" : true,
                     "allowReload":true,
+                    "allowDelete":true,
                     "pageSize" : 3,
                     "components": [
                         {
@@ -87,93 +87,3 @@
         }
     ]
 }
-=======
-{
-    "type": "page",
-    "name": "EmployeePage",
-    "title": "Employ Details page",
-    "components": [
-        {
-            "type": "resource",
-            "name": "Empdept",
-            "binding": "rest",
-            "resource": "$rootWebApp/virt/empdept"
-        },
-        {
-            "type": "resource",
-            "name": "Dept",
-            "binding": "rest",
-            "resource": "$rootWebApp/virt/department"
-        },
-        {
-            "type": "form",
-            "name": "SelectDepartment",
-            "label": "Search a Department",
-            "components": [
-                {
-                    "type":"select",
-                    "name":"SelectDept",
-                    "label":"Department",
-                    "sourceModel":"Dept",
-                    "labelKey": "DNAME",
-                    "valueKey": "DEPTNO"
-                },
-                {
-                    "type":"button",
-                    "name":"ApplyDepartment",
-                    "label":"Apply",
-                    "onClick": "$EmployeeDetails.$load()"
-                },
-                {
-                    "type":"button",
-                    "name":"ResetDepartment",
-                    "label":"Show All Departments",
-                    "onClick": "$EmployeeDetails.$loadAll()"
-                }
-            ]
-        },
-        {
-            "type": "form",
-            "name": "EditEmpList",
-            "label" : "Edit Employees",
-            "components": [
-                {
-                    "type": "grid",
-                    "model": "Empdept",
-                    "parameters" : {"DEPTNO":"$SelectDept"},
-                    "name": "EmployeeDetails",
-                    "allowNew" : true,
-                    "allowModify" : true,
-                    "allowReload":true,
-                    "pageSize" : 3,
-                    "components": [
-                        {
-                            "type": "display",
-                            "model": "id",
-                            "label": "Id"
-                        },
-                        {
-                            "type": "text",
-                            "model": "ENAME",
-                            "label": "Employee Name"
-                        },
-                        {
-                            "type": "radio",
-                            "model": "DEPTNO",
-                            "label": "Department Name",
-                            "sourceModel":"Dept",
-                            "labelKey":"DNAME",
-                            "valueKey":"DEPTNO"
-                        },
-                        {
-                            "type": "datetime",
-                            "model": "HIREDATE",
-                            "label": "Hire Date"
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
-}
->>>>>>> cae5c790ee4bdc0d0f74fc97f455f0dcf753441a

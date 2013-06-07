@@ -8,13 +8,13 @@
             "type": "resource",
             "name": "Todo",
             "binding": "rest",
-            "resource": "/StudentRegistrationSsb/ssb/todo"
+            "resource": "$rootWebApp/rest/todo"
         },
         {
             "type": "resource",
             "name": "Dept",
             "binding": "rest",
-            "resource": "$rootWebApp/virt/department"
+            "resource": "$rootWebApp/api/virtualDomains.department"
         },
         {
             "type":"link",
