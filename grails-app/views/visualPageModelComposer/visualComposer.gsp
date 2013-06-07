@@ -317,14 +317,12 @@
             // send the page source as text as expected by the compiler
             $scope.pageOneSource = this.Resource1.save({pageName:$scope.pageName, source:$scope.pageSourceView }, function(response) {
                 //console.log("save response = " + response.statusCode + ", " +response.statusMessage);
-                if (response.statusCode == 0)  {
-                    alert(response.statusMessage);
+                if (response.statusCode == 0)
                     $scope.pageStatus.message = response.statusMessage;
-                }
-                else {
-                    alert(response.statusMessage + " Page Validation Error = " + response.pageValidationResult.errors);
-                    $scope.pageStatus.message = response.statusMessage + " Page Validation Error = " + response.pageValidationResult.errors;
-                }
+                else
+                    $scope.pageStatus.message = response.statusMessage + " Page Validation Error:\n" + response.pageValidationResult.errors;
+
+                alert($scope.pageStatus.message);
             });
 
           }

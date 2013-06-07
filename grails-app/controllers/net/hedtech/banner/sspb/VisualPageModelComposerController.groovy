@@ -70,7 +70,7 @@ class VisualPageModelComposerController {
                 ret = [statusCode:0, statusMessage:"Page has been compiled and ${overwrite?'updated':'saved'} successfully."]
             } else {
                 ret = [statusCode: 2, statusMessage:"Page validation error. Page is not saved."]
-                ret << [pageValidationResult:[errors: "\nPage model validation error:\n" + validateResult.error.join('\n')] ]
+                ret << [pageValidationResult:[errors: validateResult.error.join('\n')] ]
             }
         } else
             ret = [statusCode: 1, statusMessage:"Page source is empty. Page is not compiled."]
