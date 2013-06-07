@@ -126,7 +126,7 @@ class PageComponent {
 
     // data properties
     String resource    // -> Form Data Component. uri: <path>/resourceName e.g. rest/todo
-    String binding = BINDING_PAGE    // method of data binding (sql, api, rest, page)
+    String binding = BINDING_REST    // method of data binding (sql, api, rest, page)
 
     def validation       // specify any validation definition as a map
     String onUpdate     // an code blovk to execute if the current component value is changed

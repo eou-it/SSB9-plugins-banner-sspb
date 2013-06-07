@@ -12,7 +12,7 @@
             },
             {
                 "componentType":["page"],
-                "requiredAttributes":["name"],
+                "requiredAttributes":[],
                 "optionalAttributes":["title", "scriptingLanguage", "label", "style"],
                 "requiredChildren":[],
                 "optionalChildren":["flow", "form", "block", "grid", "select", "radio", "list", "detail", "data", "resource", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button"]
@@ -129,6 +129,28 @@
                 "requiredChildren":[],
                 "optionalChildren":[]
             }
-        ]
+        ],
+        "sourceRenderDefinitions" : [
+            {"AttributeType":["type", "name", "documentation", "title", "label", "style", "submit", "submitLabel", "model", "value", "validation", "placeholder", "onUpdate", "onClick", "onLoad", "labelKey", "valueKey", "sourceModel", "booleanTrueValue", "booleanFalseValue", "resource", "sequence"], "renderProperty":{"inputType":"text"}},
+            {"AttributeType":["scriptingLanguage"], "renderProperty":{"inputType":"text", "default":"JavaScript"}},
+            {"AttributeType":["binding"], "renderProperty":{"inputType":"text", "default":"rest"}},
+            {"AttributeType":["nextButtonLabel"], "renderProperty":{"inputType":"text", "default":"Next"}},
+            {"AttributeType":["showInitially"], "renderProperty":{"inputType":"boolean", "default":true}},
+            {"AttributeType":["allowNew"], "renderProperty":{"inputType":"boolean", "default":false}},
+            {"AttributeType":["allowModify"], "renderProperty":{"inputType":"boolean", "default":false}},
+            {"AttributeType":["allowDelete"], "renderProperty":{"inputType":"boolean", "default":false}},
+            {"AttributeType":["allowReload"], "renderProperty":{"inputType":"boolean", "default":false}},
+            {"AttributeType":["required"], "renderProperty":{"inputType":"boolean", "default":false}},
+            {"AttributeType":["readonly"], "renderProperty":{"inputType":"boolean", "default":false}},
+            {"AttributeType":["loadInitially"], "renderProperty":{"inputType":"boolean", "default":false}},
+            {"AttributeType":["activated"], "renderProperty":{"inputType":"boolean", "default":false}},
+            {"AttributeType":["parameters", "sourceParameters"], "renderProperty":{"inputType":"map"}},
+            {"AttributeType":["pageSize"], "renderProperty":{"inputType":"number", "default":5}},
+            {"AttributeType":["imageUrl", "url"], "renderProperty":{"inputType":"url"}},
+            {"AttributeType":["sourceValue"], "renderProperty":{"inputType":"arrayOfMap"}},
+            {"AttributeType":["default"], "renderProperty":{"inputType":"text"}}
+        ],
+        "documentation":"TODO - specify validation for scriptingLanguage, binding as select, default value, hint, etc."
     }
+
 }

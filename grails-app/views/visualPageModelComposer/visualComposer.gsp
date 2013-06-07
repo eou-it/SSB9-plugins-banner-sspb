@@ -40,6 +40,8 @@
         $scope.dataHolder = {};
         // status holder to remember which component property is shown
         $scope.statusHolder = {selectedIndex:0, newIndex:-1};
+        // page command execution status
+        $scope.pageStatus = {};
 
         // index is a unique number assigned to each component in its own scope
         $scope.index = 0;
@@ -63,8 +65,38 @@
          var PageModelDef = $resource(rootWebApp+'visualPageModelComposer/pageModelDef');
          PageModelDef.get(null, function(data) {
             $scope.pageModelDef = data.definitions.componentTypeDefinition;
-            //console.log($scope.pageModelDef);
+            $scope.sourceRenderDef = data.definitions.sourceRenderDefinitions;
+            $scope.setAttributeRenderProperties();
+            //console.log($scope.sourceRenderDef);
           });
+
+         // create a map of {attribute type -> rendering property} for editing a component attribute
+         // can not do this dynamically when ng-switch is called because it will keep calling the function to monitor the change
+         $scope.setAttributeRenderProperties = function() {
+            $scope.attrRenderProps = {};
+            //var defaultRenderProp = {renderType:"text"};
+            //var found = false;
+            for(var i=0; i < $scope.sourceRenderDef.length; i++ ){
+                var attrDef = $scope.sourceRenderDef[i];
+                for (var j = 0; j < attrDef.AttributeType.length; j++) {
+                    $scope.attrRenderProps[attrDef.AttributeType[j]] = attrDef.renderProperty;
+                }
+            }
+            //console.log("attrRenderProps = " + $scope.attrRenderProps);
+         }
+
+         /* return the default value for an attribute
+          if the value is undefined and there is a default value then return the default value
+          if the value is undefined and there is a default value then return undefined
+          if the value is defined then return the current value
+          */
+         $scope.setDefaultValue = function (attributeName, value) {
+            if (value == undefined && $scope.attrRenderProps[attributeName].default!=undefined)
+                return  $scope.attrRenderProps[attributeName].default;
+            else
+                return value;
+
+         };
 
         // return all required attributes for a given component type
         $scope.findRequiredAttrs = function(type) {
@@ -210,6 +242,7 @@
             $scope.openTypeSelectionModal(data, index);
         }
 
+
         $scope.selectData = function(data, index) {
             //alert("scope = " + $scope.$id + ", data = " + data.type);
             $scope.dataHolder.selectedComponent = data;
@@ -266,7 +299,53 @@
             dialogFade:true
           };
 
-          $scope.tMap={a:'1', b:'2'};
+          /* page operations */
+          $scope.newPageSource = function() {
+            // TODO generate a unique page name
+            var r=confirm("All unsaved changes to the current page will be lost. Continue to create a new page?");
+            if (!r)
+                return;
+
+            $scope.pageName= "newpage";
+            $scope.pageSource[0] = {"type": "page", "name": $scope.pageName};
+            $scope.resetSelected();
+            $scope.handlePageTreeChange();
+          };
+
+          $scope.submitPageSource = function() {
+            this.Resource1=$resource(rootWebApp+'visualPageModelComposer/compilePage');
+            // send the page source as text as expected by the compiler
+            $scope.pageOneSource = this.Resource1.save({pageName:$scope.pageName, source:$scope.pageSourceView }, function(response) {
+                //console.log("save response = " + response.statusCode + ", " +response.statusMessage);
+                if (response.statusCode == 0)  {
+                    alert(response.statusMessage);
+                    $scope.pageStatus.message = response.statusMessage;
+                }
+                else {
+                    alert(response.statusMessage + " Page Validation Error = " + response.pageValidationResult.errors);
+                    $scope.pageStatus.message = response.statusMessage + " Page Validation Error = " + response.pageValidationResult.errors;
+                }
+            });
+
+          }
+
+          $scope.previewPageSource = function() {
+
+          }
+
+          $scope.exportPageSource = function() {
+
+          }
+
+          $scope.importPageSource = function () {
+
+          }
+
+          $scope.deletePageSource = function () {
+
+          }
+
+
      }
 
     </script>
@@ -304,11 +383,18 @@ div.customPage {
 <br/>
 
 
-    <label>Unique Page Name</label>
+    <label>Page Name</label>
     <input type="text" name="constantName" ng-model="pageName" required/>
 
-    <input type="button" ng-click="getPageSource()" value="Reload Page Source" />
-    <button ng-click='handlePageTreeChange()'>Refresh Tree View</button>
+    <button ng-click='newPageSource()'>New Page</button>
+    <button ng-click='submitPageSource()'>Compile and Save Page</button>
+    <button ng-click="getPageSource()">Reload Page</button>
+    <button ng-click="previewPageSource()">Preview Page</button>
+    <button ng-click='exportPageSource()'>Export Page</button>
+    <button ng-click='importPageSource()'>Import Page</button>
+    <button ng-click='deletePageSource()'>Delete Page</button>
+
+
     <input type="hidden" name="id" value="${pageModel.pageInstance?.id}"/>
     <table style="height:80%;">
         <tr>
@@ -361,9 +447,25 @@ div.customPage {
 
                     <div ng-repeat="attr in dataHolder.allAttrs">
                         <label style="text-align:right; width: 30%">{{attr.name}}<span ng-show="attr.required">*</span></label>
-                        <span ng-switch on="attr.name" >
-                            <pb-Map ng-switch-when="parameters" label='Edit parameters for {{dataHolder.selectedComponent.name}}' map='dataHolder.selectedComponent[attr.name]' pb-change="handlePageTreeChange()"></pb-Map>
-                            <input ng-switch-default style="text-align:left;" type="text" ng-change="handlePageTreeChange()" ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
+                        <span ng-switch on="attrRenderProps[attr.name].inputType" >
+                            <pb-Map ng-switch-when="map" label='Edit {{attr.name}} for {{dataHolder.selectedComponent.name}}'
+                                    map='dataHolder.selectedComponent[attr.name]' pb-parent="dataHolder.selectedComponent" pb-attrname="attr.name"
+                                    pb-change="handlePageTreeChange()"></pb-Map>
+                            <input ng-switch-when="text" style="text-align:left;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                                   ng-change="handlePageTreeChange()" ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
+                            <input ng-switch-when="number" style="text-align:left;" type="number" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                                   ng-change="handlePageTreeChange()" ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
+                            <input ng-switch-when="url" style="text-align:left;" type="url" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                                   ng-change="handlePageTreeChange()" ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
+                            <pb-Arrayofmap ng-switch-when="arrayOfMap" label='Edit {{attr.name}} for {{dataHolder.selectedComponent.name}}'
+                                           pb-change="handlePageTreeChange()" array='dataHolder.selectedComponent[attr.name]'
+                                           pb-parent="dataHolder.selectedComponent" pb-attrname="attr.name"></pb-Arrayofmap>
+                            <input ng-switch-when="boolean" style="text-align:left;" type="checkbox" ng-change="handlePageTreeChange()" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                                   ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
+
+                            <!-- TODO default type is set in the model defintion - not mapped here  -->
+                            <input ng-switch-default style="text-align:left;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                                   ng-change="handlePageTreeChange()" ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
                         </span>
                     </div>
                 </div>
@@ -373,10 +475,6 @@ div.customPage {
 
 
     </table>
-
-
-
-
 
     <!-- type selection modal body-->
     <div modal="shouldBeOpen"  options="typeSelectionModalOpts">
@@ -393,8 +491,9 @@ div.customPage {
         </div>
     </div>
 
-    <g:textArea name="statusMessage" readonly="true" value="${pageModel.status}"
-                rows="3" cols="120" style="width:99%; height:10%"/>
+
+    <textArea name="statusMessage" readonly="true" ng-model="pageStatus.message"
+              rows="3" cols="120" style="width:99%; height:10%"/>
 
 </div>
 </body>
