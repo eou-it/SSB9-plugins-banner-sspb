@@ -28,7 +28,7 @@
         {
             "type":"select",
             "name":"showSelect",
-            "label":"Select Gender",
+            "label":"Select 'Gender'",
             "sourceValue":[{"label":"Female", "sex":"F"}, {"label":"Male", "sex":"M"}],
             "labelKey":"label",
             "valueKey":"sex"
@@ -112,23 +112,30 @@
             "name": "EditTodoList",
             "label" : "Edit Todos",
             "components": [
-                 {
-                    "type": "boolean",
-                    "name" : "filt_complete",
-                    "value": false,
-                    "label": "Is Complete"
-                },
                 {
-                    "type": "button",
-                    "name": "apply_filt_complete",
-                    "label": "Apply Filter",
-                    "onClick":"$EditTodo.$load();"
-                },
-                {
-                    "type": "button",
-                    "name": "remove_filt_complete",
-                    "label": "Remove Filter",
-                    "onClick": "$filt_complete=null; $EditTodo.$load();"
+                    "type":"block",
+                    "name":"TodoFilter",
+                    "components": [
+                        {
+                            "type": "boolean",
+                            "name" : "filt_complete",
+                            "value": false,
+                            "label": "Is Complete"
+                        },
+                        {
+                            "type": "button",
+                            "name": "apply_filt_complete",
+                            "label": "Apply Filter",
+                            "onClick":"$EditTodo.$load();"
+                        },
+                        {
+                            "type": "button",
+                            "name": "remove_filt_complete",
+                            "label": "Remove Filter",
+                            "onClick": "$filt_complete=null; $EditTodo.$load();"
+                        }
+
+                    ]
                 },
                 {
                     "type": "grid",
