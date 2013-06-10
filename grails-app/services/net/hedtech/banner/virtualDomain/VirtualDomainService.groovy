@@ -1,7 +1,11 @@
 package net.hedtech.banner.virtualDomain
 
-class VirtualDomainService {
+import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 
+class VirtualDomainService {
+    def static localizer = { mapToLocalize ->
+        new ValidationTagLib().message( mapToLocalize )
+    }
     def virtualDomainSqlService
 
     // Interface for restful API - TODO may choose to put this in a separate service or move to VirtualDomainSqlService
@@ -11,7 +15,7 @@ class VirtualDomainService {
         def result
         def vd = loadVirtualDomain(params.virtualDomain)
         if (vd.error) {
-            throw new Exception( "Error: service does not exist" )//TODO  how should we handle with restful API?, i18n
+            throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message") )//TODO  how should we handle with restful API?, i18n
         }
         queryResult = virtualDomainSqlService.get(vd.virtualDomain, params)
         if (queryResult.error == "") {
@@ -27,7 +31,7 @@ class VirtualDomainService {
         def result
         def vd = loadVirtualDomain(params.virtualDomain)
         if (vd.error) {
-            throw new Exception( "Error: service does not exist" )//TODO  how should we handle with restful API?, i18n
+            throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message"))//TODO  how should we handle with restful API?, i18n
         }
         queryResult = virtualDomainSqlService.get(vd.virtualDomain, params)
         if (queryResult.error == "") {
@@ -43,7 +47,7 @@ class VirtualDomainService {
         def result
         def vd = loadVirtualDomain(params.virtualDomain)
         if (vd.error) {
-            throw new Exception( "Error: service does not exist" )//TODO  how should we handle errors with restful API?, i18n
+            throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message") )//TODO  how should we handle errors with restful API?, i18n
         }
         queryResult = virtualDomainSqlService.count(vd.virtualDomain, params)
         if (queryResult.error == "") {
@@ -64,7 +68,7 @@ class VirtualDomainService {
         params.virtualDomain=data.virtualDomain
         def vd = loadVirtualDomain(params.virtualDomain)
         if (vd.error) {
-            throw new Exception( "Error: service does not exist")
+            throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message"))
         }
         virtualDomainSqlService.create(vd.virtualDomain,params,data)
         //data
@@ -77,7 +81,7 @@ class VirtualDomainService {
         params.virtualDomain=data.virtualDomain
         def vd = loadVirtualDomain(params.virtualDomain)
         if (vd.error) {
-            throw new Exception( "Error: service does not exist")
+            throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message"))
         }
         virtualDomainSqlService.update(vd.virtualDomain,params,data)
         //data
@@ -91,7 +95,7 @@ class VirtualDomainService {
         params.id = id
         def vd = loadVirtualDomain(params.virtualDomain)
         if (vd.error) {
-            throw new Exception( "Error: service does not exist")
+            throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message"))
         }
         virtualDomainSqlService.delete(vd.virtualDomain,params)
     }

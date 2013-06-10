@@ -1,6 +1,12 @@
 package net.hedtech.banner.sspb
 
+import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
+
 class CompileService {
+
+    def static localizer = { mapToLocalize ->
+        new ValidationTagLib().message( mapToLocalize )
+    }
 
     // TODO configure Hibernate
     def transactional = false
@@ -25,20 +31,7 @@ class CompileService {
         //reset global arrays
         dataSetIDsIncluded =[]
         uiControlIDsIncluded = []
-     /*
-        try {
-            def jsonResult = slurper.parseText(json)
-            page = new PageComponent(jsonResult)
-            page = normalizeComponent(page)
-            pageValidation = validateComponent(page)
-            valid = pageValidation.valid
-            errors += pageValidation.errors
-        } catch (Exception e) {
-            println "Parsing page model exception: " + e
-            errors << "Page Model parsing error: " + e.message
-            valid = false
-        }
-       */
+
         try {
             // first validate the raw JSON page model
             def pageModelValidator = new PageModelValidator()
@@ -62,7 +55,7 @@ class CompileService {
             errors += pageValidation.error
         } catch (Exception e) {
             println "Parsing page model exception: " + e
-            errors << [code: PageModelErrors.MODEL_UNKNOWN_ERR, message : "Unknown model validation error caused by exception: $e.message", path:null]
+            errors << PageModelErrors.getError(error: PageModelErrors.MODEL_UNKNOWN_ERR, args: [e.message])
             valid = false
         }
 
@@ -217,7 +210,7 @@ class CompileService {
             // can specify resource relative to current application like $rootWebApp/rest/emp
             dataSource = "'${dataComponent.resource}'".replace("'\$rootWebApp/", "rootWebApp+'")
             if (dataSource.startsWith("'/\$rootWebApp")) {
-                throw new Exception("Compiling Resource: Expected \$rootWebApp/relativePath, got /\$rootWebApp/relativePath")
+                throw new Exception(localizer(code:"sspb.compiler.resourceInvalidRootReference.message"))
             }
             // transform parameters to angular $scope variable
             queryParameters = getQueryParameters(component, dataComponent)
@@ -592,13 +585,11 @@ class CompileService {
     // find all component that uses this data component, search child components
     def static findUsageComponents(component, dataComponent) {
         def compList = []
-        //println "in findUsageComponents (${component.ID}, ${dataComponent.name})"
         if (component.ID != dataComponent.ID) {
            if (component.model==dataComponent.name || component.model?.startsWith("${dataComponent.name}.")
            || component.sourceModel==dataComponent.name || component.sourceModel?.startsWith("${dataComponent.name}.")) {
                compList.push(component)
                component.binding = dataComponent.binding
-               //println "component=${component.name}, dataComponent = $dataComponent.name, compList Size = ${compList.size()}"
            }
         }
         component.components?.each {
@@ -623,7 +614,7 @@ class CompileService {
     }
 
 
-
+/* seems obsolete
     // accept a normalized pageComponent
     def static compile2js(page) {
         def codeList = []
@@ -632,7 +623,7 @@ class CompileService {
         String pageJS=finalizeJS(codeList)
         return pageJS
     }
-
+*/
 
     /* TODO normalize model name etc for code generation
     * model needs to be at least two letters long and camel cased
@@ -720,7 +711,8 @@ class CompileService {
         // check if name already exists on the page
         if (nameSet.contains(pageComponent.name)) {
             valid = false
-            errors << "Name conflict at ${getComponentNamePath(pageComponent)}: $pageComponent.name (of type $pageComponent.type) already exists."
+            def error = PageModelErrors.getError(error:PageModelErrors.MODEL_NAME_CONFLICT_ERR, args: [getComponentNamePath(pageComponent),pageComponent.name,pageComponent.type] )
+            errors << error.message
         } else
             nameSet << pageComponent.name
 

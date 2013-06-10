@@ -55,7 +55,7 @@ Brief summary/description of the plugin.
     def doWithSpring = {
         //  from ssh://git@devgit1/banner/plugins/banner_tools.git   mostly
         def externalbundleloc = System.getProperties().get('SSPB_DATA_DIR')
-        println "External Bundle loc : "  + externalbundleloc
+        println "External Bundle location : "  + externalbundleloc
         // find i18n resource bundles and resolve basenames
         if(externalbundleloc instanceof ConfigObject) {
             externalbundleloc = "";

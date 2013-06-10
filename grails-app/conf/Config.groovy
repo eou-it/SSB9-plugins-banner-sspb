@@ -17,7 +17,7 @@ if (extData) {
     println "Using data directory $extData"
 } else  {
     println "SSPB_DATA_DIR System variable not defined. Please define."
-    throw new Exception("Please set SSPB_DATA_DIR as location for external properties. E.g. add -DSSPB_DATA_DIR=\"C:/temp\" in JAVA_OPT")
+    throw new Exception("Please set SSPB_DATA_DIR as location for external properties. E.g. add -DSSPB_DATA_DIR=\"C:/temp\" in JAVA_OPTS")
 }
 
 

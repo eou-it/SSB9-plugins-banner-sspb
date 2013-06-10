@@ -9,21 +9,21 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-  <title>Index of Self Service Page Builder pages</title>
+  <title><g:message code="sspb.page.index.pagetitle" /></title>
 
 </head>
 <body>
     <li>
-        <g:link controller="virtualDomainComposer" >  Virtual Domain Composer</g:link>
+        <g:link controller="virtualDomainComposer" >  <g:message code="sspb.page.virtualdomain.pagetitle" /></g:link>
     </li>
     <li>
-        <g:link controller="pageModelComposer" >  Page Composer</g:link>
+        <g:link controller="pageModelComposer" >  <g:message code="page.composer" /></g:link>
     </li>
 <li>
     <g:link controller="visualPageModelComposer" > Visual Page Composer</g:link>
 </li>
 
-<g:each in="${Page.list()}">
+    <g:each in="${Page.list(sort:'constantName')}">
         <li>
             <g:link controller="customPage" id="${it.constantName}" >Run ${it.constantName}</g:link>
         </li>

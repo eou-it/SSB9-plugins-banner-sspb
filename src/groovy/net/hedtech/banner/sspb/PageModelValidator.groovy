@@ -1,5 +1,6 @@
 package net.hedtech.banner.sspb
 
+
 /**
  * Created with IntelliJ IDEA.
  * User: jzhong
@@ -8,6 +9,7 @@ package net.hedtech.banner.sspb
  * To change this template use File | Settings | File Templates.
  */
 class PageModelValidator {
+
     def pageBuilderModel
     def typeDef
     def compDef = [:]
@@ -35,7 +37,8 @@ class PageModelValidator {
      */
     def validatePage(pageSource) {
         if (!typeDef) {
-            def ex = [errorCode:PageModelErrors.MODEL_MISSING_DEFINITION_ERR.code, errorMessage:"Page model component type definition not set"] as PageModelValidationException
+            def error = PageModelErrors.getError(error: PageModelErrors.MODEL_MISSING_DEFINITION_ERR)
+            def ex = [errorCode:error.code, errorMessage:error.message] as PageModelValidationException
             throw ex
         }
         def page
@@ -44,7 +47,7 @@ class PageModelValidator {
             def slurper = new groovy.json.JsonSlurper()
             page = slurper.parseText(pageSource)
         } catch (groovy.json.JsonException ex) {
-            return [valid:false, error:[[code:PageModelErrors.MODEL_PARSING_ERR.code, message:"page model parsing error: ${ex.getMessage()}"]]]
+            return [valid:false, error:[PageModelErrors.getError(error:PageModelErrors.MODEL_PARSING_ERR, args: [ex.getLocalizedMessage()] )  ]]
         }
 
         return validateComponent(page)
@@ -63,17 +66,17 @@ class PageModelValidator {
         // check if type if missing
         if (!component.type) {
             res.valid = false
-            res.error << [code: PageModelErrors.MODEL_TYPE_MISSING_ERR.code, path : path, message: "type is missing"]
+            res.error << PageModelErrors.getError(error: PageModelErrors.MODEL_TYPE_MISSING_ERR, path: path)
         }  else if (component.type == "all" || !compDef[component.type]) {
                 res.valid = false
-                res.error << [code:PageModelErrors.MODEL_TYPE_INVALID_ERR.code, path : path, message:"type '$component.type' is invalid"]
+                res.error << PageModelErrors.getError(error: PageModelErrors.MODEL_TYPE_INVALID_ERR, path: path, args: [component.type])
         }  else {
             // check required attributes for all components
             if (compDef.all.requiredAttributes) {
                 for (attr in compDef.all.requiredAttributes) {
                     if (!component[attr]) {
                         res.valid = false
-                        res.error << [code: PageModelErrors.MODEL_REQUIRED_ATTR_MISSING_ERR.code, path : path, message:"component is missing required attribute '${component[attr]}'"]
+                        res.error << PageModelErrors.getError(error: PageModelErrors.MODEL_REQUIRED_ATTR_MISSING_ERR, path: path, args: [attr])
                     }
                 }
             }
@@ -83,7 +86,7 @@ class PageModelValidator {
                 for (attr in compDef[component.type].requiredAttributes) {
                     if (!component[attr]) {
                         res.valid = false
-                        res.error << [code:PageModelErrors.MODEL_REQUIRED_ATTR_MISSING_ERR.code, path : path, message:"component is missing required attribute '$attr'"]
+                        res.error << PageModelErrors.getError(error: PageModelErrors.MODEL_REQUIRED_ATTR_MISSING_ERR, path: path, args: [attr])
                     }
                 }
             }
@@ -95,7 +98,7 @@ class PageModelValidator {
                 !compDef[component.type].requiredAttributes.contains(prop) &&
                 !compDef[component.type].optionalAttributes.contains(prop))) {
                     res.valid = false
-                    res.error << [code: PageModelErrors.MODEL_ATTR_INVALID_ERR.code, path : path, message:"attribute '$prop' is not allowed for component type '$component.type'"]
+                    res.error << PageModelErrors.getError(error: PageModelErrors.MODEL_ATTR_INVALID_ERR, path: path, args: [prop,component.type])
                 }
             }
             // get the list of all children of the component
@@ -106,7 +109,7 @@ class PageModelValidator {
             compDef[component.type]?.requiredChildren.each {
                 if (!children.contains(it)) {
                     res.valid = false
-                    res.error << [code: PageModelErrors.MODEL_REQUIRED_CHILD_MISSING_ERR.code, path: path, message: "required child '$it' is missing"]
+                    res.error << PageModelErrors.getError(error: PageModelErrors.MODEL_REQUIRED_CHILD_MISSING_ERR, path: path, args: [it])
                 }
             }
 
@@ -114,7 +117,7 @@ class PageModelValidator {
             children.each {
                 if (!compDef[component.type]?.optionalChildren.contains(it) ) {
                     res.valid = false
-                    res.error << [code: PageModelErrors.MODEL_CHILD_INVALID_ERR.code, path: path, message: "child component of type '${it}' is not allowed"]
+                    res.error << PageModelErrors.getError(error: PageModelErrors.MODEL_CHILD_INVALID_ERR, path: path, args: [it])
                 }
             }
         }

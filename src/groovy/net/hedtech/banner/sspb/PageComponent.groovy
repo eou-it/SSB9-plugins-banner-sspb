@@ -62,6 +62,11 @@ class PageComponent {
 
     final static translatableAttributes = ["title","label","submitLabel","nextButtonLabel","placeholder","value"]
 
+    //escape flags for translatable strings
+    final static ESC_0 = 0 //no escape
+    final static ESC_H = 1 //escape HTML
+    final static ESC_JS = 2 //escape
+
     String type        // -> Generic property for component type
     String name        // -> Generic property. Maybe use componentId?
     String title       // -> Page
@@ -160,48 +165,48 @@ class PageComponent {
         result.each {
             def key ="${CompileService.getComponentNamePath(this)}.sourceValue.${it."$valueKey"}"
             def label=it."$labelKey"
-            label = tran(key,label)
-            //println "$key = $label"
+            label = tran(key,label,[] as List,ESC_JS)
             it."$labelKey"=label
         }
     }
 
-    def tran(String prop, Boolean useTag=false) {
+    def tranMsg(key, List args=[], esc = ESC_H) {
+        def encodingFlag=""
+        def argsString=""
+        if (!args.empty)
+            argsString=",args: $args"
+        switch(esc) {
+          //case ESC_H  : encodingFlag = ", encodeAs: 'HTML'"; break    // this is default so no need to specify
+            case ESC_JS : encodingFlag = ", encodeAs: 'JavaScript'"; break
+        }
+        def result =  "message(code: '$key' $argsString $encodingFlag)"
+        return "\${${result}}"
+    }
+
+    def tran(String prop, esc = ESC_H ) {
         def defTranslation = this[prop]
         if (defTranslation && translatableAttributes.contains(prop))  {
             def key ="${CompileService.getComponentNamePath(this)}.$prop"
             root.rootProperties[key] = defTranslation
-            if (useTag)
-                return " <g:message code=\"$key\" default: \"$defTranslation\"/>"
-            else
-                return "\${message(code: '$key', default: '$defTranslation')}"
+            return tranMsg(key,[] as List, esc)
         }
         return ""
     }
 
-    def tran(String key, String message, List args=[]) {
+    def tran(String key, String message, List args=[], esc = ESC_H) {
         root.rootProperties[key] = message
-        if (args.empty)
-            return "\${message(code: '$key', default: '$message')}"
-        else
-            return "\${message(code: '$key', args: $args, default: '$message')}"
+       tranMsg(key,args,esc)
     }
 
 
-    def tranGlobal(String key, String text = null, List args = [], Boolean useTag = false) {
+    def tranGlobal(String key, String text = null, List args = [], esc = ESC_H ) {
         key = "global.$key"
         if (text)
             root.globalProperties[key] = text
         else
             text = root.globalProperties[key]
         if (text) {
-            if (useTag)
-                return " <g:message code=\"$key\" default: \"$text\"/>"
-            else
-            if (args.empty)
-                return "\${message(code: '$key', default: '$text')}"
-            else
-                return "\${message(code: '$key', args: $args, default: '$text')}"
+            return tranMsg(key,args,esc)
         }
         return ""
     }
