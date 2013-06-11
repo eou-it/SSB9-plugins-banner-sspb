@@ -60,7 +60,7 @@ class PageComponent {
 
     final static NEXT_BUTTON_DEFAULT_LABEL = "Next"
 
-    final static translatableAttributes = ["title","label","submitLabel","nextButtonLabel","placeholder","value"]
+    final static translatableAttributes = ["title","label","submitLabel","nextButtonLabel","placeholder","value","description"]
 
     //escape flags for translatable strings
     final static ESC_0 = 0 //no escape
@@ -486,7 +486,7 @@ class PageComponent {
                 return ret
             case COMP_TYPE_LINK:
                 def ret = "<div>"
-                def desc = description?description:url
+                def desc = description?tran("description"):url
                 // otherwise the value is used
                 // TODO consolidate value and sourceModel?
                 // TODO is parseVariable still working after using DataSet as generic data object?

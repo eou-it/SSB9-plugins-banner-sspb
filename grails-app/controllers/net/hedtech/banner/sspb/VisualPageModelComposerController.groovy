@@ -67,13 +67,16 @@ class VisualPageModelComposerController {
                 pageInstance.compiledView = compiledView
                 pageInstance.compiledController=compiledJSCode
                 pageInstance.save()
-                ret = [statusCode:0, statusMessage:"Page has been compiled and ${overwrite?'updated':'saved'} successfully."]
+                if (overwrite)
+                    ret = [statusCode:0, statusMessage:message(code:"sspb.page.visualcomposer.compiledupdated.ok.message")]
+                else
+                    ret = [statusCode:0, statusMessage:message(code:"sspb.page.visualcomposer.compiledsaved.ok.message")]
             } else {
-                ret = [statusCode: 2, statusMessage:"Page validation error. Page is not saved."]
+                ret = [statusCode: 2, statusMessage:message(code:"sspb.page.visualcomposer.validation.failed.message")]
                 ret << [pageValidationResult:[errors: validateResult.error.join('\n')] ]
             }
         } else
-            ret = [statusCode: 1, statusMessage:"Page source is empty. Page is not compiled."]
+            ret = [statusCode: 1, statusMessage:message(code:"sspb.page.visualcomposer.no.source.message")]
 
         render groovy.json.JsonOutput.toJson(ret)
     }
@@ -103,7 +106,7 @@ class VisualPageModelComposerController {
                 pageInstance=pageInstance.save()
                 pageModel=[status:statusMessage, pageInstance: pageInstance, modelView: pageInstance.modelView, compiledView: pageInstance.compiledView, compiledController: pageInstance.compiledController]
             } else {
-                pageModel=[status:statusMessage, pageInstance: pageInstance, modelView: params.modelView, compiledView: "Page model validation error (model not saved):\n" + validateResult.error.join('\n'),
+                pageModel=[status:statusMessage, pageInstance: pageInstance, modelView: params.modelView, compiledView: message(code:"sspb.page.visualcomposer.model.validation.failed.message", args:validateResult.error.join('\n'))  ,
                         compiledController:""]
             }
         }
