@@ -507,8 +507,8 @@ class PageComponent {
                 }
                 def attributes = "$validateStr ${required?"required":""} ${placeholder?"placeholder=\"${tran("placeholder")}\"":""}".trim()
                 def typeString= "type=\"$t\""
-                if (type == COMP_TYPE_DATETIME)  //TODO localize format
-                    typeString=" ui-date=\"{dateFormat:'dd-M-yy', changeMonth: true, changeYear: true}\" "
+                if (type == COMP_TYPE_DATETIME)  //Assume format comes from jquery.ui.datepicker-<locale>.js
+                    typeString=" ui-date=\"{ changeMonth: true, changeYear: true}\" "
                 //Cannot choose format with time, but lots of options. See http://jqueryui.com/datepicker/
                 if (attributes) println "Attributes: $attributes"
                 if (parent.type==COMP_TYPE_GRID)
@@ -661,6 +661,7 @@ var pageID = "$name"
 
 <style>
 div.customPage {
+    text-align:start;
     overflow-x: auto;
     overflow-y: auto;
     margin: 4px;

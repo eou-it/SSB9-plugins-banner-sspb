@@ -427,7 +427,7 @@ tr>td:last-child, tr>th:last-child {
 td, th {
 	line-height: 1.5em;
 	padding: 0.5em 0.6em;
-	text-align: left;
+	text-align: start;
 	vertical-align: top;
 }
 
@@ -595,4 +595,12 @@ th:hover, tr:hover {
 a.skip {
 	position: absolute;
 	left: -9999px;
+}
+
+/*hvt - for rtl */
+ul,
+ol {
+    -webkit-padding-start: 25px;
+    -moz-padding-start:25px;
+    /*margin: 0 0 9px 0;*/
 }

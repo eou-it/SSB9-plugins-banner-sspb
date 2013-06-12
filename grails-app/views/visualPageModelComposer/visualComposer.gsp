@@ -185,7 +185,7 @@
             $scope.dataHolder.allAttrs = [];
         }
 
-        $scope.i18nGet  = function (key,args) {
+        $scope.i18nGet = function(key,args) {
             var tr = [];
             tr['attribute.type'             ]="${message(code:'sspb.model.attribute.type')}";
             tr['attribute.name'             ]="${message(code:'sspb.model.attribute.name')}";
@@ -255,19 +255,31 @@
 
 
             tr['sspb.page.visualbuilder.edit.map.title' ] = "${message(code:'sspb.page.visualbuilder.edit.map.title',encodeAs: 'JavaScript')}";
+            tr['pb.template.map.new.key.label'          ] = "${message(code:'pb.template.map.new.key.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.map.new.value.label'        ] = "${message(code:'pb.template.map.new.value.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.map.name.label'             ] = "${message(code:'pb.template.map.name.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.map.value.label'            ] = "${message(code:'pb.template.map.value.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.map.value.select.label'     ] = "${message(code:'pb.template.map.value.select.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.map.value.enter.label'      ] = "${message(code:'pb.template.map.value.enter.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.map.add.label'              ] = "${message(code:'pb.template.map.add.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.map.ok.label'               ] = "${message(code:'pb.template.map.ok.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.arraymap.add.label'         ] = "${message(code:'pb.template.arraymap.add.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.arraymap.ok.label'          ] = "${message(code:'pb.template.arraymap.ok.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.arraymap.new.value.label'   ] = "${message(code:'pb.template.arraymap.new.value.label',encodeAs: 'JavaScript')}";
+
 
             var res=tr[key];
-            if ( res )  {
-                if (args) {
+            if ( !res )  {
+
+                res=key;
+            }
+            if (args) {
                     args.forEach(function (arg,index)  {
                         //note undefined parameters will show as undefined
                         res=res.replace("{"+index+"}",arg);
                     } );
-                }
-                return res;
-            } else {
-                return key ;
             }
+            return res;
         }
 
         $scope.attributeIsTranslatable = function (attr) {
@@ -392,7 +404,7 @@
           /* page operations */
           $scope.newPageSource = function() {
             // TODO generate a unique page name
-            var r=confirm(${message(code: 'sspb.page.visualbuilder.unsaved.changes.message')});
+            var r=confirm("${message(code: 'sspb.page.visualbuilder.unsaved.changes.message', encodeAs: 'JavaScript')}");
             if (!r)
                 return;
 
@@ -409,8 +421,10 @@
                 //console.log("save response = " + response.statusCode + ", " +response.statusMessage);
                 if (response.statusCode == 0)
                     $scope.pageStatus.message = response.statusMessage;
-                else
-                    $scope.pageStatus.message = response.statusMessage + " Page Validation Error:\n" + response.pageValidationResult.errors;
+                else {
+                    var msg="${message(code:'sspb.page.validation.error.message')}";
+                    $scope.pageStatus.message = $scope.i18nGet(msg,[response.statusMessage,response.pageValidationResult.errors]);
+                }
 
                 alert($scope.pageStatus.message);
             });
@@ -486,9 +500,9 @@ div.customPage {
     <input type="hidden" name="id" value="${pageModel.pageInstance?.id}"/>
     <table style="height:80%;">
         <tr>
-            <th align = left style="width:30%"><g:message code="sspb.page.visualbuilder.page.sourceview.label" /></th>
-            <th align = left style="width:30%"><g:message code="sspb.page.visualbuilder.component.treeview.label" /></th>
-            <th align = left style="width:40%"><g:message code="sspb.page.visualbuilder.component.propertyview.label" /></th>
+            <th style="width:30%"><g:message code="sspb.page.visualbuilder.page.sourceview.label" /></th>
+            <th style="width:30%"><g:message code="sspb.page.visualbuilder.component.treeview.label" /></th>
+            <th style="width:40%"><g:message code="sspb.page.visualbuilder.component.propertyview.label" /></th>
         </tr>
         <tr height="99%">
             <td>
@@ -509,7 +523,7 @@ div.customPage {
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     </span>
                     <!--input type="checkbox" ng-model="showChildren" ng-show="data.components!=undefined && data.type!=undefined"/-->
-                    <span ng-init="index=nextIndex()" ng-click="selectData(data, index)" style="{{componentLabelStyle(index == statusHolder.selectedIndex)}}">{{data.name}} [{{i18nGet('type.'+data.type)}}]</span>
+                    <span ng-init="index=nextIndex()" ng-click="selectData(data, index)" style="{{componentLabelStyle(index == statusHolder.selectedIndex)}}">{{data.name}} &lrm;[{{i18nGet('type.'+data.type)}}]&lrm;</span>
                     <button  title="${message(code:'sspb.page.visualbuilder.insert.sibling.title')}" class="btn btn-mini" style="background:none;" ng-click="insertSibling($parent.$parent.data, $index)" ng-show="data.type!='page'">&larr;</button>
                     <button  title="${message(code:'sspb.page.visualbuilder.append.child.title')}" class="btn btn-mini" style="background:none;" ng-click="addChild(data)" ng-show="findAllChildrenTypes(data.type).length>0">+</button>
                     <button  title="${message(code:'sspb.page.visualbuilder.delete.component.title')}" class="btn btn-mini" style="background:none;" ng-click="deleteComponent($parent.$parent.data, $index, index)"  ng-show="data.type!='page'">-</button>
@@ -534,25 +548,25 @@ div.customPage {
                     -->
 
                     <div ng-repeat="attr in dataHolder.allAttrs">
-                        <label style="text-align:right; width: 30%">{{i18nGet('attribute.'+attr.name)}}<span ng-show="attr.required">*</span> <span ng-show="attributeIsTranslatable(attr.name)">⊙</span></label>
+                        <label style="text-align:end; width: 30%">{{i18nGet('attribute.'+attr.name)}}<span ng-show="attr.required">*</span> <span ng-show="attributeIsTranslatable(attr.name)">⊙</span></label>
                         <span ng-switch on="attrRenderProps[attr.name].inputType" >
                             <pb-Map ng-switch-when="map" label="{{i18nGet('sspb.page.visualbuilder.edit.map.title' , [i18nGet('attribute.'+attr.name),dataHolder.selectedComponent.name])}}"
                                     map='dataHolder.selectedComponent[attr.name]' pb-parent="dataHolder.selectedComponent" pb-attrname="attr.name"
                                     pb-change="handlePageTreeChange()"></pb-Map>
-                            <input ng-switch-when="text" style="text-align:left;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                            <input ng-switch-when="text" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-change="handlePageTreeChange()" ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
-                            <input ng-switch-when="number" style="text-align:left;" type="number" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                            <input ng-switch-when="number" style="text-align:start;" type="number" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-change="handlePageTreeChange()" ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
-                            <input ng-switch-when="url" style="text-align:left;" type="url" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                            <input ng-switch-when="url" style="text-align:start;" type="url" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-change="handlePageTreeChange()" ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
                             <pb-Arrayofmap ng-switch-when="arrayOfMap" label="{{i18nGet('sspb.page.visualbuilder.edit.map.title' , [i18nGet('attribute.'+attr.name),dataHolder.selectedComponent.name])}}"
                                            pb-change="handlePageTreeChange()" array='dataHolder.selectedComponent[attr.name]'
                                            pb-parent="dataHolder.selectedComponent" pb-attrname="attr.name"></pb-Arrayofmap>
-                            <input ng-switch-when="boolean" style="text-align:left;" type="checkbox" ng-change="handlePageTreeChange()" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                            <input ng-switch-when="boolean" style="text-align:start;" type="checkbox" ng-change="handlePageTreeChange()" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
 
                             <!-- TODO default type is set in the model defintion - not mapped here  -->
-                            <input ng-switch-default style="text-align:left;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                            <input ng-switch-default style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-change="handlePageTreeChange()" ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
                         </span>
                     </div>

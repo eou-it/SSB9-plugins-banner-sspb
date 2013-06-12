@@ -49,6 +49,12 @@
         <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'jquery-ui.css')}" type="text/css">
         <script src="/banner-sspb/BannerXE/lib/jquery/jquery-1.8.2.js"></script>
         <script src="/banner-sspb/BannerXE/lib/jquery/jquery-ui-1.8.24.custom.js"></script>
+
+
+        <script src="/banner-sspb/BannerXE/lib/jquery/jquery.ui.datepicker-${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).language}.js"></script>
+
+        <script src="/banner-sspb/BannerXE/lib/jquery/jquery.ui.datepicker-${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).toString().replace('_','-')}.js"></script>
+
         <%-- end Added Harry --%>
 
 

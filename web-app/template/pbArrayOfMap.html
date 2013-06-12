@@ -1,5 +1,5 @@
 <span>
-    <span style="text-align:left;">
+    <span style="text-align:start;">
         {{keys[0]}} = {{keys[1]}}:[
         <span ng-show='array.length>0' ng-repeat='item in array'>
             {{ item[keys[0]] }} = {{ item[keys[1]] }}
@@ -28,14 +28,14 @@
             </table>
 
             <form>
-                <div><label >New {{keys[0]}}</label><input id="value1" ng-model="newValue1" required> </div>
-                <div><label >New {{keys[1]}}</label><input id='value2' ng-model="newValue2" required> </div>
-                <div><button ng-click='add(newValue1, newValue2)'>Add</button></div>
+                <div><label >{{$parent.i18nGet('pb.template.arraymap.new.value.label',[keys[0]])}} </label><input id="value1" ng-model="newValue1" required> </div>
+                <div><label >{{$parent.i18nGet('pb.template.arraymap.new.value.label',[keys[1]])}} </label><input id='value2' ng-model="newValue2" required> </div>
+                <div><button ng-click='add(newValue1, newValue2)'>{{$parent.i18nGet('pb.template.arraymap.add.label')}}</button></div>
             </form>
 
         </div>
         <div class="modal-footer">
-            <button class="btn btn-success ok" ng-click="closeArrayOfMapEditModal()">OK</button>
+            <button class="btn btn-success ok" ng-click="closeArrayOfMapEditModal()">{{$parent.i18nGet('pb.template.arraymap.ok.label')}}</button>
             <!--
             <button class="btn btn-warning cancel" ng-click="cancelMapEditModal()">Cancel</button>
             -->
