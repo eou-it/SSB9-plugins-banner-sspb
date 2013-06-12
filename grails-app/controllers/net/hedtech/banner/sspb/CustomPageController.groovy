@@ -1,6 +1,9 @@
 package net.hedtech.banner.sspb
 
 
+
+
+
 class CustomPageController {
 
     static defaultAction = "page"
@@ -42,10 +45,9 @@ class CustomPageController {
             if (page && page.compiledView && page.compiledController)
                 html = compileService.assembleFinalPage(page.compiledView, page.compiledController)
         }
-
         if (html)
             render renderGsp(html, "Page$pageId")
         else
-            invalidPage("Page does not exist")
+            invalidPage(message(code:"sspb.renderer.page.does.not.exist"))
     }
 }

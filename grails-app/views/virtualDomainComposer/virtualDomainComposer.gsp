@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Virtual Domain Composer</title>
+<title><g:message code="sspb.page.virtualdomain.pagetitle" /></title>
 
 <meta name="layout" content="BannerXECustomPage"/>
 <meta name="menuEndPoint" content="/StudentRegistrationSsb/ssb/selfServiceMenu/data"/>
@@ -31,11 +31,11 @@
 <%
   if (pageInstance?.submitted) {
     out << "<script>"
-    if (pageInstance?.saveSuccess)
-        out << """alert('Saving virtual domain succeeded. Virtual domain is ${pageInstance.updated?"updated":"created"}. ID=${pageInstance.id}. version=${pageInstance.version}');
-        """
-    else
-        out << """alert('Saving virtual domain failed. Error is ${pageInstance?.error?.replaceAll('[\r\n]','')}');"""
+    if (pageInstance?.saveSuccess) {
+        out << """alert('${message(code:"sspb.page.virtualdomain.save.ok.message", args:[pageInstance.id,pageInstance.version])}');"""
+    } else {
+        out << """alert('${message(code:"sspb.page.virtualdomain.save.fail.message", args:[pageInstance?.error?.replaceAll('[\r\n]','')])}');"""
+    }
     out << "</script>"
     }
 
@@ -44,8 +44,7 @@
   if (pageInstance?.loadSubmitted) {
     out << "<script>"
     if (!pageInstance?.loadSuccess)
-        out << """alert('Loading virtual domain failed. Error is ${pageInstance?.error?.replaceAll('[\r\n]','')}');
-        """
+        out << """alert('${message(code:"sspb.page.virtualdomain.load.fail.message", args:[pageInstance?.error?.replaceAll('[\r\n]','')])}');"""
     out << "</script>"
     }
 
@@ -55,14 +54,14 @@
 
 <body>
 <div class="customPage" >
-<h3>Define or modify virtual domain definition</h3>
+<h3><g:message code="sspb.page.virtualdomain.heading" /></h3>
 <br/>
 <g:form name="LoadVDForm" action="loadVirtualDomain">
-    <label>Load Virtual Domain Definition</label>
+    <label><g:message code="sspb.page.virtualdomain.select.label" /></label>
     <g:select name="vdServiceName"
               from="${VirtualDomain.list().sort{it.serviceName}}"
               value="${pageInstance?.vdServiceName}"
-              noSelection="${['null':'Select One...']}"
+              noSelection="${['null':message(code:"sspb.page.virtualdomain.select.noselection.label")]}"
               optionKey="serviceName"
               optionValue="serviceName"
               onChange="this.form.submit()"
@@ -71,13 +70,13 @@
 
 <br/>
 <g:form name="ComposeVDForm" action="saveVirtualDomain">
-    <label>Save Virtual Domain Definition</label>
+    <label><g:message code="sspb.page.virtualdomain.servicename.label" /></label>
     <input type="text" name="vdServiceName" value="${pageInstance?.vdServiceName}" required />
 <br/>
 
 <table>
 <tr>
-    <th align = left>Query Statement</th> <th align = left>Delete Statement</th>
+    <th align = left><g:message code="sspb.page.virtualdomain.query.heading" /></th> <th align = left><g:message code="sspb.page.virtualdomain.delete.heading" /></th>
 </tr>
 <tr>
     <td>
@@ -90,7 +89,7 @@
 </table>
     <table>
         <tr>
-            <th align = left>Post/Create/Save Statement</th> <th align = left>Put/Update Statement</th>
+            <th align = left><g:message code="sspb.page.virtualdomain.post.heading" /></th> <th align = left><g:message code="sspb.page.virtualdomain.put.heading" /></th>
         </tr>
         <tr>
     <td>
@@ -102,10 +101,8 @@
 </tr>
 
 </table>
-Note: Self Service Page Builder pages currently use the Post/Create/Save Statement for both Create and Update.
-The Put/Update Statement can be provided if required.
 <br/>
-<g:actionSubmit action="saveVirtualDomain" value="Save Virtual Domain Definition"/>
+<g:actionSubmit action="saveVirtualDomain" value="${message(code:"sspb.page.virtualdomain.save.label")}" />
 <br/>
 </g:form>
 <g:form name="TestVDForm" action="loadVirtualDomain">
@@ -113,9 +110,9 @@ The Put/Update Statement can be provided if required.
     if (pageInstance?.vdServiceName)  {
     out << """
     <br/>
-    <h4> Result Query statement</h4>
-    Parameters: <input type="text" name="vdTestParameters" value="${pageInstance?.vdTestParameters}" />
-    [Return]
+    <h4>${message(code:"sspb.page.virtualdomain.query.result.label")} </h4>
+    ${message(code:"sspb.page.virtualdomain.query.result.parameters.label")} <input type="text" name="vdTestParameters" value="${pageInstance?.vdTestParameters}" />
+    ${message(code:"sspb.page.virtualdomain.query.result.parameters.enter")}
     <input type="hidden"  name="vdServiceName" value="${pageInstance?.vdServiceName}" />
     <br/>
     <iframe width="95%" height="20%" src="${createLink(uri: '/')}virt/${pageInstance?.vdServiceName}?debug=true&${pageInstance?.vdTestParameters?.replace('%','%25')}">

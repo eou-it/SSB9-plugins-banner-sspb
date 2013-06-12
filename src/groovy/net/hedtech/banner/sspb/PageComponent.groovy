@@ -60,7 +60,12 @@ class PageComponent {
 
     final static NEXT_BUTTON_DEFAULT_LABEL = "Next"
 
-    final static translatableAttributes = ["title","label","submitLabel","nextButtonLabel","placeholder","value"]
+    final static translatableAttributes = ["title","label","submitLabel","nextButtonLabel","placeholder","value","description"]
+
+    //escape flags for translatable strings
+    final static ESC_0 = 0 //no escape
+    final static ESC_H = 1 //escape HTML
+    final static ESC_JS = 2 //escape
 
     String type        // -> Generic property for component type
     String name        // -> Generic property. Maybe use componentId?
@@ -160,48 +165,48 @@ class PageComponent {
         result.each {
             def key ="${CompileService.getComponentNamePath(this)}.sourceValue.${it."$valueKey"}"
             def label=it."$labelKey"
-            label = tran(key,label)
-            //println "$key = $label"
+            label = tran(key,label,[] as List,ESC_JS)
             it."$labelKey"=label
         }
     }
 
-    def tran(String prop, Boolean useTag=false) {
+    def tranMsg(key, List args=[], esc = ESC_H) {
+        def encodingFlag=""
+        def argsString=""
+        if (!args.empty)
+            argsString=",args: $args"
+        switch(esc) {
+          //case ESC_H  : encodingFlag = ", encodeAs: 'HTML'"; break    // this is default so no need to specify
+            case ESC_JS : encodingFlag = ", encodeAs: 'JavaScript'"; break
+        }
+        def result =  "message(code: '$key' $argsString $encodingFlag)"
+        return "\${${result}}"
+    }
+
+    def tran(String prop, esc = ESC_H ) {
         def defTranslation = this[prop]
         if (defTranslation && translatableAttributes.contains(prop))  {
             def key ="${CompileService.getComponentNamePath(this)}.$prop"
             root.rootProperties[key] = defTranslation
-            if (useTag)
-                return " <g:message code=\"$key\" default: \"$defTranslation\"/>"
-            else
-                return "\${message(code: '$key', default: '$defTranslation')}"
+            return tranMsg(key,[] as List, esc)
         }
         return ""
     }
 
-    def tran(String key, String message, List args=[]) {
+    def tran(String key, String message, List args=[], esc = ESC_H) {
         root.rootProperties[key] = message
-        if (args.empty)
-            return "\${message(code: '$key', default: '$message')}"
-        else
-            return "\${message(code: '$key', args: $args, default: '$message')}"
+       tranMsg(key,args,esc)
     }
 
 
-    def tranGlobal(String key, String text = null, List args = [], Boolean useTag = false) {
+    def tranGlobal(String key, String text = null, List args = [], esc = ESC_H ) {
         key = "global.$key"
         if (text)
             root.globalProperties[key] = text
         else
             text = root.globalProperties[key]
         if (text) {
-            if (useTag)
-                return " <g:message code=\"$key\" default: \"$text\"/>"
-            else
-            if (args.empty)
-                return "\${message(code: '$key', default: '$text')}"
-            else
-                return "\${message(code: '$key', args: $args, default: '$text')}"
+            return tranMsg(key,args,esc)
         }
         return ""
     }
@@ -481,7 +486,7 @@ class PageComponent {
                 return ret
             case COMP_TYPE_LINK:
                 def ret = "<div>"
-                def desc = description?description:url
+                def desc = description?tran("description"):url
                 // otherwise the value is used
                 // TODO consolidate value and sourceModel?
                 // TODO is parseVariable still working after using DataSet as generic data object?
@@ -502,8 +507,8 @@ class PageComponent {
                 }
                 def attributes = "$validateStr ${required?"required":""} ${placeholder?"placeholder=\"${tran("placeholder")}\"":""}".trim()
                 def typeString= "type=\"$t\""
-                if (type == COMP_TYPE_DATETIME)  //TODO localize format
-                    typeString=" ui-date=\"{dateFormat:'dd-M-yy', changeMonth: true, changeYear: true}\" "
+                if (type == COMP_TYPE_DATETIME)  //Assume format comes from jquery.ui.datepicker-<locale>.js
+                    typeString=" ui-date=\"{ changeMonth: true, changeYear: true}\" "
                 //Cannot choose format with time, but lots of options. See http://jqueryui.com/datepicker/
                 if (attributes) println "Attributes: $attributes"
                 if (parent.type==COMP_TYPE_GRID)
@@ -656,6 +661,7 @@ var pageID = "$name"
 
 <style>
 div.customPage {
+    text-align:start;
     overflow-x: auto;
     overflow-y: auto;
     margin: 4px;

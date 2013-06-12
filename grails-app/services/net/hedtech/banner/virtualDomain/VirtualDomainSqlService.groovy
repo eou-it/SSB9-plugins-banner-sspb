@@ -4,10 +4,14 @@ import groovy.sql.Sql
 import groovy.sql.SqlWithParams
 import static javax.xml.bind.DatatypeConverter.parseDateTime
 import java.sql.SQLException
+import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 
 
 class VirtualDomainSqlService {
 
+    def static localizer = { mapToLocalize ->
+        new ValidationTagLib().message( mapToLocalize )
+    }
    // def sessionFactory
 
     //allow connecting to 2 different datasources, depending on VirtualDomain.dataSource
@@ -53,15 +57,16 @@ class VirtualDomainSqlService {
     */
     def get(vd, params) {
         def parameters = getNormalized(params) // some tweaks and work arounds
-        def logmsg="Converted params for get: $parameters"
+        def logmsg=localizer(code:"sspb.virtualdomain.sqlservice.param", args:[parameters])
         def sql = getSql(vd.dataSource)
         def debugStatement = (parameters.debug == "true")?" and rownum<6":""
         def errorMessage = ""
         // Add a dummy bind variable to Groovy SQL to workaround an issue related to passing a map
         // to a query without bind variables
         def statement = "select * from (${vd.codeGet}) where (1=1 or :x is null) $debugStatement"
+        //maybe remove metaData - what value?
         def metaData = { meta ->
-            logmsg += "\nNumber of columns: $meta.columnCount"
+            logmsg += localizer(code:"sspb.virtualdomain.sqlservice.numbercolumns", args:[meta.columnCount])
         }
         def rows
         try {
@@ -70,36 +75,38 @@ class VirtualDomainSqlService {
             rows = sql.rows(statement,parameters,offset,max,metaData)
             rows = idEncodeRows(rows)
             rows = handleClobRows(rows)
-            logmsg += " Fetched: ${rows?.size()} with offset $offset  "
+            logmsg += localizer(code:"sspb.virtualdomain.sqlservice.numberrows", args:[rows?.size(),offset])
+
         } catch(e) {
-            logmsg +="\n***ERROR*** ${e.getMessage()}\nStatement: \n $statement"
+            logmsg += localizer(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
+
             errorMessage=logmsg
         } finally {
             sql.close()
         }
         println logmsg
-        return [error: errorMessage, rows:rows, totalCount: rows.size()]
+        return [error: errorMessage, rows:rows, totalCount: rows?.size()]
     }
 
     def count(vd, params) {
         def parameters = getNormalized(params) // some tweaks and work arounds
-        def logmsg="Converted params for get: $parameters"
+        def logmsg=localizer(code:"sspb.virtualdomain.sqlservice.param", args:[parameters])
         def sql = getSql(vd.dataSource)
         def debugStatement = (parameters.debug == "true")?" and rownum<6":""
         def errorMessage = ""
         // Add a dummy bind variable to Groovy SQL to workaround an issue related to passing a map
         // to a query without bind variables
-        def countStatement="select count(*) COUNT from (${vd.codeGet}) where (1=1 or :x is null) $debugStatement"
+        def statement="select count(*) COUNT from (${vd.codeGet}) where (1=1 or :x is null) $debugStatement"
         def rows
         def totalCount=-1
         try {
             def max=parameters.max?parameters.max.toInteger():-1
             def offset=parameters.offset?parameters.offset.toInteger():-1
             // determine the total count
-            rows = sql.rows(countStatement,parameters)
+            rows = sql.rows(statement,parameters)
             totalCount = rows[0].COUNT
         } catch(e) {
-            logmsg +="\n***ERROR*** ${e.getMessage()}\nStatement: \n $countStatement"
+            logmsg += localizer(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
             errorMessage=logmsg
         } finally {
             sql.close()
@@ -215,7 +222,7 @@ class VirtualDomainSqlService {
             try {
                 return reader.getText()
             } catch (IOException e) {
-                throw new SQLException("Unable to read CLOB: " + e.getMessage())
+                throw new SQLException(localizer(code:"sspb.virtualdomain.sqlservice.clob.error.message", args:[e.getMessage()]))
             }
         }
         else {

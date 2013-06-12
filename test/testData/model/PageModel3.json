@@ -46,7 +46,7 @@
        {
          "type": "form",
          "name": "SelectCriteriaForm",
-         "label": "Search Criteria",
+         "label": "Search Criteria New",
          "components": [
              {
                  "type":"select",

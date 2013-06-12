@@ -1,7 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-
-
-<%-- 
+<%--
 /*********************************************************************************
  Copyright 2009-2012 SunGard Higher Education. All Rights Reserved.
  This copyrighted software contains confidential and proprietary information of 
@@ -15,7 +13,7 @@
  **********************************************************************************/
 --%>
 <!DOCTYPE html>
-<html  ng-app="BannerOnAngular">
+<html ng-app="BannerOnAngular" lang="${message(code:'default.language.locale')}" dir="${message(code:'default.language.direction')}">
     <head>
         <title><g:layoutTitle default="Banner Self Service Custom Page"/></title>
 
@@ -28,7 +26,15 @@
         <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'demo_table_jui.css')}">
 -->
 
-        <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'anish-app.css')}">
+
+<g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
+    <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'anish-app-rtl.css')}">
+</g:if>
+<g:else>
+    <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'anish-app.css')}">
+</g:else>
+
+
         <link rel="stylesheet" href="${resource(dir: 'BannerXE/lib/jquery/plugins/jstree/themes/classic', file: 'style.css')}">
         <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'common-controls.css')}">
         <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'common-platform.css')}">
@@ -43,6 +49,12 @@
         <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'jquery-ui.css')}" type="text/css">
         <script src="/banner-sspb/BannerXE/lib/jquery/jquery-1.8.2.js"></script>
         <script src="/banner-sspb/BannerXE/lib/jquery/jquery-ui-1.8.24.custom.js"></script>
+
+
+        <script src="/banner-sspb/BannerXE/lib/jquery/jquery.ui.datepicker-${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).language}.js"></script>
+
+        <script src="/banner-sspb/BannerXE/lib/jquery/jquery.ui.datepicker-${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).toString().replace('_','-')}.js"></script>
+
         <%-- end Added Harry --%>
 
 

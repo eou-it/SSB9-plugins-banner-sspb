@@ -5,7 +5,7 @@
   Time: 4:15 PM
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page import="net.hedtech.banner.sspb.Page" %>
+<%@ page import="net.hedtech.banner.sspb.PageComponent; net.hedtech.banner.sspb.Page" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
@@ -185,6 +185,108 @@
             $scope.dataHolder.allAttrs = [];
         }
 
+        $scope.i18nGet = function(key,args) {
+            var tr = [];
+            tr['attribute.type'             ]="${message(code:'sspb.model.attribute.type')}";
+            tr['attribute.name'             ]="${message(code:'sspb.model.attribute.name')}";
+            tr['attribute.documentation'    ]="${message(code:'sspb.model.attribute.documentation')}";
+            tr['attribute.title'            ]="${message(code:'sspb.model.attribute.title')}";
+            tr['attribute.scriptingLanguage']="${message(code:'sspb.model.attribute.scriptingLanguage')}";
+            tr['attribute.label'            ]="${message(code:'sspb.model.attribute.label')}";
+            tr['attribute.style'            ]="${message(code:'sspb.model.attribute.style')}";
+            tr['attribute.submit'           ]="${message(code:'sspb.model.attribute.submit')}";
+            tr['attribute.submitLabel'      ]="${message(code:'sspb.model.attribute.submitLabel')}";
+            tr['attribute.model'            ]="${message(code:'sspb.model.attribute.model')}";
+            tr['attribute.value'            ]="${message(code:'sspb.model.attribute.value')}";
+            tr['attribute.validation'       ]="${message(code:'sspb.model.attribute.validation')}";
+            tr['attribute.placeholder'      ]="${message(code:'sspb.model.attribute.placeholder')}";
+            tr['attribute.onUpdate'         ]="${message(code:'sspb.model.attribute.onUpdate')}";
+            tr['attribute.onClick'          ]="${message(code:'sspb.model.attribute.onClick')}";
+            tr['attribute.onLoad'           ]="${message(code:'sspb.model.attribute.onLoad')}";
+            tr['attribute.labelKey'         ]="${message(code:'sspb.model.attribute.labelKey')}";
+            tr['attribute.valueKey'         ]="${message(code:'sspb.model.attribute.valueKey')}";
+            tr['attribute.sourceModel'      ]="${message(code:'sspb.model.attribute.sourceModel')}";
+            tr['attribute.booleanTrueValue' ]="${message(code:'sspb.model.attribute.booleanTrueValue')}";
+            tr['attribute.booleanFalseValue']="${message(code:'sspb.model.attribute.booleanFalseValue')}";
+            tr['attribute.sequence'         ]="${message(code:'sspb.model.attribute.sequence')}";
+            tr['attribute.binding'          ]="${message(code:'sspb.model.attribute.binding')}";
+            tr['attribute.resource'         ]="${message(code:'sspb.model.attribute.resource')}";
+            tr['attribute.nextButtonLabel'  ]="${message(code:'sspb.model.attribute.nextButtonLabel')}";
+            tr['attribute.showInitially'    ]="${message(code:'sspb.model.attribute.showInitially')}";
+            tr['attribute.allowNew'         ]="${message(code:'sspb.model.attribute.allowNew')}";
+            tr['attribute.allowModify'      ]="${message(code:'sspb.model.attribute.allowModify')}";
+            tr['attribute.allowDelete'      ]="${message(code:'sspb.model.attribute.allowDelete')}";
+            tr['attribute.allowReload'      ]="${message(code:'sspb.model.attribute.allowReload')}";
+            tr['attribute.required'         ]="${message(code:'sspb.model.attribute.required')}";
+            tr['attribute.readonly'         ]="${message(code:'sspb.model.attribute.readonly')}";
+            tr['attribute.loadInitially'    ]="${message(code:'sspb.model.attribute.loadInitially')}";
+            tr['attribute.activated'        ]="${message(code:'sspb.model.attribute.activated')}";
+            tr['attribute.parameters'       ]="${message(code:'sspb.model.attribute.parameters')}";
+            tr['attribute.sourceParameters' ]="${message(code:'sspb.model.attribute.sourceParameters')}";
+            tr['attribute.pageSize'         ]="${message(code:'sspb.model.attribute.pageSize')}";
+            tr['attribute.imageUrl'         ]="${message(code:'sspb.model.attribute.imageUrl')}";
+            tr['attribute.url'              ]="${message(code:'sspb.model.attribute.url')}";
+            tr['attribute.sourceValue'      ]="${message(code:'sspb.model.attribute.sourceValue')}";
+            tr['attribute.default'          ]="${message(code:'sspb.model.attribute.default')}";
+            tr['attribute.description'      ]="${message(code:'sspb.model.attribute.description')}";
+
+            tr['type.page'        ]="${message(code:'sspb.model.type.page'     )}";
+            tr['type.flow'        ]="${message(code:'sspb.model.type.flow'     )}";
+            tr['type.form'        ]="${message(code:'sspb.model.type.form'     )}";
+            tr['type.block'       ]="${message(code:'sspb.model.type.block'    )}";
+            tr['type.grid'        ]="${message(code:'sspb.model.type.grid'     )}";
+            tr['type.select'      ]="${message(code:'sspb.model.type.select'   )}";
+            tr['type.radio'       ]="${message(code:'sspb.model.type.radio'    )}";
+            tr['type.list'        ]="${message(code:'sspb.model.type.list'     )}";
+            tr['type.detail'      ]="${message(code:'sspb.model.type.detail'   )}";
+            tr['type.data'        ]="${message(code:'sspb.model.type.data'     )}";
+            tr['type.resource'    ]="${message(code:'sspb.model.type.resource' )}";
+            tr['type.literal'     ]="${message(code:'sspb.model.type.literal'  )}";
+            tr['type.display'     ]="${message(code:'sspb.model.type.display'  )}";
+            tr['type.text'        ]="${message(code:'sspb.model.type.text'     )}";
+            tr['type.textArea'    ]="${message(code:'sspb.model.type.textArea' )}";
+            tr['type.number'      ]="${message(code:'sspb.model.type.number'   )}";
+            tr['type.datetime'    ]="${message(code:'sspb.model.type.datetime' )}";
+            tr['type.email'       ]="${message(code:'sspb.model.type.email'    )}";
+            tr['type.tel'         ]="${message(code:'sspb.model.type.tel'      )}";
+            tr['type.link'        ]="${message(code:'sspb.model.type.link'     )}";
+            tr['type.boolean'     ]="${message(code:'sspb.model.type.boolean'  )}";
+            tr['type.button'      ]="${message(code:'sspb.model.type.button'   )}";
+
+
+            tr['sspb.page.visualbuilder.edit.map.title' ] = "${message(code:'sspb.page.visualbuilder.edit.map.title',encodeAs: 'JavaScript')}";
+            tr['pb.template.map.new.key.label'          ] = "${message(code:'pb.template.map.new.key.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.map.new.value.label'        ] = "${message(code:'pb.template.map.new.value.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.map.name.label'             ] = "${message(code:'pb.template.map.name.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.map.value.label'            ] = "${message(code:'pb.template.map.value.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.map.value.select.label'     ] = "${message(code:'pb.template.map.value.select.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.map.value.enter.label'      ] = "${message(code:'pb.template.map.value.enter.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.map.add.label'              ] = "${message(code:'pb.template.map.add.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.map.ok.label'               ] = "${message(code:'pb.template.map.ok.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.arraymap.add.label'         ] = "${message(code:'pb.template.arraymap.add.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.arraymap.ok.label'          ] = "${message(code:'pb.template.arraymap.ok.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.arraymap.new.value.label'   ] = "${message(code:'pb.template.arraymap.new.value.label',encodeAs: 'JavaScript')}";
+
+
+            var res=tr[key];
+            if ( !res )  {
+
+                res=key;
+            }
+            if (args) {
+                    args.forEach(function (arg,index)  {
+                        //note undefined parameters will show as undefined
+                        res=res.replace("{"+index+"}",arg);
+                    } );
+            }
+            return res;
+        }
+
+        $scope.attributeIsTranslatable = function (attr) {
+            var attributes = ${PageComponent.translatableAttributes.encodeAsJSON()};
+            return (attributes.indexOf(attr) != -1); // seems not to work in IE8
+        }
+
         // recursively check if component1 is a direct or indirect child of component
         $scope.isChild = function(component, component1) {
             // reach a leaf node
@@ -302,11 +404,11 @@
           /* page operations */
           $scope.newPageSource = function() {
             // TODO generate a unique page name
-            var r=confirm("All unsaved changes to the current page will be lost. Continue to create a new page?");
+            var r=confirm("${message(code: 'sspb.page.visualbuilder.unsaved.changes.message', encodeAs: 'JavaScript')}");
             if (!r)
                 return;
 
-            $scope.pageName= "newpage";
+            $scope.pageName= "${message( code:'sspb.page.visualbuilder.newpage.default', encodeAs: 'JavaScript')}";
             $scope.pageSource[0] = {"type": "page", "name": $scope.pageName};
             $scope.resetSelected();
             $scope.handlePageTreeChange();
@@ -319,8 +421,10 @@
                 //console.log("save response = " + response.statusCode + ", " +response.statusMessage);
                 if (response.statusCode == 0)
                     $scope.pageStatus.message = response.statusMessage;
-                else
-                    $scope.pageStatus.message = response.statusMessage + " Page Validation Error:\n" + response.pageValidationResult.errors;
+                else {
+                    var msg="${message(code:'sspb.page.validation.error.message')}";
+                    $scope.pageStatus.message = $scope.i18nGet(msg,[response.statusMessage,response.pageValidationResult.errors]);
+                }
 
                 alert($scope.pageStatus.message);
             });
@@ -367,7 +471,7 @@ div.customPage {
 
 <div ng-controller="VisualPageComposerController" class="customPage">
 
-    <label>Load Page</label>
+    <label><g:message code="sspb.page.visualbuilder.load.label" /></label>
     <g:select name="constantName"
               from="${Page.list().sort {it.constantName}}"
               value="${pageModel.pageInstance?.constantName}"
@@ -381,24 +485,24 @@ div.customPage {
 <br/>
 
 
-    <label>Page Name</label>
+    <label><g:message code="sspb.page.visualbuilder.name.label" /></label>
     <input type="text" name="constantName" ng-model="pageName" required/>
 
-    <button ng-click='newPageSource()'>New Page</button>
-    <button ng-click='submitPageSource()'>Compile and Save Page</button>
-    <button ng-click="getPageSource()">Reload Page</button>
-    <button ng-click="previewPageSource()">Preview Page</button>
-    <button ng-click='exportPageSource()'>Export Page</button>
-    <button ng-click='importPageSource()'>Import Page</button>
-    <button ng-click='deletePageSource()'>Delete Page</button>
+    <button ng-click='newPageSource()'><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
+    <button ng-click='submitPageSource()'><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
+    <button ng-click="getPageSource()"><g:message code="sspb.page.visualbuilder.reload.label" /></button>
+    <button ng-click="previewPageSource()"><g:message code="sspb.page.visualbuilder.preview.label" /></button>
+    <button ng-click='exportPageSource()'><g:message code="sspb.page.visualbuilder.export.label" /></button>
+    <button ng-click='importPageSource()'><g:message code="sspb.page.visualbuilder.import.label" /></button>
+    <button ng-click='deletePageSource()'><g:message code="sspb.page.visualbuilder.delete.label" /></button>
 
 
     <input type="hidden" name="id" value="${pageModel.pageInstance?.id}"/>
     <table style="height:80%;">
         <tr>
-            <th align = left style="width:30%">Page Source View</th>
-            <th align = left style="width:30%">Component Tree View</th>
-            <th align = left style="width:40%">Component Property View</th>
+            <th style="width:30%"><g:message code="sspb.page.visualbuilder.page.sourceview.label" /></th>
+            <th style="width:30%"><g:message code="sspb.page.visualbuilder.component.treeview.label" /></th>
+            <th style="width:40%"><g:message code="sspb.page.visualbuilder.component.propertyview.label" /></th>
         </tr>
         <tr height="99%">
             <td>
@@ -411,18 +515,18 @@ div.customPage {
 
                 <script type="text/ng-template"  id="tree_item_renderer.html">
                     <span  ng-show="data.components!=undefined && data.components.length>0">
-                        <button title="Collapse tree" style="background:none;border:none; font-size:100%; color:gray;" ng-click="showChildren=!showChildren;"  ng-show="showChildren">&#x229f;</button>
-                        <button title="Expand tree" style="background:none;border:none; font-size:100%; color:gray;" ng-click="showChildren=!showChildren;"  ng-show="!showChildren">&#x229e;</button>
+                        <button title="${message(code:'sspb.page.visualbuilder.collapsetree.title')}" style="background:none;border:none; font-size:100%; color:gray;" ng-click="showChildren=!showChildren;"  ng-show="showChildren">&#x229f;</button>
+                        <button title="${message(code:'sspb.page.visualbuilder.expandtree.title')}" style="background:none;border:none; font-size:100%; color:gray;" ng-click="showChildren=!showChildren;"  ng-show="!showChildren">&#x229e;</button>
                     </span>
                     <!-- align text if there is no expand/collapse button-->
                     <span  ng-show="data.components==undefined || data.components.length==0" style="background:none;border:none; font-size:100%">
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     </span>
                     <!--input type="checkbox" ng-model="showChildren" ng-show="data.components!=undefined && data.type!=undefined"/-->
-                    <span ng-init="index=nextIndex()" ng-click="selectData(data, index)" style="{{componentLabelStyle(index == statusHolder.selectedIndex)}}">{{data.name}} [{{data.type}}]</span>
-                    <button  title="Insert a sibling component before this component" class="btn btn-mini" style="background:none;" ng-click="insertSibling($parent.$parent.data, $index)" ng-show="data.type!='page'">&larr;</button>
-                    <button  title="Append a child component" class="btn btn-mini" style="background:none;" ng-click="addChild(data)" ng-show="findAllChildrenTypes(data.type).length>0">+</button>
-                    <button  title="Delete this component" class="btn btn-mini" style="background:none;" ng-click="deleteComponent($parent.$parent.data, $index, index)"  ng-show="data.type!='page'">-</button>
+                    <span ng-init="index=nextIndex()" ng-click="selectData(data, index)" style="{{componentLabelStyle(index == statusHolder.selectedIndex)}}">{{data.name}} &lrm;[{{i18nGet('type.'+data.type)}}]&lrm;</span>
+                    <button  title="${message(code:'sspb.page.visualbuilder.insert.sibling.title')}" class="btn btn-mini" style="background:none;" ng-click="insertSibling($parent.$parent.data, $index)" ng-show="data.type!='page'">&larr;</button>
+                    <button  title="${message(code:'sspb.page.visualbuilder.append.child.title')}" class="btn btn-mini" style="background:none;" ng-click="addChild(data)" ng-show="findAllChildrenTypes(data.type).length>0">+</button>
+                    <button  title="${message(code:'sspb.page.visualbuilder.delete.component.title')}" class="btn btn-mini" style="background:none;" ng-click="deleteComponent($parent.$parent.data, $index, index)"  ng-show="data.type!='page'">-</button>
                     <!--button  class="btn btn-mini" ng-click="deleteChildren(data)" ng-show="data.components.length > 0">--</button-->
                     <!--input type="checkbox" ng-model="(index == statusHolder.selectedIndex)" ng-init="index=index+1" /-->
 
@@ -444,25 +548,25 @@ div.customPage {
                     -->
 
                     <div ng-repeat="attr in dataHolder.allAttrs">
-                        <label style="text-align:right; width: 30%">{{attr.name}}<span ng-show="attr.required">*</span></label>
+                        <label style="text-align:end; width: 30%">{{i18nGet('attribute.'+attr.name)}}<span ng-show="attr.required">*</span> <span ng-show="attributeIsTranslatable(attr.name)">⊙</span></label>
                         <span ng-switch on="attrRenderProps[attr.name].inputType" >
-                            <pb-Map ng-switch-when="map" label='Edit {{attr.name}} for {{dataHolder.selectedComponent.name}}'
+                            <pb-Map ng-switch-when="map" label="{{i18nGet('sspb.page.visualbuilder.edit.map.title' , [i18nGet('attribute.'+attr.name),dataHolder.selectedComponent.name])}}"
                                     map='dataHolder.selectedComponent[attr.name]' pb-parent="dataHolder.selectedComponent" pb-attrname="attr.name"
                                     pb-change="handlePageTreeChange()"></pb-Map>
-                            <input ng-switch-when="text" style="text-align:left;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                            <input ng-switch-when="text" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-change="handlePageTreeChange()" ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
-                            <input ng-switch-when="number" style="text-align:left;" type="number" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                            <input ng-switch-when="number" style="text-align:start;" type="number" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-change="handlePageTreeChange()" ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
-                            <input ng-switch-when="url" style="text-align:left;" type="url" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                            <input ng-switch-when="url" style="text-align:start;" type="url" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-change="handlePageTreeChange()" ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
-                            <pb-Arrayofmap ng-switch-when="arrayOfMap" label='Edit {{attr.name}} for {{dataHolder.selectedComponent.name}}'
+                            <pb-Arrayofmap ng-switch-when="arrayOfMap" label="{{i18nGet('sspb.page.visualbuilder.edit.map.title' , [i18nGet('attribute.'+attr.name),dataHolder.selectedComponent.name])}}"
                                            pb-change="handlePageTreeChange()" array='dataHolder.selectedComponent[attr.name]'
                                            pb-parent="dataHolder.selectedComponent" pb-attrname="attr.name"></pb-Arrayofmap>
-                            <input ng-switch-when="boolean" style="text-align:left;" type="checkbox" ng-change="handlePageTreeChange()" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                            <input ng-switch-when="boolean" style="text-align:start;" type="checkbox" ng-change="handlePageTreeChange()" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
 
                             <!-- TODO default type is set in the model defintion - not mapped here  -->
-                            <input ng-switch-default style="text-align:left;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                            <input ng-switch-default style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-change="handlePageTreeChange()" ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
                         </span>
                     </div>
@@ -477,15 +581,15 @@ div.customPage {
     <!-- type selection modal body-->
     <div modal="shouldBeOpen"  options="typeSelectionModalOpts">
         <div class="modal-header">
-            <h4>Select a component type</h4>
+            <h4><g:message code="sspb.page.visualbuilder.select.type.prompt" /></h4>
         </div>
         <div class="modal-body">
 
-            <select  ng-model="$parent.selectedType" ng-options="type for type in validChildTypes"></select>
+            <select  ng-model="$parent.selectedType" ng-options="i18nGet('type.'+type) for type in validChildTypes"></select>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-success ok" ng-click="closeTypeSelectionModal()">Create Component</button>
-            <button class="btn btn-warning cancel" ng-click="cancelTypeSelectionModal()">Cancel Creation</button>
+            <button class="btn btn-success ok" ng-click="closeTypeSelectionModal()"><g:message code="sspb.page.visualbuilder.create.component.label" /></button>
+            <button class="btn btn-warning cancel" ng-click="cancelTypeSelectionModal()"><g:message code="sspb.page.visualbuilder.create.cancel.label" /></button>
         </div>
     </div>
 

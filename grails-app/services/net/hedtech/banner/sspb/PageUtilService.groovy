@@ -4,19 +4,26 @@ package net.hedtech.banner.sspb
 import org.springframework.context.ApplicationContext
 import org.codehaus.groovy.grails.web.context.ServletContextHolder
 import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
+import net.hedtech.banner.tools.i18n.SortedProperties
+import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 
 class PageUtilService {
 
-    def extData = System.getProperties().get('SSPB_DATA_DIR')
+    //Internationalize println in this service - this service is to be used by a batch export/import utility
+    def static localizer = { mapToLocalize ->
+        new ValidationTagLib().message( mapToLocalize )
+    }
+
+    def externalDataLocation = System.getProperties().get('SSPB_DATA_DIR')
 
     void exportAllToFile(String path) {
         Page.findAll().each { page ->
             if (page.constantName.endsWith(".imp.dup"))
-                println "Skipped exporting duplicate ${page.constantName}"
+                println localizer(code:"sspb.pageutil.export.skipDuplicate.message", args:[page.constantName])
             else {
                 def file = new File("$path/${page.constantName}.json")
                 def jsonString =  page.modelView
-                println "Exported $page.constantName"
+                println localizer(code:"sspb.pageutil.export.page.done.message", args:[page.constantName])
                 file.text = jsonString
             }
         }
@@ -26,16 +33,15 @@ class PageUtilService {
         new File(path).eachFileMatch(~/.*.json/) {   file ->
             def modelView = file.getText()
             def pageName = file.name.substring(0,file.name.lastIndexOf(".json"))
-            println "Importing $pageName"
             def page = new Page(constantName: pageName, modelView: modelView)
             if (Page.findByConstantName(pageName)) {
                 page.constantName+=".imp.dup"
                 def page1=Page.findByConstantName(page.constantName)
                 if (page1) //if we have already saved a duplicate, get rid of it.
                     page1.delete(flush: true)
-                println "WARN: Page already exists. Imported as ${page.constantName}."
+                println localizer(code:"sspb.pageutil.import.duplicate.page.done.message", args:[page.constantName])
             } else {
-                println "Imported ${page.constantName} "
+                println localizer(code:"sspb.pageutil.import.page.done.message", args:[page.constantName])
             }
             page = page.save(flush: true)
         }
@@ -46,18 +52,17 @@ class PageUtilService {
         def pages = Page.findAllByConstantNameLike(pat)
         def errors =[]
         pages.each { page ->
-            println "Compiling $page.constantName"
             def validateResult =  CompileService.preparePage(page.modelView)
             def statusMessage
 
             if (validateResult.valid) {
                 page.compiledController=CompileService.compileController(validateResult.pageComponent)
                 page.compiledView = CompileService.compile2page(validateResult.pageComponent)
-                statusMessage = "Page is compiled\n"
+                statusMessage = localizer(code:"sspb.pageutil.compile.page.done.message", args:[page.constantName])
                 page=page.save(flush: true)
             }  else {
                 def error = [pageName: page.constantName, errorMessage:validateResult.error.join('\n')]
-                statusMessage = "Page compiled with Errors:\n ${error.errorMessage}"
+                statusMessage = localizer(code:"sspb.pageutil.compile.page.done.message", args:[page.constantName,error.errorMessage])
                 errors <<error
             }
             println statusMessage
@@ -66,9 +71,9 @@ class PageUtilService {
     }
 
     void updateProperties( Map properties, String baseName){
-        def bundleLocation = "$extData/${baseName}.properties"
+        def bundleLocation = "$externalDataLocation/${baseName}.properties"
         def bundle = new File(bundleLocation)
-        def temp = new Properties()
+        def temp = new SortedProperties()
         if (bundle.exists())
             new org.springframework.util.DefaultPropertiesPersister().load(temp, new InputStreamReader( new FileInputStream(bundle), "UTF-8"))
         temp.putAll(properties)
@@ -80,6 +85,9 @@ class PageUtilService {
                                                 .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT);
         def messageSource = applicationContext.getBean("messageSource")
         messageSource.clearCache()
+
+        def extensibleMessageSource = applicationContext.getBean("extensibleMessageSource")
+        extensibleMessageSource.clearCache()
     }
 
 }
