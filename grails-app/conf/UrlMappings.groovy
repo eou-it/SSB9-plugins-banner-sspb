@@ -7,9 +7,18 @@ class UrlMappings {
             }
         }
 
-        //TODO - remove TODO before release
-        "/rest/todo/$id?/$other?" (controller:"TodoRest" /*, parseRequest:true */) {
-            action = [GET: "getTodo", POST: "postTodo", PUT: "putTodo", DELETE: "deleteTodo"]
+        "/api/$pluralizedResourceName/$id"(controller:'restfulApi') {
+            action = [GET: "show", PUT: "update",
+                    DELETE: "delete"]
+            parseRequest = false
+            constraints {
+                // to constrain the id to numeric, uncomment the following:
+                // id matches: /\d+/
+            }
+        }
+        "/api/$pluralizedResourceName"(controller:'restfulApi') {
+            action = [GET: "list", POST: "create"]
+            parseRequest = false
         }
 
         "/virt/$virtualDomain/$id?/$other1?/$other2?"  (controller:"VirtualDomain" /*, parseRequest:true */) {
@@ -35,6 +44,7 @@ class UrlMappings {
 
 
         //////// restful api config
+
 
 
         "/"(view:"/index")

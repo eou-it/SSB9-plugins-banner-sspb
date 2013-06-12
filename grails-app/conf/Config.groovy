@@ -73,6 +73,26 @@ restfulApiConfig = {
             extractor = new net.hedtech.restfulapi.extractors.xml.JSONObjectExtractor()
         }
     }
+    resource {
+        name = 'pages'
+        representation {
+            mediaType = "application/json"
+            addMarshaller {
+                marshaller = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
+                priority = 100
+            }
+            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
+        }
+        representation {
+            mediaType = "application/xml"
+            jsonAsXml = true
+            addMarshaller {
+                marshaller = new net.hedtech.restfulapi.marshallers.xml.JSONObjectMarshaller()
+                priority = 200
+            }
+            extractor = new net.hedtech.restfulapi.extractors.xml.JSONObjectExtractor()
+        }
+    }
 }
 
 //seems not to work well with virtual domains yet - updates are not being picked up
