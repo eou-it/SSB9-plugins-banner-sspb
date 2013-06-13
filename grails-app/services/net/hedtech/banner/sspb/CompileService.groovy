@@ -35,6 +35,7 @@ class CompileService {
         try {
             // first validate the raw JSON page model
             def pageModelValidator = new PageModelValidator()
+            // TODO parsing of model definition should be done once
             def pageDefText = CompileService.class.classLoader.getResourceAsStream( 'PageModelDefinition.json' ).text
             slurper = new groovy.json.JsonSlurper()
             def pageBuilderModel = slurper.parseText(pageDefText)
@@ -52,7 +53,7 @@ class CompileService {
             // run second validation
             pageValidation = validateComponent(page)
             valid = pageValidation.valid
-            errors += pageValidation.error
+            errors += pageValidation.errors
         } catch (Exception e) {
             println "Parsing page model exception: " + e
             errors << PageModelErrors.getError(error: PageModelErrors.MODEL_UNKNOWN_ERR, args: [e.message])
@@ -711,8 +712,8 @@ class CompileService {
         // check if name already exists on the page
         if (nameSet.contains(pageComponent.name)) {
             valid = false
-            def error = PageModelErrors.getError(error:PageModelErrors.MODEL_NAME_CONFLICT_ERR, args: [getComponentNamePath(pageComponent),pageComponent.name,pageComponent.type] )
-            errors << error.message
+            def error = PageModelErrors.getError(error:PageModelErrors.MODEL_NAME_CONFLICT_ERR, path: getComponentNamePath(pageComponent), args: [getComponentNamePath(pageComponent),pageComponent.name,pageComponent.type] )
+            errors << error
         } else
             nameSet << pageComponent.name
 
@@ -741,12 +742,13 @@ class CompileService {
     def static getComponentNamePath(pageComponent) {
         def nameList = []
         while (pageComponent) {
-            nameList << pageComponent.name
+            nameList << pageComponent.name + "(type=$pageComponent.type)"
             pageComponent = pageComponent.parent
         }
         nameList = nameList.reverse()
+        nameList[0] = "/${nameList[0]}"
 
-        return nameList.join(".")
+        return nameList.join("/")
     }
     def static getValidChildrenType(pageComponent) {
         def validPageChildren = [PageComponent.COMP_TYPE_RESOURCE, PageComponent.COMP_TYPE_BLOCK]

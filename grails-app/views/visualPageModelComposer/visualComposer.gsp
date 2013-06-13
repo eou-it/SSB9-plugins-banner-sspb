@@ -5,7 +5,7 @@
   Time: 4:15 PM
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page import="net.hedtech.banner.sspb.PageComponent; net.hedtech.banner.sspb.Page" %>
+<%@ page import="net.hedtech.banner.sspb.PageComponent" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
@@ -16,7 +16,7 @@
     <meta name="menuBaseURL" content="/sspb/sspb"/>
     <meta name="menuDefaultBreadcrumbId" content=""/>
 
-
+    <link rel="stylesheet" href="${resource(dir: 'css', file: 'pageComposer.css')}">
     <script src="/banner-sspb/js/pbDirectives.js"></script>
 
     <script type="text/javascript">
@@ -33,11 +33,11 @@
 
      // define angular controller
      function VisualPageComposerController( $scope, $http, $resource, $parse) {
-        $scope.pageName = "${pageModel.pageInstance?.constantName}";
+        $scope.pageName = "";
         // top level page source container must be an array for tree view rendering consistency
         $scope.pageSource = [];
         // data holder for reference in child scopes
-        $scope.dataHolder = {};
+        $scope.dataHolder = {selectedContext:{}};
         // status holder to remember which component property is shown
         $scope.statusHolder = {selectedIndex:0, newIndex:-1};
         // page command execution status
@@ -165,14 +165,6 @@
         }
 
 
-        $scope.getPageSource = function() {
-            this.Resource=$resource(rootWebApp+'visualPageModelComposer/page');
-            $scope.pageOneSource = this.Resource.get({pageName:$scope.pageName}, function (){
-                $scope.pageSource[0] = $scope.pageOneSource;
-                $scope.resetSelected();
-                $scope.handlePageTreeChange();
-            });
-        };
 
         $scope.handlePageTreeChange = function() {
             $scope.pageSourceView = JSON.stringify($scope.pageSource[0], JSONFilter, 6);
@@ -183,6 +175,7 @@
             $scope.dataHolder.selectedComponent = undefined;
             $scope.statusHolder.selectedIndex = 0;
             $scope.dataHolder.allAttrs = [];
+            $scope.dataHolder.selectedContext = {};
         }
 
         $scope.i18nGet = function(key,args) {
@@ -255,6 +248,7 @@
 
 
             tr['sspb.page.visualbuilder.edit.map.title' ] = "${message(code:'sspb.page.visualbuilder.edit.map.title',encodeAs: 'JavaScript')}";
+            tr['sspb.page.visualbuilder.invalidCopyType.error.message' ] = "${message(code:'sspb.page.visualbuilder.invalidCopyType.error.message',encodeAs: 'JavaScript')}";
             tr['pb.template.map.new.key.label'          ] = "${message(code:'pb.template.map.new.key.label',encodeAs: 'JavaScript')}";
             tr['pb.template.map.new.value.label'        ] = "${message(code:'pb.template.map.new.value.label',encodeAs: 'JavaScript')}";
             tr['pb.template.map.name.label'             ] = "${message(code:'pb.template.map.name.label',encodeAs: 'JavaScript')}";
@@ -289,7 +283,7 @@
 
         // recursively check if component1 is a direct or indirect child of component
         $scope.isChild = function(component, component1) {
-            // reach a leaf node
+            // reached a leaf node
             if (component.components==undefined || component.components.length==0)
                 return false;
 
@@ -323,11 +317,49 @@
             $scope.handlePageTreeChange();
         };
 
+        $scope.moveUpComponent = function(parent, index, gIndex) {
+            //var isChildSelected = $scope.dataHolder.selectedComponent!= undefined && $scope.isChild(parent.components[index], $scope.dataHolder.selectedComponent);
+            // TODO selected data gIndex may have been changed
+            var prev = parent.components[index-1];
+            parent.components[index-1] = parent.components[index];
+            parent.components[index] = prev;
+            $scope.handlePageTreeChange();
+        };
+
+        $scope.moveDownComponent = function(parent, index, gIndex) {
+            //var isChildSelected = $scope.dataHolder.selectedComponent!= undefined && $scope.isChild(parent.components[index], $scope.dataHolder.selectedComponent);
+            // TODO selected data gIndex may have been changed
+            var next = parent.components[index+1];
+            parent.components[index+1] = parent.components[index];
+            parent.components[index] = next;
+            $scope.handlePageTreeChange();
+        };
+
+        $scope.copyComponent = function(data) {
+            $scope.dataHolder.copy = data;
+        };
+
+        // paste a component as a new child of 'data'
+        $scope.pasteComponent = function(data) {
+            // check if the copied component is allowed for the parent component
+            if ($scope.findAllChildrenTypes(data.type).indexOf($scope.dataHolder.copy.type) == -1)
+                alert($scope.i18nGet('sspb.page.visualbuilder.invalidCopyType.error.message' , [$scope.dataHolder.copy.type, data.type]));
+            else {
+                if (data.components==undefined)
+                    data.components=[];
+
+                data.components.push($scope.dataHolder.copy);
+                $scope.handlePageTreeChange();
+            }
+
+        };
+
         $scope.deleteChildren = function(data) {
             data.components = [];
             //$scope.$apply('data');
             $scope.handlePageTreeChange();
         };
+
 
         $scope.addChild = function(data) {
             //console.log("addChild");
@@ -338,6 +370,9 @@
             // delay adding node until the type selection is made
         };
 
+        /*
+            Insert a new child component to 'data' at location 'index'
+         */
         $scope.insertSibling = function(data, index) {
             //console.log("addChild");
             $scope.validChildTypes = $scope.findAllChildrenTypes(data.type);
@@ -345,10 +380,11 @@
         }
 
 
-        $scope.selectData = function(data, index) {
+        $scope.selectData = function(data, index, parent) {
             //alert("scope = " + $scope.$id + ", data = " + data.type);
             $scope.dataHolder.selectedComponent = data;
             $scope.statusHolder.selectedIndex = index;
+            $scope.dataHolder.selectedContext = parent;
             // update the current selected component's property list
             $scope.findAllAttrs(data.type);
 
@@ -401,23 +437,84 @@
             dialogFade:true
           };
 
-          /* page operations */
+         // declare the Page resource
+         var Page = $resource(rootWebApp+'api/pages/:constantName',{},{
+             save:{
+                 method:"POST",
+                 isArray:false,
+                 headers:{'Content-Type':'application/json', 'Accept':'application/json'}
+             },
+             list: {
+                 method:"GET",
+                 isArray:true,
+                 headers:{'Content-Type':'application/json', 'Accept':'application/json'}
+             },
+             get: {
+                 method:"GET",
+                 isArray:false,
+                 headers:{'Content-Type':'application/json', 'Accept':'application/json'}
+             },
+             delete: {
+                 method:"DELETE",
+                 isArray:false,
+                 headers:{'Content-Type':'application/json', 'Accept':'application/json'}
+             }
+         });
+
+         // load the list of pages
+         $scope.pageList = [];
+         $scope.loadPageNames = function() {
+             Page.list({}, function(data) {
+                 $scope.pageList = data;
+                 /*
+                  console.log("pageList = " + data);
+                  angular.forEach($scope.pageList, function(page){
+                  console.log("Page = " + page.page.constantName);
+                  });*/
+             });
+         };
+         // populate the page list initially
+         $scope.loadPageNames();
+
+         $scope.getPageSource = function() {
+             //TODO prompt for unsaved data
+             if ($scope.pageOneSource != undefined)   {
+                 var r=confirm("${message(code: 'sspb.page.visualbuilder.loadpage.unsaved.changes.message', encodeAs: 'JavaScript')}");
+                 if (!r)
+                     return;
+             }
+             Page.get({constantName:$scope.pageName}, function (data){
+                 $scope.pageOneSource = JSON.parse(data.modelView);
+                 $scope.pageSource[0] = $scope.pageOneSource;
+                 $scope.resetSelected();
+                 $scope.handlePageTreeChange();
+             });
+         };
+
+         /* page operations */
           $scope.newPageSource = function() {
             // TODO generate a unique page name
-            var r=confirm("${message(code: 'sspb.page.visualbuilder.unsaved.changes.message', encodeAs: 'JavaScript')}");
-            if (!r)
-                return;
+            if ($scope.pageOneSource != undefined) {
+                var r=confirm("${message(code: 'sspb.page.visualbuilder.newpage.unsaved.changes.message', encodeAs: 'JavaScript')}");
+                if (!r)
+                    return;
+            }
 
             $scope.pageName= "${message( code:'sspb.page.visualbuilder.newpage.default', encodeAs: 'JavaScript')}";
             $scope.pageSource[0] = {"type": "page", "name": $scope.pageName};
+            $scope.pageOneSource =  $scope.pageSource[0];
             $scope.resetSelected();
             $scope.handlePageTreeChange();
           };
 
           $scope.submitPageSource = function() {
-            this.Resource1=$resource(rootWebApp+'visualPageModelComposer/compilePage');
-            // send the page source as text as expected by the compiler
-            $scope.pageOneSource = this.Resource1.save({pageName:$scope.pageName, source:$scope.pageSourceView }, function(response) {
+            //check if page name is set
+              if ($scope.pageName== undefined || $scope.pageName == '') {
+                  alert("${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
+                  return;
+              }
+
+              Page.save({pageName:$scope.pageName, source:$scope.pageSourceView }, function(response) {
                 //console.log("save response = " + response.statusCode + ", " +response.statusMessage);
                 if (response.statusCode == 0)
                     $scope.pageStatus.message = response.statusMessage;
@@ -427,6 +524,9 @@
                 }
 
                 alert($scope.pageStatus.message);
+
+                // refresh the page list in case new page is added
+                $scope.loadPageNames();
             });
 
           }
@@ -444,6 +544,35 @@
           }
 
           $scope.deletePageSource = function () {
+              //check if page name is set
+              if ($scope.pageName== undefined || $scope.pageName == '') {
+                  alert("${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
+
+                  return;
+              }
+
+              Page.delete({constantName:$scope.pageName }, function() {
+                  // on success
+                  alert("${message(code:'sspb.page.visualbuilder.deletion.success.message')}");
+                  // clear the page name field and page source
+                  $scope.pageName = "";
+                  $scope.resetSelected();
+                  $scope.pageSource[0] = {};
+                  $scope.pageOneSource= {};
+                  $scope.handlePageTreeChange();
+                  // refresh the page list after a page is deleted
+                  $scope.loadPageNames();
+
+              }, function(response) {
+                  var msg="${message(code:'sspb.page.visualbuilder.deletion.error.message')}";
+
+                  if (response.data.errors != undefined) {
+                      msg = $scope.i18nGet(msg,[response.data.errors[0].errorMessage]);
+                      console.log(msg);
+                      // display the error
+                      alert(msg);
+                  }
+              });
 
           }
 
@@ -452,19 +581,6 @@
 
     </script>
 
-<style>
-div.customPage {
-    overflow-x: auto;
-    overflow-y: auto;
-    margin: 4px;
-    padding: 0;
-    width:99%;
-
-    position: absolute;
-    top: 110px;
-    bottom: 30px;
-    left:0;	/* rtl fix for ie */    }
-</style>
 
 </head>
 <body>
@@ -472,16 +588,12 @@ div.customPage {
 <div ng-controller="VisualPageComposerController" class="customPage">
 
     <label><g:message code="sspb.page.visualbuilder.load.label" /></label>
-    <g:select name="constantName"
-              from="${Page.list().sort {it.constantName}}"
-              value="${pageModel.pageInstance?.constantName}"
-              noSelection="${['null': 'Select One...']}"
-              optionKey="constantName"
-              optionValue="constantName"
+    <select name="constantName"
+            ng-options="page.page.constantName as page.page.constantName for page in pageList"
                 ng-model="pageName"
-                ng-change="getPageSource()"/>
+                ng-change="getPageSource()"></select>
 
-
+    <button ng-click='loadPageNames()'><g:message code="sspb.page.visualbuilder.reload.pages.label" /></button>
 <br/>
 
 
@@ -496,8 +608,6 @@ div.customPage {
     <button ng-click='importPageSource()'><g:message code="sspb.page.visualbuilder.import.label" /></button>
     <button ng-click='deletePageSource()'><g:message code="sspb.page.visualbuilder.delete.label" /></button>
 
-
-    <input type="hidden" name="id" value="${pageModel.pageInstance?.id}"/>
     <table style="height:80%;">
         <tr>
             <th style="width:30%"><g:message code="sspb.page.visualbuilder.page.sourceview.label" /></th>
@@ -507,7 +617,7 @@ div.customPage {
         <tr height="99%">
             <td>
                 <g:textArea name="modelView" ng-model="pageSourceView"
-                            cols="60" rows="30" style="width:100%; height:auto;" required="true"/>
+                            cols="60" rows="30" style="width:100%; height:auto;" required="true" ng-readonly="true" />
 
             </td>
 
@@ -523,10 +633,14 @@ div.customPage {
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     </span>
                     <!--input type="checkbox" ng-model="showChildren" ng-show="data.components!=undefined && data.type!=undefined"/-->
-                    <span ng-init="index=nextIndex()" ng-click="selectData(data, index)" style="{{componentLabelStyle(index == statusHolder.selectedIndex)}}">{{data.name}} &lrm;[{{i18nGet('type.'+data.type)}}]&lrm;</span>
+                    <span ng-init="index=nextIndex()" ng-click="selectData(data, index, $parent.$parent.data)" style="{{componentLabelStyle(index == statusHolder.selectedIndex)}}">{{data.name}} &lrm;[{{i18nGet('type.'+data.type)}}]&lrm;</span>
                     <button  title="${message(code:'sspb.page.visualbuilder.insert.sibling.title')}" class="btn btn-mini" style="background:none;" ng-click="insertSibling($parent.$parent.data, $index)" ng-show="data.type!='page'">&larr;</button>
                     <button  title="${message(code:'sspb.page.visualbuilder.append.child.title')}" class="btn btn-mini" style="background:none;" ng-click="addChild(data)" ng-show="findAllChildrenTypes(data.type).length>0">+</button>
                     <button  title="${message(code:'sspb.page.visualbuilder.delete.component.title')}" class="btn btn-mini" style="background:none;" ng-click="deleteComponent($parent.$parent.data, $index, index)"  ng-show="data.type!='page'">-</button>
+                    <button  title="${message(code:'sspb.page.visualbuilder.copy.component.title')}"   ng-click="copyComponent(data)" ng-show="data.type!='page'" class="button_copy"></button>
+                    <button  title="${message(code:'sspb.page.visualbuilder.paste.component.title')}"  ng-click="pasteComponent(data)"  ng-show="dataHolder.copy!=undefined" class="button_paste"></button>
+                    <button  title="${message(code:'sspb.page.visualbuilder.moveup.component.title')}" class="btn btn-mini" style="background:none;" ng-click="moveUpComponent($parent.$parent.data, $index, index)"  ng-show="!$first">&uarr;</button>
+                    <button  title="${message(code:'sspb.page.visualbuilder.movedown.component.title')}" class="btn btn-mini" style="background:none;" ng-click="moveDownComponent($parent.$parent.data, $index, index)"  ng-show="!$last">&darr;</button>
                     <!--button  class="btn btn-mini" ng-click="deleteChildren(data)" ng-show="data.components.length > 0">--</button-->
                     <!--input type="checkbox" ng-model="(index == statusHolder.selectedIndex)" ng-init="index=index+1" /-->
 

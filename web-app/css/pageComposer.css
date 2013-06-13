@@ -1,0 +1,64 @@
+/*
+styles used by visual composer
+*/
+
+div.customPage {
+    overflow-x: auto;
+    overflow-y: auto;
+    margin: 4px;
+    padding: 0;
+    width:99%;
+
+    position: absolute;
+    top: 110px;
+    bottom: 30px;
+    left:0;	/* rtl fix for ie */
+}
+
+.button_copy {
+    background-image: url(/banner-sspb/images/buttons/edit_copy.png); /* 16px x 16px */
+    background-color: transparent; /* make the button transparent */
+    background-repeat: no-repeat;  /* make the background image appear only once */
+    background-position: top left;  /* equivalent to 'top left' */
+    border: none;           /* assuming we don't want any borders */
+    cursor: pointer;        /* make the cursor like hovering over an <a> element */
+    width: 20px;
+    height: 20px;           /* make this the size of your image */
+    padding: 4px;
+    /* padding-left: 16px;*/     /* make text start to the right of the image */
+    vertical-align: middle; /* align the text vertically centered */
+}
+
+.button_copy:hover {
+    background-position: center left;
+}
+
+.button_copy:active {
+    background-position: bottom right;
+    padding-top: 2px;
+}
+
+.button_paste {
+    background-image: url(/banner-sspb/images/buttons/edit_paste.png); /* 16px x 16px */
+    background-color: transparent; /* make the button transparent */
+    background-repeat: no-repeat;  /* make the background image appear only once */
+    background-position: 0px 0px;  /* equivalent to 'top left' */
+    border: none;           /* assuming we don't want any borders */
+    cursor: pointer;        /* make the cursor like hovering over an <a> element */
+    width: 20px;
+    height: 20px;           /* make this the size of your image */
+    padding: 4px;
+    /* padding-left: 16px; */     /* make text start to the right of the image */
+    vertical-align: middle; /* align the text vertically centered */
+}
+
+.button_paste:hover {
+    background-position: center left;
+}
+
+.button_paste:active {
+    background-position: bottom right;
+    padding-top: 2px;
+}
+
+
