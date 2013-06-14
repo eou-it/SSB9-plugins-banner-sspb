@@ -21,50 +21,62 @@ ul {
     list-style: none;
 }
 
-.button_copy {
-    background-image: url(/banner-sspb/images/buttons/edit_copy.png); /* 16px x 16px */
-    background-color: transparent; /* make the button transparent */
-    background-repeat: no-repeat;  /* make the background image appear only once */
-    background-position: top left;  /* equivalent to 'top left' */
-    border: none;           /* assuming we don't want any borders */
-    cursor: pointer;        /* make the cursor like hovering over an <a> element */
-    width: 20px;
-    height: 20px;           /* make this the size of your image */
-    padding: 4px;
-    /* padding-left: 16px;*/     /* make text start to the right of the image */
-    vertical-align: middle; /* align the text vertically centered */
+.alignRight {
+    right:0px;
+    margin:10%;
 }
 
-.button_copy:hover {
-    background-position: center left;
+.componentEntry {
+    display: inline-block;
+    width: 200px;
+    overflow: hidden;
 }
 
-.button_copy:active {
-    background-position: bottom right;
-    padding-top: 2px;
-}
-
-.button_paste {
-    background-image: url(/banner-sspb/images/buttons/edit_paste.png); /* 16px x 16px */
-    background-color: transparent; /* make the button transparent */
+button.button_edit {
     background-repeat: no-repeat;  /* make the background image appear only once */
     background-position: 0px 0px;  /* equivalent to 'top left' */
+    background-color: transparent; /* make the button transparent */
     border: none;           /* assuming we don't want any borders */
     cursor: pointer;        /* make the cursor like hovering over an <a> element */
-    width: 20px;
+    width: 18px;
     height: 20px;           /* make this the size of your image */
-    padding: 4px;
+    padding: 2px;
     /* padding-left: 16px; */     /* make text start to the right of the image */
     vertical-align: middle; /* align the text vertically centered */
+    background-size: 90%;
 }
 
-.button_paste:hover {
+button.button_edit:hover {
     background-position: center left;
 }
 
-.button_paste:active {
+button.button_edit:active {
     background-position: bottom right;
     padding-top: 2px;
 }
 
+.button_copy {
+    background-image: url(/banner-sspb/images/buttons/edit_copy.png); /* 16px x 16px */
+}
+.button_paste {
+    background-image: url(/banner-sspb/images/buttons/edit_paste.png); /* 16px x 16px */}
 
+.button_insert {
+    background-image: url(/banner-sspb/images/buttons/edit_insert.png); /* 16px x 16px */
+}
+
+.button_delete {
+    background-image: url(/banner-sspb/images/buttons/edit_delete.png); /* 16px x 16px */
+}
+
+.button_sort_asc {
+    background-image: url(/banner-sspb/images/buttons/edit_sort_ascending.png); /* 16px x 16px */
+}
+
+.button_sort_desc {
+    background-image: url(/banner-sspb/images/buttons/edit_sort_descending.png); /* 16px x 16px */
+}
+
+.button_add {
+    background-image: url(/banner-sspb/images/buttons/edit_add.png); /* 16px x 16px */
+}

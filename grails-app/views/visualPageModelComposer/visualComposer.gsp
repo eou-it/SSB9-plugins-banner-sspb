@@ -519,10 +519,14 @@
                      return;
              }
              Page.get({constantName:$scope.pageName}, function (data){
-                 $scope.pageOneSource = JSON.parse(data.modelView);
-                 $scope.pageSource[0] = $scope.pageOneSource;
-                 $scope.resetSelected();
-                 $scope.handlePageTreeChange();
+                 try {
+                     $scope.pageOneSource = JSON.parse(data.modelView);
+                     $scope.pageSource[0] = $scope.pageOneSource;
+                     $scope.resetSelected();
+                     $scope.handlePageTreeChange();
+                 } catch(ex) {
+                     alert($scope.i18nGet("${message(code:'sspb.page.visualbuilder.parsing.error.message')}",[ex]));
+                 }
              });
          };
 
@@ -619,6 +623,35 @@
              $scope.showTree = !$scope.showTree;
          }
 
+         $scope.sourceEditEnabled = false;
+
+         $scope.enableSourceEdit = function() {
+             $scope.resetSelected();
+             $scope.sourceEditEnabled = true;
+         }
+
+         $scope.applySourceEdit = function() {
+             // prompt user
+             var msg = "${message(code:'sspb.page.visualbuilder.applychange.prompt.message')}";
+             if (confirm(msg)) {
+                 // parse the source
+                 try {
+                     var newPage = JSON.parse($scope.pageSourceView);
+                     $scope.pageOneSource = newPage;
+                     $scope.pageSource[0] = $scope.pageOneSource;
+                     $scope.sourceEditEnabled = false;
+                 } catch(ex) {
+                     alert($scope.i18nGet("${message(code:'sspb.page.visualbuilder.parsing.error.message')}",[ex]));
+                 }
+
+             }
+         }
+
+         $scope.discardSourceEdit = function() {
+             $scope.handlePageTreeChange();
+             $scope.sourceEditEnabled = false;
+         }
+
      }
 
     </script>
@@ -646,14 +679,10 @@
     <button ng-click='submitPageSource()'><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
     <button ng-click="getPageSource()"><g:message code="sspb.page.visualbuilder.reload.label" /></button>
     <button ng-click="previewPageSource()"><g:message code="sspb.page.visualbuilder.preview.label" /></button>
-    <button ng-click='exportPageSource()'><g:message code="sspb.page.visualbuilder.export.label" /></button>
-    <button ng-click='importPageSource()'><g:message code="sspb.page.visualbuilder.import.label" /></button>
     <button ng-click='deletePageSource()'><g:message code="sspb.page.visualbuilder.delete.label" /></button>
 
     <table style="height:80%;">
         <tr>
-            <!--
-            <th style="width:30%"><g:message code="sspb.page.visualbuilder.page.sourceview.label" /></th>   -->
             <th style="width:50%"><g:message code="sspb.page.visualbuilder.page.view.label" /></th>
             <th style="width:40%"><g:message code="sspb.page.visualbuilder.component.propertyview.label" /></th>
         </tr>
@@ -661,13 +690,18 @@
             <td>
                 <span ng-show="pageName != '' && pageName != 'null'">
                     <div>
-                        <button class="btn btn-mini" ng-click='toggleSourceView()' ng-disabled='showTree'><g:message code="sspb.page.visualbuilder.page.treeview.label" /></button>
+                        <button class="btn btn-mini" ng-click='toggleSourceView()' ng-disabled='showTree || sourceEditEnabled'><g:message code="sspb.page.visualbuilder.page.treeview.label" /></button>
                         <button class="btn btn-mini" ng-click='toggleSourceView()' ng-disabled='!showTree'><g:message code="sspb.page.visualbuilder.page.sourceview.label" /></button>
+                        <span ng-show="!showTree" class="alignRight">
+                            <button class="btn btn-mini" ng-click='enableSourceEdit()' ng-disabled='sourceEditEnabled'><g:message code="sspb.page.visualbuilder.page.enable.edit.label" /></button>
+                            <button class="btn btn-mini" ng-click='applySourceEdit()' ng-disabled='!sourceEditEnabled'><g:message code="sspb.page.visualbuilder.page.apply.change.label" /></button>
+                            <button class="btn btn-mini" ng-click='discardSourceEdit()' ng-disabled='!sourceEditEnabled'><g:message code="sspb.page.visualbuilder.page.discard.change.label" /></button>
+                        </span>
                     </div>
                     <div class="tabs-below">
                         <div class='tab-content' ng-show='!showTree'>
                             <textArea name="modelView" ng-model="pageSourceView"
-                                        cols="60" rows="30" style="width:100%; height:auto;" required="true" ng-readonly="true" > </textArea>
+                                        cols="60" rows="30" style="width:90%; height:auto;" required="true" ng-readonly="!sourceEditEnabled" > </textArea>
                         </div>
 
                         <div class='tab-content' ng-show="showTree">
@@ -726,14 +760,17 @@
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </span>
         <!--input type="checkbox" ng-model="showChildren" ng-show="data.components!=undefined && data.type!=undefined"/-->
-        <span ng-init="index=nextIndex()" ng-click="selectData(data, index, $parent.$parent.data)" style="{{componentLabelStyle(index == statusHolder.selectedIndex)}}">{{data.name}} &lrm;[{{i18nGet('type.'+data.type)}}]&lrm;</span>
-        <button  title="${message(code:'sspb.page.visualbuilder.insert.sibling.title')}" class="btn btn-mini" style="background:none;" ng-click="insertSibling($parent.$parent.data, $index)" ng-show="data.type!='page'">&larr;</button>
-        <button  title="${message(code:'sspb.page.visualbuilder.append.child.title')}" class="btn btn-mini" style="background:none;" ng-click="addChild(data)" ng-show="findAllChildrenTypes(data.type).length>0">+</button>
-        <button  title="${message(code:'sspb.page.visualbuilder.delete.component.title')}" class="btn btn-mini" style="background:none;" ng-click="deleteComponent($parent.$parent.data, $index, index)"  ng-show="data.type!='page'">-</button>
-        <button  title="${message(code:'sspb.page.visualbuilder.copy.component.title')}"   ng-click="copyComponent(data)" ng-show="data.type!='page'" class="button_copy"></button>
-        <button  title="${message(code:'sspb.page.visualbuilder.paste.component.title')}"  ng-click="pasteComponent(data)"  ng-show="dataHolder.copy!=undefined" class="button_paste"></button>
-        <button  title="${message(code:'sspb.page.visualbuilder.moveup.component.title')}" class="btn btn-mini" style="background:none;" ng-click="moveUpComponent($parent.$parent.data, $index, index)"  ng-show="!$first">&uarr;</button>
-        <button  title="${message(code:'sspb.page.visualbuilder.movedown.component.title')}" class="btn btn-mini" style="background:none;" ng-click="moveDownComponent($parent.$parent.data, $index, index)"  ng-show="!$last">&darr;</button>
+        <span ng-init="index=nextIndex()" ng-click="selectData(data, index, $parent.$parent.data)" class="componentEntry"
+              style="{{componentLabelStyle(index == statusHolder.selectedIndex)}}">{{data.name}} &lrm;[{{i18nGet('type.'+data.type)}}]&lrm;</span>
+
+        <button  title="${message(code:'sspb.page.visualbuilder.insert.sibling.title')}" class="button_insert button_edit" ng-click="insertSibling($parent.$parent.data, $index)" ng-show="data.type!='page'"></button>
+        <button  title="${message(code:'sspb.page.visualbuilder.append.child.title')}" class="button_edit button_add" ng-click="addChild(data)" ng-show="findAllChildrenTypes(data.type).length>0"></button>
+        <button  title="${message(code:'sspb.page.visualbuilder.moveup.component.title')}" class="button_sort_asc button_edit" ng-click="moveUpComponent($parent.$parent.data, $index, index)"  ng-show="!$first"></button>
+        <button  title="${message(code:'sspb.page.visualbuilder.movedown.component.title')}" class="button_sort_desc button_edit" ng-click="moveDownComponent($parent.$parent.data, $index, index)"  ng-show="!$last"></button>
+        <button  title="${message(code:'sspb.page.visualbuilder.delete.component.title')}" class="button_delete button_edit" ng-click="deleteComponent($parent.$parent.data, $index, index)"  ng-show="data.type!='page'"></button>
+        <button  title="${message(code:'sspb.page.visualbuilder.copy.component.title')}"  class="button_copy button_edit" ng-click="copyComponent(data)" ng-show="data.type!='page'"></button>
+        <button  title="${message(code:'sspb.page.visualbuilder.paste.component.title')}"  class="button_paste button_edit" ng-click="pasteComponent(data)"  ng-show="dataHolder.copy!=undefined" ></button>
+
         <!--button  class="btn btn-mini" ng-click="deleteChildren(data)" ng-show="data.components.length > 0">--</button-->
         <!--input type="checkbox" ng-model="(index == statusHolder.selectedIndex)" ng-init="index=index+1" /-->
 

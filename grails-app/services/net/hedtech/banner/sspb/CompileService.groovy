@@ -120,7 +120,8 @@ class CompileService {
         def result = codeList.join("\n")
         // inject common code into controller
         // TODO: refactor so it can be in a separate js.
-        def common =  new File("web-app/js/sspbCommon.js").getText()
+        //def common =  new File("js/sspbCommon.js").getText()
+        def common = CompileService.class.classLoader.getResourceAsStream( 'data/sspbCommon.js' ).text
 
         result = """
     function CustomPageController( \$scope, \$http, \$resource, \$parse) {
