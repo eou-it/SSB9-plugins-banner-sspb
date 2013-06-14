@@ -122,7 +122,7 @@ class CompileService {
         def common =  new File("web-app/js/sspbCommon.js").getText()
 
         result = """
-    function CustomPageController( \$scope, \$http, \$resource, \$parse) {
+    function CustomPageController( \$scope, \$http, \$resource, \$parse, \$locale) {
         // copy global var to scope
         \$scope._isUserAuthenticated = __isUserAuthenticated;
         \$scope._userFullName = __userFullName;

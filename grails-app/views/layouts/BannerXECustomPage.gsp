@@ -26,6 +26,9 @@
         <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'demo_table_jui.css')}">
 -->
 
+        <g:set var="localeLanguage"    value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).language}" scope="page" />
+        <g:set var="localeBrowserFull" value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).toString().replace('_','-')}" scope="page" />
+
 
 <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
     <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'anish-app-rtl.css')}">
@@ -51,9 +54,9 @@
         <script src="/banner-sspb/BannerXE/lib/jquery/jquery-ui-1.8.24.custom.js"></script>
 
 
-        <script src="/banner-sspb/BannerXE/lib/jquery/jquery.ui.datepicker-${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).language}.js"></script>
 
-        <script src="/banner-sspb/BannerXE/lib/jquery/jquery.ui.datepicker-${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).toString().replace('_','-')}.js"></script>
+        <script src="/banner-sspb/BannerXE/lib/jquery/jquery.ui.datepicker-${localeLanguage}.js"></script>
+        <script src="/banner-sspb/BannerXE/lib/jquery/jquery.ui.datepicker-${localeBrowserFull}.js"></script>
 
         <%-- end Added Harry --%>
 
@@ -63,12 +66,17 @@
 
         <script src="/banner-sspb/BannerXE/lib/angular/angular.js"></script>
         <script src="/banner-sspb/BannerXE/lib/angular/angular-resource.js"></script>
+        <script src="<g:resource dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeLanguage}.js" />"> </script>
+        <script src="<g:resource dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeBrowserFull.toLowerCase()}.js" />"> </script>
+
 
         <%-- Added Harry --%>
         <script src="/banner-sspb/BannerXE/lib/ng-grid/ng-grid.js"></script>
         <script src="/banner-sspb/BannerXE/lib/angular-ui/angular-ui.js"></script>
         <!-- for modal dialog -->
         <script src="/banner-sspb/BannerXE/lib/angular-ui/ui-bootstrap-tpls-0.3.0.js"></script>
+
+        <g:javascript src="pbRunDirectives.js"/>
         <!--
         <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">
             -->
@@ -122,8 +130,10 @@
         <script src="/banner-sspb/BannerXE/js/directives.js"></script>
 
         <script src="/banner-sspb/BannerXE/js/app.js"></script>
+<%--
         <script src="/banner-sspb/BannerXE/lib/jquery/jquery-1.8.2.js"></script>
         <script src="/banner-sspb/BannerXE/lib/jquery/jquery-ui-1.8.24.custom.js"></script>
+--%>
         <script src="/banner-sspb/BannerXE/lib/jquery/jquery.dataTables.js"></script>
         <script src="/banner-sspb/BannerXE/lib/bootstrap/bootstrap.js"></script>
         <script src="/banner-sspb/BannerXE/lib/jquery/plugins/jstree/jquery.jstree.js"></script>

@@ -507,6 +507,9 @@ class PageComponent {
                 }
                 def attributes = "$validateStr ${required?"required":""} ${placeholder?"placeholder=\"${tran("placeholder")}\"":""}".trim()
                 def typeString= "type=\"$t\""
+                if (type == COMP_TYPE_NUMBER) {  // angular-ui doesn't use localized validators
+                    typeString="type=\"text\" pb-number "
+                }
                 if (type == COMP_TYPE_DATETIME)  //Assume format comes from jquery.ui.datepicker-<locale>.js
                     typeString=" ui-date=\"{ changeMonth: true, changeYear: true}\" "
                 //Cannot choose format with time, but lots of options. See http://jqueryui.com/datepicker/
@@ -645,7 +648,7 @@ class PageComponent {
 var pageID = "$name"
 
  // inject services and controller modules to be registered with the global ng-app
- var myCustomServices = ['ngResource','ngGrid','ui'];
+ var myCustomServices = ['ngResource','ngGrid','ui', 'pbrun.directives'];
 
 
 </script>
