@@ -15,6 +15,12 @@ div.customPage {
     left:0;	/* rtl fix for ie */
 }
 
+ul {
+    padding: 0;
+    margin: 0 0 9px 10px;
+    list-style: none;
+}
+
 .button_copy {
     background-image: url(/banner-sspb/images/buttons/edit_copy.png); /* 16px x 16px */
     background-color: transparent; /* make the button transparent */

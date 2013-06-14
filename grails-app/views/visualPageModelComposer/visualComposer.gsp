@@ -281,7 +281,7 @@
             return (attributes.indexOf(attr) != -1); // seems not to work in IE8
         }
 
-        // recursively check if component1 is a direct or indirect child of component
+        // recursively check if 'component1' is a direct or indirect child of 'component'
         $scope.isChild = function(component, component1) {
             // reached a leaf node
             if (component.components==undefined || component.components.length==0)
@@ -385,11 +385,46 @@
             $scope.dataHolder.selectedComponent = data;
             $scope.statusHolder.selectedIndex = index;
             $scope.dataHolder.selectedContext = parent;
+            $scope.dataHolder.selectedType = data.type;
+            // set the components types that are valid for the selected component's parent
+            // used when component type is changed
+            if (parent != undefined)
+                $scope.dataHolder.selectedCompatibleTypes = $scope.findAllChildrenTypes(parent.type);
+            else
+                $scope.dataHolder.selectedCompatibleTypes = ["page"];
             // update the current selected component's property list
             $scope.findAllAttrs(data.type);
 
             //console.log("scope = " + $scope.$id);
         };
+
+        // handle type switch for a component
+        $scope.handleAttrChange= function() {
+            // set all valid attributes for the new component type
+            $scope.findAllAttrs($scope.dataHolder.selectedComponent.type);
+            var newAttrs = $scope.findRequiredAttrs($scope.dataHolder.selectedComponent.type).
+                    concat($scope.findOptionalAttrs($scope.dataHolder.selectedComponent.type));
+            // first remove existing attributes that are not allowed for the new type
+            var oldAttrs= _.keys($scope.dataHolder.selectedComponent);
+            for (var i =0; i < oldAttrs.length; i++ ){
+                if (oldAttrs[i] != "components" && newAttrs.indexOf(oldAttrs[i]) == -1)
+                    delete $scope.dataHolder.selectedComponent[oldAttrs[i]];
+            }
+            // check if any existing children is not allowed for the new type
+            var oldChildren = $scope.dataHolder.selectedComponent.components;
+            if (oldChildren != undefined && oldChildren.length > 0 ) {
+                var allowedChildrenTypes = $scope.findAllChildrenTypes($scope.dataHolder.selectedComponent.type);
+
+                for (var i=0; i < oldChildren.length; i++) {
+                    if (allowedChildrenTypes==undefined || !_.contains(allowedChildrenTypes, oldChildren[i].type))
+                        $scope.dataHolder.selectedComponent.components = _.without($scope.dataHolder.selectedComponent.components,
+                                oldChildren[i]);
+                }
+            }
+
+            $scope.handlePageTreeChange();
+
+         };
 
         $scope.toggleShowChildren = function() {
             $scope.showChildren = !$scope.showChildren;
@@ -558,7 +593,7 @@
                   $scope.pageName = "";
                   $scope.resetSelected();
                   $scope.pageSource[0] = {};
-                  $scope.pageOneSource= {};
+                  $scope.pageOneSource= undefined;
                   $scope.handlePageTreeChange();
                   // refresh the page list after a page is deleted
                   $scope.loadPageNames();
@@ -576,6 +611,13 @@
 
           }
 
+         /* tab controls */
+         // show tree view initially
+         $scope.showTree= true;
+         //$scope.toggleSourceLabel = "Show Page Source";
+         $scope.toggleSourceView = function() {
+             $scope.showTree = !$scope.showTree;
+         }
 
      }
 
@@ -610,50 +652,33 @@
 
     <table style="height:80%;">
         <tr>
-            <th style="width:30%"><g:message code="sspb.page.visualbuilder.page.sourceview.label" /></th>
-            <th style="width:30%"><g:message code="sspb.page.visualbuilder.component.treeview.label" /></th>
+            <!--
+            <th style="width:30%"><g:message code="sspb.page.visualbuilder.page.sourceview.label" /></th>   -->
+            <th style="width:50%"><g:message code="sspb.page.visualbuilder.page.view.label" /></th>
             <th style="width:40%"><g:message code="sspb.page.visualbuilder.component.propertyview.label" /></th>
         </tr>
         <tr height="99%">
             <td>
-                <g:textArea name="modelView" ng-model="pageSourceView"
-                            cols="60" rows="30" style="width:100%; height:auto;" required="true" ng-readonly="true" />
+                <span ng-show="pageName != '' && pageName != 'null'">
+                    <div>
+                        <button class="btn btn-mini" ng-click='toggleSourceView()' ng-disabled='showTree'><g:message code="sspb.page.visualbuilder.page.treeview.label" /></button>
+                        <button class="btn btn-mini" ng-click='toggleSourceView()' ng-disabled='!showTree'><g:message code="sspb.page.visualbuilder.page.sourceview.label" /></button>
+                    </div>
+                    <div class="tabs-below">
+                        <div class='tab-content' ng-show='!showTree'>
+                            <textArea name="modelView" ng-model="pageSourceView"
+                                        cols="60" rows="30" style="width:100%; height:auto;" required="true" ng-readonly="true" > </textArea>
+                        </div>
 
-            </td>
-
-            <td>
-
-                <script type="text/ng-template"  id="tree_item_renderer.html">
-                    <span  ng-show="data.components!=undefined && data.components.length>0">
-                        <button title="${message(code:'sspb.page.visualbuilder.collapsetree.title')}" style="background:none;border:none; font-size:100%; color:gray;" ng-click="showChildren=!showChildren;"  ng-show="showChildren">&#x229f;</button>
-                        <button title="${message(code:'sspb.page.visualbuilder.expandtree.title')}" style="background:none;border:none; font-size:100%; color:gray;" ng-click="showChildren=!showChildren;"  ng-show="!showChildren">&#x229e;</button>
-                    </span>
-                    <!-- align text if there is no expand/collapse button-->
-                    <span  ng-show="data.components==undefined || data.components.length==0" style="background:none;border:none; font-size:100%">
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    </span>
-                    <!--input type="checkbox" ng-model="showChildren" ng-show="data.components!=undefined && data.type!=undefined"/-->
-                    <span ng-init="index=nextIndex()" ng-click="selectData(data, index, $parent.$parent.data)" style="{{componentLabelStyle(index == statusHolder.selectedIndex)}}">{{data.name}} &lrm;[{{i18nGet('type.'+data.type)}}]&lrm;</span>
-                    <button  title="${message(code:'sspb.page.visualbuilder.insert.sibling.title')}" class="btn btn-mini" style="background:none;" ng-click="insertSibling($parent.$parent.data, $index)" ng-show="data.type!='page'">&larr;</button>
-                    <button  title="${message(code:'sspb.page.visualbuilder.append.child.title')}" class="btn btn-mini" style="background:none;" ng-click="addChild(data)" ng-show="findAllChildrenTypes(data.type).length>0">+</button>
-                    <button  title="${message(code:'sspb.page.visualbuilder.delete.component.title')}" class="btn btn-mini" style="background:none;" ng-click="deleteComponent($parent.$parent.data, $index, index)"  ng-show="data.type!='page'">-</button>
-                    <button  title="${message(code:'sspb.page.visualbuilder.copy.component.title')}"   ng-click="copyComponent(data)" ng-show="data.type!='page'" class="button_copy"></button>
-                    <button  title="${message(code:'sspb.page.visualbuilder.paste.component.title')}"  ng-click="pasteComponent(data)"  ng-show="dataHolder.copy!=undefined" class="button_paste"></button>
-                    <button  title="${message(code:'sspb.page.visualbuilder.moveup.component.title')}" class="btn btn-mini" style="background:none;" ng-click="moveUpComponent($parent.$parent.data, $index, index)"  ng-show="!$first">&uarr;</button>
-                    <button  title="${message(code:'sspb.page.visualbuilder.movedown.component.title')}" class="btn btn-mini" style="background:none;" ng-click="moveDownComponent($parent.$parent.data, $index, index)"  ng-show="!$last">&darr;</button>
-                    <!--button  class="btn btn-mini" ng-click="deleteChildren(data)" ng-show="data.components.length > 0">--</button-->
-                    <!--input type="checkbox" ng-model="(index == statusHolder.selectedIndex)" ng-init="index=index+1" /-->
-
-                    <ul ng-show="showChildren" style="list-style: none;">
-                        <li ng-repeat="data in data.components"   ng-include="'tree_item_renderer.html'"></li>
-                    </ul>
-                </script>
-
-                <div style="width:100%;  overflow-y: auto; overflow-x: auto; white-space:nowrap;" ng-show="pageName != '' && pageName != 'null'">
-                <ul style="list-style: none;" ng-init="showChildren=true;">
-                    <li ng-repeat="data in pageSource"   ng-include="'tree_item_renderer.html'"></li>
-                </ul>
-                </div>
+                        <div class='tab-content' ng-show="showTree">
+                            <div style="width:100%;  overflow-y: auto; overflow-x: auto; white-space:nowrap;" >
+                                <ul ng-init="showChildren=true;">
+                                    <li ng-repeat="data in pageSource"   ng-include="'tree_item_renderer.html'"></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </span>
             </td>
             <td>
                 <div ng-show="dataHolder.selectedComponent!=undefined">
@@ -667,8 +692,10 @@
                             <pb-Map ng-switch-when="map" label="{{i18nGet('sspb.page.visualbuilder.edit.map.title' , [i18nGet('attribute.'+attr.name),dataHolder.selectedComponent.name])}}"
                                     map='dataHolder.selectedComponent[attr.name]' pb-parent="dataHolder.selectedComponent" pb-attrname="attr.name"
                                     pb-change="handlePageTreeChange()"></pb-Map>
+                            <select ng-switch-when="select" ng-options="type for type in dataHolder.selectedCompatibleTypes"
+                                ng-model="dataHolder.selectedComponent[attr.name]" ng-change="handleAttrChange()"></select>
                             <input ng-switch-when="text" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
-                                   ng-change="handlePageTreeChange()" ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
+                                   ng-change="handlePageTreeChange()" ng-model="dataHolder.selectedComponent[attr.name]"/>
                             <input ng-switch-when="number" style="text-align:start;" type="number" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-change="handlePageTreeChange()" ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
                             <input ng-switch-when="url" style="text-align:start;" type="url" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
@@ -688,9 +715,33 @@
              </td>
         </tr>
 
-
-
     </table>
+    <script type="text/ng-template"  id="tree_item_renderer.html">
+        <span  ng-show="data.components!=undefined && data.components.length>0">
+            <button title="${message(code:'sspb.page.visualbuilder.collapsetree.title')}" style="background:none;border:none; font-size:100%; color:gray;" ng-click="showChildren=!showChildren;"  ng-show="showChildren">&#x229f;</button>
+            <button title="${message(code:'sspb.page.visualbuilder.expandtree.title')}" style="background:none;border:none; font-size:100%; color:gray;" ng-click="showChildren=!showChildren;"  ng-show="!showChildren">&#x229e;</button>
+        </span>
+        <!-- align text if there is no expand/collapse button-->
+        <span  ng-show="data.components==undefined || data.components.length==0" style="background:none;border:none; font-size:100%">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        </span>
+        <!--input type="checkbox" ng-model="showChildren" ng-show="data.components!=undefined && data.type!=undefined"/-->
+        <span ng-init="index=nextIndex()" ng-click="selectData(data, index, $parent.$parent.data)" style="{{componentLabelStyle(index == statusHolder.selectedIndex)}}">{{data.name}} &lrm;[{{i18nGet('type.'+data.type)}}]&lrm;</span>
+        <button  title="${message(code:'sspb.page.visualbuilder.insert.sibling.title')}" class="btn btn-mini" style="background:none;" ng-click="insertSibling($parent.$parent.data, $index)" ng-show="data.type!='page'">&larr;</button>
+        <button  title="${message(code:'sspb.page.visualbuilder.append.child.title')}" class="btn btn-mini" style="background:none;" ng-click="addChild(data)" ng-show="findAllChildrenTypes(data.type).length>0">+</button>
+        <button  title="${message(code:'sspb.page.visualbuilder.delete.component.title')}" class="btn btn-mini" style="background:none;" ng-click="deleteComponent($parent.$parent.data, $index, index)"  ng-show="data.type!='page'">-</button>
+        <button  title="${message(code:'sspb.page.visualbuilder.copy.component.title')}"   ng-click="copyComponent(data)" ng-show="data.type!='page'" class="button_copy"></button>
+        <button  title="${message(code:'sspb.page.visualbuilder.paste.component.title')}"  ng-click="pasteComponent(data)"  ng-show="dataHolder.copy!=undefined" class="button_paste"></button>
+        <button  title="${message(code:'sspb.page.visualbuilder.moveup.component.title')}" class="btn btn-mini" style="background:none;" ng-click="moveUpComponent($parent.$parent.data, $index, index)"  ng-show="!$first">&uarr;</button>
+        <button  title="${message(code:'sspb.page.visualbuilder.movedown.component.title')}" class="btn btn-mini" style="background:none;" ng-click="moveDownComponent($parent.$parent.data, $index, index)"  ng-show="!$last">&darr;</button>
+        <!--button  class="btn btn-mini" ng-click="deleteChildren(data)" ng-show="data.components.length > 0">--</button-->
+        <!--input type="checkbox" ng-model="(index == statusHolder.selectedIndex)" ng-init="index=index+1" /-->
+
+        <ul ng-show="showChildren" style="list-style: none;">
+            <li ng-repeat="data in data.components"   ng-include="'tree_item_renderer.html'"></li>
+        </ul>
+    </script>
+
 
     <!-- type selection modal body-->
     <div modal="shouldBeOpen"  options="typeSelectionModalOpts">

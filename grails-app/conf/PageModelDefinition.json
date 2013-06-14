@@ -131,7 +131,8 @@
             }
         ],
         "sourceRenderDefinitions" : [
-            {"AttributeType":["type", "name", "documentation", "title", "label", "style", "submit", "submitLabel", "model", "value", "validation", "placeholder", "onUpdate", "onClick", "onLoad", "labelKey", "valueKey", "sourceModel", "booleanTrueValue", "booleanFalseValue", "resource", "sequence"], "renderProperty":{"inputType":"text"}},
+            {"AttributeType":["name", "documentation", "title", "label", "style", "submit", "submitLabel", "model", "value", "validation", "placeholder", "onUpdate", "onClick", "onLoad", "labelKey", "valueKey", "sourceModel", "booleanTrueValue", "booleanFalseValue", "resource", "sequence"], "renderProperty":{"inputType":"text"}},
+            {"AttributeType":["type"], "renderProperty":{"inputType":"select"}},
             {"AttributeType":["scriptingLanguage"], "renderProperty":{"inputType":"text", "default":"JavaScript"}},
             {"AttributeType":["binding"], "renderProperty":{"inputType":"text", "default":"rest"}},
             {"AttributeType":["nextButtonLabel"], "renderProperty":{"inputType":"text", "default":"Next"}},
