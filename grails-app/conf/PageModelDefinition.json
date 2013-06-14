@@ -36,14 +36,14 @@
                 "requiredAttributes":["model", "parameters"],
                 "optionalAttributes":["label", "style", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize"],
                 "requiredChildren":[],
-                "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean" ]
+                "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal" ]
             },
             {
                 "componentType":["detail"],
                 "requiredAttributes":["model", "parameters"],
                 "optionalAttributes":["label", "style", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize"],
                 "requiredChildren":[],
-                "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean" ]
+                "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal"  ]
             },
             {
                 "componentType":["display"],
@@ -69,7 +69,7 @@
             {
                 "componentType":["literal"],
                 "requiredAttributes":["value"],
-                "optionalAttributes":["style"],
+                "optionalAttributes":["label","style"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },

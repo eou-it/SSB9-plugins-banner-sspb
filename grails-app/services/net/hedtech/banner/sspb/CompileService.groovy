@@ -124,7 +124,7 @@ class CompileService {
         def common = CompileService.class.classLoader.getResourceAsStream( 'data/sspbCommon.js' ).text
 
         result = """
-    function CustomPageController( \$scope, \$http, \$resource, \$parse) {
+    function CustomPageController( \$scope, \$http, \$resource, \$parse, \$locale) {
         // copy global var to scope
         \$scope._isUserAuthenticated = __isUserAuthenticated;
         \$scope._userFullName = __userFullName;

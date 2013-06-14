@@ -361,22 +361,22 @@
         };
 
 
-        $scope.addChild = function(data) {
+        $scope.addChild = function(parent) {
             //console.log("addChild");
-            $scope.validChildTypes = $scope.findAllChildrenTypes(data.type);
+            $scope.validChildTypes = $scope.findAllChildrenTypes(parent.type);
             // TODO make sure the children are expanded if appending a new component
             //$scope.showChildren = true;
-            $scope.openTypeSelectionModal(data, -1);
+            $scope.openTypeSelectionModal(parent, -1);
             // delay adding node until the type selection is made
         };
 
         /*
             Insert a new child component to 'data' at location 'index'
          */
-        $scope.insertSibling = function(data, index) {
+        $scope.insertSibling = function(parent, index) {
             //console.log("addChild");
-            $scope.validChildTypes = $scope.findAllChildrenTypes(data.type);
-            $scope.openTypeSelectionModal(data, index);
+            $scope.validChildTypes = $scope.findAllChildrenTypes(parent.type);
+            $scope.openTypeSelectionModal(parent, index);
         }
 
 
@@ -435,9 +435,9 @@
         Note! use console.log() immediately before, during & after modal dialog is displayed will prevent the dialog to show on IE 9
          unless the developer tool window is opened.
          */
-          $scope.openTypeSelectionModal = function (data, index) {
+          $scope.openTypeSelectionModal = function (parent, index) {
             $scope.shouldBeOpen = true;
-            $scope.newData = data;
+            $scope.newParent = parent;
             $scope.newIndex = index;
           };
 
@@ -445,19 +445,19 @@
             //$scope.closeMsg = 'I was closed at: ' + new Date();
             $scope.shouldBeOpen = false;
             // add the child component
-            var data = $scope.newData;
-            if (data.components==undefined)
-                data.components=[];
-            var post = data.components.length + 1;
-            var newName = data.name + '_child_' + post;
+            var parent = $scope.newParent;
+            if (parent.components==undefined)
+                parent.components=[];
+            var post = parent.components.length + 1;
+            var newName = parent.name + '_child_' + post;
             //console.log("Adding child =" + newName);
             var newComp = {name: newName, type: $scope.selectedType};
             if ($scope.newIndex==-1)
-                data.components.push(newComp);
+                parent.components.push(newComp);
             else
-                data.components.splice($scope.newIndex, 0, newComp);
+                parent.components.splice($scope.newIndex, 0, newComp);
             // open the new component for editing - the new component always get an incremented index number
-            $scope.selectData(newComp, $scope.index+1);
+            $scope.selectData(newComp, $scope.index+1, parent);
             // modal dialog is associated with parent scope
             $scope.handlePageTreeChange();
 
@@ -676,7 +676,7 @@
     <input type="text" name="constantName" ng-model="pageName" required/>
 
     <button ng-click='newPageSource()'><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
-    <button ng-click='submitPageSource()'><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
+    <button ng-click='submitPageSource()' ng-disabled='sourceEditEnabled'><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
     <button ng-click="getPageSource()"><g:message code="sspb.page.visualbuilder.reload.label" /></button>
     <button ng-click="previewPageSource()"><g:message code="sspb.page.visualbuilder.preview.label" /></button>
     <button ng-click='deletePageSource()'><g:message code="sspb.page.visualbuilder.delete.label" /></button>
