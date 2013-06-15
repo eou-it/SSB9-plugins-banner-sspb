@@ -33,15 +33,15 @@
             },
             {
                 "componentType":["grid"],
-                "requiredAttributes":["model", "parameters"],
-                "optionalAttributes":["label", "style", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize"],
+                "requiredAttributes":["model"],
+                "optionalAttributes":["label", "style", "parameters", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize"],
                 "requiredChildren":[],
                 "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal" ]
             },
             {
                 "componentType":["detail"],
-                "requiredAttributes":["model", "parameters"],
-                "optionalAttributes":["label", "style", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize"],
+                "requiredAttributes":["model"],
+                "optionalAttributes":["label", "style", "parameters", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize"],
                 "requiredChildren":[],
                 "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal"  ]
             },
@@ -96,8 +96,8 @@
             },
             {
                 "componentType":["list"],
-                "requiredAttributes":["model", "parameters", "value"],
-                "optionalAttributes":["label", "style", "allowReload", "onUpdate", "required", "onClick", "pageSize"],
+                "requiredAttributes":["model", "value"],
+                "optionalAttributes":["label", "style", "allowReload", "parameters", "onUpdate", "required", "onClick", "pageSize"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },

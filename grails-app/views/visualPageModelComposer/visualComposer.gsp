@@ -336,7 +336,8 @@
         };
 
         $scope.copyComponent = function(data) {
-            $scope.dataHolder.copy = data;
+            // make a deep copy of the data so when the source changes the copy won't get changed un-intentionally
+            $scope.dataHolder.copy = JSON.parse(JSON.stringify(data));
         };
 
         // paste a component as a new child of 'data'
@@ -347,8 +348,9 @@
             else {
                 if (data.components==undefined)
                     data.components=[];
-
-                data.components.push($scope.dataHolder.copy);
+                // make a new (deep) copy of the copied component so each pasted instance is unique
+                var newCopy = JSON.parse(JSON.stringify($scope.dataHolder.copy));
+                data.components.push(newCopy);
                 $scope.handlePageTreeChange();
             }
 
@@ -574,13 +576,6 @@
 
           }
 
-          $scope.exportPageSource = function() {
-
-          }
-
-          $scope.importPageSource = function () {
-
-          }
 
           $scope.deletePageSource = function () {
               //check if page name is set
