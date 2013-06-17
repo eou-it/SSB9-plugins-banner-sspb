@@ -529,6 +529,14 @@
                  } catch(ex) {
                      alert($scope.i18nGet("${message(code:'sspb.page.visualbuilder.parsing.error.message')}",[ex]));
                  }
+             }, function(response) {
+                 var msg  = "${message(code: 'sspb.page.visualcomposer.page.load.failed.message', encodeAs: 'JavaScript')}";
+                 if (response.data != undefined && response.data.errors!=undefined)
+                    msg = $scope.i18nGet(msg, [response.data.errors[0].errorMessage]);
+                 else
+                    msg = $scope.i18nGet(msg, ['']);
+
+                 alert(msg);
              });
          };
 
@@ -561,14 +569,25 @@
                     $scope.pageStatus.message = response.statusMessage;
                 else {
                     var msg="${message(code:'sspb.page.validation.error.message')}";
-                    $scope.pageStatus.message = $scope.i18nGet(msg,[response.statusMessage,response.pageValidationResult.errors]);
+                    if (response.pageValidationResult != undefined)
+                        $scope.pageStatus.message = $scope.i18nGet(msg,[response.statusMessage,response.pageValidationResult.errors]);
+                    else
+                        $scope.pageStatus.message = $scope.i18nGet(msg,[response.statusMessage, ""]);
                 }
 
                 alert($scope.pageStatus.message);
 
                 // refresh the page list in case new page is added
                 $scope.loadPageNames();
-            });
+            }, function(response) {
+                  var msg ="${message(code: 'sspb.page.visualcomposer.page.submit.failed.message', encodeAs: 'JavaScript')}";;
+                  if (response.data != undefined && response.data.errors!=undefined)
+                    msg =  $scope.i18nGet(msg, [response.data.errors[0].errorMessage]);
+                  else
+                      msg = $scope.i18nGet(msg, ['']);
+
+              alert(msg);
+          });
 
           }
 
@@ -600,12 +619,13 @@
               }, function(response) {
                   var msg="${message(code:'sspb.page.visualbuilder.deletion.error.message')}";
 
-                  if (response.data.errors != undefined) {
+                  if (response.data != undefined && response.data.errors != undefined)
                       msg = $scope.i18nGet(msg,[response.data.errors[0].errorMessage]);
-                      console.log(msg);
-                      // display the error
-                      alert(msg);
-                  }
+                  else
+                      msg = $scope.i18nGet(msg, ['']);
+
+                  alert(msg);
+
               });
 
           }
