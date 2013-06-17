@@ -592,6 +592,13 @@
           }
 
           $scope.previewPageSource = function() {
+              //check if page name is set
+              if ($scope.pageName== undefined || $scope.pageName == '') {
+                  alert("${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
+
+                  return;
+              }
+              window.open(rootWebApp+'customPage/page/'+ $scope.pageName, '_blank');
 
           }
 
