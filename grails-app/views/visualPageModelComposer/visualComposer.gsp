@@ -17,7 +17,8 @@
     <meta name="menuDefaultBreadcrumbId" content=""/>
 
     <link rel="stylesheet" href="${resource(dir: 'css', file: 'pageComposer.css')}">
-    <script src="/banner-sspb/js/pbDirectives.js"></script>
+
+    <script src="<g:resource dir="js" file="pbDirectives.js" />"> </script>
 
     <script type="text/javascript">
      var myCustomServices = ['ngResource', 'ui.bootstrap', 'pagebuilder.directives'];

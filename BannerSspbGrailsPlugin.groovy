@@ -6,6 +6,7 @@ import net.hedtech.banner.tools.i18n.BannerMessageSource
 import grails.util.Environment
 import org.codehaus.groovy.grails.web.context.GrailsConfigUtils
 import org.codehaus.groovy.grails.web.pages.GroovyPagesTemplateEngine
+import net.hedtech.banner.sspb.PageUtilService
 
 class BannerSspbGrailsPlugin {
     // the plugin version
@@ -54,7 +55,8 @@ Brief summary/description of the plugin.
 
     def doWithSpring = {
         //  from ssh://git@devgit1/banner/plugins/banner_tools.git   mostly
-        def externalbundleloc = System.getProperties().get('SSPB_DATA_DIR')
+        def externalbundleloc = PageUtilService.getExternalDataLocation()
+
         println "External Bundle location : "  + externalbundleloc
         // find i18n resource bundles and resolve basenames
         if(externalbundleloc instanceof ConfigObject) {

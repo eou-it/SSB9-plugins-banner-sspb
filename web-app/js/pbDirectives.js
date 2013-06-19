@@ -9,7 +9,7 @@ pagebuilderModule.directive('pbArrayofmap', function() {
         restrict:'E',
         transclude: true,
         scope:{label:'@', array:'=', pbParent:'@', pbAttrname:'@', pbChange:'&'},
-        templateUrl:'/banner-sspb/template/pbArrayOfMap.html',
+        templateUrl: templatesLocation + '/pbArrayOfMap.html',
         controller: ['$scope', '$element', '$attrs', '$transclude',
             function($scope, $element, $attrs, $transclude) {
                 // assign an empty array to the attribute if the map is undefined
@@ -87,7 +87,7 @@ pagebuilderModule.directive('pbMap', function() {
         restrict:'E',
         transclude: true,
         scope:{label:'@', map:'=', pbParent:'@', pbAttrname:'@', pbChange:'&'},
-        templateUrl:'/banner-sspb/template/pbMap.html',
+        templateUrl: templatesLocation + '/pbMap.html',
         controller: ['$scope', '$element', '$attrs', '$transclude',
             function($scope, $element, $attrs, $transclude) {
                 // assign an empty map to the attribute if the map is undefined

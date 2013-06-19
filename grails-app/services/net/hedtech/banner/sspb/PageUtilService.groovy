@@ -9,12 +9,21 @@ import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 
 class PageUtilService {
 
+    def static externalDataLocation = getExternalDataLocation()
+
+    def static getExternalDataLocation() {
+        def result = System.getProperties().get('SSPB_DATA_DIR')
+        if (!result)
+            result=System.getenv("TEMP")
+        if (!result)
+            result=System.getenv("TMP")
+        result
+    }
+
     //Internationalize println in this service - this service is to be used by a batch export/import utility
     def static localizer = { mapToLocalize ->
         new ValidationTagLib().message( mapToLocalize )
     }
-
-    def externalDataLocation = System.getProperties().get('SSPB_DATA_DIR')
 
     void exportAllToFile(String path) {
         Page.findAll().each { page ->

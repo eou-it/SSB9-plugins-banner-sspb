@@ -56,27 +56,27 @@ button.button_edit:active {
 }
 
 .button_copy {
-    background-image: url(/banner-sspb/images/buttons/edit_copy.png); /* 16px x 16px */
+    background-image: url(../images/buttons/edit_copy.png); /* 16px x 16px */
 }
 .button_paste {
-    background-image: url(/banner-sspb/images/buttons/edit_paste.png); /* 16px x 16px */}
+    background-image: url(../images/buttons/edit_paste.png); /* 16px x 16px */}
 
 .button_insert {
-    background-image: url(/banner-sspb/images/buttons/edit_insert.png); /* 16px x 16px */
+    background-image: url(../images/buttons/edit_insert.png); /* 16px x 16px */
 }
 
 .button_delete {
-    background-image: url(/banner-sspb/images/buttons/edit_delete.png); /* 16px x 16px */
+    background-image: url(../images/buttons/edit_delete.png); /* 16px x 16px */
 }
 
 .button_sort_asc {
-    background-image: url(/banner-sspb/images/buttons/edit_sort_ascending.png); /* 16px x 16px */
+    background-image: url(../images/buttons/edit_sort_ascending.png); /* 16px x 16px */
 }
 
 .button_sort_desc {
-    background-image: url(/banner-sspb/images/buttons/edit_sort_descending.png); /* 16px x 16px */
+    background-image: url(../images/buttons/edit_sort_descending.png); /* 16px x 16px */
 }
 
 .button_add {
-    background-image: url(/banner-sspb/images/buttons/edit_add.png); /* 16px x 16px */
+    background-image: url(../images/buttons/edit_add.png); /* 16px x 16px */
 }
