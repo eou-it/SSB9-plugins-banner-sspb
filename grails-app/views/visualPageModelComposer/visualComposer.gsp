@@ -16,9 +16,9 @@
     <meta name="menuBaseURL" content="/sspb/sspb"/>
     <meta name="menuDefaultBreadcrumbId" content=""/>
 
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'pageComposer.css')}">
+    <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pageComposer.css')}">
 
-    <script src="<g:resource dir="js" file="pbDirectives.js" />"> </script>
+    <script src="<g:resource plugin="banner-sspb" dir="js" file="pbDirectives.js" />"> </script>
 
     <script type="text/javascript">
      var myCustomServices = ['ngResource', 'ui.bootstrap', 'pagebuilder.directives'];

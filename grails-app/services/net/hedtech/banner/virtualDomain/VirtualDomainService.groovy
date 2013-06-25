@@ -21,7 +21,7 @@ class VirtualDomainService {
         if (queryResult.error == "") {
             result = queryResult.rows
         } else {
-            throw queryResult.error
+            throw new Exception(queryResult.error )
         }
         result
     }
@@ -53,7 +53,7 @@ class VirtualDomainService {
         if (queryResult.error == "") {
             result = queryResult.totalCount
         } else {
-            throw queryResult.error
+            throw new Exception(queryResult.error )
         }
         result
     }

@@ -9,10 +9,11 @@ import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 
 class PageUtilService {
 
+    def final static propertyDataDir = 'SSPB_DATA_DIR'
     def static externalDataLocation = getExternalDataLocation()
 
     def static getExternalDataLocation() {
-        def result = System.getProperties().get('SSPB_DATA_DIR')
+        def result = System.getProperties().get(propertyDataDir)
         if (!result)
             result=System.getenv("TEMP")
         if (!result)

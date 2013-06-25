@@ -1,4 +1,4 @@
-class UrlMappings {
+class PBUrlMappings {
 
     static mappings = {
         "/$controller/$action?/$id?"{

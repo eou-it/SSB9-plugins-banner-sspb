@@ -18,13 +18,13 @@
 
         <title><g:layoutTitle default="Banner Self Service Custom Page"/></title>
 
-        <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'bootstrap.css')}">
-        <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'jquery.dataTables.css')}">
-        <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'jquery.dataTables_themeroller.css')}">
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'bootstrap.css')}">
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'jquery.dataTables.css')}">
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'jquery.dataTables_themeroller.css')}">
 <%--
-        <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'demo_page.css')}">
-        <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'demo_table.css')}">
-        <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'demo_table_jui.css')}">
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'demo_page.css')}">
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'demo_table.css')}">
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'demo_table_jui.css')}">
 --%>
 
         <g:set var="localeLanguage"    value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).language}" scope="page" />
@@ -32,31 +32,31 @@
 
 
 <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
-    <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'anish-app-rtl.css')}">
+    <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'anish-app-rtl.css')}">
 </g:if>
 <g:else>
-    <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'anish-app.css')}">
+    <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'anish-app.css')}">
 </g:else>
 
 
-        <link rel="stylesheet" href="${resource(dir: 'BannerXE/lib/jquery/plugins/jstree/themes/classic', file: 'style.css')}">
-        <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'common-controls.css')}">
-        <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'common-platform.css')}">
-        <link rel="stylesheet" href="${resource(dir: 'css', file: 'main.css')}">
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'BannerXE/lib/jquery/plugins/jstree/themes/classic', file: 'style.css')}">
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'common-controls.css')}">
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'common-platform.css')}">
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'main.css')}">
 
-        <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'select2.css')}">
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'select2.css')}">
 
         <%-- Added Harry --%>
-        <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'ng-grid.css')}" type="text/css">
-        <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'angular-ui.css')}" type="text/css">
-        <link rel="stylesheet" href="${resource(dir: 'BannerXE/css', file: 'jquery-ui.css')}" type="text/css">
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'ng-grid.css')}" type="text/css">
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'angular-ui.css')}" type="text/css">
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'jquery-ui.css')}" type="text/css">
 
 
-        <script src="<g:resource dir="BannerXE/lib/jquery" file="jquery-1.8.2.js" />"> </script>
-        <script src="<g:resource dir="BannerXE/lib/jquery" file="jquery-ui-1.8.24.custom.js" />"> </script>
-        <script src="<g:resource dir="BannerXE/lib/underscore" file="underscore-min.js" />"> </script>
-        <script src="<g:resource dir="BannerXE/lib/jquery" file="jquery.ui.datepicker-${localeLanguage}.js" />"> </script>
-        <script src="<g:resource dir="BannerXE/lib/jquery" file="jquery.ui.datepicker-${localeBrowserFull}.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery-1.8.2.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery-ui-1.8.24.custom.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/underscore" file="underscore-min.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery.ui.datepicker-${localeLanguage}.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery.ui.datepicker-${localeBrowserFull}.js" />"> </script>
 
         <%-- end Added Harry --%>
 
@@ -64,22 +64,22 @@
         <!-- load angular JS here -->
         <%-- TODO utilize Grails Resource Management here --%>
 
-        <script src="<g:resource dir="BannerXE/lib/angular" file="angular.js" />"></script>
-        <script src="<g:resource dir="BannerXE/lib/angular" file="angular-resource.js"/>"></script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular.js" />"></script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular-resource.js"/>"></script>
 
 
 
-        <script src="<g:resource dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeLanguage}.js" />"> </script>
-        <script src="<g:resource dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeBrowserFull.toLowerCase()}.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeLanguage}.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeBrowserFull.toLowerCase()}.js" />"> </script>
 
 
         <%-- Added Harry --%>
-        <script src="<g:resource dir="BannerXE/lib/ng-grid" file="ng-grid.js" />"> </script>
-        <script src="<g:resource dir="BannerXE/lib/angular-ui" file="angular-ui.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/ng-grid" file="ng-grid.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular-ui" file="angular-ui.js" />"> </script>
         <!-- for modal dialog -->
-        <script src="<g:resource dir="BannerXE/lib/angular-ui" file="ui-bootstrap-tpls-0.3.0.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular-ui" file="ui-bootstrap-tpls-0.3.0.js" />"> </script>
 
-        <script src="<g:resource dir="js" file="pbRunDirectives.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="js" file="pbRunDirectives.js" />"> </script>
 
         <%--    <g:javascript src="sspbCommon.js"/>
         end Added Harry --%>
@@ -120,33 +120,33 @@
 
         <script type="text/javascript">
             var rootWebApp = ${createLink(uri: '/')};  //use in controller restful interface
-            var templatesLocation = "<g:resource dir="template" />";
+            var templatesLocation = "<g:resource plugin="banner-sspb" dir="template" />";
         </script>
         <!-- r:layoutResources/ -->
 
         <g:layoutHead />
 
-        <script src="<g:resource dir="BannerXE/js" file="controllers.js" />"> </script>
-        <script src="<g:resource dir="BannerXE/js" file="services.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/js" file="controllers.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/js" file="services.js" />"> </script>
 
-        <script src="<g:resource dir="BannerXE/js" file="directives.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/js" file="directives.js" />"> </script>
 
-        <script src="<g:resource dir="BannerXE/js" file="app.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/js" file="app.js" />"> </script>
 <%--
-        <script src="<g:resource dir="BannerXE/lib/jquery/jquery-1.8.2.js" />"> </script>
-        <script src="<g:resource dir="BannerXE/lib/jquery/jquery-ui-1.8.24.custom.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery/jquery-1.8.2.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery/jquery-ui-1.8.24.custom.js" />"> </script>
 --%>
-        <script src="<g:resource dir="BannerXE/lib/jquery" file="jquery.dataTables.js" />"> </script>
-        <script src="<g:resource dir="BannerXE/lib/bootstrap" file="bootstrap.js" />"> </script>
-        <script src="<g:resource dir="BannerXE/lib/jquery/plugins/jstree" file="jquery.jstree.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery.dataTables.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/bootstrap" file="bootstrap.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery/plugins/jstree" file="jquery.jstree.js" />"> </script>
 
-        <script src="<g:resource dir="BannerXE/js/aurora" file="serviceProperties.js" />"> </script>
-        <script src="<g:resource dir="BannerXE/js/aurora" file="application.js" />"> </script>
-        <script src="<g:resource dir="BannerXE/js/aurora" file="common-controls.js" />"> </script>
-        <script src="<g:resource dir="BannerXE/js/aurora" file="common-integration.js" />"> </script>
-        <script src="<g:resource dir="BannerXE/js/aurora" file="common-navigation.js" />"> </script>
-        <script src="<g:resource dir="BannerXE/js/aurora" file="common-platform.js" />"> </script>
-        <script src="<g:resource dir="BannerXE/lib/select2" file="select2.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/js/aurora" file="serviceProperties.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/js/aurora" file="application.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/js/aurora" file="common-controls.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/js/aurora" file="common-integration.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/js/aurora" file="common-navigation.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/js/aurora" file="common-platform.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/select2" file="select2.js" />"> </script>
 
 
         <!--g:customStylesheetIncludes/-->

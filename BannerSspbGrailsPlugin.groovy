@@ -57,7 +57,7 @@ Brief summary/description of the plugin.
         //  from ssh://git@devgit1/banner/plugins/banner_tools.git   mostly
         def externalbundleloc = PageUtilService.getExternalDataLocation()
 
-        println "External Bundle location : "  + externalbundleloc
+        println "External Bundle location : "  + externalbundleloc + " (To change specify location in JVM parameter: -D${PageUtilService.propertyDataDir}=\"c:/temp\")"
         // find i18n resource bundles and resolve basenames
         if(externalbundleloc instanceof ConfigObject) {
             externalbundleloc = "";

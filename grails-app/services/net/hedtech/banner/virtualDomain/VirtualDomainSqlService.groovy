@@ -12,16 +12,23 @@ class VirtualDomainSqlService {
     def static localizer = { mapToLocalize ->
         new ValidationTagLib().message( mapToLocalize )
     }
-   // def sessionFactory
+
+   def sessionFactory  //injected by Spring
 
     //allow connecting to 2 different datasources, depending on VirtualDomain.dataSource
     //to make development easy, but maybe also useful
-    def dataSource
+    //def dataSource
     def dataSource_sspb
 
-
     private def getSql =  { ds ->
-        new Sql(ds =="B"?dataSource:dataSource_sspb)
+        def result
+
+        if (ds =="B") {
+            result = new Sql(sessionFactory.getCurrentSession().connection())
+        } else {
+            result = new Sql(dataSource_sspb)
+        }
+        result
     }
 
     // copy params rather than changing params itself

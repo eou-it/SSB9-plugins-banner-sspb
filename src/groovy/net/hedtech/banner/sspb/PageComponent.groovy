@@ -160,10 +160,22 @@ class PageComponent {
     // map the validation key to angular attributes ? use HTML 5 validation instead with form
     // def validationKeyMap = ["minlength":"ngMinlength", "maxlength":"ngMaxlength", "pattern":"ngPattern"]
 
+    def getPropertiesBaseKey() {
+        def nameList = []
+        def pageComponent = this
+        while (pageComponent) {
+            nameList << pageComponent.name
+            pageComponent = pageComponent.parent
+        }
+        nameList = nameList.reverse()
+
+        return nameList.join(".")
+    }
+
     def tranSourceValue() {
         def result = sourceValue
         result.each {
-            def key ="${CompileService.getComponentNamePath(this)}.sourceValue.${it."$valueKey"}"
+            def key ="${getPropertiesBaseKey()}.sourceValue.${it."$valueKey"}"
             def label=it."$labelKey"
             label = tran(key,label,[] as List,ESC_JS)
             it."$labelKey"=label
@@ -186,7 +198,7 @@ class PageComponent {
     def tran(String prop, esc = ESC_H ) {
         def defTranslation = this[prop]
         if (defTranslation && translatableAttributes.contains(prop))  {
-            def key ="${CompileService.getComponentNamePath(this)}.$prop"
+            def key ="${getPropertiesBaseKey()}.$prop"
             root.rootProperties[key] = defTranslation
             return tranMsg(key,[] as List, esc)
         }
@@ -466,8 +478,8 @@ class PageComponent {
                 """
                 return txt
             case COMP_TYPE_LITERAL:
-                //println tran(CompileService.getComponentNamePath(this)+".value",CompileService.parseLiteral(value) ) + "\n"
-                return tran(CompileService.getComponentNamePath(this)+".value",CompileService.parseLiteral(value) ) + "\n"
+                //println tran(getPropertiesBaseKey()+".value",CompileService.parseLiteral(value) ) + "\n"
+                return tran(getPropertiesBaseKey()+".value",CompileService.parseLiteral(value) ) + "\n"
             case COMP_TYPE_DISPLAY:
                 def ret = ""
                 if (parent.type == COMP_TYPE_DETAIL) {
@@ -600,7 +612,7 @@ class PageComponent {
                     def labelStr = ""
                     if (root.flowDefs) {
                         if (submitLabel) {
-                            def key ="${CompileService.getComponentNamePath(this)}.submitAndNextLabel"
+                            def key ="${getPropertiesBaseKey()}.submitAndNextLabel"
                             labelStr = "$submitLabel and $nextButtonLabel"
                             tran(key,labelStr)
                         } else {
