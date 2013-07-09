@@ -1,89 +1,125 @@
 {
-    "type": "page",
-    "name": "EmployeePage",
-    "title": "Employ Details page",
-    "components": [
-        {
-            "type": "resource",
-            "name": "Empdept",
-            "binding": "rest",
-            "resource": "$rootWebApp/api/virtualDomains.empdept"
-        },
-        {
-            "type": "resource",
-            "name": "Dept",
-            "binding": "rest",
-            "resource": "$rootWebApp/api/virtualDomains.department"
-        },
-        {
-            "type": "form",
-            "name": "SelectDepartment",
-            "label": "Search a Department",
-            "components": [
-                {
-                    "type":"select",
-                    "name":"SelectDept",
-                    "label":"Department",
-                    "sourceModel":"Dept",
-                    "labelKey": "DNAME",
-                    "valueKey": "DEPTNO"
-                },
-                {
-                    "type":"button",
-                    "name":"ApplyDepartment",
-                    "label":"Apply",
-                    "onClick": "$EmployeeDetails.$load()"
-                },
-                {
-                    "type":"button",
-                    "name":"ResetDepartment",
-                    "label":"Show All Departments",
-                    "onClick": "$EmployeeDetails.$loadAll()"
-                }
-            ]
-        },
-        {
-            "type": "form",
-            "name": "EditEmpList",
-            "label" : "Edit Employees",
-            "components": [
-                {
-                    "type": "grid",
-                    "model": "Empdept",
-                    "parameters" : {"DEPTNO":"$SelectDept"},
-                    "name": "EmployeeDetails",
-                    "allowNew" : true,
-                    "allowModify" : true,
-                    "allowReload":true,
-                    "allowDelete":true,
-                    "pageSize" : 3,
-                    "components": [
+      "type": "page",
+      "name": "EmployeePage",
+      "title": "Employ Details page",
+      "components": [
+            {
+                  "type": "resource",
+                  "name": "Empdept",
+                  "binding": "rest",
+                  "resource": "$rootWebApp/api/virtualDomains.empdept"
+            },
+            {
+                  "type": "resource",
+                  "name": "Dept",
+                  "binding": "rest",
+                  "resource": "$rootWebApp/api/virtualDomains.department"
+            },
+            {
+                  "type": "form",
+                  "name": "SelectDepartment",
+                  "label": "Search a Department",
+                  "components": [
                         {
-                            "type": "display",
-                            "model": "id",
-                            "label": "Id"
+                              "type": "select",
+                              "name": "SelectDept",
+                              "label": "Department",
+                              "sourceModel": "Dept",
+                              "labelKey": "DNAME",
+                              "valueKey": "DEPTNO"
                         },
                         {
-                            "type": "text",
-                            "model": "ENAME",
-                            "label": "Employee Name"
+                              "type": "button",
+                              "name": "ApplyDepartment",
+                              "label": "Apply",
+                              "onClick": "$EmployeeDetails.$load()"
                         },
                         {
-                            "type": "radio",
-                            "model": "DEPTNO",
-                            "label": "Department Name",
-                            "sourceModel":"Dept",
-                            "labelKey":"DNAME",
-                            "valueKey":"DEPTNO"
-                        },
-                        {
-                            "type": "datetime",
-                            "model": "HIREDATE",
-                            "label": "Hire Date"
+                              "type": "button",
+                              "name": "ResetDepartment",
+                              "label": "Show All Departments",
+                              "onClick": "$EmployeeDetails.$loadAll()"
                         }
-                    ]
-                }
-            ]
-        }
-    ]
+                  ],
+                  "nextButtonLabel": "Next",
+                  "showInitially": true
+            },
+            {
+                  "type": "form",
+                  "name": "EditEmpList",
+                  "label": "Edit Employees",
+                  "components": [
+                        {
+                              "type": "grid",
+                              "model": "Empdept",
+                              "parameters": {
+                                    "DEPTNO": "$SelectDept"
+                              },
+                              "name": "EmployeeDetails",
+                              "allowNew": true,
+                              "allowModify": true,
+                              "allowReload": true,
+                              "allowDelete": true,
+                              "pageSize": 3,
+                              "components": [
+                                    {
+                                          "type": "display",
+                                          "model": "id",
+                                          "label": "Id"
+                                    },
+                                    {
+                                          "type": "text",
+                                          "model": "ENAME",
+                                          "label": "Employee Name",
+                                          "parameters": {},
+                                          "required": false
+                                    },
+                                    {
+                                          "type": "radio",
+                                          "model": "DEPTNO",
+                                          "label": "Department Name",
+                                          "sourceModel": "Dept",
+                                          "labelKey": "DNAME",
+                                          "valueKey": "DEPTNO",
+                                          "sourceParameters": {},
+                                          "sourceValue": [],
+                                          "required": false
+                                    },
+                                    {
+                                          "name": "SAL",
+                                          "type": "number",
+                                          "label": "Salary",
+                                          "model": "SAL",
+                                          "parameters": {},
+                                          "required": false
+                                    },
+                                    {
+                                          "name": "COMM",
+                                          "type": "number",
+                                          "label": "Commission",
+                                          "model": "COMM",
+                                          "parameters": {},
+                                          "placeholder": "Enter",
+                                          "required": false
+                                    },
+                                    {
+                                          "name": "TOTAL",
+                                          "type": "literal",
+                                          "value": "{{item.SAL + item.COMM | number:2}}",
+                                          "label": "Total Payment",
+                                          "style": "text-align: right;"
+                                    },
+                                    {
+                                          "type": "datetime",
+                                          "model": "HIREDATE",
+                                          "label": "Hire Date",
+                                          "parameters": {},
+                                          "required": false
+                                    }
+                              ]
+                        }
+                  ]
+            }
+      ],
+      "scriptingLanguage": "JavaScript"
 }

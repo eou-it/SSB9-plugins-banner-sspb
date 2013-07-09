@@ -1,7 +1,8 @@
 {
    "codePost": null,
    "id": 7,
-   "dataSource": "B",
+   "dataSource": "S",
+   "virtualDomainRoles": [],
    "codePut": null,
    "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
    "codeDelete": null,

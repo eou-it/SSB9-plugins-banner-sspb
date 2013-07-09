@@ -1,10 +1,10 @@
 {
    "codePost": null,
-   "id": 6,
-   "dataSource": "S",
+   "id": 11060,
+   "dataSource": "B",
    "virtualDomainRoles": [{
       "allowGet": true,
-      "id": 11322,
+      "id": 11320,
       "allowPost": true,
       "allowPut": true,
       "virtualDomain": {
@@ -12,13 +12,13 @@
          "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
       },
       "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
-      "roleName": "EXECUTIVEADMIN",
+      "roleName": "WTAILORADMIN",
       "allowDelete": true
    }],
    "codePut": null,
    "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
    "codeDelete": null,
-   "codeGet": "select * from emp\r\nwhere (:empno IS NULL or empno=:empno)",
+   "codeGet": "select id vid, service_name from virtual_domain",
    "typeOfCode": "S",
-   "serviceName": "employee"
+   "serviceName": "virtualDomainLookup"
 }
