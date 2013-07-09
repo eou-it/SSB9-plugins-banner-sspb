@@ -31,7 +31,12 @@ class PageIntegrationTests {
         pageUtilService.exportAllToFile(pagePath)
     }
 
-
+    @Test
+    void testCompile() {
+        def pageUtilService = new PageUtilService()
+        def errors = pageUtilService.compileAll()
+        assert errors.empty
+    }
 
 
 }

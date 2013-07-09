@@ -40,6 +40,18 @@ function nvl(val,def){
     return val;
 }
 
+$scope.setDefault = function(parent,model,def)   {
+    var val;
+    if (parent) {
+       val=parent[model];
+        if ( (val === undefined) || (val === null ) ) {
+            parent[model]=def;
+        }
+    } else {
+        console.log ("setDefault - unhandled case. parent="+parent +" model="+model);
+    }
+}
+
 
 // Use function to create a post query function associated with
 // a DataSet instance

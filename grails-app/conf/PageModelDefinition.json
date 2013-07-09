@@ -36,14 +36,14 @@
                 "requiredAttributes":["model"],
                 "optionalAttributes":["label", "style", "parameters", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize"],
                 "requiredChildren":[],
-                "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal" ]
+                "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal","hidden" ]
             },
             {
                 "componentType":["detail"],
                 "requiredAttributes":["model"],
                 "optionalAttributes":["label", "style", "parameters", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize"],
                 "requiredChildren":[],
-                "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal"  ]
+                "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal","hidden"  ]
             },
             {
                 "componentType":["display"],
@@ -74,6 +74,13 @@
                 "optionalChildren":[]
             },
             {
+                "componentType":["hidden"],
+                "requiredAttributes":["value","model"],
+                "optionalAttributes":[],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            },
+            {
                 "componentType":["button"],
                 "requiredAttributes":["label", "onClick"],
                 "optionalAttributes":[],
@@ -83,7 +90,7 @@
             {
                 "componentType":["select"],
                 "requiredAttributes":["labelKey", "valueKey" ],
-                "optionalAttributes":["label", "style", "sourceModel", "sourceParameters", "sourceValue", "model", "onUpdate", "required", "placeholder"],
+                "optionalAttributes":["label", "style", "sourceModel", "sourceParameters", "sourceValue", "model", "onUpdate", "required", "placeholder", "value"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },

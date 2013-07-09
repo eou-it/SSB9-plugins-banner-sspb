@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="net.hedtech.banner.sspb.PBUser;" contentType="text/html;charset=UTF-8" %>
 <%--
 /*********************************************************************************
  Copyright 2009-2012 SunGard Higher Education. All Rights Reserved.
@@ -86,27 +86,10 @@
 
 
 <%
- /* TODO integrate with Banner Session
-
-  if (user) {
-    out << "<script>"
-       out << "console.log('user.name = ' + $user.Username);"
-    out << "</script>"
-    } else {         */
       out << """
         <script>
-
-         //function to avoid undefined
-            function nvl(val,def){
-                if ( (val == undefined) || (val == null ) ) {
-                    return def;
-                }
-                return val;
-            }
-
-         // TODO retrieve user login information from XE session
             var __isUserAuthenticated = true;
-            var __userFullName = 'Catherine S. Miller';
+            var __userFullName = '';
             var __userFirstName = 'Catherine';
             var __userLastName = 'Miller';
             var __pidm = 7;
@@ -114,13 +97,12 @@
         </script>
 
       """
-  //}
-
 %>
 
         <script type="text/javascript">
             var rootWebApp = ${createLink(uri: '/')};  //use in controller restful interface
             var templatesLocation = "<g:resource plugin="banner-sspb" dir="template" />";
+            var user = ${PBUser.get()?.encodeAsJSON()};
         </script>
         <!-- r:layoutResources/ -->
 
@@ -161,8 +143,10 @@
                 <div id="globalNav">
                     <div>
                         <ul>
-                            <li class="userIdentityText bold">Catherine S. Miller</li>
-                            <li><a class="signOutText pointer signIn" title="">Sign Out</a></li>
+                            <li><a href="${createLink(uri: '/login/auth')}"> Sign In</a> </li>
+                            <li class="userIdentityText bold"> ${PBUser.get()?.fullName}</li>
+                            <li><a href="${createLink(uri: '/logout')}" class="signOutText pointer signIn" title="">Sign Out</a></li>
+
                             <li><a class="preferenceText pointer">Preferences</a></li>
                             <li><a class="helpText pointer" title="Help Alt+F1">Help</a></li>
                         </ul>

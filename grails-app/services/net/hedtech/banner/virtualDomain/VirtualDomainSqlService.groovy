@@ -5,6 +5,7 @@ import groovy.sql.SqlWithParams
 import static javax.xml.bind.DatatypeConverter.parseDateTime
 import java.sql.SQLException
 import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
+import net.hedtech.banner.sspb.PBUser
 
 
 class VirtualDomainSqlService {
@@ -23,7 +24,7 @@ class VirtualDomainSqlService {
     private def getSql =  { ds ->
         def result
 
-        if (ds =="B") {
+        if ( true || ds == "B") {
             result = new Sql(sessionFactory.getCurrentSession().connection())
         } else {
             result = new Sql(dataSource_sspb)
@@ -49,11 +50,40 @@ class VirtualDomainSqlService {
                 //      An empty value seems fine. Oracle does not distinguish between null and undefined.
                 if (v == "undefined")
                     v = null
+                result.put(k,v)
             }
-            result.put(k,v)
         }
         result
     }
+
+    private def addUser = { params ->
+        def user = net.hedtech.banner.sspb.PBUser.get()
+        user.each { k,v ->
+            params.put("user_" + k, v)
+        }
+    }
+    /* Check the user roles against the virtual domain roles
+     */
+    private def userAccessRights = { vd, userRoles ->
+        def result=[get: false, put: false, post: false, delete: false ]
+        vd.virtualDomainRoles.each{
+            println 'vdRole ' + it
+        }
+        userRoles.each{
+            //objectName is like SELFSERVICE-ALUMNI
+            //role is BAN_DEFAULT_M
+            //strip SELFSERVICE- this can be handled by spring security
+            def r = it.objectName.substring(it.objectName.indexOf("-")+1)
+            vd.virtualDomainRoles.findAll{vr -> vr.roleName==r}.each {
+                result.get |= it.allowGet
+                result.put |= it.allowPut
+                result.post |= it.allowPost
+                result.delete |= it.allowDelete
+            }
+        }
+        result
+    }
+
 
     /*
     get will return an array of objects satisfying the parameters
@@ -64,7 +94,11 @@ class VirtualDomainSqlService {
     */
     def get(vd, params) {
         def parameters = getNormalized(params) // some tweaks and work arounds
+        addUser(parameters)
+
         def logmsg=localizer(code:"sspb.virtualdomain.sqlservice.param", args:[parameters])
+        def userRights = userAccessRights(vd, parameters.user_roles)
+
         def sql = getSql(vd.dataSource)
         def debugStatement = (parameters.debug == "true")?" and rownum<6":""
         def errorMessage = ""
@@ -82,7 +116,7 @@ class VirtualDomainSqlService {
             rows = sql.rows(statement,parameters,offset,max,metaData)
             rows = idEncodeRows(rows)
             rows = handleClobRows(rows)
-            logmsg += localizer(code:"sspb.virtualdomain.sqlservice.numberrows", args:[rows?.size(),offset])
+            logmsg += " "+localizer(code:"sspb.virtualdomain.sqlservice.numberrows", args:[rows?.size(),offset])
 
         } catch(e) {
             logmsg += localizer(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])

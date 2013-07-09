@@ -34,11 +34,15 @@ class PageComponent {
     final static COMP_TYPE_BLOCK = "block"
     final static COMP_TYPE_FLOW = "flow"
     final static COMP_TYPE_RADIO = "radio"
+    final static COMP_TYPE_HIDDEN = "hidden"
     //final static COMP_TYPE_FUNCTION = "function"
 
-    // Types that can represent a single field
+    // Types that can represent a single field - should add RADIO
     final static COMP_ITEM_TYPES = [COMP_TYPE_LITERAL,COMP_TYPE_DISPLAY,COMP_TYPE_TEXT,COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER,
-                                    COMP_TYPE_DATETIME,COMP_TYPE_EMAIL,COMP_TYPE_TEL,COMP_TYPE_LINK,COMP_TYPE_BOOLEAN ]
+                                    COMP_TYPE_DATETIME,COMP_TYPE_EMAIL,COMP_TYPE_TEL,COMP_TYPE_LINK,COMP_TYPE_BOOLEAN]
+
+    // Single field non-input types
+    final static COMP_DISPLAY_TYPES =  [COMP_TYPE_LITERAL,COMP_TYPE_DISPLAY,COMP_TYPE_LINK,COMP_TYPE_HIDDEN]
 
     // Types that have a DataSet associated  - not completely orthogonal yet. COMP_ITEM_TYPES can have it too
     final static COMP_DATASET_TYPES = [COMP_TYPE_GRID,COMP_TYPE_LIST,COMP_TYPE_SELECT,COMP_TYPE_DETAIL,COMP_TYPE_DATA, COMP_TYPE_RADIO]
@@ -160,6 +164,10 @@ class PageComponent {
     // map the validation key to angular attributes ? use HTML 5 validation instead with form
     // def validationKeyMap = ["minlength":"ngMinlength", "maxlength":"ngMaxlength", "pattern":"ngPattern"]
 
+    static boolean isDataSetEditControl ( PageComponent pc ){
+        [COMP_TYPE_DETAIL,COMP_TYPE_GRID].contains(pc.type)
+    }
+
     def getPropertiesBaseKey() {
         def nameList = []
         def pageComponent = this
@@ -223,6 +231,24 @@ class PageComponent {
         return ""
     }
 
+    String defaultValue() {
+        def result = ""
+
+        if (value && model ) {
+            def  expr = CompileService.parseVariable(value)
+            CompileService.dataSetIDsIncluded.each { //replace with dataSetIDs
+                expr=expr.replace(".${it}_",".${it}DS.")
+            }
+            if (value == expr) { //assume a literal value if not changed - not sure if we should do this
+                expr="'$expr'"
+            }
+            def parentRef = isDataSetEditControl(parent)?"$GRID_ITEM":"this"
+            //result = "ng-init=\"${parentSelect}${model}=snvl(${parentSelect}${model},$expr)\""
+            result = "ng-init=\"setDefault($parentRef,'$model',$expr)\""
+        }
+        result
+    }
+
 
     def recordControlPanel()  {
         def dataSet    =  "${name}DS"
@@ -277,11 +303,17 @@ class PageComponent {
         // generate all table columns from the data model
         components.each { child ->
             child.parent = this
-            //get the labels from child components
-            thead+="<th>${child.tran("label")}</th>"
-            //get the child components
-            child.label=""
-            items+="<td>${child.compileComponent("", depth)}</td>\n"
+            if (child.type == COMP_TYPE_HIDDEN) {
+                //no table data or headers
+                items+= child.compileComponent("", depth)
+
+            }   else {
+                //get the labels from child components
+                thead+="<th>${child.tran("label")}</th>"
+                //get the child components
+                child.label=""
+                items+="<td>${child.compileComponent("", depth)}</td>\n"
+            }
         }
 
         def result =
@@ -429,16 +461,13 @@ class PageComponent {
                 def updateTxt = ""
                 def placeholderStr = placeholder?"""<option value="">${tran("placeholder")}</option>""":""
 
-                if(parent.type == COMP_TYPE_DETAIL) {
-                    ngModel =  "$GRID_ITEM.${model}"
-                    updateTxt +="\$parent.${parent.name}DS.setModified($GRID_ITEM); ${name}DS.setCurrentRecord($ngModel);"
-                } else if (parent.type == COMP_TYPE_GRID) {
+                if(isDataSetEditControl(parent)) {
                     ngModel =  "$GRID_ITEM.${model}"
                     updateTxt +="\$parent.${parent.name}DS.setModified($GRID_ITEM); ${name}DS.setCurrentRecord($ngModel);"
                 }
                 updateTxt += onUpdate?"${name}UICtrl.onUpdate();":""
                 updateTxt = updateTxt?"ng-change=\"$updateTxt\"":""
-                def select = """<select   ng-model="$ngModel" $updateTxt
+                def select = """<select   ng-model="$ngModel" $updateTxt  ${defaultValue()}
                                            ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName">
                                    $placeholderStr
                                 </select>"""
@@ -512,6 +541,7 @@ class PageComponent {
             case COMP_TYPE_DATETIME:
             case COMP_TYPE_EMAIL:
             case COMP_TYPE_TEL:
+            case COMP_TYPE_HIDDEN:
                 def txt = ""
                 def validateStr = ""
                 if (validation) {
@@ -525,27 +555,27 @@ class PageComponent {
                 if (type == COMP_TYPE_DATETIME)  //Assume format comes from jquery.ui.datepicker-<locale>.js
                     typeString=" ui-date=\"{ changeMonth: true, changeYear: true}\" "
                 //Cannot choose format with time, but lots of options. See http://jqueryui.com/datepicker/
-                if (attributes) println "Attributes: $attributes"
-                if (parent.type==COMP_TYPE_GRID)
+                if (isDataSetEditControl(parent)) {
+                    def addOnUpdate=""
+                    if (onUpdate)  {  //ToDo: add this to other controls in Grid/Detail
+                        addOnUpdate="\$parent.${parent.ID}_${name}_onUpdate($GRID_ITEM);"
+                    }
                     txt = """
                           <input $typeString   name="${name?name:model}" id="${name?name:model}" ${parent.allowModify?"":"readonly"}
-                          ng-model="$GRID_ITEM.${model}"
-                          ng-change="\$parent.${parent.name}DS.setModified($GRID_ITEM)" $attributes />
+                          ng-model="$GRID_ITEM.${model}"  ${defaultValue()}
+                          ng-change="$addOnUpdate\$parent.${parent.name}DS.setModified($GRID_ITEM)" $attributes />
                           """
-                else if (parent.type==COMP_TYPE_DETAIL) {
-                    txt = """<tr><td style="text-align:right; width: 15%"><strong>${tran("label")}</strong></td>"""
-                    txt+= """<td style="text-align:left;">
-                          <input $typeString   name="${name?name:model}" id="${name?name:model}" ${parent.allowModify?"":"readonly"}
-                          ng-model="$GRID_ITEM.${model}"
-                          ng-change="\$parent.${parent.name}DS.setModified($GRID_ITEM)" $attributes />
-                          </td></tr>
-                          """
+                    if (parent.type==COMP_TYPE_DETAIL) {
+                        txt = """<tr><td style="text-align:right; width: 15%"><strong>${tran("label")}</strong></td>
+                                 <td style="text-align:left;">
+                                 $txt </td></tr> """
+                    }
                 } else {
-                    // TODO do we need a value field if ng-model is defined?
+                    // TODO do we need a value field if ng-model is defined?  //added defaultValue
                     attributes += " ${readonly?"readonly":""}"
                     txt =  """<label for="${name?name:model}">${tran("label")}</label>
                               <input type="$t"   name="${name?name:model}" id="${name?name:model}" ${value?"value=\"{{${CompileService.parseVariable(value)}}}\"":"" }
-                              $attributes """
+                               ${defaultValue()} $attributes """
                     if (model && !readonly) {
                         if (binding != BINDING_PAGE)
                             txt+="ng-model=\"${ID}DS.currentRecord"    // use DataSet current record
@@ -567,15 +597,21 @@ class PageComponent {
             case COMP_TYPE_BOOLEAN:
                 def txt ="""<input type="checkbox" name="${name?name:model}" id="${name?name:model}"
                            ${booleanTrueValue?"ng-true-value=\"$booleanTrueValue\"":""}  ${booleanFalseValue?"ng-false-value=\"$booleanFalseValue\"":""}
-                           ${value?"value=\"{{$value}}\"":"" } """
+                           ${value?"value=\"{{$value}}\"":"" } ${defaultValue()}"""  // is value needed ever? Doesn't do anything if ng-model is used.
                 // add change event handler for items in a table so the item can be marked dirty for save
-                if (parent.type==COMP_TYPE_GRID || parent.type==COMP_TYPE_DETAIL )
-                    return txt + """ ng-change="\$parent.${parent.name}DS.setModified($GRID_ITEM)" ${(parent.allowModify && !readonly)?"":"readonly"} ng-model="$GRID_ITEM.${model}"/> """
+                if (isDataSetEditControl(parent)) {
+                    def addOnUpdate=""
+                    if (onUpdate)  {  //ToDo: add this to other controls in Grid/Detail
+                        addOnUpdate="\$parent.${parent.ID}_${name}_onUpdate($GRID_ITEM);"
+                    }
+                    return txt + """ ng-change="$addOnUpdate\$parent.${parent.name}DS.setModified($GRID_ITEM)" ${(parent.allowModify && !readonly)?"":"readonly"} ng-model="$GRID_ITEM.${model}"
+                                      /> """
+                }
                 else  {
                     // handle change event
                     if (onUpdate) {
                         txt += """ng-change="${name}_onUpdate()"  """
-                        println "****WARNING**** check if  property ${name}_onUpdate() is generated - possibly an inconsistent"
+                        println "****WARNING**** check if  property ${name}_onUpdate() is generated - possibly an inconsistency in generator"
                     }
                     // if not in a table, add label for checkbox
                     return txt +  """ng-model="$model" ${readonly?"readonly":""} /> <label for="${name?name:model}">${tran("label")}</label>
