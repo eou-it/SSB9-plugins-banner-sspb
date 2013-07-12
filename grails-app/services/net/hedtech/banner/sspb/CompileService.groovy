@@ -125,13 +125,13 @@ class CompileService {
 
         result = """
     function CustomPageController( \$scope, \$http, \$resource, \$parse, \$locale) {
-        // copy global var to scope
-        \$scope._isUserAuthenticated = __isUserAuthenticated;
-        \$scope._userFullName = __userFullName;
-        \$scope._userFirstName = __userFirstName;
-        \$scope._userLastName = __userLastName;
-        \$scope._pidm = __pidm;
-        \$scope._userRoles = __userRoles;
+        // copy global var to scope - HvT: do we really need this?
+        \$scope._isUserAuthenticated = user.authenticated;
+        \$scope._userFullName = user.fullName;
+        \$scope._userFirstName = "";
+        \$scope._userLastName = "";
+        \$scope._pidm = "";
+        \$scope._userRoles = user.roles;
         // page specific code
         $result
         //common code TODO - move out of this controller
@@ -266,12 +266,19 @@ class CompileService {
                         [from: ".\$get"           ,to:"DS.get"]   ]
         def result=expr
         if (result) {
-                //populateSource corresponds to DataSet.load
+
             patterns.each {pattern ->
                 dataSetIDsIncluded.each { pcId ->
-                    result=result.replace("\$${pcId}$pattern.from","\$scope.${pcId}$pattern.to" )
+                    //result=result.replace("\$${pcId}$pattern.from","\$scope.${pcId}$pattern.to" )
+                    //remove $scope, now done by parseExpression
+                    result=result.replace("\$${pcId}$pattern.from","\$${pcId}$pattern.to" )
                 }
             }
+
+            // fix 2013-07-02
+            // add logic onClick - the show/hide block feature doesn't work in on change
+            result=parseExpression(result)
+            //end fix
             if (result == expr) {
                 println "Warning: onEvent expression for $pageComponent.ID not changed."
             } else {
@@ -495,34 +502,45 @@ class CompileService {
              pageComponent.submit = parseVariable(pageComponent.submit)
 
          } else if (pageComponent.onUpdate && !uiControlIDsIncluded.contains(pageComponent.ID)) {
-            // handle input field update
-            // generate a ng-change function
-            def  expr = parseExpression(pageComponent.onUpdate)
+             // handle input field update
+             // generate a ng-change function
+             def  expr = parseExpression(pageComponent.onUpdate)
              dataSetIDsIncluded.each { //replace with dataSetIDs
                  expr=expr.replace(".${it}_",".${it}DS.")
              }
-            def duplicateExpr =""
-            if ((pageComponent.type == PageComponent.COMP_TYPE_SELECT || pageComponent.type == PageComponent.COMP_TYPE_RADIO)&&
-                    (pageComponent.parent.type == PageComponent.COMP_TYPE_DETAIL
-                     || pageComponent.parent.type == PageComponent.COMP_TYPE_GRID) ) {
-                // if a select is used in a grid or detail control its model is bound to parent model, we need to copy
-                // the model to $<selectName> in order for it to be referenced by other controls
-                println "****WARNING**** using duplicate - is this still needed?"
-                duplicateExpr =
-                    "//duplicate\n"+
-                    "\$scope.$pageComponent.name = \$scope._${pageComponent.parent.model.toLowerCase()}s_${pageComponent.parent.name}[0].$pageComponent.model;"
+             def duplicateExpr =""
+             if ((pageComponent.type == PageComponent.COMP_TYPE_SELECT || pageComponent.type == PageComponent.COMP_TYPE_RADIO)&&
+                     (pageComponent.parent.type == PageComponent.COMP_TYPE_DETAIL
+                             || pageComponent.parent.type == PageComponent.COMP_TYPE_GRID) ) {
+                 // if a select is used in a grid or detail control its model is bound to parent model, we need to copy
+                 // the model to $<selectName> in order for it to be referenced by other controls
+                 println "****WARNING**** using duplicate - is this still needed?"
+                 duplicateExpr =
+                     "//duplicate\n"+
+                             "\$scope.$pageComponent.name = \$scope._${pageComponent.parent.model.toLowerCase()}s_${pageComponent.parent.name}[0].$pageComponent.model;"
 
-            }
-            //next code is used for non-DataSet items with an onUpdate, i.e. an input field to set a filter
-            code += """
-            \$scope.${pageComponent.name}_onUpdate = function() {
-                 $duplicateExpr
-                 // handle undefined value
-                 \$scope.${pageComponent.name} = nvl(\$scope.${pageComponent.name}, "");
-                 $expr
-                 };
-            """
-        }
+             }
+
+             // add onUpdate for grid/detail items
+             if ( [pageComponent.COMP_TYPE_GRID,pageComponent.COMP_TYPE_DETAIL].contains( pageComponent.parent.type ) )  {
+                 def parentID = pageComponent.parent.ID
+                 code += """
+             \$scope.${parentID}_${pageComponent.name}_onUpdate = function(current_item) {
+                  $expr
+              };
+             """
+             } else {
+                //next code is used for non-DataSet items with an onUpdate, i.e. an input field to set a filter
+                code += """
+             \$scope.${pageComponent.name}_onUpdate = function() {
+                  $duplicateExpr
+                  // handle undefined value
+                  \$scope.${pageComponent.name} = nvl(\$scope.${pageComponent.name}, "");
+                  $expr
+             };
+             """
+             }
+         }
         pageComponent.components.each { child ->
             code+= buildControlVar(child, depth+1)
         }
@@ -678,7 +696,8 @@ class CompileService {
             if (!it.model) {
                 // generate a model of name_value if it is missing
                 // for use in controller functions to be referenced by other components
-                if (inputTypes.contains(it.type) ) {
+                // Fix: generates DataSet for Literal - also should use model for display types
+                if (inputTypes.contains(it.type) || PageComponent.COMP_DISPLAY_TYPES.contains(it.type) ) {
                     it.model = "${it.name}"
                     it.binding = PageComponent.BINDING_PAGE
                 } else {

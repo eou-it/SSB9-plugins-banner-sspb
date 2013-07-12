@@ -1,9 +1,5 @@
 package net.hedtech.banner.sspb
 
-
-
-
-
 class CustomPageController {
 
     static defaultAction = "page"

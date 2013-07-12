@@ -1,6 +1,9 @@
 package net.hedtech.banner.virtualDomain
 
 class VirtualDomain {
+
+    static hasMany = [virtualDomainRoles: VirtualDomainRole]
+
     String serviceName
     String typeOfCode="S"  //SQL
     String dataSource="B"  // for now B=Banner, S=SSPB

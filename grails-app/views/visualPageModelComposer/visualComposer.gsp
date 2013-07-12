@@ -246,6 +246,7 @@
             tr['type.link'        ]="${message(code:'sspb.model.type.link'     )}";
             tr['type.boolean'     ]="${message(code:'sspb.model.type.boolean'  )}";
             tr['type.button'      ]="${message(code:'sspb.model.type.button'   )}";
+            tr['type.hidden'      ]="${message(code:'sspb.model.type.hidden'   )}";
 
 
             tr['sspb.page.visualbuilder.edit.map.title' ] = "${message(code:'sspb.page.visualbuilder.edit.map.title',encodeAs: 'JavaScript')}";

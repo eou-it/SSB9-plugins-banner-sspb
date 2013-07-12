@@ -3,6 +3,8 @@ package net.hedtech.banner.virtualDomain
 
 
 class VirtualDomainController  {
+    //ToDo remove this controller and use the API where this controller is still used
+
     //inject the service:
     def virtualDomainSqlService
     def virtualDomainService
