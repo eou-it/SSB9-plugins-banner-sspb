@@ -53,7 +53,7 @@ class PageComponent {
     final static GRID_ITEM="item"
     final static LIST_ITEM="item"
     final static SELECT_ITEM="item"
-    final static CURRENT_ITEM = "current_item"
+    final static CURRENT_ITEM = "currentSelection"
     final static CONTROLLER_PLACEHOLDER="###CONTROLLER###"
     final static VAR_PRE = '$'  //page model variable prefix
     final static VAR_RES = '$$' // page model reserved variable prefix
@@ -283,12 +283,15 @@ class PageComponent {
             child.label=""
             items+="<td>${child.compileComponent("", depth)}</td>\n"
         }
+        def click_txt=""
+        if (onClick)
+            click_txt = "ng-click=${name}_onClick($GRID_ITEM)"
 
         def result =
             """<table>
             <tr>$thead</tr>
             <!-- Do this for every object in objects -->
-            <tr ng-repeat="$repeat | startFrom:${uiControl}.currentPage * ${uiControl}.pageSize | limitTo:${uiControl}.pageSize">
+            <tr ng-repeat="$repeat | startFrom:${uiControl}.currentPage * ${uiControl}.pageSize | limitTo:${uiControl}.pageSize" $click_txt>
               $items
             </tr>
             </table>
@@ -503,7 +506,7 @@ class PageComponent {
                 // TODO consolidate value and sourceModel?
                 // TODO is parseVariable still working after using DataSet as generic data object?
                 ret += label?"<label>${tran("label")}</label>":""
-                ret +=  """<a href="$url">$desc</a></div>"""
+                ret +=  """<a ng-href="${CompileService.parseLiteral(url)}">$desc</a></div>"""
                 return ret
 
             case COMP_TYPE_TEXT:

@@ -464,7 +464,7 @@ class CompileService {
 
     def static buildControlVar(pageComponent, depth = 0) {
         def code = ""
-         if ( [PageComponent.COMP_TYPE_BUTTON,PageComponent.COMP_TYPE_LIST].contains( pageComponent.type ) ) {
+         if ( [PageComponent.COMP_TYPE_BUTTON,PageComponent.COMP_TYPE_LIST, PageComponent.COMP_TYPE_GRID].contains( pageComponent.type ) ) {
             // generate a control function for each button/list 'click' property
             if (pageComponent.onClick) {
                 // handle variable and constant in expression
@@ -472,8 +472,12 @@ class CompileService {
                 dataSetIDsIncluded.each {   //TODO HvT - is this OK always?
                     expr=expr.replace(".${it}_",".${it}DS.")
                 }
-                def arg = pageComponent.type==PageComponent.COMP_TYPE_LIST?PageComponent.CURRENT_ITEM:""
-                code += """\$scope.${pageComponent.name}_onClick = function($arg) { $expr}; """
+                // if we are dealing with clicking on an item from a list or table then pass the current selection to the control function
+                def arg = "";
+                if (pageComponent.type==PageComponent.COMP_TYPE_LIST || pageComponent.type==PageComponent.COMP_TYPE_GRID)
+                    arg = PageComponent.CURRENT_ITEM
+
+                code += """\$scope.${pageComponent.name}_onClick = function($arg) { $expr}; \n"""
                 println "onClick expression for $pageComponent.name $pageComponent.onClick -> $expr"
             }
          } else if ((pageComponent.type == PageComponent.COMP_TYPE_SELECT || pageComponent.type == PageComponent.COMP_TYPE_RADIO) && pageComponent.sourceValue) {

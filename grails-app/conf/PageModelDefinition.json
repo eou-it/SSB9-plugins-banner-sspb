@@ -34,7 +34,7 @@
             {
                 "componentType":["grid"],
                 "requiredAttributes":["model"],
-                "optionalAttributes":["label", "style", "parameters", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize"],
+                "optionalAttributes":["label", "style", "parameters", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize","onClick"],
                 "requiredChildren":[],
                 "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal" ]
             },
@@ -131,7 +131,7 @@
             }
         ],
         "sourceRenderDefinitions" : [
-            {"AttributeType":["name", "documentation", "title", "label", "style", "submit", "submitLabel", "model", "value", "validation", "placeholder", "onUpdate", "onClick", "onLoad", "labelKey", "valueKey", "sourceModel", "booleanTrueValue", "booleanFalseValue", "resource", "sequence"], "renderProperty":{"inputType":"text"}},
+            {"AttributeType":["name", "documentation", "title", "label", "style", "submit", "submitLabel", "model", "value", "validation", "placeholder", "onUpdate", "onClick", "onLoad", "labelKey", "valueKey", "sourceModel", "booleanTrueValue", "booleanFalseValue", "resource", "sequence","imageUrl", "url"], "renderProperty":{"inputType":"text"}},
             {"AttributeType":["type"], "renderProperty":{"inputType":"select"}},
             {"AttributeType":["scriptingLanguage"], "renderProperty":{"inputType":"text", "default":"JavaScript"}},
             {"AttributeType":["binding"], "renderProperty":{"inputType":"text", "default":"rest"}},
@@ -147,7 +147,6 @@
             {"AttributeType":["activated"], "renderProperty":{"inputType":"boolean", "default":false}},
             {"AttributeType":["parameters", "sourceParameters"], "renderProperty":{"inputType":"map"}},
             {"AttributeType":["pageSize"], "renderProperty":{"inputType":"number", "default":5}},
-            {"AttributeType":["imageUrl", "url"], "renderProperty":{"inputType":"url"}},
             {"AttributeType":["sourceValue"], "renderProperty":{"inputType":"arrayOfMap"}},
             {"AttributeType":["default"], "renderProperty":{"inputType":"text"}}
         ],
