@@ -53,6 +53,12 @@ class PageUtilService {
             } else {
                 println localizer(code:"sspb.pageutil.import.page.done.message", args:[page.constantName])
             }
+            if (page.constantName.startsWith("pbadm.")){
+                //add a WTAILORADMIN role so the pages can be used
+                //TODO export PageRoles
+                def role=new PageRole(roleName: "WTAILORADMIN")
+                page.addToPageRoles(role)
+            }
             page = page.save(flush: true)
         }
     }

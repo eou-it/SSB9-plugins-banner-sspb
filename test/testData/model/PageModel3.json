@@ -1,158 +1,189 @@
 {
-   "type": "page",
-   "name": "ProgrammePage",
-   "title": "Programme Search Page",
-   "components": [
-       {
-           "type": "resource",
-           "name": "TermData",
-           "binding": "rest",
-           "resource": "$rootWebApp/api/virtualDomains.f_term"
-       },
-       {
-           "type": "resource",
-           "name": "CampusData",
-           "binding": "rest",
-           "resource": "$rootWebApp/api/virtualDomains.f_campus"
-       },
-       {
-           "type": "resource",
-           "name": "CollegeData",
-           "binding": "rest",
-           "resource": "$rootWebApp/api/virtualDomains.f_college"
-       },
-       {
-           "type": "resource",
-           "name": "LevelData",
-           "binding": "rest",
-           "resource": "$rootWebApp/api/virtualDomains.f_level"
-       },
-       {
-           "type": "resource",
-           "name": "ProgrammeData",
-           "binding": "rest",
-           "resource": "$rootWebApp/api/virtualDomains.f_programme"
-       },
-       {
-           "type": "resource",
-           "name": "ProgrammeDetailsData",
-           "binding": "rest",
-           "resource": "$rootWebApp/api/virtualDomains.f_programme_details"
-       },
-       {
-           "type":"literal",
-           "value":"<h2>Search for Programme Demo$</h2>"
-       },
-       {
-         "type": "form",
-         "name": "SelectCriteriaForm",
-         "label": "Search Criteria New",
-         "components": [
-             {
-                 "type":"select",
-                 "name":"SelectTerm",
-                 "label":"Term",
-                 "sourceModel":"TermData",
-                 "labelKey": "STVTERM_DESC",
-                 "valueKey": "STVTERM_CODE",
-                 "onUpdate":"$SelectCollege.$populateSource(); $SelectCampus.$populateSource(); $SelectLevel.$populateSource();"
-             },
-             {
-                 "type":"select",
-                 "name":"SelectCollege",
-                 "label":"College",
-                 "sourceModel":"CollegeData",
-                 "sourceParameters":{"TERM":"$SelectTerm", "LEVL":"$SelectLevel", "CAMPUS":"$SelectCampus"},
-                 "labelKey": "STVCOLL_DESC",
-                 "valueKey": "STVCOLL_CODE",
-                 "onUpdate":"$SelectCampus.$populateSource(); $SelectLevel.$populateSource();"
-             },
-             {
-                 "type":"select",
-                 "name":"SelectCampus",
-                 "label":"Campus",
-                 "sourceModel":"CampusData",
-                 "sourceParameters":{"TERM":"$SelectTerm", "LEVL":"$SelectLevel", "COLLEGE":"$SelectCollege"},
-                 "labelKey": "STVCAMP_DESC",
-                 "valueKey": "STVCAMP_CODE",
-                 "onUpdate":"$SelectCollege.$populateSource(); $SelectLevel.$populateSource();"
-             },
-             {
-                 "type":"select",
-                 "name":"SelectLevel",
-                 "label":"Level",
-                 "sourceModel":"LevelData",
-                 "sourceParameters":{"TERM":"$SelectTerm", "CAMPUS":"$SelectCampus", "COLLEGE":"$SelectCollege"},
-                 "labelKey": "STVLEVL_DESC",
-                 "valueKey": "STVLEVL_CODE",
-                 "onUpdate":"$SelectCollege.$populateSource(); $SelectCampus.$populateSource();"
-             },
-             {
-                 "type":"button",
-                 "name":"applyCriteria",
-                 "label":"Search",
-                 "onClick":"$ProgrammeList.$load(); $DisplayProgrammeListForm.$visible=true;"
-             }
-            ]
-       },
-       {
-          "type": "form",
-          "name": "DisplayProgrammeListForm",
-          "label" : "Programmes",
-          "showInitially":false,
-          "components": [
-              {
-                "type": "list",
-                "model": "ProgrammeData",
-                "parameters" : {"TERM":"$SelectTerm", "LEVL":"$SelectLevel", "CAMPUS":"$SelectCampus", "COLLEGE":"$SelectCollege"},
-                "name": "ProgrammeList",
-                "pageSize" : 15,
-                "value": "SMRPRLE_PROGRAM_DESC",
-                "onClick":"$ProgrammeCode = current_item.SMRPRLE_PROGRAM; $ProgrammeDetails.$load(); $SelectCriteriaForm.$visible=false; $DisplayProgrammeListForm.$visible=false; $ShowProgrammeDetailsForm.$visible=true;"
-              }
-          ]
-       },
-       {
-           "type":"form",
-           "name":"ShowProgrammeDetailsForm",
-           "label":"Programme Details:",
-           "showInitially":false,
-           "components": [
-               {
-                   "type": "detail",
-                   "name": "ProgrammeDetails",
-                   "model": "ProgrammeDetailsData",
-                   "parameters" : {"programme":"$ProgrammeCode"},
-                   "components": [
-                       {
-                           "type":"display",
-                           "label":"Program Description",
-                           "model":"SMRPRLE_PROGRAM_DESC"
-                       },
-                       {
-                           "type":"display",
-                           "label":"Level",
-                           "model":"STVLEVL_DESC"
-                       },
-                       {
-                           "type":"display",
-                           "label":"College",
-                           "model":"STVCOLL_DESC"
+      "type": "page",
+      "name": "ProgrammePage",
+      "title": "Programme Search Page",
+      "components": [
+            {
+                  "type": "resource",
+                  "name": "TermData",
+                  "binding": "rest",
+                  "resource": "$rootWebApp/api/virtualDomains.f_term"
+            },
+            {
+                  "type": "resource",
+                  "name": "CampusData",
+                  "binding": "rest",
+                  "resource": "$rootWebApp/api/virtualDomains.f_campus"
+            },
+            {
+                  "type": "resource",
+                  "name": "CollegeData",
+                  "binding": "rest",
+                  "resource": "$rootWebApp/api/virtualDomains.f_college"
+            },
+            {
+                  "type": "resource",
+                  "name": "LevelData",
+                  "binding": "rest",
+                  "resource": "$rootWebApp/api/virtualDomains.f_level"
+            },
+            {
+                  "type": "resource",
+                  "name": "ProgrammeData",
+                  "binding": "rest",
+                  "resource": "$rootWebApp/api/virtualDomains.f_programme"
+            },
+            {
+                  "type": "resource",
+                  "name": "ProgrammeDetailsData",
+                  "binding": "rest",
+                  "resource": "$rootWebApp/api/virtualDomains.f_programme_details"
+            },
+            {
+                  "type": "literal",
+                  "value": "<h2>Search for Programme Demo$</h2>"
+            },
+            {
+                  "type": "form",
+                  "name": "SelectCriteriaForm",
+                  "label": "Search Criteria New",
+                  "components": [
+                        {
+                              "type": "select",
+                              "name": "SelectTerm",
+                              "label": "Term",
+                              "sourceModel": "TermData",
+                              "labelKey": "STVTERM_DESC",
+                              "valueKey": "STVTERM_CODE",
+                              "onUpdate": "$SelectCollege.$populateSource(); $SelectCampus.$populateSource(); $SelectLevel.$populateSource();",
+                              "sourceParameters": {},
+                              "sourceValue": [],
+                              "required": false,
+                              "placeholder": "Select a term"
                         },
-                       {
-                           "type":"display",
-                           "label":"Degree Code",
-                           "model":"STVDEGC_DESC"
+                        {
+                              "type": "select",
+                              "name": "SelectCollege",
+                              "label": "College",
+                              "sourceModel": "CollegeData",
+                              "sourceParameters": {
+                                    "TERM": "$SelectTerm",
+                                    "LEVL": "$SelectLevel",
+                                    "CAMPUS": "$SelectCampus"
+                              },
+                              "labelKey": "STVCOLL_DESC",
+                              "valueKey": "STVCOLL_CODE",
+                              "onUpdate": "$SelectCampus.$populateSource(); $SelectLevel.$populateSource();",
+                              "sourceValue": [],
+                              "required": false,
+                              "placeholder": "All"
+                        },
+                        {
+                              "type": "select",
+                              "name": "SelectCampus",
+                              "label": "Campus",
+                              "sourceModel": "CampusData",
+                              "sourceParameters": {
+                                    "TERM": "$SelectTerm",
+                                    "LEVL": "$SelectLevel",
+                                    "COLLEGE": "$SelectCollege"
+                              },
+                              "labelKey": "STVCAMP_DESC",
+                              "valueKey": "STVCAMP_CODE",
+                              "onUpdate": "$SelectCollege.$populateSource(); $SelectLevel.$populateSource();",
+                              "sourceValue": [],
+                              "required": false,
+                              "placeholder": "All"
+                        },
+                        {
+                              "type": "select",
+                              "name": "SelectLevel",
+                              "label": "Level",
+                              "sourceModel": "LevelData",
+                              "sourceParameters": {
+                                    "TERM": "$SelectTerm",
+                                    "CAMPUS": "$SelectCampus",
+                                    "COLLEGE": "$SelectCollege"
+                              },
+                              "labelKey": "STVLEVL_DESC",
+                              "valueKey": "STVLEVL_CODE",
+                              "onUpdate": "$SelectCollege.$populateSource(); $SelectCampus.$populateSource();",
+                              "sourceValue": [],
+                              "required": false,
+                              "placeholder": "All"
+                        },
+                        {
+                              "type": "button",
+                              "name": "applyCriteria",
+                              "label": "Search",
+                              "onClick": "$ProgrammeList.$load(); $DisplayProgrammeListForm.$visible=true;"
                         }
-                   ]
-               },
-               {
-                   "type":"button",
-                   "label":"Back to programme search",
-                   "onClick":"$ShowProgrammeDetailsForm.$visible=false; $SelectCriteriaForm.$visible=true; $DisplayProgrammeListForm.$visible=true;"
-               }
-
-           ]
-        }
-    ]
+                  ]
+            },
+            {
+                  "type": "form",
+                  "name": "DisplayProgrammeListForm",
+                  "label": "Programmes",
+                  "showInitially": false,
+                  "components": [
+                        {
+                              "type": "list",
+                              "model": "ProgrammeData",
+                              "parameters": {
+                                    "TERM": "$SelectTerm",
+                                    "LEVL": "$SelectLevel",
+                                    "CAMPUS": "$SelectCampus",
+                                    "COLLEGE": "$SelectCollege"
+                              },
+                              "name": "ProgrammeList",
+                              "pageSize": 15,
+                              "value": "SMRPRLE_PROGRAM_DESC",
+                              "onClick": "$ProgrammeCode = current_item.SMRPRLE_PROGRAM; $ProgrammeDetails.$load(); $SelectCriteriaForm.$visible=false; $DisplayProgrammeListForm.$visible=false; $ShowProgrammeDetailsForm.$visible=true;"
+                        }
+                  ]
+            },
+            {
+                  "type": "form",
+                  "name": "ShowProgrammeDetailsForm",
+                  "label": "Programme Details:",
+                  "showInitially": false,
+                  "components": [
+                        {
+                              "type": "detail",
+                              "name": "ProgrammeDetails",
+                              "model": "ProgrammeDetailsData",
+                              "parameters": {
+                                    "programme": "$ProgrammeCode"
+                              },
+                              "components": [
+                                    {
+                                          "type": "display",
+                                          "label": "Program Description",
+                                          "model": "SMRPRLE_PROGRAM_DESC"
+                                    },
+                                    {
+                                          "type": "display",
+                                          "label": "Level",
+                                          "model": "STVLEVL_DESC"
+                                    },
+                                    {
+                                          "type": "display",
+                                          "label": "College",
+                                          "model": "STVCOLL_DESC"
+                                    },
+                                    {
+                                          "type": "display",
+                                          "label": "Degree Code",
+                                          "model": "STVDEGC_DESC"
+                                    }
+                              ]
+                        },
+                        {
+                              "type": "button",
+                              "label": "Back to programme search",
+                              "onClick": "$ShowProgrammeDetailsForm.$visible=false; $SelectCriteriaForm.$visible=true; $DisplayProgrammeListForm.$visible=true;"
+                        }
+                  ]
+            }
+      ]
 }

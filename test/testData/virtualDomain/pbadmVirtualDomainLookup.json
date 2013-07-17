@@ -1,0 +1,26 @@
+{
+   "codePost": null,
+   "id": 12044,
+   "dataSource": "B",
+   "virtualDomainRoles": [{
+      "allowGet": true,
+      "id": 12047,
+      "allowPost": true,
+      "allowPut": true,
+      "virtualDomain": {
+         "_ref": "../..",
+         "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+      },
+      "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
+      "roleName": "WTAILORADMIN",
+      "allowDelete": true,
+      "version": 1
+   }],
+   "codePut": null,
+   "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
+   "codeDelete": null,
+   "codeGet": "select id vid, service_name from virtual_domain\r\norder by 2",
+   "typeOfCode": "S",
+   "serviceName": "pbadmVirtualDomainLookup",
+   "version": 0
+}

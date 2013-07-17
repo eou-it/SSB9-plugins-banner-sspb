@@ -1,107 +1,120 @@
 {
-   "type": "page",
-   "name": "FlowDemoPage",
-   "title": "Flow Control Demo Page",
-   "components": [
-       {
-           "type": "resource",
-           "name": "EmployeeRes",
-           "binding": "rest",
-           "resource": "$rootWebApp/api/virtualDomains.employee"
-       },
-       {
-            "type":"flow",
-            "name":"managerFlow",
-            "sequence":"form1, form2, form3"
-       },
-       {
-            "type":"flow",
-            "name":"employeeFlow",
-            "sequence":"form1, form3"
-       },
-       {
-           "type":"select",
-           "name":"selectEmployee",
-           "label":"Choose an employee to see different flows",
-           "sourceModel":"EmployeeRes",
-           "labelKey": "ENAME",
-           "valueKey": "EMPNO",
-           "onUpdate":"$EmployeeData.$load();"
-       },
-       {   "type":"data",
-           "name":"EmployeeData",
-           "model":"EmployeeRes",
-           "parameters":{"EMPNO":"$selectEmployee"},
-           "loadInitially": false,
-           "onLoad":"if ($EmployeeData.JOB =='MANAGER') $$activateFlow('managerFlow'); else $$activateFlow('employeeFlow');"
-       },
-       {    "type":"block",
-           "name":"Banner",
-           "components": [
-               { "type" : "literal",
-                 "value" : "Complete $EmployeeData.JOB forms for $EmployeeData.ENAME"
-                }
-           ]
-       },
-       {     "type": "form",
-             "name": "form1",
-             "label": "Common Form",
-             "showInitially":false,
-             "components": [
-                 {
-                     "type":"text",
-                     "name":"age",
-                     "label":"Age (required)",
-                     "required":true,
-                     "validation":{"pattern":"\\d+", "maxlength":2, "minlength":1}
-                 },
-                 {
-                     "type":"text",
-                     "name":"input12",
-                     "label":"This is an optional field"
-                 }
-             ]
-        },
-       {     "type": "form",
-             "name": "form2",
-             "label": "Manager Only Form",
-             "showInitially":false,
-             "components": [
-                 {
-                     "type":"text",
-                     "name":"address",
-                     "label":"Address (required)",
-                     "required":true
-                 },
-                 {
-                     "type":"text",
-                     "name":"input22",
-                     "label":"This is an optional field"
-                 }
-             ]
-        },
-       {     "type": "form",
-             "name": "form3",
-             "label": "All Employee Form",
-             "showInitially":false,
-              "submit":"$age=null;$address=null;$email=null;",
-              "nextButtonLabel":"Finish",
-              "submitLabel":"Submit",
-             "components": [
-                 {
-                     "type":"email",
-                     "name":"email",
-                     "label":"email (required)",
-                     "required":true,
-                     "validation":{"minlength":3}
-                 },
-                 {
-                     "type":"text",
-                     "name":"input32",
-                     "label":"This is an optional field"
-                 }
-             ]
-        }
-
-    ]
+      "type": "page",
+      "name": "FlowDemoPage",
+      "title": "Flow Control Demo Page",
+      "components": [
+            {
+                  "type": "resource",
+                  "name": "EmployeeRes",
+                  "binding": "rest",
+                  "resource": "$rootWebApp/api/virtualDomains.employee"
+            },
+            {
+                  "type": "flow",
+                  "name": "managerFlow",
+                  "sequence": "form1, form2, form3"
+            },
+            {
+                  "type": "flow",
+                  "name": "employeeFlow",
+                  "sequence": "form1, form3"
+            },
+            {
+                  "type": "select",
+                  "name": "selectEmployee",
+                  "label": "Choose an employee to see different flows",
+                  "sourceModel": "EmployeeRes",
+                  "labelKey": "ENAME",
+                  "valueKey": "EMPNO",
+                  "onUpdate": "$EmployeeData.$load();"
+            },
+            {
+                  "type": "data",
+                  "name": "EmployeeData",
+                  "model": "EmployeeRes",
+                  "parameters": {
+                        "EMPNO": "$selectEmployee"
+                  },
+                  "loadInitially": false,
+                  "onLoad": "if ($EmployeeData.JOB =='MANAGER') $$activateFlow('managerFlow'); else $$activateFlow('employeeFlow');"
+            },
+            {
+                  "type": "block",
+                  "name": "Banner",
+                  "components": [
+                        {
+                              "type": "literal",
+                              "value": "Complete $EmployeeData.JOB forms for $EmployeeData.ENAME"
+                        }
+                  ]
+            },
+            {
+                  "type": "form",
+                  "name": "form1",
+                  "label": "Common Form",
+                  "showInitially": false,
+                  "components": [
+                        {
+                              "type": "text",
+                              "name": "age",
+                              "label": "Age (required)",
+                              "required": true,
+                              "validation": {
+                                    "pattern": "\\d+",
+                                    "maxlength": 2,
+                                    "minlength": 1
+                              }
+                        },
+                        {
+                              "type": "text",
+                              "name": "input12",
+                              "label": "This is an optional field"
+                        }
+                  ]
+            },
+            {
+                  "type": "form",
+                  "name": "form2",
+                  "label": "Manager Only Form",
+                  "showInitially": false,
+                  "components": [
+                        {
+                              "type": "text",
+                              "name": "address",
+                              "label": "Address (required)",
+                              "required": true
+                        },
+                        {
+                              "type": "text",
+                              "name": "input22",
+                              "label": "This is an optional field"
+                        }
+                  ]
+            },
+            {
+                  "type": "form",
+                  "name": "form3",
+                  "label": "All Employee Form",
+                  "showInitially": false,
+                  "submit": "$age=null;$address=null;$email=null;",
+                  "nextButtonLabel": "Finish",
+                  "submitLabel": "Submit",
+                  "components": [
+                        {
+                              "type": "email",
+                              "name": "email",
+                              "label": "email (required)",
+                              "required": true,
+                              "validation": {
+                                    "minlength": 3
+                              }
+                        },
+                        {
+                              "type": "text",
+                              "name": "input32",
+                              "label": "This is an optional field"
+                        }
+                  ]
+            }
+      ]
 }

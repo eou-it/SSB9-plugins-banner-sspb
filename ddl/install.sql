@@ -23,7 +23,10 @@ connect SSPBMGR/&&SSPBMGR_PASSWORD
 prompt Install Hibernate Sequence
 
 CREATE SEQUENCE SSPBMGR.HIBERNATE_SEQUENCE INCREMENT BY 1 START WITH 10000;
+CREATE OR REPLACE PUBLIC SYNONYM HIBERNATE_SEQUENCE FOR SSPBMGR.HIBERNATE_SEQUENCE;
 
 prompt Install SSPBMGR tables
 @tab_sspb_virt_dom
+@tab_sspb_virt_dom_role
 @tab_sspb_page
+@tab_sspb_page_role

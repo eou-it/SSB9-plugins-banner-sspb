@@ -1,6 +1,9 @@
 package net.hedtech.banner.sspb
 
 class Page {
+
+    static hasMany = [pageRoles: PageRole]
+
     String constantName
     String modelView
     String compiledView

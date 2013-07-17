@@ -3,6 +3,10 @@ grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 
 grails.plugin.location.'restful-api'="../restful-api.git"
+grails.plugin.location.'banner_core'="../banner_core.git"
+grails.plugin.location.'banner_codenarc'="../banner_codenarc.git"
+grails.plugin.location.'i18n_core'="../i18n_core.git"
+grails.plugin.location.'spring-security-cas' = "../spring_security_cas.git"
 
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
@@ -32,27 +36,55 @@ grails.project.dependency.resolution = {
 
         // runtime 'mysql:mysql-connector-java:5.1.21'
         test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
+		
+		// HvT: resolve compilation issue with Banner-core
+        // taken from grails-spring-security-cas / grails-app / conf / BuildConfig.groovy
+        compile('org.springframework.security:spring-security-cas-client:3.0.7.RELEASE') {
+            excludes 'spring-security-core', 'spring-security-web', 'servlet-api',
+                    'spring-tx', 'spring-test', 'cas-client-core', 'ehcache',
+                    'junit', 'mockito-core', 'jmock-junit4'
+        }
+        compile('org.jasig.cas.client:cas-client-core:3.1.12') {
+            excludes 'xmlsec', 'opensaml', 'spring-beans', 'spring-test', 'spring-core',
+                    'spring-context', 'log4j', 'junit', 'commons-logging', 'servlet-api'
+        }
     }
 
     plugins {
+        //compile ":resources:1.1.6"
         compile ":spring-security-core:1.2.7.3"
+        compile ":webxml:1.4.1"
+
 
         runtime ":hibernate:$grailsVersion"
-        //runtime ":jquery:1.7.1"
+        //runtime ":jquery:1.8.2"
+        //runtime ":jquery-ui:1.8.24"
+        //compile ":angularjs-resources:1.0.2"
         //runtime ":resources:1.1.6"
-        build(":tomcat:$grailsVersion",
+        
+		
+		build(":tomcat:$grailsVersion",
               ":release:2.2.0",
               ":rest-client-builder:1.0.3") {
             export = false
         }
 
-        compile (":inflector:0.2"
-		        //,":cache-headers:1.1.5"
+		compile ":tomcat:$grailsVersion"
+        
+		compile (":inflector:0.2"
+		        ,":cache-headers:1.1.5"
 				//,':cache:1.0.0'
 				)
+
+        // Fix HvT
+        compile 'org.grails.plugins:codenarc:0.18.1'
+        // Fix  HvT
+        compile ":functional-test:2.0.RC1"
+
 
         test(":spock:0.7") {
             exclude "spock-grails-support"
         }
+        test ':code-coverage:1.2.5'
     }
 }
