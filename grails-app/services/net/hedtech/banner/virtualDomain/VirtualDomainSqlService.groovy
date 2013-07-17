@@ -14,7 +14,7 @@ class VirtualDomainSqlService {
         new ValidationTagLib().message( mapToLocalize )
     }
 
-   def sessionFactory  //injected by Spring
+    def sessionFactory  //injected by Spring
 
     //allow connecting to 2 different datasources, depending on VirtualDomain.dataSource
     //to make development easy, but maybe also useful
@@ -24,7 +24,7 @@ class VirtualDomainSqlService {
     private def getSql =  { ds ->
         def result
 
-        if ( true || ds == "B") {
+        if ( ds == "B") {
             result = new Sql(sessionFactory.getCurrentSession().connection())
         } else {
             result = new Sql(dataSource_sspb)
@@ -57,24 +57,26 @@ class VirtualDomainSqlService {
     }
 
     private def addUser = { params ->
-        def user = net.hedtech.banner.sspb.PBUser.get()
+        def user = PBUser.get()
         user.each { k,v ->
-            params.put("user_" + k, v)
+            try {
+                params.put("user_" + k, v)
+            }
+            catch (e) {
+                println e
+            }
         }
     }
     /* Check the user roles against the virtual domain roles
      */
     private def userAccessRights = { vd, userRoles ->
         def result=[get: false, put: false, post: false, delete: false ]
-        vd.virtualDomainRoles.each{
-            println 'vdRole ' + it
-        }
-        userRoles.each{
+        for (it in userRoles) {
             //objectName is like SELFSERVICE-ALUMNI
             //role is BAN_DEFAULT_M
             //strip SELFSERVICE- this can be handled by spring security
-            def r = it.objectName.substring(it.objectName.indexOf("-")+1)
-            vd.virtualDomainRoles.findAll{vr -> vr.roleName==r}.each {
+            def r = it.objectName.substring(it.objectName.indexOf("-") + 1)
+            vd.virtualDomainRoles.findAll {vr -> vr.roleName == r}.each {
                 result.get |= it.allowGet
                 result.put |= it.allowPut
                 result.post |= it.allowPost
@@ -95,10 +97,10 @@ class VirtualDomainSqlService {
     def get(vd, params) {
         def parameters = getNormalized(params) // some tweaks and work arounds
         addUser(parameters)
-
         def logmsg=localizer(code:"sspb.virtualdomain.sqlservice.param", args:[parameters])
-        def userRights = userAccessRights(vd, parameters.user_roles)
-
+        if (!userAccessRights(vd, parameters.user_authorities).get) {
+            throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.user_loginName}"))
+        }
         def sql = getSql(vd.dataSource)
         def debugStatement = (parameters.debug == "true")?" and rownum<6":""
         def errorMessage = ""
@@ -131,7 +133,11 @@ class VirtualDomainSqlService {
 
     def count(vd, params) {
         def parameters = getNormalized(params) // some tweaks and work arounds
+        addUser(parameters)
         def logmsg=localizer(code:"sspb.virtualdomain.sqlservice.param", args:[parameters])
+        if (!userAccessRights(vd, parameters.user_authorities).get) {
+            throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.user_loginName}"))
+        }
         def sql = getSql(vd.dataSource)
         def debugStatement = (parameters.debug == "true")?" and rownum<6":""
         def errorMessage = ""
@@ -157,25 +163,68 @@ class VirtualDomainSqlService {
     }
 
     def update(vd, params, data) {
-        data = prepareData(data, params)
-        def sql = getSql(vd.dataSource)
-        sql.execute(vd.codePut, data)
-        sql.close()
-        //data
+        def parameters = params
+        addUser(parameters)
+        data = prepareData(data, parameters)
+        if (!userAccessRights(vd, parameters.user_authorities).put) {
+            throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.user_loginName}"))
+        }
+        def sql
+        try {
+            sql = getSql(vd.dataSource)
+            sql.execute(vd.codePut, data)
+        }
+        catch(e) {
+            println "exception in update statement: $e"
+            throw(e)
+        }
+        finally {
+            sql?.close()
+        }
+        return [] //should return updated object from db
     }
 
     def create(vd, params, data) {
-        data = prepareData(data, params)
-        def sql = getSql(vd.dataSource)
-        sql.execute(vd.codePost, data)
-        sql.close()
+        def parameters = params
+        addUser(parameters)
+        data = prepareData(data, parameters)
+        if (!userAccessRights(vd, parameters.user_authorities).post){
+            throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.user_loginName}"))
+        }
+        def sql
+        try {
+            sql = getSql(vd.dataSource)
+            sql.execute(vd.codePost, data)
+        }
+        catch(e) {
+            println "exception in create statement: $e"
+            throw(e)
+        }
+        finally {
+            sql?.close()
+        }
+        return [] //should return created object from db
     }
 
     def delete(vd, params) {
-        def sql = getSql(vd.dataSource)
-        params.id = urlPathDecode(params.id)
-        sql.execute(vd.codeDelete, params)
-        sql.close()
+        def parameters = params
+        addUser(parameters)
+        if (!userAccessRights(vd, parameters.user_authorities).delete){
+            throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.user_loginName}"))
+        }
+        parameters.id = urlPathDecode(parameters.id)
+        def sql
+        try {
+            sql = getSql(vd.dataSource)
+            sql.execute(vd.codeDelete, params)
+        }
+        catch(e) {
+            println "exception in delete statement: $e"
+            throw(e)
+        }
+        finally {
+            sql?.close()
+        }
     }
 
     //Support methods and closures

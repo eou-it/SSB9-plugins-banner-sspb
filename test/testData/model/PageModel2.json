@@ -18,7 +18,7 @@
             {
                   "type": "form",
                   "name": "SelectDepartment",
-                  "label": "Search a Department",
+                  "label": "Search a Department  {{$locale}}",
                   "components": [
                         {
                               "type": "select",

@@ -1,10 +1,10 @@
 {
    "codePost": null,
-   "id": 11060,
+   "id": 12041,
    "dataSource": "B",
    "virtualDomainRoles": [{
       "allowGet": true,
-      "id": 11320,
+      "id": 12049,
       "allowPost": true,
       "allowPut": true,
       "virtualDomain": {
@@ -13,12 +13,14 @@
       },
       "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
       "roleName": "WTAILORADMIN",
-      "allowDelete": true
+      "allowDelete": true,
+      "version": 0
    }],
    "codePut": null,
    "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
    "codeDelete": null,
-   "codeGet": "select id vid, service_name from virtual_domain",
+   "codeGet": "select TWTVROLE_CODE code,  TWTVROLE_DESC description \r\nfrom twtvrole\r\nwhere\r\n (:virtual_domain_id is null or\r\n   TWTVROLE_CODE not in \r\n  (select role_name from virtual_domain_role where virtual_domain_id=:virtual_domain_id)\r\n)\r\nunion\r\nselect 'GUEST', 'Guest (no authentication)'\r\nfrom dual\r\norder by 2",
    "typeOfCode": "S",
-   "serviceName": "virtualDomainLookup"
+   "serviceName": "pbadmWebTailorRoles",
+   "version": 0
 }

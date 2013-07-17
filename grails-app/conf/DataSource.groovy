@@ -37,8 +37,8 @@ environments {
             password = "u_pick_it"
             url = "jdbc:oracle:thin:@oracledb:1521:ban83"
             //url = "jdbc:oracle:thin:@149.24.229.150:1521:orcl"
-            dbCreate = "none" //"validate"
-            loggingSql = false //true
+            dbCreate =  "none" //"validate" "update"
+            //loggingSql = true
         }
 
     }
