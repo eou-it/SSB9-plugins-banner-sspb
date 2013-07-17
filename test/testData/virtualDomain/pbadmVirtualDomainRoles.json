@@ -1,7 +1,7 @@
 {
    "codePost": "insert into virtual_domain_role\r\n (id, version,allow_delete, allow_get, allow_post, allow_put, role_name,virtual_domain_id) \r\nvalues\r\n( hibernate_sequence.nextval, 0, \r\n   nvl(:ALLOW_DELETE,0),\r\n  nvl(:ALLOW_GET,1),\r\n  nvl(:ALLOW_POST,0),\r\n  nvl(:ALLOW_PUT,0),\r\n  :ROLE_NAME,\r\n  :VIRTUAL_DOMAIN_ID\r\n)",
    "id": 12042,
-   "dataSource": "B",
+   "dataSource": "S",
    "virtualDomainRoles": [{
       "allowGet": true,
       "id": 12048,

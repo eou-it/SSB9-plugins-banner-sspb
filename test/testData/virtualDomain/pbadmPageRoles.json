@@ -1,7 +1,7 @@
 {
    "codePost": "insert into page_role\r\n (id, version,allow, role_name,page_id) \r\nvalues\r\n( hibernate_sequence.nextval, 0, \r\n   nvl(:ALLOW,1),\r\n  :ROLE_NAME,\r\n  :PAGE_ID\r\n)",
    "id": 12040,
-   "dataSource": "B",
+   "dataSource": "S",
    "virtualDomainRoles": [{
       "allowGet": true,
       "id": 12046,

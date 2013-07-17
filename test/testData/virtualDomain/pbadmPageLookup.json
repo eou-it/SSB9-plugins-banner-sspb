@@ -1,7 +1,7 @@
 {
    "codePost": null,
    "id": 12043,
-   "dataSource": "B",
+   "dataSource": "S",
    "virtualDomainRoles": [{
       "allowGet": true,
       "id": 12045,
