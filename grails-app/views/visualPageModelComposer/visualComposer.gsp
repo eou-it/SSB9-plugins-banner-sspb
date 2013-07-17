@@ -11,9 +11,9 @@
 <head>
   <title>Banner Page Builder Visual Composer</title>
 
-    <meta name="layout" content="BannerXECustomPage"/>
-    <meta name="menuEndPoint" content="/sspb/selfServiceMenu/pageModel"/>
-    <meta name="menuBaseURL" content="/sspb/sspb"/>
+    <meta name="layout" content="bannerSelfServicePBPage"/>
+    <meta name="menuEndPoint" content="${request.contextPath}/ssb/menu"/>
+    <meta name="menuBaseURL" content="${request.contextPath}/ssb"/>
     <meta name="menuDefaultBreadcrumbId" content=""/>
 
     <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pageComposer.css')}">
@@ -645,14 +645,14 @@
          //$scope.toggleSourceLabel = "Show Page Source";
          $scope.toggleSourceView = function() {
              $scope.showTree = !$scope.showTree;
-         }
+         };
 
          $scope.sourceEditEnabled = false;
 
          $scope.enableSourceEdit = function() {
              $scope.resetSelected();
              $scope.sourceEditEnabled = true;
-         }
+         };
 
          $scope.applySourceEdit = function() {
              // prompt user
@@ -669,7 +669,7 @@
                  }
 
              }
-         }
+         };
 
          $scope.discardSourceEdit = function() {
              $scope.handlePageTreeChange();
@@ -684,7 +684,7 @@
 </head>
 <body>
 
-<div ng-controller="VisualPageComposerController" class="customPage">
+<div id="content" ng-controller="VisualPageComposerController" class="customPage">
 
     <label><g:message code="sspb.page.visualbuilder.load.label" /></label>
     <select name="constantName"
@@ -795,6 +795,7 @@
         <button  title="${message(code:'sspb.page.visualbuilder.copy.component.title')}"  class="button_copy button_edit" ng-click="copyComponent(data)" ng-show="data.type!='page'"></button>
         <button  title="${message(code:'sspb.page.visualbuilder.paste.component.title')}"  class="button_paste button_edit" ng-click="pasteComponent(data)"  ng-show="dataHolder.copy!=undefined" ></button>
 
+
         <!--button  class="btn btn-mini" ng-click="deleteChildren(data)" ng-show="data.components.length > 0">--</button-->
         <!--input type="checkbox" ng-model="(index == statusHolder.selectedIndex)" ng-init="index=index+1" /-->
 
@@ -821,7 +822,7 @@
 
 
     <textArea name="statusMessage" readonly="true" ng-model="pageStatus.message"
-              rows="3" cols="120" style="width:99%; height:10%"/>
+              rows="3" cols="120" style="width:99%; height:10%"></textArea>
 
 </div>
 </body>

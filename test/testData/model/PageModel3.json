@@ -108,7 +108,7 @@
                 "name": "ProgrammeList",
                 "pageSize" : 15,
                 "value": "SMRPRLE_PROGRAM_DESC",
-                "onClick":"$ProgrammeCode = current_item.SMRPRLE_PROGRAM; $ProgrammeDetails.$load(); $SelectCriteriaForm.$visible=false; $DisplayProgrammeListForm.$visible=false; $ShowProgrammeDetailsForm.$visible=true;"
+                "onClick":"$ProgrammeCode = currentSelection.SMRPRLE_PROGRAM; $ProgrammeDetails.$load(); $SelectCriteriaForm.$visible=false; $DisplayProgrammeListForm.$visible=false; $ShowProgrammeDetailsForm.$visible=true;"
               }
           ]
        },

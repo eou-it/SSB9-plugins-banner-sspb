@@ -687,7 +687,9 @@ class PageComponent {
 """\
 <head>
 <!-- sitemesh -->
-<meta name="layout" content="BannerXECustomPage"/>
+<meta name="layout" content="bannerSelfServicePBPage"/>
+<meta name="menuEndPoint" content="\${request.contextPath}/ssb/menu"/>
+<meta name="menuBaseURL" content="\${request.contextPath}/ssb"/>
 
 <!--meta name="layout" content="simple"/-->
 
@@ -741,7 +743,7 @@ div.customPage {
     }
 </style>
 
-   <div ng-controller="CustomPageController"  class="customPage">
+   <div id="content" ng-controller="CustomPageController"  class="customPage">
    ${label?"<h1>${tran("label")}</h1>":""}
  """
     }

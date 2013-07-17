@@ -8,7 +8,7 @@
             "type": "resource",
             "name": "Todo",
             "binding": "rest",
-            "resource": "$rootWebApp/rest/todo"
+            "resource": "$rootWebApp/api/virtualDomains.todo"
         },
         {
             "type": "resource",

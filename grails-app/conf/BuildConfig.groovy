@@ -3,6 +3,12 @@ grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 
 grails.plugin.location.'restful-api'="../restful-api.git"
+grails.plugin.location.'banner_ui_ss'="../banner_ui_ss.git"
+grails.plugin.location.'banner-core'="../banner_core.git"
+grails.plugin.location.'banner-codenarc'="../banner_codenarc.git"
+grails.plugin.location.'sghe-aurora'="../sghe_aurora.git"
+grails.plugin.location.'spring-security-cas'="../spring_security_cas.git"
+grails.plugin.location.'i18n_core'="../i18n_core.git"
 
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
@@ -36,6 +42,13 @@ grails.project.dependency.resolution = {
 
     plugins {
         compile ":spring-security-core:1.2.7.3"
+        compile ':cache-headers:1.1.5'
+        compile ':codenarc:0.18.1'
+        compile ':csv:0.3.1'
+        compile ':feeds:1.5'
+
+        //compile ':selenium:0.8'
+        //compile ':selenium-rc:1.0.2'
 
         runtime ":hibernate:$grailsVersion"
         //runtime ":jquery:1.7.1"

@@ -4,10 +4,10 @@
 <head>
 <title><g:message code="sspb.page.virtualdomain.pagetitle" /></title>
 
-<meta name="layout" content="BannerXECustomPage"/>
-<meta name="menuEndPoint" content="/StudentRegistrationSsb/ssb/selfServiceMenu/data"/>
-<meta name="menuBaseURL" content="/StudentRegistrationSsb/ssb"/>
-<meta name="menuDefaultBreadcrumbId" content="Banner Self-Service_Student_Registration"/>
+    <meta name="layout" content="bannerSelfServicePBPage"/>
+    <meta name="menuEndPoint" content="${request.contextPath}/ssb/menu"/>
+    <meta name="menuBaseURL" content="${request.contextPath}/ssb"/>
+    <meta name="menuDefaultBreadcrumbId" content=""/>
 
 
 <style>
@@ -53,7 +53,7 @@
 </head>
 
 <body>
-<div class="customPage" >
+<div id="content"  class="customPage" >
 <h3><g:message code="sspb.page.virtualdomain.heading" /></h3>
 <br/>
 <g:form name="LoadVDForm" action="loadVirtualDomain">
