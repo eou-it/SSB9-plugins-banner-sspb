@@ -159,7 +159,7 @@ class VirtualDomainSqlService {
             sql.close()
         }
         println logmsg
-        return [error: errorMessage, totalCount:totalCount]
+        return [error: errorMessage, totalCount:totalCount.longValue()]
     }
 
     def update(vd, params, data) {
