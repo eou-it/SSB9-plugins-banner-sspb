@@ -85,19 +85,6 @@
         end Added Harry --%>
 
 
-<%
-      out << """
-        <script>
-            var __isUserAuthenticated = true;
-            var __userFullName = '';
-            var __userFirstName = 'Catherine';
-            var __userLastName = 'Miller';
-            var __pidm = 7;
-            var __userRoles = [ 'ROLE_SELFSERVICE-FACULTY_BAN_DEFAULT_M','ROLE_SELFSERVICE-STUDENT_BAN_DEFAULT_M','ROLE_SELFSERVICE_BAN_DEFAULT_M' ];
-        </script>
-
-      """
-%>
 
         <script type="text/javascript">
             var rootWebApp = ${createLink(uri: '/')};  //use in controller restful interface

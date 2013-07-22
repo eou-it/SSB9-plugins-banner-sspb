@@ -16,12 +16,10 @@
     <li>
         <g:link controller="virtualDomainComposer" >  <g:message code="sspb.page.virtualdomain.pagetitle" /></g:link>
     </li>
+
     <li>
-        <g:link controller="pageModelComposer" >  <g:message code="page.composer" /></g:link>
+        <g:link controller="visualPageModelComposer" > <g:message code="visualpage.composer" /></g:link>
     </li>
-<li>
-    <g:link controller="visualPageModelComposer" > <g:message code="visualpage.composer" /></g:link>
-</li>
 
     <g:each in="${Page.list(sort:'constantName')}">
         <li>
