@@ -134,6 +134,7 @@ class PageComponent {
     String description
     String url
     String imageUrl
+    Boolean replaceView=true    // if set to false the rendering engine will attempt to open the link content in a new window/tab
 
     String style        // TODO add styling support
 
@@ -531,11 +532,16 @@ class PageComponent {
             case COMP_TYPE_LINK:
                 def ret = "<div>"
                 def desc = description?tran("description"):url
+                // handle open link in new window attr
+                def targetStr =''
+                if (!replaceView)
+                    targetStr = 'target="_blank"'
+
                 // otherwise the value is used
                 // TODO consolidate value and sourceModel?
                 // TODO is parseVariable still working after using DataSet as generic data object?
                 ret += label?"<label>${tran("label")}</label>":""
-                ret +=  """<a ng-href="${CompileService.parseLiteral(url)}">$desc</a></div>"""
+                ret +=  """<a ng-href="${CompileService.parseLiteral(url)}" $targetStr>$desc</a></div>"""
                 return ret
 
             case COMP_TYPE_TEXT:

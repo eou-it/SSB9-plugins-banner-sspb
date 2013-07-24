@@ -55,7 +55,7 @@
             {
                 "componentType":["link"],
                 "requiredAttributes":["url"],
-                "optionalAttributes":["label", "style", "description", "imageUrl"],
+                "optionalAttributes":["label", "style", "description", "imageUrl", "replaceView"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
@@ -150,6 +150,7 @@
             {"AttributeType":["allowReload"], "renderProperty":{"inputType":"boolean", "default":false}},
             {"AttributeType":["required"], "renderProperty":{"inputType":"boolean", "default":false}},
             {"AttributeType":["readonly"], "renderProperty":{"inputType":"boolean", "default":false}},
+            {"AttributeType":["replaceView"], "renderProperty":{"inputType":"boolean", "default":true}},
             {"AttributeType":["loadInitially"], "renderProperty":{"inputType":"boolean", "default":false}},
             {"AttributeType":["activated"], "renderProperty":{"inputType":"boolean", "default":false}},
             {"AttributeType":["parameters", "sourceParameters"], "renderProperty":{"inputType":"map"}},
