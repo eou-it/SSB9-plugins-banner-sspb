@@ -75,6 +75,7 @@ class PageComponent {
     String name        // -> Generic property. Maybe use componentId?
     String title       // -> Page
     String scriptingLanguage = "JavaScript" // -> page property that specifies the scripting language to use in page model
+    String importCSS   // specify what custom stylesheets to import, comma separated list of custom stylesheet names (without the .css extension )
     String label       // -> Items (inputs, display)
     String placeholder // -> Input Items (is text shown when no input is provided)
     String model       // -> top level data model should have first letter in upper case, data declared in controller will be lower case
@@ -161,6 +162,8 @@ class PageComponent {
 
     def rootProperties = [:]    // the key/value properties (set on page component)
     def globalProperties = [:]  // properties shared in pages
+
+    def styleStr;
 
     // map the validation key to angular attributes ? use HTML 5 validation instead with form
     // def validationKeyMap = ["minlength":"ngMinlength", "maxlength":"ngMaxlength", "pattern":"ngPattern"]
@@ -259,23 +262,23 @@ class PageComponent {
         def result =
         """
         <!-- pagination -->
-        <button ng-disabled="${uiControl}.currentPage == 0" ng-click="${uiControl}.currentPage=${uiControl}.currentPage - 1">
+        <button $styleStr ng-disabled="${uiControl}.currentPage == 0" ng-click="${uiControl}.currentPage=${uiControl}.currentPage - 1">
                 ${tranGlobal("page.previous.label","Previous")}
         </button>
             {{${uiControl}.currentPage+1}}/{{${uiControl}.numberOfPages()}}
-        <button ng-disabled="${uiControl}.currentPage >= ${arrayName}.length/${uiControl}.pageSize - 1" ng-click="${uiControl}.currentPage=${uiControl}.currentPage + 1">
+        <button $styleStr ng-disabled="${uiControl}.currentPage >= ${arrayName}.length/${uiControl}.pageSize - 1" ng-click="${uiControl}.currentPage=${uiControl}.currentPage + 1">
                 ${tranGlobal("page.next.label","Next")}
         </button><br>
         """
 
         if (allowNew) {
-            result += """ <button ng-click="${dataSet}.add()"> ${tranGlobal("newRecord.label","Add New")}  </button>"""
+            result += """ <button $styleStr ng-click="${dataSet}.add()"> ${tranGlobal("newRecord.label","Add New")}  </button>"""
         }
         if (allowModify || allowDelete) {
-            result += """ <button ng-click="${dataSet}.save()"> ${tranGlobal("save.label","Save")} </button>"""
+            result += """ <button $styleStr ng-click="${dataSet}.save()"> ${tranGlobal("save.label","Save")} </button>"""
         }
         if (allowReload) {
-            result += """ <button ng-click="${dataSet}.load()"> ${tranGlobal("refresh.label","Refresh")} </button> """
+            result += """ <button $styleStr ng-click="${dataSet}.load()"> ${tranGlobal("refresh.label","Refresh")} </button> """
         }
         return result
     }
@@ -294,10 +297,10 @@ class PageComponent {
 
         // add a delete checkbox column if allowDelete is true
         if (allowDelete) {
-            thead = "<th>${tranGlobal("delete.label","Delete")}</th>"
+            thead = "<th $styleStr >${tranGlobal("delete.label","Delete")}</th>"
             items = """
-            <td>
-             <input ng-click="${dataSet}.delete($GRID_ITEM)" type="checkbox" style="width:20%"/>
+            <td $styleStr >
+             <input $styleStr ng-click="${dataSet}.delete($GRID_ITEM)" type="checkbox" style="width:20%"/>
             </td>
             """
         }
@@ -310,10 +313,10 @@ class PageComponent {
 
             }   else {
                 //get the labels from child components
-                thead+="<th>${child.tran("label")}</th>"
+                thead+="<th $styleStr >${child.tran("label")}</th>"
                 //get the child components
                 child.label=""
-                items+="<td>${child.compileComponent("", depth)}</td>\n"
+                items+="<td $styleStr >${child.compileComponent("", depth)}</td>\n"
             }
         }
         def click_txt=""
@@ -321,7 +324,7 @@ class PageComponent {
             click_txt = "ng-click=${name}_onClick($GRID_ITEM)"
 
         def result =
-            """<table>
+            """<table $styleStr >
             <tr>$thead</tr>
             <!-- Do this for every object in objects -->
             <tr ng-repeat="$repeat | startFrom:${uiControl}.currentPage * ${uiControl}.pageSize | limitTo:${uiControl}.pageSize" $click_txt>
@@ -343,8 +346,8 @@ class PageComponent {
 
         def result = ""
         if (label)
-            result += "<label>${tran("label")}</label>\n"
-        result +="""<table ng-repeat="$repeat | startFrom:${uiControl}.currentPage * ${uiControl}.pageSize | limitTo:${uiControl}.pageSize" >\n"""
+            result += "<label $styleStr >${tran("label")}</label>\n"
+        result +="""<table $styleStr ng-repeat="$repeat | startFrom:${uiControl}.currentPage * ${uiControl}.pageSize | limitTo:${uiControl}.pageSize" >\n"""
 
         if (allowDelete) {
             result += """
@@ -380,13 +383,13 @@ class PageComponent {
         def repeat = "$LIST_ITEM in ${dataSet}.data"
 
         if (label)
-            txt += "<label>${tran("label")}</label>"
+            txt += "<label $styleStr >${tran("label")}</label>"
         // handle click event
         def click_txt=""
         if (onClick)
             click_txt = "ng-click=${name}_onClick($LIST_ITEM)"
         txt +=
-            """<ul>
+            """<ul $styleStr >
             <li $click_txt ng-repeat="$repeat | startFrom:${uiControl}.currentPage * ${uiControl}.pageSize | limitTo:${uiControl}.pageSize">
              ${onClick?"<a href=\"\">":""} {{$LIST_ITEM.$value}}  ${onClick?"</a>":""}
             </li>
@@ -400,7 +403,7 @@ class PageComponent {
         def arrayName = "${name}DS.data"
         def result
         def ngModel = name
-        def labelTxt = label? """<label for="${name?name:model}">${tran("label")}</label>""":""
+        def labelTxt = label? """<label $styleStr for="${name?name:model}">${tran("label")}</label>""":""
         def updateTxt = ""
         //def placeholderStr = placeholder?"""<option value="">$placeholder</option>""":""
         def initTxt = value?"""ng-init="\$parent.$ngModel='$value'" """:""
@@ -420,12 +423,12 @@ class PageComponent {
         updateTxt += onUpdate?"${name}UICtrl.onUpdate();":""
         updateTxt = updateTxt?"ng-change=\"$updateTxt\"":""
 
-        def radio = """<div ng-repeat="$SELECT_ITEM in $arrayName" $initTxt>
-            <input type="radio"   ng-model=$ngModel name="$nameTxt" $updateTxt
+        def radio = """<div $styleStr ng-repeat="$SELECT_ITEM in $arrayName" $initTxt>
+            <input $styleStr type="radio"   ng-model=$ngModel name="$nameTxt" $updateTxt
                 value="{{$SELECT_ITEM.$valueKey}}"/> {{$SELECT_ITEM.$labelKey}}
         </div>"""
         if(parent.type == COMP_TYPE_DETAIL) {
-            result = """<tr><td style="text-align:right; width: 15%"><strong>${tran("label")}</strong></td><td style="text-align:left;">
+            result = """<tr $styleStr ><td style="text-align:right; width: 15%"><strong>${tran("label")}</strong></td><td style="text-align:left;">
                              $radio
                              </td></tr>"""
         } else {
@@ -449,6 +452,8 @@ class PageComponent {
             heading = "<h$headingLevel>${tran("label")}</h$headingLevel><br>"
         }
 
+        styleStr = style?""" class="$style" """:""
+
 
         switch (t) {
 
@@ -461,7 +466,7 @@ class PageComponent {
                 def arrayName = "${name}DS.data"
                 def result
                 def ngModel = name
-                def labelTxt = label? """<label for="${name?name:model}">${tran("label")}</label>""":""
+                def labelTxt = label? """<label $styleStr for="${name?name:model}">${tran("label")}</label>""":""
                 def updateTxt = ""
                 def placeholderStr = placeholder?"""<option value="">${tran("placeholder")}</option>""":""
 
@@ -471,7 +476,7 @@ class PageComponent {
                 }
                 updateTxt += onUpdate?"${name}UICtrl.onUpdate();":""
                 updateTxt = updateTxt?"ng-change=\"$updateTxt\"":""
-                def select = """<select   ng-model="$ngModel" $updateTxt  ${defaultValue()}
+                def select = """<select  $styleStr ng-model="$ngModel" $updateTxt  ${defaultValue()}
                                            ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName">
                                    $placeholderStr
                                 </select>"""
@@ -495,7 +500,7 @@ class PageComponent {
 
             case COMP_TYPE_BLOCK:
 
-                return """<div  id="$name" ng-show="${name}_visible"> $heading
+                return """<div $styleStr id="$name" ng-show="${name}_visible"> $heading
                 """
             case COMP_TYPE_FORM:
                 def txt = ""
@@ -507,30 +512,30 @@ class PageComponent {
                 if (root.flowDefs)
                     submitStr+= "; _activateNextForm('$name');"
 
-                txt += """<form name="${name?name:model}" ng-show="${name}_visible"  ${submitStr?"""ng-submit="$submitStr" """:""}>$heading
+                txt += """<form $styleStr name="${name?name:model}" ng-show="${name}_visible"  ${submitStr?"""ng-submit="$submitStr" """:""}>$heading
                 """
                 return txt
             case COMP_TYPE_LITERAL:
                 //println tran(getPropertiesBaseKey()+".value",CompileService.parseLiteral(value) ) + "\n"
-                return tran(getPropertiesBaseKey()+".value",CompileService.parseLiteral(value) ) + "\n"
+                return "<span $styleStr>" + tran(getPropertiesBaseKey()+".value",CompileService.parseLiteral(value) ) + "</span>\n"
             case COMP_TYPE_DISPLAY:
                 def ret = ""
                 if (parent.type == COMP_TYPE_DETAIL) {
                     ret += "<tr>"
                     // for display in detail control take the parent model, and make a table row
                     ret += """<td  style="text-align:right; width: 15%"><strong> ${tran("label")}</strong></td><td style="text-align:left;">
-                              {{$GRID_ITEM.${model}}}</td>"""
+                             <span $styleStr> {{$GRID_ITEM.${model}}} </span></td>"""
                     ret += "</tr>"
                 } else if (parent.type == COMP_TYPE_GRID) {
-                    ret = "{{ $GRID_ITEM.${model} }}";
+                    ret = " <span $styleStr> {{ $GRID_ITEM.${model} }} </span>";
                 } else
                     // otherwise the value is used
                     // TODO consolidate value and sourceModel?
                     // TODO is parseVariable still working after using DataSet as generic data object?
-                    ret += label?"<label>${tran("label")}</label>":"" + value?"value=\"{{${CompileService.parseVariable(value)}}}\"":""
+                    ret += label?"<label $styleStr>${tran("label")}</label>":"" + "<span $styleStr>" + value?"value=\"{{${CompileService.parseVariable(value)}}}\"":"" + "</span>"
                 return ret
             case COMP_TYPE_LINK:
-                def ret = "<div>"
+                def ret = "<div $styleStr>"
                 def desc = description?tran("description"):url
                 // handle open link in new window attr
                 def targetStr =''
@@ -570,20 +575,20 @@ class PageComponent {
                         addOnUpdate="\$parent.${parent.ID}_${name}_onUpdate($GRID_ITEM);"
                     }
                     txt = """
-                          <input $typeString   name="${name?name:model}" id="${name?name:model}" ${parent.allowModify?"":"readonly"}
+                          <input $styleStr $typeString   name="${name?name:model}" id="${name?name:model}" ${parent.allowModify?"":"readonly"}
                           ng-model="$GRID_ITEM.${model}"  ${defaultValue()}
                           ng-change="$addOnUpdate\$parent.${parent.name}DS.setModified($GRID_ITEM)" $attributes />
                           """
                     if (parent.type==COMP_TYPE_DETAIL) {
                         txt = """<tr><td style="text-align:right; width: 15%"><strong>${tran("label")}</strong></td>
                                  <td style="text-align:left;">
-                                 $txt </td></tr> """
+                                 <span $styleStr> $txt </span></td></tr> """
                     }
                 } else {
                     // TODO do we need a value field if ng-model is defined?  //added defaultValue
                     attributes += " ${readonly?"readonly":""}"
-                    txt =  """<label for="${name?name:model}">${tran("label")}</label>
-                              <input type="$t"   name="${name?name:model}" id="${name?name:model}" ${value?"value=\"{{${CompileService.parseVariable(value)}}}\"":"" }
+                    txt =  """<label $styleStr for="${name?name:model}">${tran("label")}</label>
+                              <input $styleStr type="$t"   name="${name?name:model}" id="${name?name:model}" ${value?"value=\"{{${CompileService.parseVariable(value)}}}\"":"" }
                                ${defaultValue()} $attributes """
                     if (model && !readonly) {
                         if (binding != BINDING_PAGE)
@@ -604,7 +609,7 @@ class PageComponent {
                 }
                 return txt
             case COMP_TYPE_BOOLEAN:
-                def txt ="""<input type="checkbox" name="${name?name:model}" id="${name?name:model}"
+                def txt ="""<input $styleStr type="checkbox" name="${name?name:model}" id="${name?name:model}"
                            ${booleanTrueValue?"ng-true-value=\"$booleanTrueValue\"":""}  ${booleanFalseValue?"ng-false-value=\"$booleanFalseValue\"":""}
                            ${value?"value=\"{{$value}}\"":"" } ${defaultValue()}"""  // is value needed ever? Doesn't do anything if ng-model is used.
                 // add change event handler for items in a table so the item can be marked dirty for save
@@ -627,12 +632,12 @@ class PageComponent {
                     """
                 }
             case COMP_TYPE_SUBMIT:
-                return """<input type="submit" value="${tran("label")}"/>
+                return """<input $styleStr type="submit" value="${tran("label")}"/>
                 """
             case COMP_TYPE_BUTTON:
                 // TODO for SQL generate the action ID for each method, assign ID to each click action
                 if (onClick)
-                    return """<button ng-click="${name}_onClick()">${tran("label")}</button>\n"""
+                    return """<button $styleStr ng-click="${name}_onClick()">${tran("label")}</button>\n"""
 
             case COMP_TYPE_RESOURCE:      //fall through
             case COMP_TYPE_DATA:
@@ -670,7 +675,7 @@ class PageComponent {
                     } else {
                         labelStr = tran('submitLabel')
                     }
-                    nextTxt += """<div>
+                    nextTxt += """<div $styleStr>
                     <input type="submit" value="$labelStr"/>
                     </div>
                     """
@@ -686,11 +691,19 @@ class PageComponent {
     Generate HTML head and page wide JS code
      */
     def pageHeader() {
-    // generate page header for global functions, CSS and Angular directives
-    // TODO : generate and register all services for REST resources
-    // TODO: move static functions, CSS to decorator
-    // TODO: generate unique page ID
-"""\
+        // generate page header for global functions, CSS and Angular directives
+        // TODO : generate and register all services for REST resources
+        // TODO: move static functions, CSS to decorator
+        // TODO: generate unique page ID
+        def importPath = "../../cssRender"
+        def cssImp = ""
+        //split the string into a list
+        def is = importCSS?.tokenize(',')
+        for (css in is) {
+            cssImp += """<link type="text/css" rel="stylesheet" href="$importPath?name=${css.trim()}" />\n"""
+        }
+
+"""
 <head>
 <!-- sitemesh -->
 <meta name="layout" content="bannerSelfServicePBPage"/>
@@ -721,6 +734,8 @@ var pageID = "$name"
     $CONTROLLER_PLACEHOLDER
 </script>
 
+<!-- import custom stylesheets -->
+$cssImp
 
 <style>
 div.customPage {

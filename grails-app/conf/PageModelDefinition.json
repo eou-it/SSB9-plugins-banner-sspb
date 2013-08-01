@@ -13,7 +13,7 @@
             {
                 "componentType":["page"],
                 "requiredAttributes":[],
-                "optionalAttributes":["title", "scriptingLanguage", "label", "style"],
+                "optionalAttributes":["title", "scriptingLanguage", "label", "style", "importCSS"],
                 "requiredChildren":[],
                 "optionalChildren":["flow", "form", "block", "grid", "select", "radio", "list", "detail", "data", "resource", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button"]
             },
@@ -83,7 +83,7 @@
             {
                 "componentType":["button"],
                 "requiredAttributes":["label", "onClick"],
-                "optionalAttributes":[],
+                "optionalAttributes":["style"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
@@ -138,7 +138,7 @@
             }
         ],
         "sourceRenderDefinitions" : [
-            {"AttributeType":["name", "documentation", "title", "label", "style", "submit", "submitLabel", "model", "value", "validation", "placeholder", "onUpdate", "onClick", "onLoad", "labelKey", "valueKey", "sourceModel", "booleanTrueValue", "booleanFalseValue", "resource", "sequence","imageUrl", "url"], "renderProperty":{"inputType":"text"}},
+            {"AttributeType":["name", "documentation", "title", "label", "style", "importCSS", "submit", "submitLabel", "model", "value", "validation", "placeholder", "onUpdate", "onClick", "onLoad", "labelKey", "valueKey", "sourceModel", "booleanTrueValue", "booleanFalseValue", "resource", "sequence","imageUrl", "url"], "renderProperty":{"inputType":"text"}},
             {"AttributeType":["type"], "renderProperty":{"inputType":"select"}},
             {"AttributeType":["scriptingLanguage"], "renderProperty":{"inputType":"text", "default":"JavaScript"}},
             {"AttributeType":["binding"], "renderProperty":{"inputType":"text", "default":"rest"}},

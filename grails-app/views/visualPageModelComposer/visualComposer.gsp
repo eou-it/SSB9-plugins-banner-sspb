@@ -225,6 +225,8 @@
             tr['attribute.sourceValue'      ]="${message(code:'sspb.model.attribute.sourceValue')}";
             tr['attribute.default'          ]="${message(code:'sspb.model.attribute.default')}";
             tr['attribute.description'      ]="${message(code:'sspb.model.attribute.description')}";
+            tr['attribute.importCSS'        ]="${message(code:'sspb.model.attribute.importCSS')}";
+
 
             tr['type.page'        ]="${message(code:'sspb.model.type.page'     )}";
             tr['type.flow'        ]="${message(code:'sspb.model.type.flow'     )}";
@@ -249,6 +251,7 @@
             tr['type.boolean'     ]="${message(code:'sspb.model.type.boolean'  )}";
             tr['type.button'      ]="${message(code:'sspb.model.type.button'   )}";
             tr['type.hidden'      ]="${message(code:'sspb.model.type.hidden'   )}";
+            tr['type.style'      ]="${message(code:'sspb.model.type.style'   )}";
 
 
             tr['sspb.page.visualbuilder.edit.map.title' ] = "${message(code:'sspb.page.visualbuilder.edit.map.title',encodeAs: 'JavaScript')}";

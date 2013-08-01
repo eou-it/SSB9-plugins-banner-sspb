@@ -1,0 +1,20 @@
+--ALTER SESSION SET CURRENT_SCHEMA=SSPBMGR;
+
+-- Using readable names for now 
+--- TODO: use Banner naming standards if this has to be Banner specific
+
+Prompt Css
+
+  CREATE TABLE CSS  (
+    CONSTANT_NAME VARCHAR2(60 CHAR) NOT NULL,
+	CSS CLOB NOT NULL,
+	DESCRIPTION CLOB,
+	ID NUMBER(19,0) NOT NULL, 
+	VERSION NUMBER(19,0) NOT NULL, 
+    --	 
+    PRIMARY KEY (ID),
+    UNIQUE(CONSTANT_NAME)
+   ); 
+   
+   CREATE OR REPLACE PUBLIC SYNONYM CSS FOR CSS;
+   GRANT ALL ON CSS TO BANINST1;

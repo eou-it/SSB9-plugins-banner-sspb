@@ -86,6 +86,8 @@
         <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeBrowserFull.toLowerCase()}.js" />"> </script>
         <!-- end from Harry -->
 
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'main.css')}">
+
         <script type="text/javascript">
             var rootWebApp = ${createLink(uri: '/')};  //use in controller restful interface
             var templatesLocation = "<g:resource plugin="banner-sspb" dir="template" />";
@@ -103,7 +105,7 @@
         <script src="<g:resource plugin="banner-sspb" dir="BannerXE/js" file="app.js" />"> </script>
 
         <g:customStylesheetIncludes/>
-        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'main.css')}">
+
 
     </head>
     <body>

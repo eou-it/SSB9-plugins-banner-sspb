@@ -138,6 +138,7 @@ formControllerMap = [
         // SELFSERVICE should be first 'Form Name' - probably self service and other forms is not expected
         'virtualdomain'           : ['SELFSERVICE'], // kind of obsolete - should go through restfulapi
         'virtualdomaincomposer'   : ['SELFSERVICE'],
+        'cssmanager'              : ['SELFSERVICE'],
         'visualpagemodelcomposer' : ['SELFSERVICE'],
         'pagemodelcomposer'       : ['SELFSERVICE'], // kind of obsolete, but useful for viewing the generated code
         'custompage'              : ['SELFSERVICE'], // renders the page builder pages
@@ -180,9 +181,12 @@ grails.plugins.springsecurity.interceptUrlMap = [
         //Page Builder specific
         '/api/virtualDomains.*/**'    : ['IS_AUTHENTICATED_ANONYMOUSLY','ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'], // not sure if this is overriding or complementing the filterChain
         '/api/pages/**'               : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
+        '/api/csses/**'               : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
         '/virt/**'                    : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
         '/virtualDomainComposer/**'   : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
         '/visualPageModelComposer/**' : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M','ROLE_SCADETL_BAN_DEFAULT_M'],
+        '/cssManager/**'              : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+        '/cssRender/**'              : ['IS_AUTHENTICATED_ANONYMOUSLY'],
         '/customPage/**'              : ['IS_AUTHENTICATED_ANONYMOUSLY'],   // Controller should deal with privileges
         '/rest/**'                    : ['IS_AUTHENTICATED_ANONYMOUSLY'],
         // Not sure if next line should be there - it is commented in other SS modules
@@ -241,6 +245,27 @@ restfulApiConfig = {
     }
     resource {
         name = 'pages'
+        representation {
+            mediaType = "application/json"
+            addMarshaller {
+                marshaller = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
+                priority = 100
+            }
+            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
+        }
+        representation {
+            mediaType = "application/xml"
+            jsonAsXml = true
+            addMarshaller {
+                marshaller = new net.hedtech.restfulapi.marshallers.xml.JSONObjectMarshaller()
+                priority = 200
+            }
+            extractor = new net.hedtech.restfulapi.extractors.xml.JSONObjectExtractor()
+        }
+    }
+
+    resource {
+        name = 'csses'
         representation {
             mediaType = "application/json"
             addMarshaller {
