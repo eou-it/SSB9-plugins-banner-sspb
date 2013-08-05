@@ -153,4 +153,55 @@ pagebuilderModule.directive('pbMap', function() {
 
 });
 
+/* a directive to allow uploading of a file to an URL in a modal dialog */
+pagebuilderModule.directive('pbUpload', function() {
+    return {
+        restrict:'E',
+        transclude: true,
+        scope:{label:'@', status:'=', pbChange:'&'},
+        templateUrl: templatesLocation + '/pbUpload.html',
+        controller: ['$scope', '$element', '$attrs', '$transclude',
+            function($scope, $element, $attrs, $transclude) {
+
+                //$scope.cssStatus = {};
+                // upload status callback
+                //$scope.foo = "Hello!";
+                $scope.complete = function(content, completed) {
+                    //console.log(content.length);
+                    $scope.uploadResponse = content;
+                    $scope.status.message = content.statusMessage;
+
+                    // call parent handler
+                    if (completed)
+                        $scope.pbChange();
+                };
+
+                // modal dialog functions
+                $scope.openUploadModal = function () {
+                    $scope.uploadShouldBeOpen = true;
+                };
+
+                $scope.closeUploadModal = function () {
+                    $scope.uploadShouldBeOpen = false;
+                    // cause ng-change function passed to the directive to be applied
+                    //$scope.pbChange();
+                    //$scope.handlePageTreeChange();
+                };
+
+                $scope.cancelUploadModal = function() {
+                    $scope.uploadShouldBeOpen = false;
+                }
+
+                $scope.uploadModalOpts = {
+                    backdropFade: true,
+                    dialogFade:true
+                };
+
+            }],
+        replace:true
+    }
+
+});
+
+
 

@@ -30,6 +30,24 @@
                 $scope.cssStatus.message = content.statusMessage;
             };
 
+            $scope.i18nGet = function(key,args) {
+                var tr = [];
+                tr['sspb.css.cssManager.upload.label'             ]="${message(code:'sspb.css.cssManager.upload.label')}";
+                tr['pb.template.upload.ok.label'             ]="${message(code:'pb.template.upload.ok.label')}";
+
+                var res=tr[key];
+                if ( !res )  {
+
+                    res=key;
+                }
+                if (args) {
+                    args.forEach(function (arg,index)  {
+                        //note undefined parameters will show as undefined
+                        res=res.replace("{"+index+"}",arg);
+                    } );
+                }
+                return res;
+            }
             //
             $scope.cssName = "";
             // css command execution status
@@ -156,6 +174,7 @@
                     alert("${message(code:'sspb.page.visualbuilder.deletion.success.message')}");
                     // clear the page name field and page source
                     $scope.cssName = "";
+                    $scope.description = "";
                     $scope.cssSource= undefined;
                     $scope.loadCssNames();
 
@@ -186,40 +205,29 @@
                 ng-change="getCssSource()"></select>
 
         <button ng-click='loadCssNames()'><g:message code="sspb.css.cssManager.reload.pages.label" /></button>
-
+        <div>
         <button ng-click='newCssSource()'><g:message code="sspb.css.cssManager.new.css.label" /></button>
         <button ng-click='submitCssSource()'><g:message code="sspb.css.cssManager.save.label" /></button>
+        <pb-Upload label='Upload Stylesheet' status='cssStatus' pb-change='loadCssNames()'></pb-Upload>
         <button ng-click="getCssSource()"><g:message code="sspb.css.cssManager.reload.label" /></button>
         <button ng-click='deleteCssSource()'><g:message code="sspb.css.cssManager.delete.label" /></button>
 
-
-        <br/>
-        <label>Stylesheet Source</label>
-        <textarea ng-model='cssSource'></textarea>
-
-
-        <!-- css file upload form TODO put in a modal dialog -->
-        <form id="foo" ng-upload method="POST" action="{{rootWebApp + 'uploadCss?delay=yes'}}">
-            <!--form id="foo" ng-upload method="POST" action="{{'/banner-sspb-test-app/api/csses/' + cssName}}"-->
-            <div>
-                <label>Select a name for publishing:</label>
-                <input name="cssName" ng-model='cssName'/>
+        </div>
+        <div class="form-horizontal">
+            <div class="control-group">
+                <label class="control-label"  for='cssName'>Select a name for publishing:</label>
+                <input name="cssName" id='cssName' ng-model='cssName'/>
             </div>
-            <div>
-                <label>Enter a description:</label>
-                <input name="description" ng-model='description'/>
+            <div class="control-group">
+                <label class="control-label"  for='desc'>Enter a description:</label>
+                <input name="description" id='desc' ng-model='description'/>
             </div>
 
-            <div>
-                <label>Select a file to upload:</label>
-                <input type="file" name="file" />
+            <div class="control-group">
+                <label class="control-label" for='source'>Stylesheet Source</label>
+                <textarea ng-model='cssSource' id='source'></textarea>
             </div>
-            <div>
-                <input upload-submit="bar(content)" type="submit" class="btn" value="Submit" />
-            </div>
-        </form>
-        <div class="alert alert-info">Server Response: {{uploadResponse}}</div>
-
+        </div>
         <textArea name="statusMessage" readonly="true" ng-model="cssStatus.message"
                   rows="3" cols="120" style="width:99%; height:10%"></textArea>
     </div>
