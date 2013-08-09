@@ -471,8 +471,8 @@ class CompileService {
 
     def static buildControlVar(pageComponent, depth = 0) {
         def code = ""
-         if ( [PageComponent.COMP_TYPE_BUTTON,PageComponent.COMP_TYPE_LIST, PageComponent.COMP_TYPE_GRID].contains( pageComponent.type ) ) {
-            // generate a control function for each button/list 'click' property
+         if ( [PageComponent.COMP_TYPE_BUTTON,PageComponent.COMP_TYPE_LIST, PageComponent.COMP_TYPE_GRID, PageComponent.COMP_TYPE_LINK].contains( pageComponent.type ) ) {
+            // generate a control function for each button/list/link/grid 'click' property
             if (pageComponent.onClick) {
                 // handle variable and constant in expression
                 def expr = parseExpression(pageComponent.onClick)
@@ -558,12 +558,12 @@ class CompileService {
         // do a replacement of global $$reservedVar.property with __reservedVar_property?
         // $$reservedVar with __reservedVar
         //def ret = rawExp.replaceAll('\\$\\$(\\w*)\\.(\\w*)', '__$1_$2')
-        def ret = rawExp.replaceAll('\\$\\$(\\w*)', '#scope._$1')
+        def ret = rawExp?.replaceAll('\\$\\$(\\w*)', '#scope._$1')
         // replace $myVar with $scope.myVar, $myVar.prop with $scope.myVar_prop
-        ret = ret.replaceAll('\\$(\\w*)\\.\\$(\\w*)', '#scope.$1_$2')
-        ret = ret.replace('$', '$scope.')
+        ret = ret?.replaceAll('\\$(\\w*)\\.\\$(\\w*)', '#scope.$1_$2')
+        ret = ret?.replace('$', '$scope.')
         // finalize
-        ret = ret.replace('#', '$')
+        ret = ret?.replace('#', '$')
 
         return ret
     }
@@ -582,9 +582,9 @@ class CompileService {
         //ret = ret.replaceAll('\\$\\$(\\w*)', '#scope._$1')
         // replace $myVar with $scope.myVar, $myVar.prop with $scope.myVar_prop
         //ret = ret.replaceAll('\\$(\\w*)\\.(\\w*)', '#scope.$1_$2')
-         def ret = rawExp.replaceAll('\\$\\$([\\w\\.]*)', '_$1')
-        ret = ret.replaceAll('\\$(\\w*)\\.\\$(\\w*)', '$1_$2')
-        ret = ret.replace('$', '')
+         def ret = rawExp?.replaceAll('\\$\\$([\\w\\.]*)', '_$1')
+        ret = ret?.replaceAll('\\$(\\w*)\\.\\$(\\w*)', '$1_$2')
+        ret = ret?.replace('$', '')
         // finalize
         //ret = ret.replace('#', '$')
 
@@ -598,8 +598,8 @@ class CompileService {
         //ret = ret.replaceAll('\\$\\$(\\w*)', '#scope._$1')
         // replace $myVar with $scope.myVar, $myVar.prop with $scope.myVar_prop
         //ret = ret.replaceAll('\\$(\\w*)\\.(\\w*)', '#scope.$1_$2')
-        def ret = rawExp.replaceAll('\\$\\$([\\w\\.]*)', '{{ _$1 }}')
-        ret = ret.replaceAll('\\$([\\w\\.]*)', '{{ $1 }}')
+        def ret = rawExp?.replaceAll('\\$\\$([\\w\\.]*)', '{{ _$1 }}')
+        ret = ret?.replaceAll('\\$([\\w\\.]*)', '{{ $1 }}')
         // finalize
         //ret = ret.replace('#', '$')
 

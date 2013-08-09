@@ -226,6 +226,7 @@
             tr['attribute.default'          ]="${message(code:'sspb.model.attribute.default')}";
             tr['attribute.description'      ]="${message(code:'sspb.model.attribute.description')}";
             tr['attribute.importCSS'        ]="${message(code:'sspb.model.attribute.importCSS')}";
+            tr['attribute.replaceView'        ]="${message(code:'sspb.model.attribute.replaceView')}";
 
 
             tr['type.page'        ]="${message(code:'sspb.model.type.page'     )}";
@@ -255,6 +256,7 @@
 
 
             tr['sspb.page.visualbuilder.edit.map.title' ] = "${message(code:'sspb.page.visualbuilder.edit.map.title',encodeAs: 'JavaScript')}";
+            tr['sspb.page.visualbuilder.edit.textarea.title' ] = "${message(code:'sspb.page.visualbuilder.edit.textarea.title',encodeAs: 'JavaScript')}";
             tr['sspb.page.visualbuilder.invalidCopyType.error.message' ] = "${message(code:'sspb.page.visualbuilder.invalidCopyType.error.message',encodeAs: 'JavaScript')}";
             tr['pb.template.map.new.key.label'          ] = "${message(code:'pb.template.map.new.key.label',encodeAs: 'JavaScript')}";
             tr['pb.template.map.new.value.label'        ] = "${message(code:'pb.template.map.new.value.label',encodeAs: 'JavaScript')}";
@@ -267,6 +269,7 @@
             tr['pb.template.arraymap.add.label'         ] = "${message(code:'pb.template.arraymap.add.label',encodeAs: 'JavaScript')}";
             tr['pb.template.arraymap.ok.label'          ] = "${message(code:'pb.template.arraymap.ok.label',encodeAs: 'JavaScript')}";
             tr['pb.template.arraymap.new.value.label'   ] = "${message(code:'pb.template.arraymap.new.value.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.textarea.ok.label'               ] = "${message(code:'pb.template.textarea.ok.label',encodeAs: 'JavaScript')}";
 
 
             var res=tr[key];
@@ -755,6 +758,9 @@
                             <pb-Map ng-switch-when="map" label="{{i18nGet('sspb.page.visualbuilder.edit.map.title' , [i18nGet('attribute.'+attr.name),dataHolder.selectedComponent.name])}}"
                                     map='dataHolder.selectedComponent[attr.name]' pb-parent="dataHolder.selectedComponent" pb-attrname="attr.name"
                                     pb-change="handlePageTreeChange()"></pb-Map>
+                            <pb-Textarea ng-switch-when="textarea" label="{{i18nGet('sspb.page.visualbuilder.edit.textarea.title' , [i18nGet('attribute.'+attr.name),dataHolder.selectedComponent.name])}}"
+                                    value='dataHolder.selectedComponent[attr.name]' pb-Parent="dataHolder.selectedComponent" pb-Attrname="attr.name"
+                                    pb-change="handlePageTreeChange()"></pb-Textarea>
                             <select ng-switch-when="select" ng-options="type for type in dataHolder.selectedCompatibleTypes"
                                 ng-model="dataHolder.selectedComponent[attr.name]" ng-change="handleAttrChange()"></select>
                             <input ng-switch-when="text" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'

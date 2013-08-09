@@ -8,7 +8,7 @@ pagebuilderModule.directive('pbArrayofmap', function() {
     return {
         restrict:'E',
         transclude: true,
-        scope:{label:'@', array:'=', pbParent:'@', pbAttrname:'@', pbChange:'&'},
+        scope:{label:'@', array:'=', pbParent:'=', pbAttrname:'=', pbChange:'&'},
         templateUrl: templatesLocation + '/pbArrayOfMap.html',
         controller: ['$scope', '$element', '$attrs', '$transclude',
             function($scope, $element, $attrs, $transclude) {
@@ -86,7 +86,7 @@ pagebuilderModule.directive('pbMap', function() {
     return {
         restrict:'E',
         transclude: true,
-        scope:{label:'@', map:'=', pbParent:'@', pbAttrname:'@', pbChange:'&'},
+        scope:{label:'@', map:'=', pbParent:'=', pbAttrname:'=', pbChange:'&'},
         templateUrl: templatesLocation + '/pbMap.html',
         controller: ['$scope', '$element', '$attrs', '$transclude',
             function($scope, $element, $attrs, $transclude) {
@@ -143,6 +143,64 @@ pagebuilderModule.directive('pbMap', function() {
                 }
 
                 $scope.mapEditModalOpts = {
+                    backdropFade: true,
+                    dialogFade:true
+                };
+
+            }],
+        replace:true
+    }
+
+});
+
+/* a directive to allow display and editing of large amount of text */
+pagebuilderModule.directive('pbTextarea', function() {
+    return {
+        restrict:'E',
+        transclude: true,
+        scope:{label:'@', value:'=', pbParent:'=', pbAttrname:'=', pbChange:'&'},
+        templateUrl: templatesLocation + '/pbTextarea.html',
+        controller: ['$scope', '$element', '$attrs', '$transclude',
+            function($scope, $element, $attrs, $transclude) {
+                // assign an empty map to the attribute if the map is undefined
+               /*
+                if ($scope.value == undefined) {
+                    $scope.value = '';
+                    $scope.pbParent[$scope.pbAttrname]=$scope.value;
+                }*/
+                //console.log("Init scope, pbParent = " + $scope.pbParent[$scope.pbAttrname]);
+
+                $scope.processInput = function() {
+                    console.log("pbAttrname = " + $scope.pbAttrname);
+                    console.log("before value = " + $scope.value) ;
+                    console.log("before pbParent = " + $scope.pbParent);
+                    $scope.pbParent[$scope.pbAttrname]=$scope.value;
+                    console.log("after pbParent = " + $scope.pbParent);
+
+                    $scope.pbChange();
+                    //console.log("value = " + $scope.value) ;
+
+
+
+                }
+
+                // modal dialog functions
+                $scope.openTextareaModal = function () {
+                    $scope.textareaShouldBeOpen = true;
+                };
+
+                $scope.closeTextareaModal = function () {
+                    $scope.textareaShouldBeOpen = false;
+                    // cause ng-change function passed to the directive to be applied
+                    $scope.pbChange();
+                    //$scope.handlePageTreeChange();
+                };
+
+                $scope.cancelTextareaModal = function() {
+                    $scope.textareaShouldBeOpen = false;
+                }
+
+                $scope.textareaModalOpts = {
                     backdropFade: true,
                     dialogFade:true
                 };

@@ -537,16 +537,20 @@ class PageComponent {
             case COMP_TYPE_LINK:
                 def ret = "<div $styleStr>"
                 def desc = description?tran("description"):url
+                def clickStr = onClick?"""ng-click="${name}_onClick()" """:""
+
                 // handle open link in new window attr
                 def targetStr =''
                 if (!replaceView)
                     targetStr = 'target="_blank"'
+                // set url to empty string if it is null, otherwise the page is re-directed to a non-existing page
+                url = (url==null)?"":url
 
                 // otherwise the value is used
                 // TODO consolidate value and sourceModel?
                 // TODO is parseVariable still working after using DataSet as generic data object?
                 ret += label?"<label>${tran("label")}</label>":""
-                ret +=  """<a ng-href="${CompileService.parseLiteral(url)}" $targetStr>$desc</a></div>"""
+                ret +=  """<a ng-href="${CompileService.parseLiteral(url)}" $targetStr $clickStr>$desc</a></div>"""
                 return ret
 
             case COMP_TYPE_TEXT:

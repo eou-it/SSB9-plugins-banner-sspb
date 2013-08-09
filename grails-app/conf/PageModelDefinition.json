@@ -54,8 +54,8 @@
             },
             {
                 "componentType":["link"],
-                "requiredAttributes":["url"],
-                "optionalAttributes":["label", "style", "description", "imageUrl", "replaceView"],
+                "requiredAttributes":[],
+                "optionalAttributes":["label", "style", "description", "url", "onClick", "imageUrl", "replaceView"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
@@ -138,7 +138,8 @@
             }
         ],
         "sourceRenderDefinitions" : [
-            {"AttributeType":["name", "documentation", "title", "label", "style", "importCSS", "submit", "submitLabel", "model", "value", "validation", "placeholder", "onUpdate", "onClick", "onLoad", "labelKey", "valueKey", "sourceModel", "booleanTrueValue", "booleanFalseValue", "resource", "sequence","imageUrl", "url"], "renderProperty":{"inputType":"text"}},
+            {"AttributeType":["name",  "title", "label", "style", "importCSS", "submitLabel", "model", "value", "placeholder", "labelKey", "valueKey", "sourceModel", "booleanTrueValue", "booleanFalseValue", "resource", "imageUrl", "url"], "renderProperty":{"inputType":"text"}},
+            {"AttributeType":["submit", "validation", "onUpdate", "onClick", "onLoad", "sequence", "description", "documentation"], "renderProperty":{"inputType":"textarea"}},
             {"AttributeType":["type"], "renderProperty":{"inputType":"select"}},
             {"AttributeType":["scriptingLanguage"], "renderProperty":{"inputType":"text", "default":"JavaScript"}},
             {"AttributeType":["binding"], "renderProperty":{"inputType":"text", "default":"rest"}},
