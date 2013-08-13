@@ -22,7 +22,7 @@
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "style", "showInitially"],
                 "requiredChildren":[],
-                "optionalChildren":["form", "grid", "select", "radio", "list", "detail", "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
+                "optionalChildren":["block", "form", "grid", "select", "radio", "list", "detail", "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
             },
             {
                 "componentType":["form"],
@@ -138,8 +138,8 @@
             }
         ],
         "sourceRenderDefinitions" : [
-            {"AttributeType":["name",  "title", "label", "style", "importCSS", "submitLabel", "model", "value", "placeholder", "labelKey", "valueKey", "sourceModel", "booleanTrueValue", "booleanFalseValue", "resource", "imageUrl", "url"], "renderProperty":{"inputType":"text"}},
-            {"AttributeType":["submit", "validation", "onUpdate", "onClick", "onLoad", "sequence", "description", "documentation"], "renderProperty":{"inputType":"textarea"}},
+            {"AttributeType":["name",  "title", "label", "style", "importCSS", "submitLabel", "model", "placeholder", "labelKey", "valueKey", "sourceModel", "booleanTrueValue", "booleanFalseValue", "resource", "imageUrl", "url"], "renderProperty":{"inputType":"text"}},
+            {"AttributeType":["submit", "validation", "value", "onUpdate", "onClick", "onLoad", "sequence", "description", "documentation"], "renderProperty":{"inputType":"textarea"}},
             {"AttributeType":["type"], "renderProperty":{"inputType":"select"}},
             {"AttributeType":["scriptingLanguage"], "renderProperty":{"inputType":"text", "default":"JavaScript"}},
             {"AttributeType":["binding"], "renderProperty":{"inputType":"text", "default":"rest"}},
