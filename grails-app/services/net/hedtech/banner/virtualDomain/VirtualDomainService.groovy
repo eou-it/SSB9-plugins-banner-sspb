@@ -61,11 +61,9 @@ class VirtualDomainService {
     //TODO
     //missing methods show
 
-    def create (Map data) {
+    def create (Map data, params) {
         println "Data for post/save/create:" + data
-        //required param virtualDomain is added to data as a work around to deal with the rest API
-        def params = [:]
-        params.virtualDomain=data.virtualDomain
+        params.virtualDomain //=data.virtualDomain
         def vd = loadVirtualDomain(params.virtualDomain)
         if (vd.error) {
             throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message"))
@@ -75,10 +73,8 @@ class VirtualDomainService {
         //Should really be querying the record again so any database trigger changes get reflected in client
     }
 
-    def update (def id, Map data) {
+    def update (def id, Map data, params) {
         println "Data for put/update:" + data
-        def params = [:]
-        params.virtualDomain=data.virtualDomain
         def vd = loadVirtualDomain(params.virtualDomain)
         if (vd.error) {
             throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message"))
@@ -88,11 +84,8 @@ class VirtualDomainService {
         //Should really be querying the record again so any database trigger changes get reflected in client
     }
 
-    def delete (def id, Map data) {
+    def delete (def id, Map data,  params) {
         println "Data for DELETE:" + data
-        def params = [:]
-        params.virtualDomain = data.virtualDomain
-        params.id = id
         def vd = loadVirtualDomain(params.virtualDomain)
         if (vd.error) {
             throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message"))

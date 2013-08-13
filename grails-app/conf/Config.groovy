@@ -214,53 +214,128 @@ markdown = [
         removeHtml: true
 ]
 
+// ******************************************************************************
+//                              CORS Configuration
+// ******************************************************************************
+// Note: If changing custom header names, remember to reflect them here.
+//
+cors.url.pattern        = '/api/*'
+cors.allow.origin.regex ='.*'
+cors.expose.headers     ='content-type,X-hedtech-totalCount,X-hedtech-pageOffset,X-hedtech-pageMaxSize,X-hedtech-message,X-hedtech-Media-Type'
+
+
+// ******************************************************************************
+//             RESTful API Custom Response Header Name Configuration
+// ******************************************************************************
+// Note: Tests within this test app expect this 'X-hedtech...' naming to be used.
+//
+restfulApi.header.totalCount  = 'X-hedtech-totalCount'
+restfulApi.header.pageOffset  = 'X-hedtech-pageOffset'
+restfulApi.header.pageMaxSize = 'X-hedtech-pageMaxSize'
+restfulApi.header.message     = 'X-hedtech-message'
+restfulApi.header.mediaType   = 'X-hedtech-Media-Type'
+
+// ******************************************************************************
+//             RESTful API 'Paging' Query Parameter Name Configuration
+// ******************************************************************************
+// Note: Tests within this test app expect this 'X-hedtech...' naming to be used.
+//
+restfulApi.page.max    = 'max'
+restfulApi.page.offset = 'offset'
+
+// ******************************************************************************
+//                       RESTful API Endpoint Configuration
+// ******************************************************************************
+
 restfulApiConfig = {
-    resource {
-        name = 'virtualDomains'    // common service to handle all virtual domain
-        /*
-        representation {
-            mediaType = "text/plain"
-            // AngularJS delete doesn't include a body and mediaType will default to text/plain (?)
-            //can we omit marshallers and extractors - there is nothing to extract or marchal here
-        }
-        media type must be xml or json
-        */
-        representation {
-            mediaType = "application/json"
-            addMarshaller {
-                marshaller = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
-                priority = 100
+
+
+    jsonDomainMarshallerTemplates {
+        template 'jsonDomainAffordance' config {
+            additionalFields {map ->
+                map['json'].property("_href", "/${map['resourceName']}/${map['resourceId']}" )
             }
-            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
-        }
-        representation {
-            mediaType = "application/xml"
-            jsonAsXml = true
-            addMarshaller {
-                marshaller = new net.hedtech.restfulapi.marshallers.xml.JSONObjectMarshaller()
-                priority = 200
-            }
-            extractor = new net.hedtech.restfulapi.extractors.xml.JSONObjectExtractor()
         }
     }
-    resource {
-        name = 'pages'
+
+    xmlDomainMarshallerTemplates {
+        template 'xmlDomainAffordance' config {
+            additionalFields {map ->
+                def xml = map['xml']
+                xml.startNode('_href')
+                xml.convertAnother("/${map['resourceName']}/${map['resourceId']}")
+                xml.end()
+            }
+        }
+    }
+
+    marshallerGroups {
+        group 'json-date-closure' marshallers {
+            marshaller {
+                instance = new org.codehaus.groovy.grails.web.converters.marshaller.ClosureOjectMarshaller<grails.converters.JSON>(
+                    java.util.Date, {return "customized-date:" + it?.format("yyyy-MM-dd'T'HH:mm:ssZ")})
+            }
+        }
+    }
+
+    // This pseudo resource is used when issuing a query using a POST. Such a POST is made
+    // against the actual resource being queried, but using a different URL prefix (e.g., qapi)
+    // so the request is routed to the 'list' method (versus the normal 'create' method).
+    resource 'query-filters' config {
+        // TODO: Add support for 'application/x-www-form-urlencoded'
         representation {
-            mediaType = "application/json"
-            addMarshaller {
-                marshaller = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
-                priority = 100
+            mediaTypes = ["application/json"]
+            jsonExtractor {}
+        }
+    }
+	
+    // Pagebuilder resources
+	
+    resource 'virtualDomains'  config {  // common service to handle all virtual domain
+
+        representation {
+            mediaTypes = ["application/json"]
+            marshallers {
+                marshaller {
+                    instance = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
+                    priority = 100
+               }
             }
             extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
         }
         representation {
-            mediaType = "application/xml"
-            jsonAsXml = true
-            addMarshaller {
-                marshaller = new net.hedtech.restfulapi.marshallers.xml.JSONObjectMarshaller()
-                priority = 200
+            mediaTypes = ["application/xml"]
+            //jsonAsXml = true
+            marshallers {
+                marshaller {
+                    instance = new net.hedtech.restfulapi.marshallers.xml.BasicDomainClassMarshaller(app:grailsApplication)
+                    priority = 200
+                }
             }
-            extractor = new net.hedtech.restfulapi.extractors.xml.JSONObjectExtractor()
+            extractor = new net.hedtech.restfulapi.extractors.xml.MapExtractor()
+        }
+    }
+    resource  'pages' config {
+        representation {
+            mediaTypes = ["application/json"]
+            marshallers {
+                marshaller {
+                    instance = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
+                    priority = 100
+                }
+            }
+            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
+        }
+        representation {
+            mediaTypes = ["application/xml"]
+            //jsonAsXml = true
+            marshallers {
+                marshaller {
+                    instance = new net.hedtech.restfulapi.marshallers.xml.BasicDomainClassMarshaller(app:grailsApplication)
+                    priority = 200
+                }
+            }
+            extractor = new net.hedtech.restfulapi.extractors.xml.MapExtractor()
         }
     }
 
