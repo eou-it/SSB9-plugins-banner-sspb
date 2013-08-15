@@ -339,24 +339,27 @@ restfulApiConfig = {
         }
     }
 
-    resource {
-        name = 'csses'
+    resource 'csses' config {
         representation {
-            mediaType = "application/json"
-            addMarshaller {
-                marshaller = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
-                priority = 100
+            mediaTypes = ["application/json"]
+            marshallers {
+                marshaller {
+                    instance = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
+                    priority = 100
+                }
             }
             extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
         }
         representation {
-            mediaType = "application/xml"
-            jsonAsXml = true
-            addMarshaller {
-                marshaller = new net.hedtech.restfulapi.marshallers.xml.JSONObjectMarshaller()
-                priority = 200
+            mediaTypes = ["application/xml"]
+            //jsonAsXml = true
+            marshallers {
+                marshaller {
+                    instance = new net.hedtech.restfulapi.marshallers.xml.BasicDomainClassMarshaller(app:grailsApplication)
+                    priority = 200
+                }
             }
-            extractor = new net.hedtech.restfulapi.extractors.xml.JSONObjectExtractor()
+            extractor = new net.hedtech.restfulapi.extractors.xml.MapExtractor()
         }
     }
 }

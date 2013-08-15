@@ -47,4 +47,8 @@ modules = {
         defaultBundle environment == "development" ? false : "pageBuilderRTL"
 
     }
+	
+    application {
+        resource url:'js/application.js'
+    }	
 }

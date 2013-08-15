@@ -9,6 +9,10 @@ class CustomPageController {
     def user = PBUser.get()
 
     def page = {
+        if (params.id=="menu") {    //Work around aurora issue calling this 'page'. Todo: analyse and provide better fix
+            render ""
+            return
+        }
         // render view page.gsp which will be including getHTML
         render  (view:"page", model:[id: params.id])
     }
@@ -46,6 +50,7 @@ class CustomPageController {
         def pageId = params.id
         def html
         def allow=true
+
 
         if (params.file == "true") { // render a file
             html = new File("target/compiledPage/page${pageId}.html").getText()

@@ -59,7 +59,7 @@ class PageService {
 
 
     // TODO for now update(post) handles both update and creation to simplify client side logic
-    def create(Map content) {
+    def create(Map content, params) {
         log.trace "PageService.create invoked"
 
 
@@ -88,7 +88,7 @@ class PageService {
     }
 
     // update is not used since the client may not know if a page exists or not when submitting (concurrent editing)
-    def update(def id, Map content) {
+    def update(def id, Map content, params) {
         log.trace "PageService.update invoked"
 
         checkForExceptionRequest()
@@ -149,7 +149,7 @@ class PageService {
     }
 
     // note the content-type header still needs to be set in the request even we don't send in any content in the body
-    void delete(id,Map content) {
+    void delete(id,Map content, params) {
         Page.withTransaction {
             def page = Page.find{constantName==id}
             page.delete(failOnError:true)
