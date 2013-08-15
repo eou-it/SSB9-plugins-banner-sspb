@@ -63,7 +63,6 @@ class VirtualDomainService {
 
     def create (Map data, params) {
         println "Data for post/save/create:" + data
-        params.virtualDomain //=data.virtualDomain
         def vd = loadVirtualDomain(params.virtualDomain)
         if (vd.error) {
             throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message"))
