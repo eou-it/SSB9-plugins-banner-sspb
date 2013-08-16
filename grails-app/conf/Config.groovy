@@ -290,7 +290,8 @@ restfulApiConfig = {
     }
 	
     // Pagebuilder resources
-	
+
+    /*
     resource 'virtualDomains'  config {  // common service to handle all virtual domain
 
         representation {
@@ -315,6 +316,7 @@ restfulApiConfig = {
             extractor = new net.hedtech.restfulapi.extractors.xml.MapExtractor()
         }
     }
+    */
     resource  'pages' config {
         representation {
             mediaTypes = ["application/json"]

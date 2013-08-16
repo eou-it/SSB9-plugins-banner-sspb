@@ -27,6 +27,7 @@ class PBUrlMappings {
 
         /////// restful api config
         // for now (until the restful api supports regular expressions)
+/*
         //
         "/api/$pluralizedResourceName.$virtualDomain/$id"(controller:'restfulApi') {
             action = [GET: "show", PUT: "update",
@@ -42,7 +43,7 @@ class PBUrlMappings {
             parseRequest = false
         }
 
-
+*/
         //////// restful api config
 
 

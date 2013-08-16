@@ -8,12 +8,23 @@ class VirtualDomainService {
     }
     def virtualDomainSqlService
 
+    private String vdPrefix = "virtualDomains."   // Todo: might want to get rid of plural or choose other prefix
+
+    private def vdName (params) {
+        String resourceName=params.pluralizedResourceName
+        if ( resourceName.startsWith(vdPrefix)) {
+            resourceName = resourceName.substring(vdPrefix.length())
+        } else {
+            resourceName = null
+        }
+    }
+
     // Interface for restful API - TODO may choose to put this in a separate service or move to VirtualDomainSqlService
     // if the service name can be configured, which fails now.
     def list(Map params) {
         def queryResult
         def result
-        def vd = loadVirtualDomain(params.virtualDomain)
+        def vd = loadVirtualDomain(vdName(params))
         if (vd.error) {
             throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message") )//TODO  how should we handle with restful API?, i18n
         }
@@ -29,7 +40,7 @@ class VirtualDomainService {
     def show(Map params) {
         def queryResult
         def result
-        def vd = loadVirtualDomain(params.virtualDomain)
+        def vd = loadVirtualDomain(vdName(params))
         if (vd.error) {
             throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message"))//TODO  how should we handle with restful API?, i18n
         }
@@ -45,7 +56,7 @@ class VirtualDomainService {
     def count(Map params) {
         def queryResult
         def result
-        def vd = loadVirtualDomain(params.virtualDomain)
+        def vd = loadVirtualDomain(vdName(params))
         if (vd.error) {
             throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message") )//TODO  how should we handle errors with restful API?, i18n
         }
@@ -63,7 +74,7 @@ class VirtualDomainService {
 
     def create (Map data, params) {
         println "Data for post/save/create:" + data
-        def vd = loadVirtualDomain(params.virtualDomain)
+        def vd = loadVirtualDomain(vdName(params))
         if (vd.error) {
             throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message"))
         }
@@ -74,7 +85,7 @@ class VirtualDomainService {
 
     def update (def id, Map data, params) {
         println "Data for put/update:" + data
-        def vd = loadVirtualDomain(params.virtualDomain)
+        def vd = loadVirtualDomain(vdName(params))
         if (vd.error) {
             throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message"))
         }
@@ -85,7 +96,7 @@ class VirtualDomainService {
 
     def delete (def id, Map data,  params) {
         println "Data for DELETE:" + data
-        def vd = loadVirtualDomain(params.virtualDomain)
+        def vd = loadVirtualDomain(vdName(params))
         if (vd.error) {
             throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message"))
         }

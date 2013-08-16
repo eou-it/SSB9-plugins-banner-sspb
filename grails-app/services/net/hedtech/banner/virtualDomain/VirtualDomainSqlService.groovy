@@ -97,7 +97,7 @@ class VirtualDomainSqlService {
     def get(vd, params) {
         def parameters = getNormalized(params) // some tweaks and work arounds
         addUser(parameters)
-        def logmsg=localizer(code:"sspb.virtualdomain.sqlservice.param", args:[parameters])
+        def logmsg=localizer(code:"sspb.virtualdomain.sqlservice.param", args:[vd.serviceName,parameters])
         if (!userAccessRights(vd, parameters.user_authorities).get) {
             throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.user_loginName}"))
         }
@@ -134,7 +134,7 @@ class VirtualDomainSqlService {
     def count(vd, params) {
         def parameters = getNormalized(params) // some tweaks and work arounds
         addUser(parameters)
-        def logmsg=localizer(code:"sspb.virtualdomain.sqlservice.param", args:[parameters])
+        def logmsg=localizer(code:"sspb.virtualdomain.sqlservice.param.count", args:[vd.serviceName,parameters])
         if (!userAccessRights(vd, parameters.user_authorities).get) {
             throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.user_loginName}"))
         }
