@@ -528,11 +528,15 @@ class PageComponent {
                     ret += "</tr>"
                 } else if (parent.type == COMP_TYPE_GRID) {
                     ret = " <span $styleStr> {{ $GRID_ITEM.${model} }} </span>";
-                } else
+                } else {
                     // otherwise the value is used
                     // TODO consolidate value and sourceModel?
                     // TODO is parseVariable still working after using DataSet as generic data object?
-                    ret += label?"<label $styleStr>${tran("label")}</label>":"" + "<span $styleStr>" + value?"value=\"{{${CompileService.parseVariable(value)}}}\"":"" + "</span>"
+                    ret  = label?"<label $styleStr>${tran("label")}</label>":""
+                    ret += value?"{{${CompileService.parseVariable(value)}}}":""
+                    if (styleStr)
+                        ret  = "<span $styleStr> $ret</span> "
+                }
                 return ret
             case COMP_TYPE_LINK:
                 def ret = "<div $styleStr>"

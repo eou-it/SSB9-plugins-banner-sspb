@@ -68,6 +68,14 @@
                                           "label": "Id"
                                     },
                                     {
+                                          "name": "EMPNO",
+                                          "type": "number",
+                                          "label": "Employee Number",
+                                          "model": "EMPNO",
+                                          "parameters": {},
+                                          "required": false
+                                    },
+                                    {
                                           "type": "text",
                                           "model": "ENAME",
                                           "label": "Employee Name",

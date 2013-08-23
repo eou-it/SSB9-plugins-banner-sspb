@@ -21,6 +21,12 @@
                   "resource": "$rootWebApp/api/virtualDomains.pbadmWebTailorRoles"
             },
             {
+                  "name": "pagesecurity",
+                  "type": "resource",
+                  "binding": "rest",
+                  "resource": "$rootWebApp/api/pagesecurity"
+            },
+            {
                   "name": "SelectPageBlock",
                   "type": "block",
                   "label": "",
@@ -36,7 +42,7 @@
                               "sourceParameters": {},
                               "sourceValue": [],
                               "model": "selectPage",
-                              "onUpdate": "$editPageRoles.$load();$EditRolesForm.$visible=$selectPage; $roleName.$populateSource();",
+                              "onUpdate": "$editPageRoles.$load();\n$EditRolesForm.$visible=$selectPage;\n$roleName.$populateSource();\n$ApplyRolesForm.$visible=$selectPage;",
                               "required": false,
                               "placeholder": "Select..."
                         }
@@ -44,7 +50,7 @@
             },
             {
                   "name": "EditRolesForm",
-                  "type": "block",
+                  "type": "form",
                   "showInitially": false,
                   "components": [
                         {
@@ -78,6 +84,12 @@
                                           "value": ""
                                     },
                                     {
+                                          "name": "pageID",
+                                          "type": "hidden",
+                                          "value": "$selectPage",
+                                          "model": "PAGE_ID"
+                                    },
+                                    {
                                           "name": "allow",
                                           "type": "boolean",
                                           "label": "Allow Access",
@@ -87,16 +99,47 @@
                                           "readonly": false,
                                           "model": "ALLOW",
                                           "onUpdate": ""
-                                    },
-                                    {
-                                          "name": "pageID",
-                                          "type": "hidden",
-                                          "value": "$selectPage",
-                                          "model": "PAGE_ID"
                                     }
-                              ]
+                              ],
+                              "submit": "gridsubmit"
                         }
-                  ]
+                  ],
+                  "nextButtonLabel": "Next"
+            },
+            {
+                  "name": "ApplyRolesForm",
+                  "type": "form",
+                  "nextButtonLabel": "",
+                  "showInitially": false,
+                  "components": [
+                        {
+                              "name": "psdata",
+                              "type": "data",
+                              "model": "pagesecurity",
+                              "parameters": {},
+                              "loadInitially": false
+                        },
+                        {
+                              "name": "applyRolesButton",
+                              "type": "button",
+                              "label": "Apply page roles",
+                              "onClick": "console.log('Apply pressed');\nvar item={pageId:$selectPage};\n$psdataDS.data=[];\n$psdataDS.add( item);\n$psdataDS.save();"
+                        },
+                        {
+                              "name": "Status",
+                              "type": "display",
+                              "label": "Form Dirty",
+                              "value": "$EditRolesForm.#dirty"
+                        },
+                        {
+                              "name": "Status2",
+                              "type": "display",
+                              "label": "Page Roles Dirty",
+                              "value": "$editPageRolesDS.dirty()"
+                        }
+                  ],
+                  "submitLabel": "",
+                  "submit": ""
             }
       ],
       "documentation": "Associate Roles with a Page",

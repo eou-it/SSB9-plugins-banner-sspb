@@ -10,6 +10,11 @@ import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 class PageUtilService {
 
     def final static propertyDataDir = 'SSPB_DATA_DIR'
+    def final static loadOverwriteExisting=0
+    def final static loadSkipExisting=1
+    def final static loadRenameIfExisting=2
+    def final static loadIfNew=3
+
     def static externalDataLocation = getExternalDataLocation()
 
     def static getExternalDataLocation() {
@@ -39,20 +44,26 @@ class PageUtilService {
         }
     }
 
-    void importAllFromFile(String path) {
+    void importAllFromFile(String path, mode=loadRenameIfExisting) {
         new File(path).eachFileMatch(~/.*.json/) {   file ->
             def modelView = file.getText()
             def pageName = file.name.substring(0,file.name.lastIndexOf(".json"))
-            def page = new Page(constantName: pageName, modelView: modelView)
-            if (Page.findByConstantName(pageName)) {
-                page.constantName+=".imp.dup"
-                def page1=Page.findByConstantName(page.constantName)
-                if (page1) //if we have already saved a duplicate, get rid of it.
-                    page1.delete(flush: true)
-                println localizer(code:"sspb.pageutil.import.duplicate.page.done.message", args:[page.constantName])
-            } else {
-                println localizer(code:"sspb.pageutil.import.page.done.message", args:[page.constantName])
+            def existingPage = Page.findByConstantName(pageName)
+            if (existingPage && mode==loadSkipExisting)
+                return
+            else if (existingPage && mode==loadRenameIfExisting) {
+                pageName += ".imp.dup"
+                def oldDup=Page.findByConstantName(pageName)
+                if (oldDup) //if we have already saved a duplicate, get rid of it.
+                    oldDup.delete(flush: true)
+                println localizer(code:"sspb.pageutil.import.duplicate.page.done.message", args:[pageName])
             }
+            else if (existingPage && mode==loadOverwriteExisting) {
+                existingPage.delete(flush: true)
+            }
+
+            def page = new Page(constantName: pageName, modelView: modelView)
+            println localizer(code:"sspb.pageutil.import.page.done.message", args:[page.constantName])
             if (page.constantName.startsWith("pbadm.")){
                 //add a WTAILORADMIN role so the pages can be used
                 //TODO export PageRoles

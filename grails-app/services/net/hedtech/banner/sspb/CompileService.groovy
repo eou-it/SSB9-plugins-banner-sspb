@@ -586,7 +586,7 @@ class CompileService {
         ret = ret?.replaceAll('\\$(\\w*)\\.\\$(\\w*)', '$1_$2')
         ret = ret?.replace('$', '')
         // finalize
-        //ret = ret.replace('#', '$')
+        ret = ret.replace('#', '$')
 
         return ret
     }

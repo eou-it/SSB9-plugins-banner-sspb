@@ -28,7 +28,6 @@ class PBUrlMappings {
 
 
         "/"(view:"/index")
-        "/develop"(view:"/pbIndex")
         "500"(view:'/error')
 
     }

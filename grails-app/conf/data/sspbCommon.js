@@ -90,6 +90,9 @@ function CreateDataSet(params){
     this.modified = [];
     this.added = [];
     this.deleted = [];
+	if (this.data === undefined)  {
+		this.data = [];
+    }
 
     function init() {
         this.currentRecord=null;
@@ -210,6 +213,10 @@ function CreateDataSet(params){
             item.$delete({id:item.id});
         });
         this.deleted = [];
+    }
+
+    this.dirty = function() {
+        return this.added.length + this.modified.length + this.deleted.length>0
     }
 
     if (params.autoPopulate) {
