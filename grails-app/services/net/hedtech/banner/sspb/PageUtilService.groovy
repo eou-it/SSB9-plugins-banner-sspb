@@ -1,11 +1,10 @@
 package net.hedtech.banner.sspb
 
-
-import org.springframework.context.ApplicationContext
 import org.codehaus.groovy.grails.web.context.ServletContextHolder
 import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
+import org.springframework.context.ApplicationContext
 import net.hedtech.banner.tools.i18n.SortedProperties
-import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
+
 
 class PageUtilService {
 
@@ -14,6 +13,8 @@ class PageUtilService {
     def final static loadSkipExisting=1
     def final static loadRenameIfExisting=2
     def final static loadIfNew=3
+
+    def pageService
 
     def static externalDataLocation = getExternalDataLocation()
 
@@ -26,52 +27,63 @@ class PageUtilService {
         result
     }
 
-    //Internationalize println in this service - this service is to be used by a batch export/import utility
-    def static localizer = { mapToLocalize ->
-        new ValidationTagLib().message( mapToLocalize )
-    }
-
     void exportAllToFile(String path) {
         Page.findAll().each { page ->
             if (page.constantName.endsWith(".imp.dup"))
-                println localizer(code:"sspb.pageutil.export.skipDuplicate.message", args:[page.constantName])
+                println message(code:"sspb.pageutil.export.skipDuplicate.message", args:[page.constantName])
             else {
                 def file = new File("$path/${page.constantName}.json")
                 def jsonString =  page.modelView
-                println localizer(code:"sspb.pageutil.export.page.done.message", args:[page.constantName])
+                println message(code:"sspb.pageutil.export.page.done.message", args:[page.constantName])
                 file.text = jsonString
             }
         }
     }
 
+
+    void importInitially(mode=loadSkipExisting) {
+        def fileNames = PageUtilService.class.classLoader.getResourceAsStream( "data/install/pages.txt" ).text
+        fileNames.eachLine {  fileName ->
+            def pageName = fileName.substring(0,fileName.lastIndexOf(".json"))
+            def modelView=PageUtilService.class.classLoader.getResourceAsStream( "data/install/$fileName" ).text
+            savePage(pageName, modelView, mode)
+        }
+    }
+
     void importAllFromFile(String path, mode=loadRenameIfExisting) {
         new File(path).eachFileMatch(~/.*.json/) {   file ->
-            def modelView = file.getText()
             def pageName = file.name.substring(0,file.name.lastIndexOf(".json"))
-            def existingPage = Page.findByConstantName(pageName)
-            if (existingPage && mode==loadSkipExisting)
-                return
-            else if (existingPage && mode==loadRenameIfExisting) {
-                pageName += ".imp.dup"
-                def oldDup=Page.findByConstantName(pageName)
-                if (oldDup) //if we have already saved a duplicate, get rid of it.
-                    oldDup.delete(flush: true)
-                println localizer(code:"sspb.pageutil.import.duplicate.page.done.message", args:[pageName])
-            }
-            else if (existingPage && mode==loadOverwriteExisting) {
-                existingPage.delete(flush: true)
-            }
-
-            def page = new Page(constantName: pageName, modelView: modelView)
-            println localizer(code:"sspb.pageutil.import.page.done.message", args:[page.constantName])
-            if (page.constantName.startsWith("pbadm.")){
-                //add a WTAILORADMIN role so the pages can be used
-                //TODO export PageRoles
-                def role=new PageRole(roleName: "WTAILORADMIN")
-                page.addToPageRoles(role)
-            }
-            page = page.save(flush: true)
+            def modelView = file.getText()
+            savePage(pageName, modelView, mode)
         }
+    }
+
+    void savePage (pageName, modelView, mode=loadRenameIfExisting) {
+        def existingPage = Page.findByConstantName(pageName)
+        def msg
+        if (existingPage && mode==loadSkipExisting)
+            return
+        else if (existingPage && mode==loadRenameIfExisting) {
+            pageName += ".imp.dup"
+            def oldDup=Page.findByConstantName(pageName)
+            if (oldDup) //if we have already saved a duplicate, get rid of it.
+                oldDup.delete(flush: true)
+            msg=message(code:"sspb.pageutil.import.duplicate.page.done.message", args:[pageName])
+        }
+        else if (existingPage && mode==loadOverwriteExisting) {
+            existingPage.delete(flush: true)
+            msg=message(code:"sspb.pageutil.import.page.done.message", args:[pageName])
+        }
+
+        def page = new Page(constantName: pageName, modelView: modelView)
+        println msg
+        if (page.constantName.startsWith("pbadm.")){
+            //add a WTAILORADMIN role so the pages can be used
+            def role=new PageRole(roleName: "WTAILORADMIN")
+            page.addToPageRoles(role)
+        }
+        page = page.save(flush: true)
+        compileAll(pageName)
     }
 
     def compileAll(String pattern) {
@@ -79,20 +91,10 @@ class PageUtilService {
         def pages = Page.findAllByConstantNameLike(pat)
         def errors =[]
         pages.each { page ->
-            def validateResult =  CompileService.preparePage(page.modelView)
-            def statusMessage
-
-            if (validateResult.valid) {
-                page.compiledController=CompileService.compileController(validateResult.pageComponent)
-                page.compiledView = CompileService.compile2page(validateResult.pageComponent)
-                statusMessage = localizer(code:"sspb.pageutil.compile.page.done.message", args:[page.constantName])
-                page=page.save(flush: true)
-            }  else {
-                def error = [pageName: page.constantName, errorMessage:validateResult.error.join('\n')]
-                statusMessage = localizer(code:"sspb.pageutil.compile.page.done.message", args:[page.constantName,error.errorMessage])
-                errors <<error
-            }
-            println statusMessage
+            def result=pageService.compilePage( page.constantName, page.modelView)
+            if (result.statusCode>0)
+                errors << result
+            println result
         }
         errors
     }

@@ -125,23 +125,29 @@ class PageService {
         if (pageSource)  {
             def validateResult =  compileService.preparePage(pageSource)
             if (validateResult.valid) {
-                def compiledJSCode=compileService.compileController(validateResult.pageComponent)
-                log.trace "JavaScript is compiled\n"
-                def compiledView = compileService.compile2page(validateResult.pageComponent)
-                log.trace "Page is compiled\n"
-                if (!pageInstance)
-                    pageInstance = new Page([constantName:pageName])
-                pageInstance.modelView=pageSource
-                pageInstance.compiledView = compiledView
-                pageInstance.compiledController=compiledJSCode
-                pageInstance.save()
-                ret = [statusCode:0, statusMessage:"Page has been compiled and ${overwrite?'updated':'saved'} successfully."]
+                try {
+                    def compiledJSCode=compileService.compileController(validateResult.pageComponent)
+                    log.trace "JavaScript is compiled\n"
+                    def compiledView = compileService.compile2page(validateResult.pageComponent)
+                    log.trace "Page is compiled\n"
+                    if (!pageInstance)
+                        pageInstance = new Page([constantName:pageName])
+                    pageInstance.modelView=pageSource
+                    pageInstance.compiledView = compiledView
+                    pageInstance.compiledController=compiledJSCode
+                    pageInstance.save()
+                    ret = [statusCode:0, statusMessage:"Page has been compiled and ${overwrite?'updated':'saved'} successfully."]
+                    //TODO: I18N - should not use logic to construct message using updated  or saved
+                } catch (e)   {
+                    ret = [statusCode: 2, statusMessage:e.getMessage()+"\n"]
+                }
+
             } else {
-                ret = [statusCode: 2, statusMessage:"Page validation error. Page is not saved."]
+                ret = [statusCode: 2, statusMessage:"Page validation error. Page is not saved."] //TODO: I18N
                 ret << [pageValidationResult:[errors: validateResult.error.join('\n')] ]
             }
         } else
-            ret = [statusCode: 1, statusMessage:"Page source is empty. Page is not compiled."]
+            ret = [statusCode: 1, statusMessage:"Page source is empty. Page is not compiled."]  //TODO: I18N
 
         ret << [overwrite:overwrite]
 

@@ -1,0 +1,26 @@
+{
+   "codePost": "insert into page_role\r\n (id, version,allow, role_name,page_id) \r\nvalues\r\n( hibernate_sequence.nextval, 0, \r\n   nvl(:ALLOW,1),\r\n  :ROLE_NAME,\r\n  :PAGE_ID\r\n)",
+   "id": 12040,
+   "dataSource": "S",
+   "virtualDomainRoles": [{
+      "allowGet": true,
+      "id": 12046,
+      "allowPost": true,
+      "allowPut": true,
+      "virtualDomain": {
+         "_ref": "../..",
+         "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+      },
+      "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
+      "roleName": "WTAILORADMIN",
+      "allowDelete": true,
+      "version": 0
+   }],
+   "codePut": "update page_role\r\nset version=version+1,\r\nallow=nvl(:ALLOW,0),\r\nrole_name=:ROLE_NAME,\r\npage_id=:PAGE_ID\r\nwhere id=:id",
+   "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
+   "codeDelete": "delete from page_role where id=:id",
+   "codeGet": "select \r\n  id \"id\",\r\n  to_char(allow) allow, /* cannot use int 0/1 for checkbox in AngularJS*/\r\n  role_name,\r\n  page_id\r\nfrom page_role\r\nwhere id = nvl(:id,id)\r\n  and page_id=nvl(:page_id,page_id)",
+   "typeOfCode": "S",
+   "serviceName": "pbadmPageRoles",
+   "version": 0
+}

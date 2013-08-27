@@ -1,4 +1,6 @@
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
+
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.core.io.ContextResource
 import org.apache.commons.lang.StringUtils
 import net.hedtech.banner.tools.i18n.ExtendedMessageSource
@@ -129,8 +131,26 @@ Brief summary/description of the plugin.
         }
     }
 
-    def doWithDynamicMethods = { ctx ->
-        // TODO Implement registering dynamic methods to classes (optional)
+    def doWithDynamicMethods = { applicationContext ->
+        application.serviceClasses.each {
+            // Note: weblogic throws an error if we try to inject the method if it is already present
+            if (!it.metaClass.methods.find { m -> m.name.matches("message") }) {
+                def name = it.name // needed as this 'it' is not visible within the below closure...
+                try {
+                    it.metaClass.static.message = { mapToLocalize ->
+                        //def applicationContext = ServletContextHolder.getServletContext().getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT);
+                        MessageSource messageSource = applicationContext.getBean("messageSource")
+                        try {
+                            messageSource.getMessage(mapToLocalize.code, (Object[]) mapToLocalize.args, LocaleContextHolder.locale)
+                        }
+                        catch (e) {
+                            println e
+                        }
+                    }
+                }
+                catch (e) {} // rare case where we'll bury it...
+            }
+        }
     }
 
     def doWithApplicationContext = { applicationContext ->

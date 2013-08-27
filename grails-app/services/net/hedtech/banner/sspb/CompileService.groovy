@@ -4,9 +4,11 @@ import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 
 class CompileService {
 
+    /* use message
     def static localizer = { mapToLocalize ->
         new ValidationTagLib().message( mapToLocalize )
     }
+    */
 
     // TODO configure Hibernate
     def transactional = false
@@ -212,7 +214,7 @@ class CompileService {
             // can specify resource relative to current application like $rootWebApp/rest/emp
             dataSource = "'${dataComponent.resource}'".replace("'\$rootWebApp/", "rootWebApp+'")
             if (dataSource.startsWith("'/\$rootWebApp")) {
-                throw new Exception(localizer(code:"sspb.compiler.resourceInvalidRootReference.message"))
+                throw new Exception(message(code:"sspb.compiler.resourceInvalidRootReference.message"))
             }
             // transform parameters to angular $scope variable
             queryParameters = getQueryParameters(component, dataComponent)
