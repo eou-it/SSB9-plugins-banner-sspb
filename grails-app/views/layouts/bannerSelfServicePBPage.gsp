@@ -66,16 +66,25 @@
         <r:layoutResources/>
 
         <!-- TODO begin from Harry -->
+
+        <!--  below file fixes datepicker display issue -->
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'jquery-ui.css')}" type="text/css">
+        <!--  below file fixes Error: $digest already in progress issue -->
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery-ui-1.8.24.custom.js" />"> </script>
+
+        <!-- above are 2 duplicate imports of newer versions than in ui-ss-->
+
         <g:set var="localeLanguage"    value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).language}" scope="page" />
         <g:set var="localeBrowserFull" value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).toString().replace('_','-')}" scope="page" />
 
-
+        <!-- Do we still need the anish-app*.css?
         <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
             <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'anish-app-rtl.css')}">
         </g:if>
         <g:else>
             <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'anish-app.css')}">
         </g:else>
+        -->
 
         <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular.js" />"></script>
         <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular-resource.js"/>"></script>
