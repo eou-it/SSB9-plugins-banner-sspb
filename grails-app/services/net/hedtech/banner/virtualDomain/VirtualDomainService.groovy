@@ -69,9 +69,6 @@ class VirtualDomainService {
         result
     }
 
-    //TODO
-    //missing methods show
-
     def create (Map data, params) {
         println "Data for post/save/create:" + data
         def vd = loadVirtualDomain(vdName(params))

@@ -42,5 +42,16 @@ class VirtualDomainComposerController {
         render (view:"virtualDomainComposer", model: [pageInstance: pageInstance])
     }
 
+    def deleteVirtualDomain = {
+        def pageInstance = params
+        if (pageInstance.vdServiceName)  {
+            def loadResult =  virtualDomainService.loadVirtualDomain(pageInstance.vdServiceName)
+            (VirtualDomain) loadResult.virtualDomain.delete()
+
+        }
+
+        render (view:"virtualDomainComposer", model: [pageInstance: null])
+    }
+
 
 }

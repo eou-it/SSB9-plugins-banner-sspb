@@ -6,25 +6,25 @@
                   "name": "pageRoles",
                   "type": "resource",
                   "binding": "rest",
-                  "resource": "$rootWebApp/api/virtualDomains.pbadmPageRoles"
+                  "resource": "$rootWebApp/internal/virtualDomains.pbadmPageRoles"
             },
             {
                   "name": "pageLookup",
                   "type": "resource",
                   "binding": "rest",
-                  "resource": "$rootWebApp/api/virtualDomains.pbadmPageLookup"
+                  "resource": "$rootWebApp/internal/virtualDomains.pbadmPageLookup"
             },
             {
                   "name": "webTailorRolesLookup",
                   "type": "resource",
                   "binding": "rest",
-                  "resource": "$rootWebApp/api/virtualDomains.pbadmWebTailorRoles"
+                  "resource": "$rootWebApp/internal/virtualDomains.pbadmWebTailorRoles"
             },
             {
                   "name": "pagesecurity",
                   "type": "resource",
                   "binding": "rest",
-                  "resource": "$rootWebApp/api/pagesecurity"
+                  "resource": "$rootWebApp/internal/pagesecurity"
             },
             {
                   "name": "SelectPageBlock",

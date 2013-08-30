@@ -38,6 +38,8 @@ class VirtualDomainUtilService {
         } else if (existingVD && mode == loadOverwriteExisting) {
             existingVD.delete(flush: true)
             msg=message(code:"sspb.virtualdomainutil.import.vd.done.message", args:[serviceName])
+        } else {
+            msg=message(code:"sspb.virtualdomainutil.import.vd.done.message", args:[serviceName])
         }
 
         JSON.use("deep")

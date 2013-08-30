@@ -74,6 +74,8 @@
 <g:form name="ComposeVDForm" action="saveVirtualDomain">
     <label><g:message code="sspb.page.virtualdomain.servicename.label" /></label>
     <input type="text" name="vdServiceName" value="${pageInstance?.vdServiceName}" required />
+    <g:actionSubmit action="saveVirtualDomain" value="${message(code:"sspb.page.virtualdomain.save.label")}" />
+    <g:actionSubmit action="deleteVirtualDomain" value="${message(code:"sspb.page.virtualdomain.delete.label")}" />
 <br/>
 
 <table>
@@ -104,7 +106,7 @@
 
 </table>
 <br/>
-<g:actionSubmit action="saveVirtualDomain" value="${message(code:"sspb.page.virtualdomain.save.label")}" />
+
 <br/>
 </g:form>
 <g:form name="TestVDForm" action="loadVirtualDomain">

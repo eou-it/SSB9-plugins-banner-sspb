@@ -325,11 +325,13 @@ class PageComponent {
 
         def result =
             """<table $styleStr >
-            <tr>$thead</tr>
+            <thead><tr>$thead</tr></thead>
+            <tbody>
             <!-- Do this for every object in objects -->
             <tr ng-repeat="$repeat | startFrom:${uiControl}.currentPage * ${uiControl}.pageSize | limitTo:${uiControl}.pageSize" $click_txt>
               $items
             </tr>
+            </tbody>
             </table>
             """
         result +=  recordControlPanel()
