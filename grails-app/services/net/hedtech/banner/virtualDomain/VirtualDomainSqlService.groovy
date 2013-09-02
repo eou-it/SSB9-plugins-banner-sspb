@@ -86,12 +86,50 @@ class VirtualDomainSqlService {
         result
     }
 
+    /*
+    Replace the default order by clause with an order by clause provided as parameters (or append clause to query)
+    This closure may fail to do the right thing if an inner query contains an order by and the outer query does not
+    */
+    private def replaceOrderBy = {statement, orderBy ->
+        def result=statement
+        if (orderBy && statement) {
+            def orderByList=[]
+            if (orderBy instanceof String)
+                orderByList << orderBy
+            else
+                orderByList=orderBy
+            def ob="order by"
+            //assume order by and ) is not in comments
+            def regex=/(?i:order+[ \t\n\r]by)/
+            //normalize order by statement
+            String norm = statement.replaceAll(regex,ob)
+            //find last occurrence of order by
+            def lastOB=norm.lastIndexOf(ob)
+            result=(lastOB>-1)?norm.substring(0,lastOB + ob.length()):norm +" "+ ob
+            //see if there is a bracket after order by
+            def ket=(lastOB>-1)?norm.indexOf(")",lastOB+ob.length()):-1
+            def index=0
+            for (s in orderByList) {
+                //replace operator and special characters to avoid sql injection
+                s=(String) s.tr(" ',.<>?;:|+=!/&*(){}[]`~@#\$%\"^-", " ")
+                if (s) {
+                    result +=  ((index>0)?",":" ") + s
+                    index++
+                }
+            }
+            if (ket>=0) {  //append part after right bracket
+                result+=norm.substring(ket)
+            }
+        }
+        result
+    }
 
     /*
     get will return an array of objects satisfying the parameters
     refactoring to support paging/pagination:
       input max: number of rows to return
       input offset: offset within total number of rows
+    refactoring pagination to restrict in the sql layer
 
     */
     def get(vd, params) {
@@ -102,23 +140,36 @@ class VirtualDomainSqlService {
             throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.user_loginName}"))
         }
         def sql = getSql(vd.dataSource)
-        def debugStatement = (parameters.debug == "true")?" and rownum<6":""
         def errorMessage = ""
-        // Add a dummy bind variable to Groovy SQL to workaround an issue related to passing a map
-        // to a query without bind variables
-        def statement = "select * from (${vd.codeGet}) where (1=1 or :x is null) $debugStatement"
+        def statement = vd.codeGet
         //maybe remove metaData - what value?
         def metaData = { meta ->
             logmsg += localizer(code:"sspb.virtualdomain.sqlservice.numbercolumns", args:[meta.columnCount])
         }
         def rows
         try {
-            def max=parameters.max?parameters.max.toInteger():-1
-            def offset=parameters.offset?parameters.offset.toInteger():-1
-            rows = sql.rows(statement,parameters,offset,max,metaData)
+            if (parameters.max) //make sure that an integer was passed in (avoid sql injection)
+                parameters.max=parameters.max.toInteger()
+            else
+                parameters.max=1000.toInteger()
+            if (parameters.debug == true)
+                parameters.max=5.toInteger()
+            if (!parameters.offset)
+                parameters.offset=0.toLong()
+            if (parameters.sortby) {
+                statement=replaceOrderBy(statement, parameters.sortby)
+            }
+            //modify query for sql pagination (should be fast if an index exists on columns in order by clause)
+            statement="""select /*+first_rows(${parameters.max})*/ *
+                         from (select rownum row_number, a.*
+                               from ($statement) a
+                               where rownum <= :offset+:max
+                         )
+                         where row_number >= :offset+1 """
+            rows = sql.rows(statement,parameters,metaData)
             rows = idEncodeRows(rows)
             rows = handleClobRows(rows)
-            logmsg += " "+localizer(code:"sspb.virtualdomain.sqlservice.numberrows", args:[rows?.size(),offset])
+            logmsg += " "+localizer(code:"sspb.virtualdomain.sqlservice.numberrows", args:[rows?.size(),parameters.offset])
 
         } catch(e) {
             logmsg += localizer(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
@@ -139,16 +190,13 @@ class VirtualDomainSqlService {
             throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.user_loginName}"))
         }
         def sql = getSql(vd.dataSource)
-        def debugStatement = (parameters.debug == "true")?" and rownum<6":""
         def errorMessage = ""
         // Add a dummy bind variable to Groovy SQL to workaround an issue related to passing a map
         // to a query without bind variables
-        def statement="select count(*) COUNT from (${vd.codeGet}) where (1=1 or :x is null) $debugStatement"
+        def statement="select count(*) COUNT from (${vd.codeGet}) where (1=1 or :x is null)"
         def rows
         def totalCount=-1
         try {
-            def max=parameters.max?parameters.max.toInteger():-1
-            def offset=parameters.offset?parameters.offset.toInteger():-1
             // determine the total count
             rows = sql.rows(statement,parameters)
             totalCount = rows[0].COUNT
