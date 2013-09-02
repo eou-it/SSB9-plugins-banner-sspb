@@ -57,12 +57,13 @@ $scope.setDefault = function(parent,model,def)   {
 // a DataSet instance
 function CreatePostQuery(instanceIn, userFunction) {
     console.log("Post Query Constructor for DataSet " + instanceIn.componentId);
-    this.go = function(it) {
+    this.go = function(it, response) {
         var instance=instanceIn;
         var uf=userFunction;
         console.log("Executing Post for DataSet="+instance.componentId+" size="+it.length) ;
         instance.currentRecord=instance.data[0];  //set the current record
         instance.setInitialRecord();
+        instance.totalCount=response("X-hedtech-totalCount") ;
         if (uf) { uf(); }
     };
     return this;
@@ -100,6 +101,7 @@ function CreateDataSet(params){
         this.modified = [];
         this.added = [];
         this.deleted = [];
+        this.totalCount=null;
     }
 
     var post = new CreatePostQuery(this,params.postQuery) ;  //remember this
@@ -232,6 +234,7 @@ function CreateUICtrl(params) {
     this.pageSize=params.pageSize;
     this.currentPage=0;
     this.numberOfPages = function () {
-        return Math.ceil(this.dataSet.data.length/this.pageSize);
+        //return Math.ceil(this.dataSet.data.length/this.pageSize);
+        return Math.ceil(this.dataSet.totalCount/this.pageSize);
     }
 }
