@@ -243,6 +243,9 @@ restfulApi.header.mediaType   = 'X-hedtech-Media-Type'
 restfulApi.page.max    = 'max'
 restfulApi.page.offset = 'offset'
 
+// API path component to construct the REST API URL
+sspb.apiPath = 'internal'
+
 // ******************************************************************************
 //                       RESTful API Endpoint Configuration
 // ******************************************************************************
