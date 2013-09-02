@@ -138,9 +138,11 @@
             }
         ],
         "sourceRenderDefinitions" : [
-            {"AttributeType":["name",  "title", "label", "style", "importCSS", "submitLabel", "model", "placeholder", "labelKey", "valueKey", "sourceModel", "booleanTrueValue", "booleanFalseValue", "resource", "imageUrl", "url"], "renderProperty":{"inputType":"text"}},
+            {"AttributeType":["name",  "title", "label", "style", "importCSS", "submitLabel", "model", "placeholder", "labelKey", "valueKey", "sourceModel", "booleanTrueValue", "booleanFalseValue",             {"AttributeType":["type"], "renderProperty":{"inputType":"select"}},
+                "imageUrl", "url"], "renderProperty":{"inputType":"text"}},
             {"AttributeType":["submit", "validation", "value", "onUpdate", "onClick", "onLoad", "sequence", "description", "documentation"], "renderProperty":{"inputType":"textarea"}},
             {"AttributeType":["type"], "renderProperty":{"inputType":"select"}},
+            {"AttributeType":["resource"], "renderProperty":{"inputType":"combo", "selectSource":"virtualDomains.pbadmVirtualDomainLookup"}},
             {"AttributeType":["scriptingLanguage"], "renderProperty":{"inputType":"text", "default":"JavaScript"}},
             {"AttributeType":["binding"], "renderProperty":{"inputType":"text", "default":"rest"}},
             {"AttributeType":["nextButtonLabel"], "renderProperty":{"inputType":"text", "default":"Next"}},
