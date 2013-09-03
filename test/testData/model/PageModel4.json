@@ -7,20 +7,20 @@
                   "type": "resource",
                   "name": "CountryData",
                   "binding": "rest",
-                  "resource": "$rootWebApp/api/virtualDomains.stvnation",
+                  "resource": "virtualDomains.stvnation",
                   "documentation": "Retrieve nation desc and code"
             },
             {
                   "type": "resource",
                   "name": "StateData",
                   "binding": "rest",
-                  "resource": "$rootWebApp/api/virtualDomains.stvstat"
+                  "resource": "virtualDomains.stvstat"
             },
             {
                   "type": "resource",
                   "name": "PRAddressData",
                   "binding": "rest",
-                  "resource": "$rootWebApp/api/virtualDomains.PRAddress"
+                  "resource": "virtualDomains.PRAddress"
             },
             {
                   "type": "form",

@@ -7,37 +7,37 @@
                   "type": "resource",
                   "name": "TermData",
                   "binding": "rest",
-                  "resource": "$rootWebApp/api/virtualDomains.f_term"
+                  "resource": "virtualDomains.f_term"
             },
             {
                   "type": "resource",
                   "name": "CampusData",
                   "binding": "rest",
-                  "resource": "$rootWebApp/api/virtualDomains.f_campus"
+                  "resource": "virtualDomains.f_campus"
             },
             {
                   "type": "resource",
                   "name": "CollegeData",
                   "binding": "rest",
-                  "resource": "$rootWebApp/api/virtualDomains.f_college"
+                  "resource": "virtualDomains.f_college"
             },
             {
                   "type": "resource",
                   "name": "LevelData",
                   "binding": "rest",
-                  "resource": "$rootWebApp/api/virtualDomains.f_level"
+                  "resource": "virtualDomains.f_level"
             },
             {
                   "type": "resource",
                   "name": "ProgrammeData",
                   "binding": "rest",
-                  "resource": "$rootWebApp/api/virtualDomains.f_programme"
+                  "resource": "virtualDomains.f_programme"
             },
             {
                   "type": "resource",
                   "name": "ProgrammeDetailsData",
                   "binding": "rest",
-                  "resource": "$rootWebApp/api/virtualDomains.f_programme_details"
+                  "resource": "virtualDomains.f_programme_details"
             },
             {
                   "type": "literal",
