@@ -54,7 +54,7 @@
             $scope.cssStatus = {};
 
             // declare the Css resource
-            var Css = $resource(rootWebApp+'api/csses/:constantName',{},{
+            var Css = $resource(rootWebApp+'internal/csses/:constantName',{},{
                 save:{
                     method:"POST",
                     isArray:false,
