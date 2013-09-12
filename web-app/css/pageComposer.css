@@ -32,6 +32,15 @@ ul {
     overflow: hidden;
 }
 
+.componentEntry_selected {
+    display: inline-block;
+    width: 200px;
+    overflow: hidden;
+    border-style:ridge;
+    border-width:2px;
+    color:red
+}
+
 button.button_edit {
     background-repeat: no-repeat;  /* make the background image appear only once */
     background-position: 0px 0px;  /* equivalent to 'top left' */

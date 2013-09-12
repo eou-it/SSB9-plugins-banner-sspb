@@ -7,7 +7,7 @@
                   "type": "resource",
                   "name": "EmployeeRes",
                   "binding": "rest",
-                  "resource": "$rootWebApp/api/virtualDomains.employee"
+                  "resource": "virtualDomains.employee"
             },
             {
                   "type": "flow",

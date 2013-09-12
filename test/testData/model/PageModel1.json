@@ -8,13 +8,13 @@
                   "type": "resource",
                   "name": "Todo",
                   "binding": "rest",
-                  "resource": "$rootWebApp/rest/todo"
+                  "resource": "todo"
             },
             {
                   "type": "resource",
                   "name": "Dept",
                   "binding": "rest",
-                  "resource": "$rootWebApp/api/virtualDomains.department"
+                  "resource": "virtualDomains.department"
             },
             {
                   "type": "link",

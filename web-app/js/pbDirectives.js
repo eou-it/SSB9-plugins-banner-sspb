@@ -179,9 +179,6 @@ pagebuilderModule.directive('pbTextarea', function() {
 
                     $scope.pbChange();
                     //console.log("value = " + $scope.value) ;
-
-
-
                 }
 
                 // modal dialog functions
@@ -210,6 +207,47 @@ pagebuilderModule.directive('pbTextarea', function() {
     }
 
 });
+
+/* a directive to allow editing of text from a list */
+pagebuilderModule.directive('pbCombo', function() {
+    return {
+        restrict:'E',
+        transclude: true,
+        scope:{loadSourceLabel:'@', editValueLabel:'@', selectLabel:'@', value:'=', sourceList:"=", pbParent:'=', pbAttrname:'=', pbChange:'&', pbLoadsourcelist:'&' },
+        template: "<Span>" +
+            "<select ng-show='showSelect' ng-model='value'  ng-options='val for val in sourceList' ng-change='processInput()'></select>" +
+            "<button ng-show='showSelect' class='btn btn-mini' ng-click='loadSourceList()'>{{loadSourceLabel}}</button>" +
+            "<button ng-show='showSelect' class='btn btn-mini' ng-click='showSelect=false'>{{editValueLabel}}</button>" +
+            "<input ng-show='!showSelect' type='text' ng-model='value' ng-change='processInput()'/>" +
+            "<button ng-show='!showSelect' class='btn btn-mini' ng-click='showSelect=true'>{{selectLabel}}</button>" +
+            "</Span>",
+        controller: ['$scope', '$element', '$attrs', '$transclude',
+            function($scope, $element, $attrs, $transclude) {
+                $scope.showSelect = false;
+
+                // since value is a string (not an object) we need to copy the value back to the parent scope
+                $scope.processInput = function() {
+                    console.log("pbAttrname = " + $scope.pbAttrname);
+                    console.log("before value = " + $scope.value) ;
+                    console.log("before pbParent = " + $scope.pbParent);
+                    $scope.pbParent[$scope.pbAttrname]=$scope.value;
+                    console.log("after pbParent = " + $scope.pbParent);
+
+                    $scope.pbChange();
+                    //console.log("value = " + $scope.value) ;
+                };
+
+                $scope.loadSourceList = function() {
+                    //$scope.pbLoadsourcelist();
+                    // TODO passing loadVdList as a parameter does not work, hardwire the function call
+                    $scope.$parent.$parent.loadVdList();
+                };
+            }],
+        replace:true
+    }
+
+});
+
 
 /* a directive to allow uploading of a file to an URL in a modal dialog */
 pagebuilderModule.directive('pbUpload', function() {
@@ -248,7 +286,7 @@ pagebuilderModule.directive('pbUpload', function() {
 
                 $scope.cancelUploadModal = function() {
                     $scope.uploadShouldBeOpen = false;
-                }
+                };
 
                 $scope.uploadModalOpts = {
                     backdropFade: true,

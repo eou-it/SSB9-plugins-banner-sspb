@@ -36,6 +36,8 @@
 
      // define angular controller
      function VisualPageComposerController( $scope, $http, $resource, $parse) {
+        $scope.component_entry_style = ["componentEntry", "componentEntry_selected"];
+
         $scope.pageName = "";
         // top level page source container must be an array for tree view rendering consistency
         $scope.pageSource = [];
@@ -58,7 +60,7 @@
         $scope.componentLabelStyle = function(selected) {
         if (selected)
             //return "text-decoration:underline;";
-            return "border-style:ridge; border-width:2px;";
+            return "border-style:ridge; border-width:2px; color:red";
         else
             return "";
         }
@@ -270,6 +272,9 @@
             tr['pb.template.arraymap.ok.label'          ] = "${message(code:'pb.template.arraymap.ok.label',encodeAs: 'JavaScript')}";
             tr['pb.template.arraymap.new.value.label'   ] = "${message(code:'pb.template.arraymap.new.value.label',encodeAs: 'JavaScript')}";
             tr['pb.template.textarea.ok.label'               ] = "${message(code:'pb.template.textarea.ok.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.combo.loadsource.label'               ] = "${message(code:'pb.template.combo.loadsource.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.combo.edit.label'               ] = "${message(code:'pb.template.combo.edit.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.combo.select.label'               ] = "${message(code:'pb.template.combo.select.label',encodeAs: 'JavaScript')}";
 
 
             var res=tr[key];
@@ -484,8 +489,33 @@
             dialogFade:true
           };
 
+         // declare the virtual domain lookup resource  and functions for loading the resourse combo box
+         var VDList = $resource(rootWebApp+'internal/virtualDomains.pbadmVirtualDomainLookup',{},{
+             list: {
+                 method:"GET",
+                 isArray:true,
+                 headers:{'Content-Type':'application/json', 'Accept':'application/json'}
+             }
+         });
+         $scope.vdlist = [];
+         $scope.loadVdList = function() {
+             console.log("==== In loadVDList====");
+             VDList.list({}, function(data) {
+                 // only need the service_name
+                 $scope.vdlist = [];
+
+                  //console.log("vdList = " + data);
+                  angular.forEach(data, function(vd){
+                    $scope.vdlist.push("virtualDomains."+ vd.SERVICE_NAME);
+                    console.log("VD = " + vd.SERVICE_NAME);
+                  });
+             });
+         };
+         $scope.loadVdList();
+
+
          // declare the Page resource
-         var Page = $resource(rootWebApp+'api/pages/:constantName',{},{
+         var Page = $resource(rootWebApp+'internal/pages/:constantName',{},{
              save:{
                  method:"POST",
                  isArray:false,
@@ -761,6 +791,10 @@
                             <pb-Textarea ng-switch-when="textarea" label="{{i18nGet('sspb.page.visualbuilder.edit.textarea.title' , [i18nGet('attribute.'+attr.name),dataHolder.selectedComponent.name])}}"
                                     value='dataHolder.selectedComponent[attr.name]' pb-Parent="dataHolder.selectedComponent" pb-Attrname="attr.name"
                                     pb-change="handlePageTreeChange()"></pb-Textarea>
+                            <pb-Combo ng-switch-when="combo"
+                                         value='dataHolder.selectedComponent[attr.name]' pb-Parent="dataHolder.selectedComponent" pb-Attrname="attr.name"
+                                         pb-change="handlePageTreeChange()" pb-loadsourcelist="loadVdList()" load-source-label="{{i18nGet('pb.template.combo.loadsource.label')}}" edit-value-label="{{i18nGet('pb.template.combo.edit.label')}}"
+                                         select-label="{{i18nGet('pb.template.combo.select.label')}}" source-list="vdlist"></pb-Combo>
                             <select ng-switch-when="select" ng-options="type for type in dataHolder.selectedCompatibleTypes"
                                 ng-model="dataHolder.selectedComponent[attr.name]" ng-change="handleAttrChange()"></select>
                             <input ng-switch-when="text" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
@@ -795,7 +829,7 @@
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </span>
         <!--input type="checkbox" ng-model="showChildren" ng-show="data.components!=undefined && data.type!=undefined"/-->
-        <span ng-init="index=nextIndex()" ng-click="selectData(data, index, $parent.$parent.data)" class="componentEntry"
+        <span ng-init="index=nextIndex()" ng-click="selectData(data, index, $parent.$parent.data)"
               style="{{componentLabelStyle(index == statusHolder.selectedIndex)}}">{{data.name}} &lrm;[{{i18nGet('type.'+data.type)}}]&lrm;</span>
 
         <button  title="${message(code:'sspb.page.visualbuilder.insert.sibling.title')}" class="button_insert button_edit" ng-click="insertSibling($parent.$parent.data, $index)" ng-show="data.type!='page'"></button>

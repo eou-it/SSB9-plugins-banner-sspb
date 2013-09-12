@@ -1,6 +1,7 @@
 package net.hedtech.banner.sspb
 
-import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
+//import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
+import org.codehaus.groovy.grails.commons.ConfigurationHolder as CH
 
 class CompileService {
 
@@ -201,6 +202,8 @@ class CompileService {
         def result = ""
         def dataSource
         def queryParameters = "null"
+        def apiPath = CH.config.sspb.apiPath;
+
         def staticData =""
         //should only COMP_TYPE_DATA have loadInitially?
         def autoPopulate = "true"
@@ -212,7 +215,9 @@ class CompileService {
         // first handle data binding
         if (dataComponent.binding == PageComponent.BINDING_REST) {
             // can specify resource relative to current application like $rootWebApp/rest/emp
-            dataSource = "'${dataComponent.resource}'".replace("'\$rootWebApp/", "rootWebApp+'")
+            //dataSource = "'${dataComponent.resource}'".replace("'\$rootWebApp/", "rootWebApp+'")
+            dataSource = "rootWebApp+'$apiPath/${dataComponent.resource}'"
+
             if (dataSource.startsWith("'/\$rootWebApp")) {
                 throw new Exception(message(code:"sspb.compiler.resourceInvalidRootReference.message"))
             }
