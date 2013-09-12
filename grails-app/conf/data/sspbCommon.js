@@ -238,3 +238,10 @@ function CreateUICtrl(params) {
         return Math.ceil(this.dataSet.totalCount/this.pageSize);
     }
 }
+
+function CreateDropDownTemplateGrid(params) {
+    var temp ="<select ng-class=\"'colt' + $index\" ng-model=\"row.entity[col.field]\" " +
+        "ng-options=\"i.STVTERM_CODE for i in termSelectDS.data\"" +
+        "placeholder=\"-- Select One --\"></select>";
+
+}

@@ -254,6 +254,8 @@ class CompileService {
                     onUpdate: function() {${parseOnEventFunction(component.onUpdate, component)} }
                 });
             """
+        if (component.type == PageComponent.COMP_TYPE_GRID)
+            result +=component.gridJS()
 
         return result
     }

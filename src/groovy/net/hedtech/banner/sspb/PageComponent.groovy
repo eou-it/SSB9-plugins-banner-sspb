@@ -8,8 +8,6 @@
  */
 package net.hedtech.banner.sspb
 
-import javax.annotation.PostConstruct
-
 class PageComponent {
     final static COMP_TYPE_PAGE = "page"
     final static COMP_TYPE_FORM = "form"
@@ -283,10 +281,174 @@ class PageComponent {
         return result
     }
 
+    def gridControlPanel()  {
+        def dataSet    =  "${name}DS"
+        def arrayName  =  "${name}DS.data"
+        def uiControl =  "${name}UICtrl"
+
+        def result = ""
+
+        if (allowNew) {
+            result += """ <button $styleStr ng-click="${dataSet}.add()"> ${tranGlobal("newRecord.label","Add New")}  </button>"""
+        }
+        if (allowDelete) {
+            result += """ <button $styleStr ng-click="${dataSet}.delete(${dataSet}.selectedRecords[0])"> ${tranGlobal("deleteRecord.label","Delete selected")}  </button>"""
+        }
+        if (allowModify || allowDelete) {
+            result += """ <button $styleStr ng-click="${dataSet}.save()"> ${tranGlobal("save.label","Save")} </button>"""
+        }
+        if (allowReload) {
+            result += """ <button $styleStr ng-click="${dataSet}.load()"> ${tranGlobal("refresh.label","Refresh")} </button> """
+        }
+        return result
+    }
+
+    String gridHeaderRowTemplate() {
+       return """
+        <div ng-style="{ height: col.headerRowHeight }" ng-repeat="col in renderedColumns" ng-class="col.colIndex()" class="ngHeaderCell" ng-header-cell>
+        </div>
+        <div style="position:absolute; right: 40px; text-align: right">
+            <a href="index.html#/cart" title="go to shopping cart" ng-disabled="cart.getTotalCount() < 1">
+            <i class="icon-shopping-cart" />
+            <b>{{cart.getTotalCount()}}</b> items, <b>{{cart.getTotalPrice() | currency}}</b>
+            </a>
+        </div>  """
+    }
+
+    String gridJS() {
+        def dataSet    =  "${name}DS"
+        def uiControl =  "${name}UICtrl"
+        def items =""
+
+        // generate all table columns from the data model
+        components.each { child ->
+            child.parent = this
+            def ro= child.readonly || COMP_DISPLAY_TYPES.contains(child.type)
+            if (items.length()>0)
+                items+=","
+            def optional =  (child.type==COMP_TYPE_HIDDEN)? ",visible: false":""
+            optional+= ro?"":",enableCellEdit: ${!ro}"
+            items+=
+                """{   field : '${child.model}',
+                        displayName : '${child.tran("label",ESC_JS)}',
+                        cellTemplate : '${child.gridChildHTML()}'
+                        $optional
+                   }"""
+        }
+
+        def code = """
+        \$scope.${name}Grid = {
+            columnDefs: [
+                $items
+             ],
+            data: '${dataSet}.data',
+            enableCellSelection: true,
+            enableColumnResize: true,
+            enablePaging: true,
+            jqueryUIDraggable:true,
+            multiSelect: false,
+            pagingOptions: {pageSizes: [$pageSize, ${pageSize*2}, ${pageSize*4}], totalServerItems:0,currentPage:1},
+            selectedItems: \$scope.${dataSet}.selectedRecords,
+            showColumnMenu: true,
+            showFooter: true
+        };
+        \$scope.update${name}DS = function(column,row,cellValue) {
+              console.log(row.entity);
+              console.log(column.field);
+              //row.entity[column.field] = cellValue;
+         };
+        """
+        // add a delete checkbox column if allowDelete is true
+        if (allowDelete) {
+            def label = tranGlobal("delete.label","Delete")
+        }
+
+        def click_txt=""
+        if (onClick)
+            click_txt = "ng-click=${name}_onClick($GRID_ITEM)"
+        return code
+    }
+
+    private def javaScriptString(s) {
+        def result = s.replaceAll("\'","\\\\'")
+        println result
+        result
+
+    }
+    //this returns a html template string as a javascript string - escape strings
+    String gridChildHTML( int depth=0) {
+        def ro= readonly || COMP_DISPLAY_TYPES.contains(type)
+        def tagStart="<input"
+        def tagEnd="/>"
+        def typeAt="type=\"$type\""
+        def styleAt="style=\"background-color:transparent; border:0; width: 99%; height:{{rowHeight}}px\""
+        //styleStr?styleStr:""
+        def specialAt=""
+        def readonlyAt = (parent.allowModify && !ro)?"":"readonly"
+        def requiredAt = required?"required":""
+        def validateAt = ""
+        def defaultAt = "" //ng-init seems not to work within grid.javaScriptString(defaultValue())
+        def placeholderAt=""
+        def ngModel="ng-model=\"row.entity[col.field]\""
+        //def ngChange=javaScriptString("ng-change=\"update${parent.name}DS(col,row,cellValue)\"")
+        //def ngChange=javaScriptString("ng-change=\"console.log('on change')\"")
+        def ngChange="ng-change=\""+(onUpdate?"\$parent.${parent.ID}_${name}_onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity)\""
+
+
+
+        if (type == COMP_TYPE_NUMBER ) {
+            typeAt="type=\"text\" pb-number " //angular-ui doesn't use localized validators
+            //styleAt=styleAt.replace("=\"","=\"text-align:right;")  //doesn't look good
+        }
+        else if (type == COMP_TYPE_DATETIME ) {
+            typeAt="ui-date=\"{ changeMonth: true, changeYear: true}\" "
+            //Assume format comes from jquery.ui.datepicker-<locale>.js
+            //Cannot choose format with time, but lots of options. See http://jqueryui.com/datepicker/
+        }
+
+        switch (type) {
+            case COMP_TYPE_SELECT:
+                // SELECT must have a model
+                def arrayName = "${name}DS.data"
+                def updateTxt = ""
+                placeholderAt = placeholder?"""<option value="">${tran("placeholder")}</option>""":""
+                //Todo: setModified for DS
+                updateTxt += onUpdate?"${name}UICtrl.onUpdate();":""
+                updateTxt = updateTxt?"ng-change=\"$updateTxt\"":""
+                return """<select  styleAt} $ngModel $updateTxt  $defaultAt ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName">  $placeholderAt   </select>"""
+            case [COMP_TYPE_TEXT, COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER, COMP_TYPE_DATETIME, COMP_TYPE_EMAIL, COMP_TYPE_TEL] :
+                validateAt = validation?validation.collect { k,v -> "$k=\"$v\"" }.join(' '):""
+                placeholderAt=placeholder?"placeholder=\"${tran("placeholder")}\"":""
+                break
+            case COMP_TYPE_BOOLEAN:
+                typeAt = "type=\"checkbox\""
+                ngChange=""
+                specialAt ="""${booleanTrueValue?"ng-true-value=\"$booleanTrueValue\"":""}  ${booleanFalseValue?"ng-false-value=\"$booleanFalseValue\"":""} onclick="alert(\\'Hallo\\')" """
+                break
+            case COMP_TYPE_DISPLAY:
+                typeAt=""
+                break
+            case COMP_TYPE_LITERAL:
+                typeAt=""
+                specialAt="value=\""+tran(getPropertiesBaseKey()+".value",CompileService.parseLiteral(value) ) + "\""
+                //ngModel="x"
+                break
+            default :
+                println "***No ng-grid html edit template for $type ${name?name:model}"
+        }
+        def result = "$tagStart $typeAt $styleAt $specialAt $readonlyAt $requiredAt $validateAt $defaultAt $placeholderAt" +
+                     " $ngModel $ngChange $tagEnd"
+        return result
+    }
+
     /*
     Special compilation for generating table specific controls
      */
     def gridCompile(int depth=0) {
+        if (name.endsWith("NGrid")) //TODO
+            return """${gridControlPanel()}
+                      <div class="gridStyle" ng-grid="${name}Grid" style="width:100%; height:${pageSize*30+90}px; border: 2px solid rgb(212,212,212)"></div>"""
+        // Old code with HTML Table grid -- leave for now as some parts are not implemented yet in new Grid
         def dataSet    =  "${name}DS"
         def uiControl =  "${name}UICtrl"
         def repeat = "$GRID_ITEM in ${dataSet}.data"
@@ -444,6 +606,8 @@ class PageComponent {
     def flowCompile() {
 
     }
+
+
 
     String componentStart(String t, int depth=0) {
         // determine heading level
