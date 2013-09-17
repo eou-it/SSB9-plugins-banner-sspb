@@ -60,7 +60,7 @@ class CssService {
 
 
     // TODO for now update(post) handles both update and creation to simplify client side logic
-    def create(Map content) {
+    def create(Map content, params) {
         log.trace "CssService.create invoked"
 
 

@@ -42,8 +42,8 @@ pagebuilderModule.directive('pbArrayofmap', function() {
                     newObj[$scope.keys[1]] = value2;
                     $scope.array.push(newObj);
                 };
-
-                $scope.delete = function(index) {
+                // IE 8 rename
+                $scope.deleteEntry = function(index) {
                     $scope.array.splice(index, 1);
 
                 };
@@ -116,8 +116,8 @@ pagebuilderModule.directive('pbMap', function() {
                     $scope.newValue = undefined;
                     $scope.newKey = undefined;
                 };
-
-                $scope.delete = function(key) {
+                // IE 8 - rename
+                $scope.deleteEntry = function(key) {
                     delete $scope.map[key];
                     $scope.buildIndex();
                 };

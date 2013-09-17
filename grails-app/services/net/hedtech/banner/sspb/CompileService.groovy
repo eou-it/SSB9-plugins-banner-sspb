@@ -208,7 +208,7 @@ class CompileService {
         //should only COMP_TYPE_DATA have loadInitially?
         def autoPopulate = "true"
         if ( (component.type == PageComponent.COMP_TYPE_DATA ||
-              PageComponent.COMP_ITEM_TYPES.contains(component.type) )
+              PageComponent.COMP_DATASET_TYPES.contains(component.type) )
             && !component.loadInitially) {
             autoPopulate = "false"
         }
