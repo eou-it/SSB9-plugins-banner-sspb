@@ -117,7 +117,7 @@
             },
             {
                 "componentType":["resource"],
-                "requiredAttributes":["binding", "resource"],
+                "requiredAttributes":["binding", "resource", "data"],
                 "optionalAttributes":[],
                 "requiredChildren":[],
                 "optionalChildren":[]

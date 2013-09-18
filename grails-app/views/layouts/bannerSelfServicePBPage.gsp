@@ -101,6 +101,7 @@
             var rootWebApp = ${createLink(uri: '/')};  //use in controller restful interface
             var templatesLocation = "<g:resource plugin="banner-sspb" dir="template" />";
             var user = ${PBUser.get()?.encodeAsJSON()};
+            var params = ${params?.encodeAsJSON()};
         </script>
 
         <!-- layout head contains angular module declaration and need to be placed before app.js -->

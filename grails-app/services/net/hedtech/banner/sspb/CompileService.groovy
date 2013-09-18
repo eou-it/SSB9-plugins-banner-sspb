@@ -129,12 +129,9 @@ class CompileService {
         result = """
     function CustomPageController( \$scope, \$http, \$resource, \$parse, \$locale) {
         // copy global var to scope - HvT: do we really need this?
-        \$scope._isUserAuthenticated = user.authenticated;
-        \$scope._userFullName = user.fullName;
-        \$scope._userFirstName = "";
-        \$scope._userLastName = "";
-        \$scope._pidm = "";
-        \$scope._userRoles = user.roles;
+        \$scope._user = user;
+        \$scope._params = params;
+
         // page specific code
         $result
         //common code TODO - move out of this controller
