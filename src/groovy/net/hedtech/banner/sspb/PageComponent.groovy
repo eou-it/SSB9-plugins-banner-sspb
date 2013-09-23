@@ -131,6 +131,9 @@ class PageComponent {
     String booleanTrueValue     // by default if these values are omitted JS will assume true and false (not quotes around) as they can be transferred in JSON as true/false
     String booleanFalseValue
 
+    // display option
+    def asHtml = false         // specify if the content should be render as innerHTML or text node
+
     // link property
     String description
     String url
@@ -561,21 +564,38 @@ class PageComponent {
             case COMP_TYPE_DISPLAY:
                 def ret = ""
                 if (parent.type == COMP_TYPE_DETAIL) {
-                    ret += "<div ${getId("container-" + idTxtParam)} $styleStr>"
+                    ret += "<div ${getId("container-" + idTxtParam)} $styleStr>" +
+                            """<label ${getId("label-"+ idTxtParam)}> ${tran("label")}</label>"""
+                    if (asHtml) {
+                        ret += "<span ${getId(idTxtParam)} $styleStr  ng-bind-html-unsafe='$GRID_ITEM.$model'></span>"
+                    }
+                    else   {
+                        def val = value?"{{$GRID_ITEM.$model}}":""
+                        ret  = "<span ${getId(idTxtParam)} $styleStr> $val</span>"
+                    }
                     // for display in detail control take the parent model, and make a table row
                     ret += """<label ${getId("label-"+ idTxtParam)}> ${tran("label")}</label><span ${getId("span-"+ idTxtParam)}>
                              {{$GRID_ITEM.${model}}} </span>"""
-                    ret += "</div>"
+                    ret += "</span></div>"
                 } else if (parent.type == COMP_TYPE_GRID) {
-                    ret = " <span ${getId(idTxtParam)} $styleStr> {{ $GRID_ITEM.${model} }} </span>";
+                    if (asHtml)
+                        ret = " <span ${getId(idTxtParam)} $styleStr ng-bind-html-unsafe='$GRID_ITEM.$model'> </span>";
+                    else
+                        ret = " <span ${getId(idTxtParam)} $styleStr> {{ $GRID_ITEM.${model} }} </span>";
                 } else {
                     // otherwise the value is used
                     // TODO consolidate value and sourceModel?
                     // TODO is parseVariable still working after using DataSet as generic data object?
                     ret  = label?"<label ${getId(idTxtParam)} $styleStr>${tran("label")}</label>":""
-                    ret += value?"{{${CompileService.parseVariable(value)}}}":""
-                    //if (styleStr)
-                        ret  = "<span ${getId(idTxtParam)} $styleStr> $ret</span> "
+
+
+                    if (asHtml) {
+                        ret += "<span ${getId(idTxtParam)} $styleStr  ng-bind-html-unsafe='${CompileService.parseVariable(value)}'></span>"
+                    }
+                    else   {
+                        ret += value?"{{${CompileService.parseLiteral(value)}}}":""
+                        ret  = "<span ${getId(idTxtParam)} $styleStr> $ret</span>"
+                    }
                 }
                 return ret
             case COMP_TYPE_LINK:

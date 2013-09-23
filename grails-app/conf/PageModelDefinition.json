@@ -48,7 +48,7 @@
             {
                 "componentType":["display"],
                 "requiredAttributes":[],
-                "optionalAttributes":["label", "style", "value", "model", "loadInitially"],
+                "optionalAttributes":["label", "style", "value", "model", "loadInitially", "asHtml"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
@@ -117,7 +117,7 @@
             },
             {
                 "componentType":["resource"],
-                "requiredAttributes":["binding", "resource", "data"],
+                "requiredAttributes":["binding", "resource"],
                 "optionalAttributes":[],
                 "requiredChildren":[],
                 "optionalChildren":[]
@@ -146,6 +146,7 @@
             {"AttributeType":["scriptingLanguage"], "renderProperty":{"inputType":"text", "default":"JavaScript"}},
             {"AttributeType":["binding"], "renderProperty":{"inputType":"text", "default":"rest"}},
             {"AttributeType":["nextButtonLabel"], "renderProperty":{"inputType":"text", "default":"Next"}},
+            {"AttributeType":["asHtml"], "renderProperty":{"inputType":"boolean", "default":false}},
             {"AttributeType":["showInitially"], "renderProperty":{"inputType":"boolean", "default":true}},
             {"AttributeType":["allowNew"], "renderProperty":{"inputType":"boolean", "default":false}},
             {"AttributeType":["allowModify"], "renderProperty":{"inputType":"boolean", "default":false}},

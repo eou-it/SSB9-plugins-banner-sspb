@@ -88,6 +88,7 @@
 
         <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular.js" />"></script>
         <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular-resource.js"/>"></script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular-sanitize.js"/>"></script>
 
         <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery.ui.datepicker-${localeLanguage}.js" />"> </script>
         <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery.ui.datepicker-${localeBrowserFull}.js" />"> </script>
