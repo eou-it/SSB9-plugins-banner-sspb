@@ -1,44 +1,4 @@
-/**
- * Created with IntelliJ IDEA.
- * User: hvthor
- * Date: 18-4-13
- * Time: 17:51
- * To change this template use File | Settings | File Templates.
- */
 
-//utility functions
-//build a sub list from elements of "sourceList" as identified by indices in "indexList"
-//Return - the sub list
-
-function buildList(sourceList, indexList) {
-    var newList = new Array();
-    for (var i = 0; i < indexList.length; i++) {
-        newList.push(sourceList[indexList[i]]);
-    }
-    return newList;
-}
-
-/*
- build an expression by replacing tokens on the "statement" with values passed in the "paramList"
- usage - buildExpression("select * from table where col1=? and col2=?", "?", ["'val1'", "'val2'"])
- Return - new statement with tokens replaced. e.g. "select * from table where col1='val1' and col2='val2'"
-
- TODO - escape ? if it is in the statement e.g.  in the subsitute variables
- */
-function buildExpression(statement, token, paramList) {
-    for (var i=0; i < paramList.length; i++)
-        statement = statement.replace(token, paramList[i]);
-    return statement;
-}
-
-
-//function to avoid undefined
-function nvl(val,def){
-    if ( (val == undefined) || (val == null ) ) {
-        return def;
-    }
-    return val;
-}
 
 $scope.setDefault = function(parent,model,def)   {
     var val;
@@ -63,7 +23,7 @@ function CreatePostQuery(instanceIn, userFunction) {
         console.log("Executing Post for DataSet="+instance.componentId+" size="+it.length) ;
         instance.currentRecord=instance.data[0];  //set the current record
         instance.setInitialRecord();
-        instance.totalCount=response("X-hedtech-totalCount") ;
+        instance.totalCount=parseInt(response("X-hedtech-totalCount")) ;
         if (uf) { uf(); }
     };
     return this;
@@ -88,6 +48,7 @@ function CreateDataSet(params){
     this.useGet=nvl(params.useGet,false);
     this.currentRecord=null;
     this.selectedRecords=[];
+    this.sortInfo={fields:[], directions:[], columns:[]};
     this.modified = [];
     this.added = [];
     this.deleted = [];
@@ -95,31 +56,59 @@ function CreateDataSet(params){
 		this.data = [];
     }
 
-    function init() {
+    this.pageSize=params.pageSize;
+    if (this.pageSize>0){
+        this.pagingOptions = {  pageSizes: [this.pageSize, this.pageSize*2, this.pageSize*4],
+            pageSize: this.pageSize,
+            currentPage:1
+        };
+    }
+
+    this.init = function() {
         this.currentRecord=null;
-        this.selectedRecords=[];
-        this.modified = [];
-        this.added = [];
-        this.deleted = [];
+        this.selectedRecords.removeAll();
+        this.modified.removeAll();
+        this.added.removeAll();
+        this.deleted.removeAll();
         this.totalCount=null;
     }
 
-    var post = new CreatePostQuery(this,params.postQuery) ;  //remember this
+    var post = new CreatePostQuery(this,params.postQuery);
 
     this.get = function() {
-        this.init;
+        this.init();
         var params;
         eval("params="+this.queryParams+";");
         console.log("Query Parameters:") ;
         console.log( params);
         this.data=[];
-        this.data[0] = this.Resource.get(params, post.go  );
+        this.data[0] = this.Resource.get(params, post.go);
     }
 
-    this.load = function() {
-        this.init;
+    this.load = function(all,paging) {
+        if (paging) {
+            this.currentRecord=null;
+            this.selectedRecords.removeAll();
+        } else {
+            this.init();
+        }
         var params;
-        eval("params="+this.queryParams+";");
+        if (!all)
+            eval("params="+this.queryParams+";");
+        else
+            params={};
+        if (this.pageSize>0) {
+            params.offset=(this.pagingOptions.currentPage-1)*this.pagingOptions.pageSize;
+            params.max=this.pagingOptions.pageSize;
+        }
+        //sortby=3&sortby=4
+        //sortInfo={fields:[], directions:[]};
+        if (this.sortInfo.fields.length>0) {
+            params.sortby=[];
+            for (var ix = 0;ix< this.sortInfo.fields.length;ix++){
+                params.sortby[ix] = this.sortInfo.fields[ix] +' '+ this.sortInfo.directions[ix] ;
+            }
+        }
         console.log("Query Parameters:") ;
         console.log( params);
         if (this.useGet)  {
@@ -131,8 +120,7 @@ function CreateDataSet(params){
     }
 
     this.loadAll = function() {
-        this.init;
-        this.data = this.Resource.query({}, post.go  );
+        this.load(true);
     }
 
     this.setInitialRecord = function () {
@@ -194,10 +182,26 @@ function CreateDataSet(params){
         // TODO - clear the add control content
     }
 
-    this.delete = function(item) {
-        if (this.deleted.indexOf(item) == -1)
-            this.deleted.push(item);
-        this.data.splice(this.data.indexOf(item),1);
+    /*
+    delete selected record(s)
+     */
+    this.delete = function(items) {
+        if (this.data.remove(items) ) {
+            // we got a single record
+            if (this.deleted.indexOf(items) == -1)
+                this.deleted.push(items);
+            this.selectedRecords.remove(item);
+        } else {
+            // we got an array of records to delete
+            for (ix in items){
+                var item=items[ix];
+                if (this.data.remove(item) )  {
+                    if (this.deleted.indexOf(item) == -1)
+                        this.deleted.push(item);
+                    this.selectedRecords.remove(item);
+                }
+            }
+        }
     }
 
     this.save = function() {
@@ -211,7 +215,6 @@ function CreateDataSet(params){
         });
         this.modified = [];
         this.deleted.forEach( function(item)  {
-            //item.$delete({id:item.id});
             item.$delete({id:item.id});
         });
         this.deleted = [];
@@ -239,9 +242,3 @@ function CreateUICtrl(params) {
     }
 }
 
-function CreateDropDownTemplateGrid(params) {
-    var temp ="<select ng-class=\"'colt' + $index\" ng-model=\"row.entity[col.field]\" " +
-        "ng-options=\"i.STVTERM_CODE for i in termSelectDS.data\"" +
-        "placeholder=\"-- Select One --\"></select>";
-
-}

@@ -75,8 +75,8 @@
             },
             {
                 "componentType":["hidden"],
-                "requiredAttributes":["value","model"],
-                "optionalAttributes":[],
+                "requiredAttributes":["model"],
+                "optionalAttributes":["value"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },

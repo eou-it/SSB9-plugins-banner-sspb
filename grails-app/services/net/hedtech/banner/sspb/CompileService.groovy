@@ -127,7 +127,7 @@ class CompileService {
         def common = CompileService.class.classLoader.getResourceAsStream( 'data/sspbCommon.js' ).text
 
         result = """
-    function CustomPageController( \$scope, \$http, \$resource, \$parse, \$locale) {
+    function CustomPageController( \$scope, \$http, \$resource, \$parse, \$locale, \$templateCache) {
         // copy global var to scope - HvT: do we really need this?
         \$scope._isUserAuthenticated = user.authenticated;
         \$scope._userFullName = user.fullName;
@@ -236,6 +236,10 @@ class CompileService {
         def optionalParams=""
         if  (PageComponent.COMP_ITEM_TYPES.contains(component.type)) //items don't support arrays, use the get
             optionalParams+=",useGet: true"
+        if (component.type != PageComponent.COMP_TYPE_SELECT)
+            optionalParams+=",pageSize: $component.pageSize"
+        // consider getting rid of UICtrl... need pagesize in query parameters, so not much point to have it in another
+        // object dedicated to UI
         result =
             """
             //\$scope.$component.ID=[];
@@ -247,8 +251,8 @@ class CompileService {
                     autoPopulate: $autoPopulate,
                     postQuery: function() {$postQuery},
                     selectValueKey: ${component.valueKey ? "\"$component.valueKey\"" : null},
-                    selectInitialValue: ""
-                   $optionalParams
+                    selectInitialValue: "$component.value"
+                    $optionalParams
                 });
 
             \$scope.$uiControlName = new CreateUICtrl (

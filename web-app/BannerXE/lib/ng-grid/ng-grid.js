@@ -259,6 +259,11 @@ angular.module('ngGrid.services').factory('$domUtilityService',['$utilityService
             css,
             cols = $scope.columns,
             sumWidth = 0;
+        //HvT: RTL fix
+        var start="left: ";
+        if ($scope.i18n['direction']=='rtl') {
+            start="right: ";
+        }
 
         if (!$style) {
             $style = $('#' + gridId);
@@ -276,7 +281,9 @@ angular.module('ngGrid.services').factory('$domUtilityService',['$utilityService
         for (var i = 0; i < cols.length; i++) {
             var col = cols[i];
             if (col.visible !== false) {
-                css += "." + gridId + " .col" + i + " { width: " + col.width + "px; left: " + sumWidth + "px; height: " + rowHeight + "px }" +
+                //HvT: RTL fix
+                //css += "." + gridId + " .col" + i + " { width: " + col.width + "px; left: " + sumWidth + "px; height: " + rowHeight + "px }" +
+                css += "." + gridId + " .col" + i + " { width: " + col.width + "px; " + start + sumWidth + "px; height: " + rowHeight + "px }" +
                     "." + gridId + " .colt" + i + " { width: " + col.width + "px; }";
                 sumWidth += col.width;
             }
@@ -783,6 +790,11 @@ var ngColumn = function (config, $scope, grid, domUtilityService, $templateCache
     };
     self.onMouseMove = function(event) {
         var diff = event.clientX - self.startMousePosition;
+        //HvT: RTL fix
+        if ($scope.i18n['direction']=='rtl') {
+            diff=-diff;
+        }
+        //End RTL fix
         var newWidth = diff + self.origWidth;
         self.width = (newWidth < self.minWidth ? self.minWidth : (newWidth > self.maxWidth ? self.maxWidth : newWidth));
         $scope.hasUserChangedGridColumnWidths = true;

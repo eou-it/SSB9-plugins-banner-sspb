@@ -4,7 +4,7 @@
 <head>
     <title>Composer</title>
 
-    <meta name="layout" content="BannerXECustomPage"/>
+    <meta name="layout" content="bannerSelfServicePBPage"/>
     <meta name="menuEndPoint" content="/StudentRegistrationSsb/ssb/selfServiceMenu/pageModel"/>
     <meta name="menuBaseURL" content="/StudentRegistrationSsb/ssb"/>
     <meta name="menuDefaultBreadcrumbId" content="Banner Self-Service_Student_Registration"/>
