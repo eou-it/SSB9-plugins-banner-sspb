@@ -39,12 +39,19 @@
         $scope.component_entry_style = ["componentEntry", "componentEntry_selected"];
 
         $scope.pageName = "";
+        $scope.pageCurName = $scope.pageName;
         // top level page source container must be an array for tree view rendering consistency
         $scope.pageSource = [];
+         // saved pageSource for dirty detection
+         //$scope.savedPageSource = {};
+
         // data holder for reference in child scopes
         $scope.dataHolder = {selectedContext:{}};
-        // status holder to remember which component property is shown
-        $scope.statusHolder = {selectedIndex:0, newIndex:-1};
+
+        // status holder to remember which component property is shown, and if page has been modified
+         // noDirtyCheck is set by page loading, new page function to tell the watch function not to set the dirty flag
+         // right after a page is loaded (which causes the PageSource to change)
+        $scope.statusHolder = {selectedIndex:0, newIndex:-1, pageIsDirty:false, noDirtyCheck:true};
         // page command execution status
         $scope.pageStatus = {};
 
@@ -329,7 +336,7 @@
                $scope.resetSelected();
 
             //$scope.$apply('parent');
-            $scope.handlePageTreeChange();
+            //$scope.handlePageTreeChange();
         };
 
         $scope.moveUpComponent = function(parent, index, gIndex) {
@@ -338,7 +345,7 @@
             var prev = parent.components[index-1];
             parent.components[index-1] = parent.components[index];
             parent.components[index] = prev;
-            $scope.handlePageTreeChange();
+            //$scope.handlePageTreeChange();
         };
 
         $scope.moveDownComponent = function(parent, index, gIndex) {
@@ -347,7 +354,7 @@
             var next = parent.components[index+1];
             parent.components[index+1] = parent.components[index];
             parent.components[index] = next;
-            $scope.handlePageTreeChange();
+            //$scope.handlePageTreeChange();
         };
 
         $scope.copyComponent = function(data) {
@@ -374,7 +381,7 @@
         $scope.deleteChildren = function(data) {
             data.components = [];
             //$scope.$apply('data');
-            $scope.handlePageTreeChange();
+            //$scope.handlePageTreeChange();
         };
 
 
@@ -439,7 +446,7 @@
                 }
             }
 
-            $scope.handlePageTreeChange();
+            //$scope.handlePageTreeChange();
 
          };
 
@@ -476,7 +483,7 @@
             // open the new component for editing - the new component always get an incremented index number
             $scope.selectData(newComp, $scope.index+1, parent);
             // modal dialog is associated with parent scope
-            $scope.handlePageTreeChange();
+            //$scope.handlePageTreeChange();
 
           };
 
@@ -507,7 +514,7 @@
                   //console.log("vdList = " + data);
                   angular.forEach(data, function(vd){
                     $scope.vdlist.push("virtualDomains."+ vd.SERVICE_NAME);
-                    console.log("VD = " + vd.SERVICE_NAME);
+                    //console.log("VD = " + vd.SERVICE_NAME);
                   });
              });
          };
@@ -553,19 +560,40 @@
          // populate the page list initially
          $scope.loadPageNames();
 
+         // determine if current loaded page has changed since it was load
+         $scope.isPageModified = function () {
+             return $scope.statusHolder.isPageModified;
+         }
+
+         // handle page model changes
+         $scope.$watch('pageOneSource', function() {
+             //console.log("-- changed --");
+             if (!$scope.statusHolder.noDirtyCheck)
+                $scope.statusHolder.isPageModified = true;
+             else
+                 $scope.statusHolder.noDirtyCheck = false; // we still want to check dirty state after the initial loading/new page
+             // re-format the page source text
+             $scope.handlePageTreeChange();
+         }, true);
+
          $scope.getPageSource = function() {
              //TODO prompt for unsaved data
-             if ($scope.pageOneSource != undefined)   {
+             if ($scope.isPageModified())   {
                  var r=confirm("${message(code: 'sspb.page.visualbuilder.loadpage.unsaved.changes.message', encodeAs: 'JavaScript')}");
-                 if (!r)
+                 if (!r)  {
+                     $scope.pageName = $scope.pageCurName;
                      return;
+                 }
              }
              Page.get({constantName:$scope.pageName}, function (data){
                  try {
+                     $scope.statusHolder.noDirtyCheck = true;
                      $scope.pageOneSource = JSON.parse(data.modelView);
                      $scope.pageSource[0] = $scope.pageOneSource;
                      $scope.resetSelected();
-                     $scope.handlePageTreeChange();
+                     //$scope.handlePageTreeChange();
+                     $scope.pageCurName= $scope.pageName;
+                     $scope.statusHolder.isPageModified = false;
                  } catch(ex) {
                      alert($scope.i18nGet("${message(code:'sspb.page.visualbuilder.parsing.error.message')}",[ex]));
                  }
@@ -583,30 +611,35 @@
          /* page operations */
           $scope.newPageSource = function() {
             // TODO generate a unique page name
-            if ($scope.pageOneSource != undefined) {
+              if ($scope.isPageModified())   {
                 var r=confirm("${message(code: 'sspb.page.visualbuilder.newpage.unsaved.changes.message', encodeAs: 'JavaScript')}");
                 if (!r)
                     return;
             }
 
             $scope.pageName= "${message( code:'sspb.page.visualbuilder.newpage.default', encodeAs: 'JavaScript')}";
+            $scope.pageCurName= $scope.pageName;
+            $scope.statusHolder.noDirtyCheck = true;
             $scope.pageSource[0] = {"type": "page", "name": $scope.pageName};
             $scope.pageOneSource =  $scope.pageSource[0];
             $scope.resetSelected();
-            $scope.handlePageTreeChange();
+            //$scope.handlePageTreeChange();
+            $scope.statusHolder.isPageModified = false;
           };
 
           $scope.submitPageSource = function() {
             //check if page name is set
-              if ($scope.pageName== undefined || $scope.pageName == '') {
+              if ($scope.pageCurName== undefined || $scope.pageCurName == '') {
                   alert("${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
                   return;
               }
 
-              Page.save({pageName:$scope.pageName, source:$scope.pageSourceView }, function(response) {
+              Page.save({pageName:$scope.pageCurName, source:$scope.pageSourceView }, function(response) {
                 //console.log("save response = " + response.statusCode + ", " +response.statusMessage);
-                if (response.statusCode == 0)
+                if (response.statusCode == 0) {
                     $scope.pageStatus.message = response.statusMessage;
+                    $scope.statusHolder.isPageModified = false;
+                }
                 else {
                     var msg="${message(code:'sspb.page.validation.error.message')}";
                     if (response.pageValidationResult != undefined)
@@ -614,7 +647,6 @@
                     else
                         $scope.pageStatus.message = $scope.i18nGet(msg,[response.statusMessage, ""]);
                 }
-
                 alert($scope.pageStatus.message);
 
                 // refresh the page list in case new page is added
@@ -633,33 +665,35 @@
 
           $scope.previewPageSource = function() {
               //check if page name is set
-              if ($scope.pageName== undefined || $scope.pageName == '') {
+              if ($scope.pageCurName== undefined || $scope.pageCurName == '') {
                   alert("${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
 
                   return;
               }
-              window.open(rootWebApp+'customPage/page/'+ $scope.pageName, '_blank');
+              window.open(rootWebApp+'customPage/page/'+ $scope.pageCurName, '_blank');
 
           }
 
 
           $scope.deletePageSource = function () {
               //check if page name is set
-              if ($scope.pageName== undefined || $scope.pageName == '') {
+              if ($scope.pageCurName== undefined || $scope.pageCurName == '') {
                   alert("${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
 
                   return;
               }
 
-              Page.delete({constantName:$scope.pageName }, function() {
+              Page.delete({constantName:$scope.pageCurName }, function() {
                   // on success
                   alert("${message(code:'sspb.page.visualbuilder.deletion.success.message')}");
                   // clear the page name field and page source
+                  $scope.pageCurName = "";
                   $scope.pageName = "";
                   $scope.resetSelected();
+                  $scope.statusHolder.noDirtyCheck = true;
                   $scope.pageSource[0] = {};
                   $scope.pageOneSource= undefined;
-                  $scope.handlePageTreeChange();
+                  $scope.statusHolder.isPageModified = false;
                   // refresh the page list after a page is deleted
                   $scope.loadPageNames();
 
@@ -694,8 +728,8 @@
 
          $scope.applySourceEdit = function() {
              // prompt user
-             var msg = "${message(code:'sspb.page.visualbuilder.applychange.prompt.message')}";
-             if (confirm(msg)) {
+             //var msg = "${message(code:'sspb.page.visualbuilder.applychange.prompt.message')}";
+             //if (confirm(msg)) {
                  // parse the source
                  try {
                      var newPage = JSON.parse($scope.pageSourceView);
@@ -706,11 +740,11 @@
                      alert($scope.i18nGet("${message(code:'sspb.page.visualbuilder.parsing.error.message')}",[ex]));
                  }
 
-             }
+             //}
          };
 
          $scope.discardSourceEdit = function() {
-             $scope.handlePageTreeChange();
+             //$scope.handlePageTreeChange();
              $scope.sourceEditEnabled = false;
          }
 
@@ -735,7 +769,7 @@
 
 
     <label><g:message code="sspb.page.visualbuilder.name.label" /></label>
-    <input type="text" name="constantName" ng-model="pageName" required/>
+    <input type="text" name="constantName" ng-model="pageCurName" required/>
 
     <button ng-click='newPageSource()'><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
     <button ng-click='submitPageSource()' ng-disabled='sourceEditEnabled'><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
@@ -750,7 +784,7 @@
         </tr>
         <tr height="99%">
             <td>
-                <span ng-show="pageName != '' && pageName != 'null'">
+                <span ng-show="pageCurName != '' && pageCurName != 'null'">
                     <div>
                         <button class="btn btn-mini" ng-click='toggleSourceView()' ng-disabled='showTree || sourceEditEnabled'><g:message code="sspb.page.visualbuilder.page.treeview.label" /></button>
                         <button class="btn btn-mini" ng-click='toggleSourceView()' ng-disabled='!showTree'><g:message code="sspb.page.visualbuilder.page.sourceview.label" /></button>
@@ -787,31 +821,31 @@
                         <span ng-switch on="attrRenderProps[attr.name].inputType" >
                             <pb-Map ng-switch-when="map" label="{{i18nGet('sspb.page.visualbuilder.edit.map.title' , [i18nGet('attribute.'+attr.name),dataHolder.selectedComponent.name])}}"
                                     map='dataHolder.selectedComponent[attr.name]' pb-parent="dataHolder.selectedComponent" pb-attrname="attr.name"
-                                    pb-change="handlePageTreeChange()"></pb-Map>
+                                    ></pb-Map>
                             <pb-Textarea ng-switch-when="textarea" label="{{i18nGet('sspb.page.visualbuilder.edit.textarea.title' , [i18nGet('attribute.'+attr.name),dataHolder.selectedComponent.name])}}"
                                     value='dataHolder.selectedComponent[attr.name]' pb-Parent="dataHolder.selectedComponent" pb-Attrname="attr.name"
-                                    pb-change="handlePageTreeChange()"></pb-Textarea>
+                                    ></pb-Textarea>
                             <pb-Combo ng-switch-when="combo"
-                                         value='dataHolder.selectedComponent[attr.name]' pb-Parent="dataHolder.selectedComponent" pb-Attrname="attr.name"
-                                         pb-change="handlePageTreeChange()" pb-loadsourcelist="loadVdList()" load-source-label="{{i18nGet('pb.template.combo.loadsource.label')}}" edit-value-label="{{i18nGet('pb.template.combo.edit.label')}}"
-                                         select-label="{{i18nGet('pb.template.combo.select.label')}}" source-list="vdlist"></pb-Combo>
+                                   value='dataHolder.selectedComponent[attr.name]' pb-Parent="dataHolder.selectedComponent" pb-Attrname="attr.name"
+                                   pb-loadsourcelist="loadVdList()" load-source-label="{{i18nGet('pb.template.combo.loadsource.label')}}" edit-value-label="{{i18nGet('pb.template.combo.edit.label')}}"
+                                   select-label="{{i18nGet('pb.template.combo.select.label')}}" source-list="vdlist"></pb-Combo>
                             <select ng-switch-when="select" ng-options="type for type in dataHolder.selectedCompatibleTypes"
-                                ng-model="dataHolder.selectedComponent[attr.name]" ng-change="handleAttrChange()"></select>
+                                ng-model="dataHolder.selectedComponent[attr.name]"></select>
                             <input ng-switch-when="text" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
-                                   ng-change="handlePageTreeChange()" ng-model="dataHolder.selectedComponent[attr.name]"/>
+                                   ng-model="dataHolder.selectedComponent[attr.name]"/>
                             <input ng-switch-when="number" style="text-align:start;" type="number" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
-                                   ng-change="handlePageTreeChange()" ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
+                                   ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
                             <input ng-switch-when="url" style="text-align:start;" type="url" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
-                                   ng-change="handlePageTreeChange()" ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
+                                   ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
                             <pb-Arrayofmap ng-switch-when="arrayOfMap" label="{{i18nGet('sspb.page.visualbuilder.edit.map.title' , [i18nGet('attribute.'+attr.name),dataHolder.selectedComponent.name])}}"
-                                           pb-change="handlePageTreeChange()" array='dataHolder.selectedComponent[attr.name]'
-                                           pb-parent="dataHolder.selectedComponent" pb-attrname="attr.name"></pb-Arrayofmap>
-                            <input ng-switch-when="boolean" style="text-align:start;" type="checkbox" ng-change="handlePageTreeChange()" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                                   array='dataHolder.selectedComponent[attr.name]'
+                                   pb-parent="dataHolder.selectedComponent" pb-attrname="attr.name"></pb-Arrayofmap>
+                            <input ng-switch-when="boolean" style="text-align:start;" type="checkbox" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
 
                             <!-- TODO default type is set in the model defintion - not mapped here  -->
                             <input ng-switch-default style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
-                                   ng-change="handlePageTreeChange()" ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
+                                   ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
                         </span>
                     </div>
                 </div>

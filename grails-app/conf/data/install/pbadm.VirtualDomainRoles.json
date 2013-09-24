@@ -6,19 +6,19 @@
                   "name": "virtualDomainRoles",
                   "type": "resource",
                   "binding": "rest",
-                  "resource": "$rootWebApp/internal/virtualDomains.pbadmVirtualDomainRoles"
+                  "resource": "virtualDomains.pbadmVirtualDomainRoles"
             },
             {
                   "name": "virtualDomainLookup",
                   "type": "resource",
                   "binding": "rest",
-                  "resource": "$rootWebApp/internal/virtualDomains.pbadmVirtualDomainLookup"
+                  "resource": "virtualDomains.pbadmVirtualDomainLookup"
             },
             {
                   "name": "webTailorRolesLookup",
                   "type": "resource",
                   "binding": "rest",
-                  "resource": "$rootWebApp/internal/virtualDomains.pbadmWebTailorRoles"
+                  "resource": "virtualDomains.pbadmWebTailorRoles"
             },
             {
                   "name": "SelectVirtualDomainBlock",

@@ -100,7 +100,7 @@ class PageComponent {
 
     // data
     String onLoad=""
-    Boolean loadInitially = false   // specify if the data should be loaded after page is loaded
+    Boolean loadInitially = true   // specify if  data (query) from resource should be loaded after page is loaded
 
     def errorHandling = [:] // a map of error code-> code block that specifies what actions to take if an error is encountered during resource operation
     String value       // -> Item value, read only  for display type - also used to initialize an input type
@@ -260,13 +260,17 @@ class PageComponent {
         def result =
         """
         <!-- pagination -->
+        <span ng-show='${arrayName}.length > ${uiControl}.pageSize'>
         <button $styleStr ng-disabled="${uiControl}.currentPage == 0" ng-click="${uiControl}.currentPage=${uiControl}.currentPage - 1">
                 ${tranGlobal("page.previous.label","Previous")}
         </button>
             {{${uiControl}.currentPage+1}}/{{${uiControl}.numberOfPages()}}
         <button $styleStr ng-disabled="${uiControl}.currentPage >= ${arrayName}.length/${uiControl}.pageSize - 1" ng-click="${uiControl}.currentPage=${uiControl}.currentPage + 1">
                 ${tranGlobal("page.next.label","Next")}
-        </button><br>
+        </button>
+        <br>
+        </span>
+
         """
 
         if (allowNew) {

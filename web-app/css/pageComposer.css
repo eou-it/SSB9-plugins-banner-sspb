@@ -38,7 +38,7 @@ ul {
     overflow: hidden;
     border-style:ridge;
     border-width:2px;
-    color:red
+    color:red;
 }
 
 button.button_edit {

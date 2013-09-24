@@ -226,8 +226,8 @@ function MyRegistrationPageCtrl($scope, $http) {
         time[day] = {};
         time[day].value = cellvalue;
         time[day].course = cellcourse;
-
-        time[day].class = cellstyleclass;
+        // rename class to class1 due to IE8 issue
+        time[day].class1 = cellstyleclass;
 
     };
 
