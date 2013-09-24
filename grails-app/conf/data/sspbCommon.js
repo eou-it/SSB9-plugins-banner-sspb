@@ -36,11 +36,15 @@ function CreatePostQuery(instanceIn, userFunction) {
 function CreateDataSet(params){
     this.componentId=params.componentId;
     this.data=params.data;
+    if (params.resourceURL) {
+        this.cache = $cacheFactory(this.componentId);
+    }
     this.Resource=$resource(params.resourceURL+'/:id',
                            {id:'@id'}, //parameters
                            {//custom methods
-                            update: {method:'PUT', params: {id:'@id'}}
-                          }
+                            update: {method:'PUT', params: {id:'@id'}},
+                            list: {method:'GET',cache: this.cache, isArray:true}
+                           }
                          );
     this.queryParams=params.queryParams;
     this.selectValueKey=params.selectValueKey;
@@ -56,12 +60,17 @@ function CreateDataSet(params){
 		this.data = [];
     }
 
+
     this.pageSize=params.pageSize;
     if (this.pageSize>0){
         this.pagingOptions = {  pageSizes: [this.pageSize, this.pageSize*2, this.pageSize*4],
             pageSize: this.pageSize,
             currentPage:1
         };
+    }
+
+    this.numberOfPages = function () {
+        return Math.ceil(this.dataSet.totalCount/this.pageSize);
     }
 
     this.init = function() {
@@ -85,15 +94,17 @@ function CreateDataSet(params){
         this.data[0] = this.Resource.get(params, post.go);
     }
 
-    this.load = function(all,paging) {
-        if (paging) {
+    this.load = function(p) {
+        if (p && p.clearCache)
+            this.cache.removeAll();
+        if (p && p.paging) {
             this.currentRecord=null;
             this.selectedRecords.removeAll();
         } else {
             this.init();
         }
         var params;
-        if (!all)
+        if (!(p && p.all))
             eval("params="+this.queryParams+";");
         else
             params={};
@@ -101,8 +112,6 @@ function CreateDataSet(params){
             params.offset=(this.pagingOptions.currentPage-1)*this.pagingOptions.pageSize;
             params.max=this.pagingOptions.pageSize;
         }
-        //sortby=3&sortby=4
-        //sortInfo={fields:[], directions:[]};
         if (this.sortInfo.fields.length>0) {
             params.sortby=[];
             for (var ix = 0;ix< this.sortInfo.fields.length;ix++){
@@ -115,12 +124,13 @@ function CreateDataSet(params){
             this.data=[];
             this.data[0] = this.Resource.get(params, post.go  );
         }
-        else
-            this.data = this.Resource.query(params, post.go  );
+        else {
+            this.data = this.Resource.list(params, post.go  );
+        }
     }
 
     this.loadAll = function() {
-        this.load(true);
+        this.load({all:true});
     }
 
     this.setInitialRecord = function () {
@@ -129,9 +139,10 @@ function CreateDataSet(params){
         if (model.name != "noop")  {
             if (this.selectValueKey) {  //we have a select
                 var iVal=this.selectInitialValue;
-                if (iVal == null || iVal == undefined){
-                    iVal = this.currentRecord[this.selectValueKey];
-                }
+                //it doesn't seem always desired to pick the current record of a select
+                //if (iVal == null || iVal == undefined){
+                //    iVal = this.currentRecord[this.selectValueKey];
+                //}
                 model.assign($scope, iVal);
             }  else {
                 model.assign($scope, this.currentRecord);
@@ -218,6 +229,7 @@ function CreateDataSet(params){
             item.$delete({id:item.id});
         });
         this.deleted = [];
+        //this.cache.removeAll();
     }
 
     this.dirty = function() {
@@ -228,17 +240,9 @@ function CreateDataSet(params){
         this.load();
     }
 
+    this.onUpdate=params.onUpdate;
     return this;
 }
 
-function CreateUICtrl(params) {
-    this.dataSet=params.dataSet;
-    this.onUpdate=params.onUpdate;
-    this.pageSize=params.pageSize;
-    this.currentPage=0;
-    this.numberOfPages = function () {
-        //return Math.ceil(this.dataSet.data.length/this.pageSize);
-        return Math.ceil(this.dataSet.totalCount/this.pageSize);
-    }
-}
+
 

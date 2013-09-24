@@ -45,8 +45,6 @@ class PageComponent {
     // Types that have a DataSet associated  - not completely orthogonal yet. COMP_ITEM_TYPES can have it too
     final static COMP_DATASET_TYPES = [COMP_TYPE_GRID,COMP_TYPE_LIST,COMP_TYPE_SELECT,COMP_TYPE_DETAIL,COMP_TYPE_DATA, COMP_TYPE_RADIO]
 
-    final static COMP_UICTRL_TYPES = COMP_DATASET_TYPES //not sure if they ever will be different
-
     final static BINDING_REST = "rest"
     final static BINDING_SQL = "sql"
     final static BINDING_PAGE = "page"
@@ -254,18 +252,15 @@ class PageComponent {
 
     def recordControlPanel()  {
         def dataSet    =  "${name}DS"
-        def arrayName  =  "${name}DS.data"
-        def uiControl =  "${name}UICtrl"
-
         def result =
         """
         <!-- pagination -->
-        <span ng-show='${arrayName}.length > ${uiControl}.pageSize'>
-        <button $styleStr ng-disabled="${uiControl}.currentPage == 0" ng-click="${uiControl}.currentPage=${uiControl}.currentPage - 1">
+        <span ng-show='${dataSet}.totalCount > ${dataSet}.pagingOptions.pageSize'>
+        <button $styleStr ng-disabled="${dataSet}.pagingOptions.currentPage == 1" ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1">
                 ${tranGlobal("page.previous.label","Previous")}
         </button>
-            {{${uiControl}.currentPage+1}}/{{${uiControl}.numberOfPages()}}
-        <button $styleStr ng-disabled="${uiControl}.currentPage >= ${arrayName}.length/${uiControl}.pageSize - 1" ng-click="${uiControl}.currentPage=${uiControl}.currentPage + 1">
+            {{${dataSet}.pagingOptions.currentPage}}/{{${dataSet}.numberOfPages()}}
+        <button $styleStr ng-disabled="${dataSet}.pagingOptions.currentPage >= ${dataSet}.totalCount/${dataSet}.pagingOptions.pageSize " ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1">
                 ${tranGlobal("page.next.label","Next")}
         </button>
         <br>
@@ -277,19 +272,16 @@ class PageComponent {
             result += """ <button $styleStr ng-click="${dataSet}.add()"> ${tranGlobal("newRecord.label","Add New")}  </button>"""
         }
         if (allowModify || allowDelete) {
-            result += """ <button $styleStr ng-click="${dataSet}.save() ng-disabled="!${dataSet}.dirty()"> ${tranGlobal("save.label","Save")} </button>"""
+            result += """ <button $styleStr ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()"> ${tranGlobal("save.label","Save")} </button>"""
         }
         if (allowReload) {
-            result += """ <button $styleStr ng-click="${dataSet}.load()"> ${tranGlobal("refresh.label","Refresh")} </button> """
+            result += """ <button $styleStr ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})"> ${tranGlobal("refresh.label","Refresh")} </button> """
         }
         return result
     }
 
     def gridControlPanel()  {
         def dataSet    =  "${name}DS"
-        def arrayName  =  "${name}DS.data"
-        def uiControl =  "${name}UICtrl"
-
         def result = ""
         styleStr=styleStr?styleStr:""
         if (allowNew) {
@@ -302,7 +294,7 @@ class PageComponent {
             result += """ <button $styleStr ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()"> ${tranGlobal("save.label","Save",[], ESC_JS)} </button>"""
         }
         if (allowReload) {
-            result += """ <button $styleStr ng-click="${dataSet}.load(false,true)"> ${tranGlobal("refresh.label","Refresh",[], ESC_JS)} </button> """
+            result += """ <button $styleStr ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})"> ${tranGlobal("refresh.label","Refresh",[], ESC_JS)} </button> """
         }
         // alas, but cannot dynamically toggle multiSelect property of grid
         //result += "<input type=\"checkbox\" ng-model=\"${name}Grid.multiSelect\">Select multiple</input>"
@@ -311,7 +303,6 @@ class PageComponent {
 
     String gridJS() {
         def dataSet    =  "${name}DS"
-        def uiControl =  "${name}UICtrl"
         def items =""
 
         // generate all table columns from the data model
@@ -356,19 +347,22 @@ class PageComponent {
             useExternalSorting: true,
             i18n: gridLocale
         };
-        \$scope.update${name}DS = function(column,row,cellValue) {
-              console.log(row.entity);
-              console.log(column.field);
-              //row.entity[column.field] = cellValue;
-         };
+        ${dataSetWatches()}
+        """
+        return code
+    }
+
+    String dataSetWatches() {
+        def dataSet = "${name}DS"
+        def code = """
         \$scope.\$watch('${dataSet}.pagingOptions', function(newVal, oldVal) {
             if (newVal !== oldVal ) {
-              \$scope.${dataSet}.load(false,true);
+                \$scope.${dataSet}.load({all:false,paging:true});
             }
         }, true);
-         \$scope.\$watch('${dataSet}.sortInfo', function(newVal, oldVal) {
+        \$scope.\$watch('${dataSet}.sortInfo', function(newVal, oldVal) {
             if ( (newVal.fields.join(',') !== oldVal.fields.join(','))||(newVal.directions.join(',') !== oldVal.directions.join(',')) ) {
-              \$scope.${dataSet}.load(false,true);
+                \$scope.${dataSet}.load({all:false,paging:true});
             }
         }, true);
         """
@@ -376,13 +370,12 @@ class PageComponent {
         if (onClick)  { //TODO: this is not really on click but onSelectionChanged
             code+=
         """\$scope.\$watch('${dataSet}.selectedRecords[0]', function(newVal, oldVal) {
-                if (newVal !== oldVal ) {
-                    \$scope.${name}_onClick(newVal);
-                }
-            });
+            if (newVal !== oldVal ) {
+                \$scope.${name}_onClick(newVal);
+            }
+        });
         """
         }
-        return code
     }
 
     private def javaScriptString(s) {
@@ -422,7 +415,7 @@ class PageComponent {
             case COMP_TYPE_SELECT:
                 // SELECT must have a model
                 def arrayName = "${name}DS.data"
-                ngChange="ng-change=\""+(onUpdate?"\${name}UICtrl.onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity)\""
+                ngChange="ng-change=\""+(onUpdate?"\${name}DS.onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity)\""
                 placeholderAt = placeholder?"""<option value="">${tran("placeholder")}</option>""":""
                 return """<select ${styleAt} $ngModel $ngChange  $defaultAt ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName">  $placeholderAt   </select>"""
             case [COMP_TYPE_TEXT, COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER, COMP_TYPE_DATETIME, COMP_TYPE_EMAIL, COMP_TYPE_TEL] :
@@ -459,7 +452,6 @@ class PageComponent {
         }
         // Old code with HTML Table grid -- leave for now as some parts are not implemented yet in new Grid
         def dataSet    =  "${name}DS"
-        def uiControl =  "${name}UICtrl"
         def repeat = "$GRID_ITEM in ${dataSet}.data"
         //implement as table for now
         // generate table column headers
@@ -499,7 +491,7 @@ class PageComponent {
             <thead><tr>$thead</tr></thead>
             <tbody>
             <!-- Do this for every object in objects -->
-            <tr ng-repeat="$repeat | startFrom:${uiControl}.currentPage * ${uiControl}.pageSize | limitTo:${uiControl}.pageSize" $click_txt>
+            <tr ng-repeat="$repeat" $click_txt>
               $items
             </tr>
             </tbody>
@@ -513,14 +505,13 @@ class PageComponent {
        refactoring to use the 'same' model as a grid
      */
     def detailCompile(int depth=0) {
-        def dataSet    =  "${name}DS"
-        def uiControl =  "${name}UICtrl"
+        def dataSet   =  "${name}DS"
         def repeat = "$GRID_ITEM in ${dataSet}.data"    //GRID_ITEM is confusing
 
         def result = ""
         if (label)
             result += "<label $styleStr >${tran("label")}</label>\n"
-        result +="""<table $styleStr ng-repeat="$repeat | startFrom:${uiControl}.currentPage * ${uiControl}.pageSize | limitTo:${uiControl}.pageSize" >\n"""
+        result +="""<table $styleStr ng-repeat="$repeat" >\n"""
 
         if (allowDelete) {
             result += """
@@ -538,8 +529,7 @@ class PageComponent {
             result+="${child.compileComponent("", depth)}\n"
         }
         result+= "</table>\n"
-
-        result +=  recordControlPanel()
+        result+= recordControlPanel()
         return result
     }
 
@@ -548,11 +538,8 @@ class PageComponent {
      */
     def listCompile(int depth=0) {
 
-        def dataSet    =  "${name}DS"
-        def uiControl =  "${name}UICtrl"
-
+        def dataSet   =  "${name}DS"
         def txt = ""
-
         def repeat = "$LIST_ITEM in ${dataSet}.data"
 
         if (label)
@@ -563,7 +550,7 @@ class PageComponent {
             click_txt = "ng-click=${name}_onClick($LIST_ITEM)"
         txt +=
             """<ul $styleStr >
-            <li $click_txt ng-repeat="$repeat | startFrom:${uiControl}.currentPage * ${uiControl}.pageSize | limitTo:${uiControl}.pageSize">
+            <li $click_txt ng-repeat="$repeat">
              ${onClick?"<a href=\"\">":""} {{$LIST_ITEM.$value}}  ${onClick?"</a>":""}
             </li>
             </ul>
@@ -593,7 +580,7 @@ class PageComponent {
         } else {
             ngModel =  "\$parent.$ngModel"
         }
-        updateTxt += onUpdate?"${name}UICtrl.onUpdate();":""
+        updateTxt += onUpdate?"${name}DS.onUpdate();":""
         updateTxt = updateTxt?"ng-change=\"$updateTxt\"":""
 
         def radio = """<div $styleStr ng-repeat="$SELECT_ITEM in $arrayName" $initTxt>
@@ -649,7 +636,7 @@ class PageComponent {
                     ngModel =  "$GRID_ITEM.${model}"
                     updateTxt +="\$parent.${parent.name}DS.setModified($GRID_ITEM); ${name}DS.setCurrentRecord($ngModel);"
                 }
-                updateTxt += onUpdate?"${name}UICtrl.onUpdate();":""
+                updateTxt += onUpdate?"${name}DS.onUpdate();":""
                 updateTxt = updateTxt?"ng-change=\"$updateTxt\"":""
                 def select = """<select  $styleStr ng-model="$ngModel" $updateTxt  ${defaultValue()}
                                            ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName">

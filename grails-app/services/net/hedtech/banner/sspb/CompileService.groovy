@@ -15,7 +15,6 @@ class CompileService {
     def transactional = false
 
     static def dataSetIDsIncluded =[]
-    static def uiControlIDsIncluded = []
 
 //major step 1.
     //TODO develop page validation
@@ -33,7 +32,6 @@ class CompileService {
         def pageValidation = [:]
         //reset global arrays
         dataSetIDsIncluded =[]
-        uiControlIDsIncluded = []
 
         try {
             // first validate the raw JSON page model
@@ -66,7 +64,6 @@ class CompileService {
 
         //populate components to be used in name resolution
         //dataSets=page.findComponents(PageComponent.COMP_DATASET_TYPES)
-        //uiControls=page.findComponents(PageComponent.COMP_UICTRL_TYPES)
         //return results
         return [valid:valid, pageComponent:page, error:errors]
     }
@@ -104,7 +101,7 @@ class CompileService {
 
          */
         modelComponents.each {
-            preBuildCode(it)  // populates   dataSetIDsIncluded and  uiControlIDsIncluded
+            preBuildCode(it)  // populates   dataSetIDsIncluded
         }
         // is order important?
         modelComponents.each {
@@ -127,7 +124,7 @@ class CompileService {
         def common = CompileService.class.classLoader.getResourceAsStream( 'data/sspbCommon.js' ).text
 
         result = """
-    function CustomPageController( \$scope, \$http, \$resource, \$parse, \$locale, \$templateCache) {
+    function CustomPageController( \$scope, \$http, \$resource, \$parse, \$locale, \$templateCache,\$cacheFactory) {
         // copy global var to scope - HvT: do we really need this?
         \$scope._isUserAuthenticated = user.authenticated;
         \$scope._userFullName = user.fullName;
@@ -230,7 +227,6 @@ class CompileService {
         }
 
         def dataSetName = "${component.ID}DS"
-        def uiControlName = "${component.ID}UICtrl"
         def postQuery = component.onLoad ? parseExpression(component.onLoad) : ""
 
         def optionalParams=""
@@ -251,20 +247,15 @@ class CompileService {
                     autoPopulate: $autoPopulate,
                     postQuery: function() {$postQuery},
                     selectValueKey: ${component.valueKey ? "\"$component.valueKey\"" : null},
-                    selectInitialValue: "$component.value"
-                    $optionalParams
-                });
-
-            \$scope.$uiControlName = new CreateUICtrl (
-                {
-                    name: "$uiControlName",
-                    dataSet: \$scope.$dataSetName,
-                    pageSize: $component.pageSize,
+                    selectInitialValue: ${component.value?"\"$component.value\"":"null"},
                     onUpdate: function() {${parseOnEventFunction(component.onUpdate, component)} }
+                    $optionalParams
                 });
             """
         if (component.type == PageComponent.COMP_TYPE_GRID)
             result +=component.gridJS()
+        if ( [PageComponent.COMP_TYPE_DETAIL,PageComponent.COMP_TYPE_LIST].contains( component.type))
+            result +=component.dataSetWatches()
 
         return result
     }
@@ -309,11 +300,9 @@ class CompileService {
         referenceComponents.each {component->
             if (PageComponent.COMP_DATASET_TYPES.contains(component.type)) {
                 dataSetIDsIncluded<<component.ID   //remember  - used to replace variable names
-                uiControlIDsIncluded<<component.ID
             } else if (dataComponent.binding != "page"){
                 if ( PageComponent.COMP_ITEM_TYPES.contains(component.type)){
                     dataSetIDsIncluded<<component.ID   //remember  - used to replace variable names
-                    uiControlIDsIncluded<<component.ID
                 }
             }
         }
@@ -506,7 +495,6 @@ class CompileService {
              def dataComponent = [static: true, data: groovy.json.JsonOutput.toJson(pageComponent.tranSourceValue())]
              def uiControlCode =  getUIControlCode (pageComponent, dataComponent)
              dataSetIDsIncluded<<pageComponent.ID   //remember  - used to replace variable names
-             uiControlIDsIncluded<<pageComponent.ID
              //TODO - could be added too late to the *Included  collections?
              code += uiControlCode
          } else if (pageComponent.submit) {
@@ -514,7 +502,7 @@ class CompileService {
              // do not need $scope. prefix or {{ }}
              pageComponent.submit = parseVariable(pageComponent.submit)
 
-         } else if (pageComponent.onUpdate && !uiControlIDsIncluded.contains(pageComponent.ID)) {
+         } else if (pageComponent.onUpdate && !dataSetIDsIncluded.contains(pageComponent.ID)) {
              // handle input field update
              // generate a ng-change function
              def  expr = parseExpression(pageComponent.onUpdate)
