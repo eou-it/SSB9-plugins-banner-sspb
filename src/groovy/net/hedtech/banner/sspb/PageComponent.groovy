@@ -525,7 +525,7 @@ class PageComponent {
                                    $placeholderStr
                                 </select>"""
                 if(parent.type == COMP_TYPE_DETAIL) {
-                    result = """<div ${getId("container")} $styleStr"><label ${getId("label-" + idTxtParam)}>${tran("label")}</label>
+                    result = """<div ${getId("container")} $styleStr><label ${getId("label-" + idTxtParam)}>${tran("label")}</label>
                              $select
                              </div>"""
                 } else {
@@ -570,13 +570,12 @@ class PageComponent {
                         ret += "<span ${getId(idTxtParam)} $styleStr  ng-bind-html-unsafe='$GRID_ITEM.$model'></span>"
                     }
                     else   {
-                        def val = value?"{{$GRID_ITEM.$model}}":""
-                        ret  = "<span ${getId(idTxtParam)} $styleStr> $val</span>"
+                        // TODO handle value in details for display
+                        def val = "{{$GRID_ITEM.$model}}"
+                        ret += "<span ${getId(idTxtParam)} $styleStr> $val</span>"
                     }
-                    // for display in detail control take the parent model, and make a table row
-                    ret += """<label ${getId("label-"+ idTxtParam)}> ${tran("label")}</label><span ${getId("span-"+ idTxtParam)}>
-                             {{$GRID_ITEM.${model}}} </span>"""
-                    ret += "</span></div>"
+                    // for display in detail control take the parent model
+                    ret += "</div>"
                 } else if (parent.type == COMP_TYPE_GRID) {
                     if (asHtml)
                         ret = " <span ${getId(idTxtParam)} $styleStr ng-bind-html-unsafe='$GRID_ITEM.$model'> </span>";
@@ -648,7 +647,7 @@ class PageComponent {
                         addOnUpdate="\$parent.${parent.ID}_${name}_onUpdate($GRID_ITEM);"
                     }
                     txt = """
-                          <input ${getId(idTxtParam)} $styleDatepicker $styleStr $typeString   name="${name?name:model}" ${getId()} ${parent.allowModify?"":"readonly"}
+                          <input ${getId(idTxtParam)} $styleDatepicker $styleStr $typeString   name="${name?name:model}" ${parent.allowModify?"":"readonly"}
                           ng-model="$GRID_ITEM.${model}"  ${defaultValue()}
                           ng-change="$addOnUpdate\$parent.${parent.name}DS.setModified($GRID_ITEM)" $attributes />
                           """
