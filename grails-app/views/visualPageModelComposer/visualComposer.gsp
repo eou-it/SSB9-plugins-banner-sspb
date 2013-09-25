@@ -218,6 +218,7 @@
             tr['attribute.resource'         ]="${message(code:'sspb.model.attribute.resource')}";
             tr['attribute.nextButtonLabel'  ]="${message(code:'sspb.model.attribute.nextButtonLabel')}";
             tr['attribute.showInitially'    ]="${message(code:'sspb.model.attribute.showInitially')}";
+            tr['attribute.asHtml'           ]="${message(code:'sspb.model.attribute.asHtml')}";
             tr['attribute.allowNew'         ]="${message(code:'sspb.model.attribute.allowNew')}";
             tr['attribute.allowModify'      ]="${message(code:'sspb.model.attribute.allowModify')}";
             tr['attribute.allowDelete'      ]="${message(code:'sspb.model.attribute.allowDelete')}";

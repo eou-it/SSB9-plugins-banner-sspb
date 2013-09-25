@@ -120,18 +120,14 @@ class CompileService {
         def result = codeList.join("\n")
         // inject common code into controller
         // TODO: refactor so it can be in a separate js.
-        //def common =  new File("js/sspbCommon.js").getText()
         def common = CompileService.class.classLoader.getResourceAsStream( 'data/sspbCommon.js' ).text
 
         result = """
     function CustomPageController( \$scope, \$http, \$resource, \$parse, \$locale, \$templateCache,\$cacheFactory) {
         // copy global var to scope - HvT: do we really need this?
-        \$scope._isUserAuthenticated = user.authenticated;
-        \$scope._userFullName = user.fullName;
-        \$scope._userFirstName = "";
-        \$scope._userLastName = "";
-        \$scope._pidm = "";
-        \$scope._userRoles = user.roles;
+        \$scope._user = user;
+        \$scope._params = params;
+
         // page specific code
         $result
         //common code TODO - move out of this controller
@@ -201,7 +197,6 @@ class CompileService {
         def queryParameters = "null"
         def apiPath = CH.config.sspb.apiPath;
 
-        def staticData =""
         //should only COMP_TYPE_DATA have loadInitially?
         def autoPopulate = "true"
         if ( (component.type == PageComponent.COMP_TYPE_DATA ||
@@ -211,16 +206,9 @@ class CompileService {
         }
         // first handle data binding
         if (dataComponent.binding == PageComponent.BINDING_REST) {
-            // can specify resource relative to current application like $rootWebApp/rest/emp
-            //dataSource = "'${dataComponent.resource}'".replace("'\$rootWebApp/", "rootWebApp+'")
-            dataSource = "rootWebApp+'$apiPath/${dataComponent.resource}'"
-
-            if (dataSource.startsWith("'/\$rootWebApp")) {
-                throw new Exception(message(code:"sspb.compiler.resourceInvalidRootReference.message"))
-            }
+            dataSource = "resourceURL: rootWebApp+'$apiPath/${dataComponent.resource}'"
             // transform parameters to angular $scope variable
             queryParameters = getQueryParameters(component, dataComponent)
-            dataSource =  "resourceURL: $dataSource"
         } else {
             dataSource =  "data: $dataComponent.data"
             autoPopulate = "false"
@@ -234,8 +222,8 @@ class CompileService {
             optionalParams+=",useGet: true"
         if (component.type != PageComponent.COMP_TYPE_SELECT)
             optionalParams+=",pageSize: $component.pageSize"
-        // consider getting rid of UICtrl... need pagesize in query parameters, so not much point to have it in another
-        // object dedicated to UI
+        if (component.onUpdate)
+            optionalParams+=",onUpdate: function() {${parseOnEventFunction(component.onUpdate, component)} }"
         result =
             """
             //\$scope.$component.ID=[];
@@ -247,8 +235,7 @@ class CompileService {
                     autoPopulate: $autoPopulate,
                     postQuery: function() {$postQuery},
                     selectValueKey: ${component.valueKey ? "\"$component.valueKey\"" : null},
-                    selectInitialValue: ${component.value?"\"$component.value\"":"null"},
-                    onUpdate: function() {${parseOnEventFunction(component.onUpdate, component)} }
+                    selectInitialValue: ${component.value?"\"$component.value\"":"null"}
                     $optionalParams
                 });
             """

@@ -88,6 +88,7 @@
 
         <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular.js" />"></script>
         <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular-resource.js"/>"></script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular-sanitize.js"/>"></script>
 
         <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery.ui.datepicker-${localeLanguage}.js" />"> </script>
         <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery.ui.datepicker-${localeBrowserFull}.js" />"> </script>
@@ -102,6 +103,7 @@
             var templatesLocation = "<g:resource plugin="banner-sspb" dir="template" />";
             var user = ${PBUser.get()?.encodeAsJSON()};
             var gridLocale = '${localeBrowserFull.toLowerCase()}';
+            var params = ${params?.encodeAsJSON()};
         </script>
 
         <!-- layout head contains angular module declaration and need to be placed before app.js -->
@@ -116,6 +118,29 @@
 
         <g:customStylesheetIncludes/>
 
+        <style>
+            *.margin
+            {
+                margin-top: 10px;
+                margin-left:10px;
+                margin-right:10px;
+                overflow-y:scroll;
+                overflow-x:auto;
+            }
+            div.customPage {
+                text-align:start;
+                overflow-x: auto;
+                overflow-y: auto;
+                margin: 4px;
+                padding: 0;
+                width:99%;
+
+                position: absolute;
+                top: 110px;
+                bottom: 30px;
+                left:0;	/* rtl fix for ie */
+            }
+        </style>
 
     </head>
     <body>
@@ -131,29 +156,25 @@
         <g:customJavaScriptIncludes/>
 
     <script type="text/javascript">
-        //if (!window.ngGrid.i18n['${localeBrowserFull.toLowerCase()}']) {
-        //always include, need to have the style*properties
-            window.ngGrid.i18n['${localeBrowserFull.toLowerCase()}'] = {
-                ngAggregateLabel:          '${message(code: 'nggrid.ngAggregateLabel'         , encodeAs: 'JavaScript')}',
-                ngGroupPanelDescription:   '${message(code: 'nggrid.ngGroupPanelDescription'  , encodeAs: 'JavaScript')}',
-                ngSearchPlaceHolder:       '${message(code: 'nggrid.ngSearchPlaceHolder'      , encodeAs: 'JavaScript')}',
-                ngMenuText:                '${message(code: 'nggrid.ngMenuText'               , encodeAs: 'JavaScript')}',
-                ngShowingItemsLabel:       '${message(code: 'nggrid.ngShowingItemsLabel'      , encodeAs: 'JavaScript')}',
-                ngTotalItemsLabel:         '${message(code: 'nggrid.ngTotalItemsLabel'        , encodeAs: 'JavaScript')}',
-                ngSelectedItemsLabel:      '${message(code: 'nggrid.ngSelectedItemsLabel'     , encodeAs: 'JavaScript')}',
-                ngPageSizeLabel:           '${message(code: 'nggrid.ngPageSizeLabel'          , encodeAs: 'JavaScript')}',
-                ngPagerFirstTitle:         '${message(code: 'nggrid.ngPagerFirstTitle'        , encodeAs: 'JavaScript')}',
-                ngPagerNextTitle:          '${message(code: 'nggrid.ngPagerNextTitle'         , encodeAs: 'JavaScript')}',
-                ngPagerPrevTitle:          '${message(code: 'nggrid.ngPagerPrevTitle'         , encodeAs: 'JavaScript')}',
-                ngPagerLastTitle:          '${message(code: 'nggrid.ngPagerLastTitle'         , encodeAs: 'JavaScript')}',
-                direction:                 '${message(code:'default.language.direction')}',
-                styleLeft:                 '${message(code:'style.left')}',
-                styleRight:                '${message(code:'style.right')}',
-                maxPageLabel:              '${message(code:'nggrid.maxPageLabel')}',
-                pageLabel:                 '${message(code:'nggrid.pageLabel')}'
-            };
-        //}
+        window.ngGrid.i18n[gridLocale] = {
+            ngAggregateLabel:          '${message(code: 'nggrid.ngAggregateLabel'         , encodeAs: 'JavaScript')}',
+            ngGroupPanelDescription:   '${message(code: 'nggrid.ngGroupPanelDescription'  , encodeAs: 'JavaScript')}',
+            ngSearchPlaceHolder:       '${message(code: 'nggrid.ngSearchPlaceHolder'      , encodeAs: 'JavaScript')}',
+            ngMenuText:                '${message(code: 'nggrid.ngMenuText'               , encodeAs: 'JavaScript')}',
+            ngShowingItemsLabel:       '${message(code: 'nggrid.ngShowingItemsLabel'      , encodeAs: 'JavaScript')}',
+            ngTotalItemsLabel:         '${message(code: 'nggrid.ngTotalItemsLabel'        , encodeAs: 'JavaScript')}',
+            ngSelectedItemsLabel:      '${message(code: 'nggrid.ngSelectedItemsLabel'     , encodeAs: 'JavaScript')}',
+            ngPageSizeLabel:           '${message(code: 'nggrid.ngPageSizeLabel'          , encodeAs: 'JavaScript')}',
+            ngPagerFirstTitle:         '${message(code: 'nggrid.ngPagerFirstTitle'        , encodeAs: 'JavaScript')}',
+            ngPagerNextTitle:          '${message(code: 'nggrid.ngPagerNextTitle'         , encodeAs: 'JavaScript')}',
+            ngPagerPrevTitle:          '${message(code: 'nggrid.ngPagerPrevTitle'         , encodeAs: 'JavaScript')}',
+            ngPagerLastTitle:          '${message(code: 'nggrid.ngPagerLastTitle'         , encodeAs: 'JavaScript')}',
+            direction:                 '${message(code:'default.language.direction')}',
+            styleLeft:                 '${message(code:'style.left')}',
+            styleRight:                '${message(code:'style.right')}',
+            maxPageLabel:              '${message(code:'nggrid.maxPageLabel'             , encodeAs: 'JavaScript')}',
+            pageLabel:                 '${message(code:'nggrid.pageLabel'                , encodeAs: 'JavaScript')}'
+        };
     </script>
     </body>
 </html>
-
