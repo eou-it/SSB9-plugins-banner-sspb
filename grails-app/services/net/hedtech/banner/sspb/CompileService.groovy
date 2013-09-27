@@ -15,7 +15,6 @@ class CompileService {
     def transactional = false
 
     static def dataSetIDsIncluded =[]
-    static def uiControlIDsIncluded = []
 
 //major step 1.
     //TODO develop page validation
@@ -33,7 +32,6 @@ class CompileService {
         def pageValidation = [:]
         //reset global arrays
         dataSetIDsIncluded =[]
-        uiControlIDsIncluded = []
 
         try {
             // first validate the raw JSON page model
@@ -66,7 +64,6 @@ class CompileService {
 
         //populate components to be used in name resolution
         //dataSets=page.findComponents(PageComponent.COMP_DATASET_TYPES)
-        //uiControls=page.findComponents(PageComponent.COMP_UICTRL_TYPES)
         //return results
         return [valid:valid, pageComponent:page, error:errors]
     }
@@ -104,7 +101,7 @@ class CompileService {
 
          */
         modelComponents.each {
-            preBuildCode(it)  // populates   dataSetIDsIncluded and  uiControlIDsIncluded
+            preBuildCode(it)  // populates   dataSetIDsIncluded
         }
         // is order important?
         modelComponents.each {
@@ -123,11 +120,10 @@ class CompileService {
         def result = codeList.join("\n")
         // inject common code into controller
         // TODO: refactor so it can be in a separate js.
-        //def common =  new File("js/sspbCommon.js").getText()
         def common = CompileService.class.classLoader.getResourceAsStream( 'data/sspbCommon.js' ).text
 
         result = """
-    function CustomPageController( \$scope, \$http, \$resource, \$parse, \$locale) {
+    function CustomPageController( \$scope, \$http, \$resource, \$parse, \$locale, \$templateCache,\$cacheFactory) {
         // copy global var to scope - HvT: do we really need this?
         \$scope._user = user;
         \$scope._params = params;
@@ -201,7 +197,6 @@ class CompileService {
         def queryParameters = "null"
         def apiPath = CH.config.sspb.apiPath;
 
-        def staticData =""
         //should only COMP_TYPE_DATA have loadInitially?
         def autoPopulate = "true"
         if ( (component.type == PageComponent.COMP_TYPE_DATA ||
@@ -211,28 +206,24 @@ class CompileService {
         }
         // first handle data binding
         if (dataComponent.binding == PageComponent.BINDING_REST) {
-            // can specify resource relative to current application like $rootWebApp/rest/emp
-            //dataSource = "'${dataComponent.resource}'".replace("'\$rootWebApp/", "rootWebApp+'")
-            dataSource = "rootWebApp+'$apiPath/${dataComponent.resource}'"
-
-            if (dataSource.startsWith("'/\$rootWebApp")) {
-                throw new Exception(message(code:"sspb.compiler.resourceInvalidRootReference.message"))
-            }
+            dataSource = "resourceURL: rootWebApp+'$apiPath/${dataComponent.resource}'"
             // transform parameters to angular $scope variable
             queryParameters = getQueryParameters(component, dataComponent)
-            dataSource =  "resourceURL: $dataSource"
         } else {
             dataSource =  "data: $dataComponent.data"
             autoPopulate = "false"
         }
 
         def dataSetName = "${component.ID}DS"
-        def uiControlName = "${component.ID}UICtrl"
         def postQuery = component.onLoad ? parseExpression(component.onLoad) : ""
 
         def optionalParams=""
         if  (PageComponent.COMP_ITEM_TYPES.contains(component.type)) //items don't support arrays, use the get
             optionalParams+=",useGet: true"
+        if (component.type != PageComponent.COMP_TYPE_SELECT)
+            optionalParams+=",pageSize: $component.pageSize"
+        if (component.onUpdate)
+            optionalParams+=",onUpdate: function() {${parseOnEventFunction(component.onUpdate, component)} }"
         result =
             """
             //\$scope.$component.ID=[];
@@ -244,18 +235,14 @@ class CompileService {
                     autoPopulate: $autoPopulate,
                     postQuery: function() {$postQuery},
                     selectValueKey: ${component.valueKey ? "\"$component.valueKey\"" : null},
-                    selectInitialValue: ""
-                   $optionalParams
-                });
-
-            \$scope.$uiControlName = new CreateUICtrl (
-                {
-                    name: "$uiControlName",
-                    dataSet: \$scope.$dataSetName,
-                    pageSize: $component.pageSize,
-                    onUpdate: function() {${parseOnEventFunction(component.onUpdate, component)} }
+                    selectInitialValue: ${component.value?"\"$component.value\"":"null"}
+                    $optionalParams
                 });
             """
+        if (component.type == PageComponent.COMP_TYPE_GRID)
+            result +=component.gridJS()
+        if ( [PageComponent.COMP_TYPE_DETAIL,PageComponent.COMP_TYPE_LIST].contains( component.type))
+            result +=component.dataSetWatches()
 
         return result
     }
@@ -300,11 +287,9 @@ class CompileService {
         referenceComponents.each {component->
             if (PageComponent.COMP_DATASET_TYPES.contains(component.type)) {
                 dataSetIDsIncluded<<component.ID   //remember  - used to replace variable names
-                uiControlIDsIncluded<<component.ID
             } else if (dataComponent.binding != "page"){
                 if ( PageComponent.COMP_ITEM_TYPES.contains(component.type)){
                     dataSetIDsIncluded<<component.ID   //remember  - used to replace variable names
-                    uiControlIDsIncluded<<component.ID
                 }
             }
         }
@@ -497,7 +482,6 @@ class CompileService {
              def dataComponent = [static: true, data: groovy.json.JsonOutput.toJson(pageComponent.tranSourceValue())]
              def uiControlCode =  getUIControlCode (pageComponent, dataComponent)
              dataSetIDsIncluded<<pageComponent.ID   //remember  - used to replace variable names
-             uiControlIDsIncluded<<pageComponent.ID
              //TODO - could be added too late to the *Included  collections?
              code += uiControlCode
          } else if (pageComponent.submit) {
@@ -505,7 +489,7 @@ class CompileService {
              // do not need $scope. prefix or {{ }}
              pageComponent.submit = parseVariable(pageComponent.submit)
 
-         } else if (pageComponent.onUpdate && !uiControlIDsIncluded.contains(pageComponent.ID)) {
+         } else if (pageComponent.onUpdate && !dataSetIDsIncluded.contains(pageComponent.ID)) {
              // handle input field update
              // generate a ng-change function
              def  expr = parseExpression(pageComponent.onUpdate)

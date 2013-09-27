@@ -29,6 +29,7 @@ modules = {
 
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: "bootstrap_custom.css"]
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/bootstrap', file: "bootstrap.js"]
+        //TODO: duplicate below
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular-ui', file: "ui-bootstrap-tpls-0.3.0.js"]
 
         // TODO check if all of below is needed , loading order in page does not work --> cause angular module not found
@@ -44,8 +45,11 @@ modules = {
 
     'pageBuilderRTL' {
         dependsOn "bannerSelfServiceRTL"
+        dependsOn "pageBuilder"
         defaultBundle environment == "development" ? false : "pageBuilderRTL"
-
+        resource url:[plugin: 'banner-sspb', file: 'BannerXE/css/ng-grid-rtl.css']
+        resource url:[plugin: 'banner-ui-ss', file: 'css/backbone.pagingcontrols-rtl.css']
+        resource url:[plugin: 'banner-sspb', file: 'css/banner-sspb-rtl-patch.css']
     }
 	
     application {

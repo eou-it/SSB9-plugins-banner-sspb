@@ -84,6 +84,7 @@ class PageSecurityService {
         catch(e) {
             println "Exception merging $url - $configAttribute: \n $e"
         }
+        springSecurityService.clearCachedRequestmaps()
         return rm
     }
 
