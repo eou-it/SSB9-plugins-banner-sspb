@@ -24,6 +24,11 @@ function CreatePostQuery(instanceIn, userFunction) {
         instance.currentRecord=instance.data[0];  //set the current record
         instance.setInitialRecord();
         instance.totalCount=parseInt(response("X-hedtech-totalCount")) ;
+        if (instance.pagingOptions && instance.pagingOptions.currentPage>instance.numberOfPages() ) {
+            //causes requery
+            instance.pagingOptions.currentPage=instance.numberOfPages();
+        }
+
         if (uf) { uf(); }
     };
     return this;
@@ -80,6 +85,8 @@ function CreateDataSet(params){
         this.added.removeAll();
         this.deleted.removeAll();
         this.totalCount=null;
+        if (this.pageSize>0)
+            this.pagingOptions.currentPage=1;
     }
 
     var post = new CreatePostQuery(this,params.postQuery);
@@ -229,20 +236,19 @@ function CreateDataSet(params){
             item.$delete({id:item.id});
         });
         this.deleted = [];
-        //this.cache.removeAll();
+        this.cache.removeAll();
     }
 
     this.dirty = function() {
         return this.added.length + this.modified.length + this.deleted.length>0
     }
 
+    this.onUpdate=params.onUpdate;
+
     if (params.autoPopulate) {
         this.load();
     }
 
-    this.onUpdate=params.onUpdate;
+
     return this;
 }
-
-
-

@@ -488,7 +488,7 @@ class CompileService {
              // parse submit action
              // do not need $scope. prefix or {{ }}
              pageComponent.submit = parseVariable(pageComponent.submit)
-
+             //TODO should there be a ! in next line?
          } else if (pageComponent.onUpdate && !dataSetIDsIncluded.contains(pageComponent.ID)) {
              // handle input field update
              // generate a ng-change function

@@ -8,7 +8,7 @@
                   "type": "resource",
                   "name": "Todo",
                   "binding": "rest",
-                  "resource": "todo"
+                  "resource": "todos"
             },
             {
                   "type": "resource",
@@ -73,7 +73,8 @@
                   "valueKey": "age",
                   "value": "C",
                   "sourceParameters": {},
-                  "required": false
+                  "required": false,
+                  "loadInitially": true
             },
             {
                   "type": "literal",
