@@ -30,21 +30,19 @@
                               "sourceParameters": {},
                               "sourceValue": [],
                               "required": false,
-                              "placeholder": "All departments",
-                              "loadInitially": true,
                               "value": ""
                         },
                         {
                               "type": "button",
                               "name": "ApplyDepartment",
                               "label": "Apply",
-                              "onClick": "$EmployeeDetails.$load()"
+                              "onClick": "$EmployeeDetailsNGrid.$load()"
                         },
                         {
                               "type": "button",
                               "name": "ResetDepartment",
                               "label": "Show All Departments",
-                              "onClick": "$EmployeeDetails.$loadAll()"
+                              "onClick": "$EmployeeDetailsNGrid.$loadAll()"
                         }
                   ],
                   "nextButtonLabel": "Next",
@@ -61,17 +59,19 @@
                               "parameters": {
                                     "DEPTNO": "$SelectDept"
                               },
-                              "name": "EmployeeDetails",
+                              "name": "EmployeeDetailsNGrid",
                               "allowNew": true,
                               "allowModify": true,
                               "allowReload": true,
                               "allowDelete": true,
-                              "pageSize": 3,
+                              "pageSize": 8,
                               "components": [
                                     {
                                           "type": "display",
                                           "model": "id",
-                                          "label": "Id"
+                                          "label": "Id",
+                                          "loadInitially": true,
+                                          "asHtml": false
                                     },
                                     {
                                           "name": "EMPNO",
@@ -79,7 +79,8 @@
                                           "label": "Employee Number",
                                           "model": "EMPNO",
                                           "parameters": {},
-                                          "required": false
+                                          "required": false,
+                                          "loadInitially": true
                                     },
                                     {
                                           "type": "text",
@@ -90,7 +91,7 @@
                                           "name": "ENAME"
                                     },
                                     {
-                                          "type": "radio",
+                                          "type": "select",
                                           "model": "DEPTNO",
                                           "label": "Department Name",
                                           "sourceModel": "Dept",
@@ -133,18 +134,34 @@
                                           "required": false
                                     },
                                     {
-                                          "name": "EmployeeDetails_child_9",
+                                          "name": "someCheckbox",
                                           "type": "boolean",
                                           "booleanTrueValue": "1",
                                           "booleanFalseValue": "0",
                                           "readonly": false,
                                           "onUpdate": "alert(\"I am an alert box!\")",
-                                          "label": "Tick me",
-                                          "loadInitially": true
+                                          "label": "Click me"
                                     }
                               ],
-                              "onClick": "console.log('clicked'+$EmployeeDetailsDS.$currentRecord);",
+                              "onClick": "console.log(\"selected record: \"+currentSelection.id);",
                               "loadInitially": true
+                        }
+                  ],
+                  "nextButtonLabel": "Next",
+                  "showInitially": true
+            },
+            {
+                  "name": "EmployeePage_child_5",
+                  "type": "form",
+                  "label": "Debugging",
+                  "nextButtonLabel": "Next",
+                  "showInitially": true,
+                  "components": [
+                        {
+                              "name": "GridSelection",
+                              "type": "literal",
+                              "label": "GridSelection",
+                              "value": "$EmployeeDetailsNGridDS.selectedRecords"
                         }
                   ]
             }

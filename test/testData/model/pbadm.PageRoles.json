@@ -101,7 +101,8 @@
                                           "onUpdate": ""
                                     }
                               ],
-                              "submit": "gridsubmit"
+                              "submit": "gridsubmit",
+                              "loadInitially": true
                         }
                   ],
                   "nextButtonLabel": "Next"
@@ -124,18 +125,6 @@
                               "type": "button",
                               "label": "Apply page roles",
                               "onClick": "console.log('Apply pressed');\nvar item={pageId:$selectPage};\n$psdataDS.data=[];\n$psdataDS.add( item);\n$psdataDS.save();"
-                        },
-                        {
-                              "name": "Status",
-                              "type": "display",
-                              "label": "Form Dirty",
-                              "value": "$EditRolesForm.#dirty"
-                        },
-                        {
-                              "name": "Status2",
-                              "type": "display",
-                              "label": "Page Roles Dirty",
-                              "value": "$editPageRolesDS.dirty()"
                         }
                   ],
                   "submitLabel": "",
