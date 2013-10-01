@@ -748,7 +748,7 @@ class PageComponent {
                         ret += "<span ${getId(idTxtParam)} $styleStr  ng-bind-html-unsafe='${CompileService.parseVariable(value)}'></span>"
                 }
                     else   {
-                        ret += value?"{{${CompileService.parseLiteral(value)}}}":""
+                        ret += value?"${CompileService.parseLiteral(value)}":""
                         ret  = "<span ${getId(idTxtParam)} $styleStr> $ret</span>"
                     }
                 }

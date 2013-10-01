@@ -279,21 +279,29 @@ class VirtualDomainSqlService {
 
     private  def prepareData( Map d, Map p) {
         for (it in d) {
-            // convert 1981-02-20T05:00:00+0000 to 1981-02-20T05:00:00Z
-            if ( (it.value instanceof String) && it.value.find('\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\+\\d{4}') )  {
+            // convert 1981-02-20T05:00:00+/-0000 to 1981-02-20T05:00:00+-00:00
+            if ( (it.value instanceof String) && it.value.find('\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{4}') )  {
                 //likely a JSON date 1980-12-16T23:00:00Z
-                def convertDateString = it.value.replaceAll('(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2})\\+\\d{4}', '$1Z')
+                // convert RFC 822 timezone (1981-02-20T05:00:00+/-0000) to XML date timezone  (1981-02-20T05:00:00+-00:00)
+                // RFC 822 time is returned if the date retrieved from the server was not modified by the date picker
+                def convertDateString = it.value.replaceAll('(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2})([+-]\\d{2})(\\d{2})', '$1$2:$3')
                 try {
                     def p1 = javax.xml.bind.DatatypeConverter.parseDateTime(convertDateString)
-                    it.value=new java.sql.Date(p1.getTime().time)
+                    it.value=new java.sql.Timestamp(p1.getTime().time)
                 } catch (e) {
                     //do nothing it is not a date so it should be ok
                 }
             }  else if (  (it.value instanceof String)  && it.value.endsWith('Z')) {
                 //not really needed to use a regular expression - as parseDateTime should raise exception
+                // if a date is returned from datepicker it appends "Z" at the end
                 try {
+                    // date string is 1981-06-10T04:00:00.000Z, adjusted for GMT by browser
+                    // convert to 1981-06-10T04:00:00+00:00
+                    // date/time stored on server is assumed to be GMT
+                    it.value = it.value.substring(0, 19)
+                    it.value += "+00:00"
                     def date = javax.xml.bind.DatatypeConverter.parseDateTime(it.value)
-                    it.value=new java.sql.Date(date.getTime().time)
+                    it.value=new java.sql.Timestamp(date.getTime().time)
                 } catch (e) {
                     //do nothing it is not a date so it should be ok
                 }
