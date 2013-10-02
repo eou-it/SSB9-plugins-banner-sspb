@@ -340,7 +340,7 @@ class PageComponent {
             if (items.length()>0)
                 items+=",\n"
             def optional =  (child.type==COMP_TYPE_HIDDEN)? ",visible: false":""
-            optional+= ro?"":",enableCellEdit: ${!ro}"
+            //optional+= ro?"":",enableCellEdit: ${!ro}"   // breaks drop-down in firefox and is not really needed
             //TODO: for sorting need a way to distinguish JSON data from formula's or synthetic columns (i.e. boolean without model)
             //model gets automatically populated with Name - maybe don't do this and reserve model for JSON columns
             if (child.type==COMP_TYPE_LITERAL)// needs to be a column in the api to be sortable on server
@@ -404,6 +404,7 @@ class PageComponent {
         });
         """
         }
+        code
     }
 
     private def javaScriptString(s) {
@@ -418,20 +419,16 @@ class PageComponent {
         def tagEnd="/>"
         def typeAt="type=\"$type\""
         def styleAt="style=\"background-color:transparent; border:0; width: 100%; height:{{rowHeight}}px\""
-        //def styleAt="style=\"background-color:transparent; border:0\""
-        //styleStr?styleStr:""
         def specialAt=""
         def readonlyAt = (parent.allowModify && !ro)?"":"readonly"
         def requiredAt = required?"required":""
         def validateAt = ""
         def defaultAt = "" //ng-init seems not to work within grid.javaScriptString(defaultValue())
         def placeholderAt=""
-        def ngModel="ng-model=\"row.entity[col.field]\""
+        def ngModel="ng-model=\"COL_FIELD\""    // shorthand for  row.entity[col.field]
         def ngChange="ng-change=\""+(onUpdate?"\$parent.${parent.ID}_${name}_onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity)\""
-
-        if (type == COMP_TYPE_NUMBER ) {
+         if (type == COMP_TYPE_NUMBER ) {
             typeAt="type=\"text\" pb-number " //angular-ui doesn't use localized validators
-            //styleAt=styleAt.replace("=\"","=\"text-align:right;")  //doesn't look good
         }
         else if (type == COMP_TYPE_DATETIME ) {
             typeAt="ui-date=\"{ changeMonth: true, changeYear: true}\" "
@@ -443,12 +440,14 @@ class PageComponent {
             case COMP_TYPE_SELECT:
                 // SELECT must have a model
                 def arrayName = "${name}DS.data"
-                ngChange="ng-change=\""+(onUpdate?"\${name}DS.onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity)\""
+                readonlyAt = (parent.allowModify && !ro)?"":"disabled" //select doesn't have readonly
+                ngChange="ng-change=\""+(onUpdate?"\${name}DS.onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity);${name}DS.setCurrentRecord(row.entity.$model);\""
                 placeholderAt = placeholder?"""<option value="">${tran("placeholder")}</option>""":""
-                return """<select ${styleAt} $ngModel $ngChange  $defaultAt ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName">  $placeholderAt   </select>"""
+                return """<select ${styleAt} $ngModel $readonlyAt $ngChange $defaultAt ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName"> $placeholderAt </select>"""
             case [COMP_TYPE_TEXT, COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER, COMP_TYPE_DATETIME, COMP_TYPE_EMAIL, COMP_TYPE_TEL] :
                 validateAt = validation?validation.collect { k,v -> "$k=\"$v\"" }.join(' '):""
                 placeholderAt=placeholder?"placeholder=\"${tran("placeholder")}\"":""
+                //specialAt="onClick=\"console.log(${javaScriptString("'Row  :{{row.rowIndex}}'")});\""
                 break
             case COMP_TYPE_BOOLEAN:
                 typeAt = "type=\"checkbox\""
@@ -475,7 +474,7 @@ class PageComponent {
 
         if (name.endsWith("NGrid")) { //TODO
             def borderpx=2
-            //headerRowHeight doesn't work in {{ expression }} - assume same as rowHeight
+            //headerRowHeight doesn't work in {{ expression }} - assume same as rowHeight hence pageSize+1
             return """<div class="gridStyle" ng-grid="${name}Grid" style="width:99.5%; height:{{${borderpx*2}+${pageSize+1}*rowHeight+footerRowHeight}}px; border: ${borderpx}px solid rgb(212,212,212);$style"></div>"""
         }
         // Old code with HTML Table grid -- leave for now as some parts are not implemented yet in new Grid
