@@ -747,7 +747,7 @@ class PageComponent {
                         ret += "<span ${getId(idTxtParam)} $styleStr  ng-bind-html-unsafe='${CompileService.parseVariable(value)}'></span>"
                 }
                     else   {
-                        ret += value?"{{${CompileService.parseLiteral(value)}}}":""
+                        ret += value?"${CompileService.parseLiteral(value)}":""
                         ret  = "<span ${getId(idTxtParam)} $styleStr> $ret</span>"
                     }
                 }
@@ -795,14 +795,19 @@ class PageComponent {
                     // override the datepicker style which is defined in banner-ss-ui.css, which causes layout issue
                     styleDatepicker = 'style="width:auto; margin-bottom:2px;" '
                 }
+
+                // for datetime input do NOT assign an ID otherwise it won't work!
+                def inputIdStr = (type==COMP_TYPE_DATETIME)?"":getId(idTxtParam)
+
                 //Cannot choose format with time, but lots of options. See http://jqueryui.com/datepicker/
                 if (isDataSetEditControl(parent)) {
                     def addOnUpdate=""
                     if (onUpdate)  {  //ToDo: add this to other controls in Grid/Detail
                         addOnUpdate="\$parent.${parent.ID}_${name}_onUpdate($GRID_ITEM);"
                     }
+
                     txt = """
-                          <input ${getId(idTxtParam)} $styleDatepicker $styleStr $typeString   name="${name?name:model}" ${parent.allowModify?"":"readonly"}
+                          <input ${inputIdStr} $styleDatepicker $styleStr $typeString   name="${name?name:model}" ${parent.allowModify?"":"readonly"}
                           ng-model="$GRID_ITEM.${model}"  ${defaultValue()}
                           ng-change="$addOnUpdate\$parent.${parent.name}DS.setModified($GRID_ITEM)" $attributes />
                           """
@@ -815,7 +820,7 @@ class PageComponent {
                     // TODO do we need a value field if ng-model is defined?  //added defaultValue
                     attributes += " ${readonly?"readonly":""}"
                     txt =  """<label ${getId("label")} $styleStr for="${name?name:model}">${tran("label")}</label>
-                              <input ${getId()}  $styleDatepicker $styleStr type="$t"   name="${name?name:model}" id="${name?name:model}" ${value?"value=\"{{${CompileService.parseVariable(value)}}}\"":"" }
+                              <input $inputIdStr  $styleDatepicker $typeString $styleStr type="$t"   name="${name?name:model}" ${value?"value=\"{{${CompileService.parseVariable(value)}}}\"":"" }
                                ${defaultValue()} $attributes """
                     if (model && !readonly) {
                         if (binding != BINDING_PAGE)
