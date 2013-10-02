@@ -12,10 +12,9 @@
   <title>Banner Page Builder Visual Composer</title>
 
     <meta name="layout" content="bannerSelfServicePBPage"/>
-    <!--
+
     <meta name="menuEndPoint" content="${request.contextPath}/ssb/menu"/>
     <meta name="menuBaseURL" content="${request.contextPath}/ssb"/>
-    -->
     <meta name="menuDefaultBreadcrumbId" content=""/>
 
     <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pageComposer.css')}">

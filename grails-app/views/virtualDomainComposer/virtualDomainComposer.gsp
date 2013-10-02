@@ -5,10 +5,10 @@
 <title><g:message code="sspb.page.virtualdomain.pagetitle" /></title>
 
     <meta name="layout" content="bannerSelfServicePBPage"/>
-    <!--
+
     <meta name="menuEndPoint" content="${request.contextPath}/ssb/menu"/>
     <meta name="menuBaseURL" content="${request.contextPath}/ssb"/>
-    -->
+
     <meta name="menuDefaultBreadcrumbId" content=""/>
 
 
