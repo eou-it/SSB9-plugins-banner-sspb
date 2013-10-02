@@ -113,6 +113,12 @@ class VirtualDomainSqlService {
                 //replace operator and special characters to avoid sql injection
                 s=(String) s.tr(" ',.<>?;:|+=!/&*(){}[]`~@#\$%\"^-", " ")
                 if (s) {
+                    def tokens=s.split() //split sortby on whitespace
+                    if (tokens[0].toLowerCase()==tokens[0]) {
+                        //if sortby column is lowercase, Oracle wants a case sensitive column
+                        //so add double quotes around column
+                        s="\""+tokens[0]+"\" "+tokens[1]
+                    }
                     result +=  ((index>0)?",":" ") + s
                     index++
                 }
