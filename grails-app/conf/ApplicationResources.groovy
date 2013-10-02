@@ -33,6 +33,7 @@ modules = {
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular-ui', file: "ui-bootstrap-tpls-0.3.0.js"]
 
         // TODO check if all of below is needed , loading order in page does not work --> cause angular module not found
+        // app.js is needed rest not
         /*
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/js', file: "controllers.js"]
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/js', file: "services.js"]
