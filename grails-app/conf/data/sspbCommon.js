@@ -75,7 +75,7 @@ function CreateDataSet(params){
     }
 
     this.numberOfPages = function () {
-        return Math.ceil(this.totalCount/this.pagingOptions.pageSize);
+        return Math.max(1,Math.ceil(this.totalCount/this.pagingOptions.pageSize));
     }
 
     this.init = function() {

@@ -38,19 +38,7 @@ class VirtualDomainService {
     }
 
     def show(Map params) {
-        def queryResult
-        def result
-        def vd = loadVirtualDomain(vdName(params))
-        if (vd.error) {
-            throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message"))//TODO  how should we handle with restful API?, i18n
-        }
-        queryResult = virtualDomainSqlService.get(vd.virtualDomain, params)
-        if (queryResult.error == "") {
-            result = queryResult.rows
-        } else {
-            throw queryResult.error
-        }
-        result[0]
+        list(params)[0]
     }
 
     def count(Map params) {
@@ -107,7 +95,7 @@ class VirtualDomainService {
 
     def saveVirtualDomain(vdServiceName, vdQuery, vdPost, vdPut, vdDelete) {
 
-        println "---------- Save $vdServiceName -------------"
+        log.info "---------- Save $vdServiceName (VirtualDomainService)-------------"
         def updateVD = true
         def success = false
         def error = ""
@@ -136,7 +124,7 @@ class VirtualDomainService {
 
     def loadVirtualDomain(vdServiceName) {
 
-        println "---------- load $vdServiceName -------------"
+        log.info "---------- load $vdServiceName (VirtualDomainService)-------------"
         def success = false
         def error = "$vdServiceName not found"
         def vd = null

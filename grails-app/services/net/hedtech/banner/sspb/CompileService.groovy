@@ -123,17 +123,17 @@ class CompileService {
         def common = CompileService.class.classLoader.getResourceAsStream( 'data/sspbCommon.js' ).text
 
         result = """
-    function CustomPageController( \$scope, \$http, \$resource, \$parse, \$locale, \$templateCache,\$cacheFactory) {
-        // copy global var to scope - HvT: do we really need this?
-        \$scope._user = user;
-        \$scope._params = params;
-
-        // page specific code
-        $result
-        //common code TODO - move out of this controller
-        $common
-    }
-        """
+               |function CustomPageController( \$scope, \$http, \$resource, \$parse, \$locale, \$templateCache,\$cacheFactory) {
+               |    // copy global var to scope - HvT: do we really need this?
+               |    \$scope._user = user;
+               |    \$scope._params = params;
+               |
+               |    // page specific code
+               |    $result
+               |    //common code TODO - move out of this controller
+               |    $common
+               |}//End Controller
+               |""".stripMargin()
         return result
     }
 
@@ -224,21 +224,20 @@ class CompileService {
             optionalParams+=",pageSize: $component.pageSize"
         if (component.onUpdate)
             optionalParams+=",onUpdate: function() {${parseOnEventFunction(component.onUpdate, component)} }"
-        result =
-            """
-            //\$scope.$component.ID=[];
-            \$scope.$dataSetName = new CreateDataSet (
-                {
-                    componentId: "$component.ID",
-                    $dataSource,
-                    queryParams: $queryParameters,
-                    autoPopulate: $autoPopulate,
-                    postQuery: function() {$postQuery},
-                    selectValueKey: ${component.valueKey ? "\"$component.valueKey\"" : null},
-                    selectInitialValue: ${component.value?"\"$component.value\"":"null"}
-                    $optionalParams
-                });
-            """
+        result = """
+              |    //\$scope.$component.ID=[];
+              |    \$scope.$dataSetName = new CreateDataSet (
+              |    {
+              |        componentId: "$component.ID",
+              |        $dataSource,
+              |        queryParams: $queryParameters,
+              |        autoPopulate: $autoPopulate,
+              |        postQuery: function() {$postQuery},
+              |        selectValueKey: ${component.valueKey ? "\"$component.valueKey\"" : null},
+              |        selectInitialValue: ${component.value?"\"$component.value\"":"null"}
+              |        $optionalParams
+              |    });
+              |""".stripMargin()
         if (component.type == PageComponent.COMP_TYPE_GRID)
             result +=component.gridJS()
         if ( [PageComponent.COMP_TYPE_DETAIL,PageComponent.COMP_TYPE_LIST].contains( component.type))
@@ -323,10 +322,11 @@ class CompileService {
                     // implicitly define a $scope variable  ${dataVarName}_${component.ID}
                     def queryParameters = getQueryParameters(component,dataComponent)
                     def functionDef = """
-                        // initialize value
-                        \$scope.${component.ID}_load = function() {
-                        \$scope.${dataVarName}_${component.ID} = ${dataComponent.name}.get($queryParameters);
-                        };\n"""
+                                    |    // initialize value
+                                    |    \$scope.${component.ID}_load = function() {
+                                    |    \$scope.${dataVarName}_${component.ID} = ${dataComponent.name}.get($queryParameters);
+                                    |    };
+                                    |""".stripMargin()
                     functions << functionDef
                 }
             }
@@ -357,9 +357,7 @@ class CompileService {
             pageComponent.root.formSet << pageComponent.name
 
             //def showInActiveFlow
-           code += """
-    \$scope.${pageComponent.name}_visible = $pageComponent.showInitially;
-            """
+           code += """\n    \$scope.${pageComponent.name}_visible = $pageComponent.showInitially;"""
         }
 
         if (pageComponent.type == PageComponent.COMP_TYPE_BLOCK) {
@@ -367,9 +365,7 @@ class CompileService {
             // determine if a form needs to be shown initially if there is an active flow defined
             // build a form array
 
-           code += """
-    \$scope.${pageComponent.name}_visible = $pageComponent.showInitially;
-            """
+           code += """\n    \$scope.${pageComponent.name}_visible = $pageComponent.showInitially;"""
         }
 
         // loop through all forms and flow controls first before adding code
@@ -381,77 +377,77 @@ class CompileService {
         if (pageComponent.type == PageComponent.COMP_TYPE_PAGE && pageComponent.flowDefs) {
             // initialize global structures and data
             code += """
-    $flowArray = ${groovy.json.JsonOutput.toJson(pageComponent.flowDefs)};
-    $activeFlowVar = ${pageComponent.activeFlow?"\"$pageComponent.activeFlow\"":"null"};
-    $formSetVar = ${groovy.json.JsonOutput.toJson(pageComponent.formSet)};
-
-    // find the flow definition by flow name
-    \$scope._findFlow = function(flowName) {
-        var ind;
-        for (ind = 0; ind < ${flowArray}.length; ind++) {
-            if ($flowArray[ind].name == flowName)
-                return $flowArray[ind];
-        }
-        return null;
-    }
-
-    // return the next form of the active flow, or the same form if the form is the last one in the flow
-    \$scope._nextForm = function(formName) {
-        var activeflow = \$scope._findFlow($activeFlowVar);
-        // activeSeq is an array of forms
-        var activeSeq = activeflow["sequence"];
-        // curIndex is the position of the current form in the active sequence
-        var curIndex = activeSeq.indexOf(formName);
-        if (curIndex < activeSeq.length - 1) {
-            curIndex = curIndex+1;
-            return activeSeq[curIndex];
-        } else {
-            return null;
-        }
-    }
-
-    // called by form "next" button
-    \$scope._activateNextForm = function(formName, hideExistingForm) {
-        // set hideExistingForm default to true
-        hideExistingForm = (typeof hideExistingForm === 'undefined') ? true : hideExistingForm;
-        var nextForm = \$scope._nextForm(formName);
-
-        if (hideExistingForm)
-            \$scope[formName + "_visible"] = false;
-
-        if (nextForm != null)
-            \$scope[nextForm + "_visible"] = true;
-    }
-
-    // return the name of the first form of a flow
-    \$scope._findFirstForm = function(flowName) {
-        // find the flow definition by name
-        var flow = \$scope._findFlow(flowName);
-        // seq is an array of forms
-        var seq = flow["sequence"];
-        return seq[0];
-    }
-
-    // called when a flow is activated
-    \$scope._activateFlow = function(flowName) {
-        // disable all existing forms
-        angular.forEach($formSetVar, function(value, index) {
-            // value is form name
-            \$scope[value+"_visible"] = false;
-        })
-
-        // set the active flow name
-        $activeFlowVar = flowName;
-
-        // now enable the first form of the active flow
-        var fname = \$scope._findFirstForm(flowName);
-
-        \$scope[fname + "_visible"] = true;
-    }
-    //activate the $activeFlowVar if it is set
-    if ($activeFlowVar)
-        \$scope._activateFlow($activeFlowVar);
-            """
+                |    $flowArray = ${groovy.json.JsonOutput.toJson(pageComponent.flowDefs)};
+                |    $activeFlowVar = ${pageComponent.activeFlow?"\"$pageComponent.activeFlow\"":"null"};
+                |    $formSetVar = ${groovy.json.JsonOutput.toJson(pageComponent.formSet)};
+                |
+                |    // find the flow definition by flow name
+                |    \$scope._findFlow = function(flowName) {
+                |        var ind;
+                |        for (ind = 0; ind < ${flowArray}.length; ind++) {
+                |            if ($flowArray[ind].name == flowName)
+                |                return $flowArray[ind];
+                |        }
+                |        return null;
+                |    }
+                |
+                |    // return the next form of the active flow, or the same form if the form is the last one in the flow
+                |    \$scope._nextForm = function(formName) {
+                |        var activeflow = \$scope._findFlow($activeFlowVar);
+                |        // activeSeq is an array of forms
+                |        var activeSeq = activeflow["sequence"];
+                |        // curIndex is the position of the current form in the active sequence
+                |        var curIndex = activeSeq.indexOf(formName);
+                |        if (curIndex < activeSeq.length - 1) {
+                |            curIndex = curIndex+1;
+                |            return activeSeq[curIndex];
+                |        } else {
+                |            return null;
+                |        }
+                |    }
+                |
+                |    // called by form "next" button
+                |    \$scope._activateNextForm = function(formName, hideExistingForm) {
+                |        // set hideExistingForm default to true
+                |        hideExistingForm = (typeof hideExistingForm === 'undefined') ? true : hideExistingForm;
+                |        var nextForm = \$scope._nextForm(formName);
+                |
+                |        if (hideExistingForm)
+                |            \$scope[formName + "_visible"] = false;
+                |
+                |        if (nextForm != null)
+                |            \$scope[nextForm + "_visible"] = true;
+                |    }
+                |
+                |    // return the name of the first form of a flow
+                |    \$scope._findFirstForm = function(flowName) {
+                |        // find the flow definition by name
+                |        var flow = \$scope._findFlow(flowName);
+                |        // seq is an array of forms
+                |        var seq = flow["sequence"];
+                |        return seq[0];
+                |    }
+                |
+                |    // called when a flow is activated
+                |    \$scope._activateFlow = function(flowName) {
+                |        // disable all existing forms
+                |        angular.forEach($formSetVar, function(value, index) {
+                |            // value is form name
+                |            \$scope[value+"_visible"] = false;
+                |        })
+                |
+                |        // set the active flow name
+                |        $activeFlowVar = flowName;
+                |
+                |        // now enable the first form of the active flow
+                |        var fname = \$scope._findFirstForm(flowName);
+                |
+                |        \$scope[fname + "_visible"] = true;
+                |    }
+                |    //activate the $activeFlowVar if it is set
+                |    if ($activeFlowVar)
+                |        \$scope._activateFlow($activeFlowVar);
+                |""".stripMargin()
         }
 
         return code
@@ -473,7 +469,7 @@ class CompileService {
                 if (pageComponent.type==PageComponent.COMP_TYPE_LIST || pageComponent.type==PageComponent.COMP_TYPE_GRID)
                     arg = PageComponent.CURRENT_ITEM
 
-                code += """\$scope.${pageComponent.name}_onClick = function($arg) { $expr}; \n"""
+                code += """    \$scope.${pageComponent.name}_onClick = function($arg) { $expr}; \n"""
                 println "onClick expression for $pageComponent.name $pageComponent.onClick -> $expr"
             }
          } else if ((pageComponent.type == PageComponent.COMP_TYPE_SELECT || pageComponent.type == PageComponent.COMP_TYPE_RADIO) && pageComponent.sourceValue) {
@@ -489,6 +485,7 @@ class CompileService {
              // do not need $scope. prefix or {{ }}
              pageComponent.submit = parseVariable(pageComponent.submit)
              //TODO should there be a ! in next line?
+             //I think yes(HvT) - because the onUpdate is put in the DataSet it doesn't need
          } else if (pageComponent.onUpdate && !dataSetIDsIncluded.contains(pageComponent.ID)) {
              // handle input field update
              // generate a ng-change function
@@ -505,7 +502,7 @@ class CompileService {
                  println "****WARNING**** using duplicate - is this still needed?"
                  duplicateExpr =
                      "//duplicate\n"+
-                             "\$scope.$pageComponent.name = \$scope._${pageComponent.parent.model.toLowerCase()}s_${pageComponent.parent.name}[0].$pageComponent.model;"
+                     "\$scope.$pageComponent.name = \$scope._${pageComponent.parent.model.toLowerCase()}s_${pageComponent.parent.name}[0].$pageComponent.model;"
 
              }
 
@@ -513,20 +510,20 @@ class CompileService {
              if ( [pageComponent.COMP_TYPE_GRID,pageComponent.COMP_TYPE_DETAIL].contains( pageComponent.parent.type ) )  {
                  def parentID = pageComponent.parent.ID
                  code += """
-             \$scope.${parentID}_${pageComponent.name}_onUpdate = function(current_item) {
-                  $expr
-              };
-             """
+                       |    \$scope.${parentID}_${pageComponent.name}_onUpdate = function(current_item) {
+                       |         $expr
+                       |    };
+                       |""".stripMargin()
              } else {
-                //next code is used for non-DataSet items with an onUpdate, i.e. an input field to set a filter
-                code += """
-             \$scope.${pageComponent.name}_onUpdate = function() {
-                  $duplicateExpr
-                  // handle undefined value
-                  \$scope.${pageComponent.name} = nvl(\$scope.${pageComponent.name}, "");
-                  $expr
-             };
-             """
+                 //next code is used for non-DataSet items with an onUpdate, i.e. an input field to set a filter
+                 code += """
+                       |    \$scope.${pageComponent.name}_onUpdate = function() {
+                       |         $duplicateExpr
+                       |         // handle undefined value
+                       |         \$scope.${pageComponent.name} = nvl(\$scope.${pageComponent.name}, "");
+                       |         $expr
+                       |    };
+                       |""".stripMargin()
              }
          }
         pageComponent.components.each { child ->

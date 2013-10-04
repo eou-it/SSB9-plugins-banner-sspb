@@ -5,6 +5,7 @@ import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 
 import net.hedtech.banner.security.BannerGrantedAuthority
 import org.springframework.security.core.GrantedAuthority
+import org.apache.commons.logging.LogFactory
 
 // Integration with Banner - class to get user object for page builder
 // Define a user object with relevant attributes from the Banner user
@@ -17,7 +18,7 @@ class PBUser {
     static def get(groovy.sql.Sql sql=null) {
         def userIn = SecurityContextHolder?.context?.authentication?.principal
         def user
-        println "Getting new PB User $userIn"
+        LogFactory.getLog(this).info "Getting new PB User $userIn"
         //avoid direct dependency on BannerUser
         if (userIn.class.name.endsWith('BannerUser')) {
             Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>()
