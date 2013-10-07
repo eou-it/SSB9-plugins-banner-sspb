@@ -1,5 +1,7 @@
 package net.hedtech.banner.sspb
 
+import net.hedtech.banner.tools.i18n.PageMessageSource
+
 //import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 import org.codehaus.groovy.grails.commons.ConfigurationHolder as CH
 
@@ -144,10 +146,14 @@ class CompileService {
     def static compile2page(pageComponent) {
         def pageTxt=pageComponent.compileComponent("")
         def pageUtilService = new PageUtilService()
-        pageUtilService.updateProperties(pageComponent.rootProperties,"pages")
-        pageUtilService.updateProperties(pageComponent.globalProperties,"pageGlobal")
+        pageUtilService.updateProperties(pageComponent.rootProperties,propertiesFileName(pageComponent.name))
+        pageUtilService.updateProperties(pageComponent.globalProperties,PageMessageSource.globalPropertiesName)
         pageUtilService.reloadBundles()
         return pageTxt
+    }
+
+    def static propertiesFileName(String pageName) {
+        pageName.tr('_ ','-.')
     }
 
 

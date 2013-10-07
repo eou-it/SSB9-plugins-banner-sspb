@@ -13,13 +13,13 @@ import java.util.concurrent.ConcurrentHashMap
 // from ssh://git@devgit1/banner/plugins/banner_tools.git
 class BannerMessageSource extends PluginAwareResourceBundleMessageSource {
 
-    String extensibleBundleLocation
+    //String externalDataLocation
     private PathMatchingResourcePatternResolver extensibleResourceResolver;
     private ResourceLoader extensibleResourceLoader;
     private Map cachedExtensibleProperties = new ConcurrentHashMap();
     private int externalBundleCacheMillis = -1;
 
-    ExtendedMessageSource extensibleMessageSource
+    PageMessageSource pageMessageSource
 
     @Override
     protected String resolveCodeWithoutArguments(String code, Locale locale) {
@@ -30,7 +30,7 @@ class BannerMessageSource extends PluginAwareResourceBundleMessageSource {
             return code
         }
 
-        String msg = extensibleMessageSource.resolveCodeWithoutArguments(code, locale)
+        String msg = pageMessageSource.resolveCodeWithoutArguments(code, locale)
         if(msg == null) {
             return super.resolveCodeWithoutArguments(code, getLocale(locale))    //To change body of overridden methods use File | Settings | File Templates.
         } else {
@@ -47,7 +47,7 @@ class BannerMessageSource extends PluginAwareResourceBundleMessageSource {
             return new MessageFormat(code, locale)
         }
 
-        MessageFormat mf = extensibleMessageSource.resolveCode(code, locale)
+        MessageFormat mf = pageMessageSource.resolveCode(code, locale)
         if(mf == null) {
             return super.resolveCode(code, getLocale(locale))    //To change body of overridden methods use File | Settings | File Templates.
         } else {

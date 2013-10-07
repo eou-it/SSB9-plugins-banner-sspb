@@ -1,5 +1,6 @@
 package net.hedtech.banner.sspb
 
+import net.hedtech.banner.tools.i18n.PageMessageSource
 import org.codehaus.groovy.grails.web.context.ServletContextHolder
 import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
 import org.springframework.context.ApplicationContext
@@ -103,8 +104,15 @@ class PageUtilService {
         def bundleLocation = "$externalDataLocation/${baseName}.properties"
         def bundle = new File(bundleLocation)
         def temp = new SortedProperties()
-        if (bundle.exists())
+        if (bundle.exists()) {
             new org.springframework.util.DefaultPropertiesPersister().load(temp, new InputStreamReader( new FileInputStream(bundle), "UTF-8"))
+        }  else {
+            // if a new file we need to add it to the base names
+            ApplicationContext applicationContext = (ApplicationContext) ServletContextHolder.getServletContext()
+                    .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT);
+            PageMessageSource pageMessageSource = applicationContext.getBean("pageMessageSource")
+            pageMessageSource.addPageResource(baseName)
+        }
         temp.putAll(properties)
         new org.springframework.util.DefaultPropertiesPersister().store( temp, new OutputStreamWriter( new FileOutputStream(bundle),"UTF-8" ), "")
     }
@@ -115,8 +123,8 @@ class PageUtilService {
         def messageSource = applicationContext.getBean("messageSource")
         messageSource.clearCache()
 
-        def extensibleMessageSource = applicationContext.getBean("extensibleMessageSource")
-        extensibleMessageSource.clearCache()
+        def pageMessageSource = applicationContext.getBean("pageMessageSource")
+        pageMessageSource.clearCache()
     }
 
 }

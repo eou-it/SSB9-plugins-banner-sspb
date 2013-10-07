@@ -3,7 +3,7 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.core.io.ContextResource
 import org.apache.commons.lang.StringUtils
-import net.hedtech.banner.tools.i18n.ExtendedMessageSource
+import net.hedtech.banner.tools.i18n.PageMessageSource
 import net.hedtech.banner.tools.i18n.BannerMessageSource
 import grails.util.Environment
 import org.codehaus.groovy.grails.web.context.GrailsConfigUtils
@@ -57,13 +57,6 @@ Brief summary/description of the plugin.
 
     def doWithSpring = {
         //  from ssh://git@devgit1/banner/plugins/banner_tools.git   mostly
-        def externalbundleloc = PageUtilService.getExternalDataLocation()
-
-        println "External Bundle location : "  + externalbundleloc + " (To change specify location in JVM parameter: -D${PageUtilService.propertyDataDir}=\"c:/temp\")"
-        // find i18n resource bundles and resolve basenames
-        if(externalbundleloc instanceof ConfigObject) {
-            externalbundleloc = "";
-        }
         Set baseNames = []
 
         def messageResources
@@ -107,19 +100,18 @@ Brief summary/description of the plugin.
         }
 
         LOG.debug "Creating messageSource with basenames: $baseNames"
-        def pageResources = ["pages","pageGlobal"].toArray()
-        extensibleMessageSource (ExtendedMessageSource) {
-            extensibleBundleLocation = externalbundleloc
-            //basename = "messages"
-            basenames=pageResources
-            allBundles = messageResources
+
+        // create bean pageMessageSource
+        pageMessageSource (PageMessageSource) {
         }
+
+
         messageSource(BannerMessageSource) {
             basenames = baseNames.toArray()
             fallbackToSystemLocale = false
-            extensibleBundleLocation = externalbundleloc
+            //externalDataLocation = externalbundleloc
             pluginManager = manager
-            extensibleMessageSource = ref (extensibleMessageSource)
+            pageMessageSource = ref (pageMessageSource)
             if (Environment.current.isReloadEnabled() || GrailsConfigUtils.isConfigTrue(application, GroovyPagesTemplateEngine.CONFIG_PROPERTY_GSP_ENABLE_RELOAD)) {
                 def cacheSecondsSetting = application?.flatConfig?.get('grails.i18n.cache.seconds')
                 if(cacheSecondsSetting != null) {
