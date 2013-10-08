@@ -45,6 +45,12 @@ class PageComponent {
     // Types that have a DataSet associated  - not completely orthogonal yet. COMP_ITEM_TYPES can have it too
     final static COMP_DATASET_TYPES = [COMP_TYPE_GRID,COMP_TYPE_LIST,COMP_TYPE_SELECT,COMP_TYPE_DETAIL,COMP_TYPE_DATA, COMP_TYPE_RADIO]
 
+    // component type that is renderable
+    final static COMP_VISUAL_TYPES = [COMP_TYPE_PAGE,COMP_TYPE_FORM, COMP_TYPE_BLOCK, COMP_TYPE_LITERAL,
+            COMP_TYPE_DISPLAY,COMP_TYPE_TEXT,COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER,COMP_TYPE_BUTTON,
+            COMP_TYPE_DATETIME,COMP_TYPE_EMAIL,COMP_TYPE_TEL,COMP_TYPE_LINK,COMP_TYPE_BOOLEAN,COMP_TYPE_SUBMIT,
+            COMP_TYPE_GRID,COMP_TYPE_LIST,COMP_TYPE_SELECT,COMP_TYPE_DETAIL,COMP_TYPE_RADIO]
+
     final static BINDING_REST = "rest"
     final static BINDING_SQL = "sql"
     final static BINDING_PAGE = "page"
@@ -57,6 +63,7 @@ class PageComponent {
     final static CONTROLLER_PLACEHOLDER="###CONTROLLER###"
     final static VAR_PRE = '$'  //page model variable prefix
     final static VAR_RES = '$$' // page model reserved variable prefix
+    final static STYLE_ATTR = 'style' // component attribute name for use in JavaScript code
 
     final static NEXT_BUTTON_DEFAULT_LABEL = "Next"
 
@@ -654,7 +661,8 @@ class PageComponent {
         if(isDataSetEditControl(parent) || isDataSetEditControl(this))
             idTxtParam = "{{\$index}}"
 
-        styleStr = style?""" class="$style" """:""
+        //styleStr = style?""" class="$style" """:""
+        styleStr = """ ng-class='${name}_$STYLE_ATTR' """
         labelStyleStr =  labelStyle?""" class="$labelStyle" """:""
         valueStyleStr =  valueStyle?""" class="$valueStyle" """:""
 

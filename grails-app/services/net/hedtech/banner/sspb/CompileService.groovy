@@ -118,6 +118,9 @@ class CompileService {
         // add flow control functions
         codeList << buildFlowControl(page)
 
+        // add style initialization code
+        codeList << initializeStyle(page)
+
         // TODO Add each function to result
         def result = codeList.join("\n")
         // inject common code into controller
@@ -139,6 +142,22 @@ class CompileService {
         return result
     }
 
+    // iterate through all components and add a style attributes (name.style_attr)
+    def static initializeStyle(pageComponent) {
+        def ret = ""
+        if (PageComponent.COMP_VISUAL_TYPES.contains(pageComponent.type))
+        {
+            // set the initial value if specified in the page definition
+            def style = pageComponent.style?"'${pageComponent.style}'":"''"
+            // add a scope variable to for dynamic CSS manipulation
+            ret += """\$scope.${pageComponent.name}_${PageComponent.STYLE_ATTR}=$style;\n"""
+        }
+        pageComponent.components.each { child ->
+            ret+= initializeStyle(child)
+        }
+        return ret
+
+    }
 //major step 3. (done in pageComponent)
     // compile the page
     // accept a normalized page level pageComponent
