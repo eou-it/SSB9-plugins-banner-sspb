@@ -247,7 +247,7 @@ fieldset,
 }
 
 label {
-	cursor: pointer;
+	#cursor: pointer;
 	display: inline-block;
 	margin: 0 0.25em 0 0;
 }

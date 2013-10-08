@@ -442,11 +442,11 @@ class PageComponent {
                 def arrayName = "${name}DS.data"
                 readonlyAt = (parent.allowModify && !ro)?"":"disabled" //select doesn't have readonly
                 ngChange="ng-change=\""+(onUpdate?"\${name}DS.onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity);${name}DS.setCurrentRecord(row.entity.$model);\""
-                placeholderAt = placeholder?"""<option value="">${tran("placeholder",ESC_JS)}</option>""":""
+                placeholderAt = placeholder?"""<option value="">${tran("placeholder")}</option>""":""
                 return """<select ${styleAt} $ngModel $readonlyAt $ngChange $defaultAt ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName"> $placeholderAt </select>"""
             case [COMP_TYPE_TEXT, COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER, COMP_TYPE_DATETIME, COMP_TYPE_EMAIL, COMP_TYPE_TEL] :
                 validateAt = validation?validation.collect { k,v -> "$k=\"$v\"" }.join(' '):""
-                placeholderAt=placeholder?"placeholder=\"${tran("placeholder",ESC_JS)}\"":""
+                placeholderAt=placeholder?"placeholder=\"${tran("placeholder")}\"":""
                 //specialAt="onClick=\"console.log(${javaScriptString("'Row  :{{row.rowIndex}}'")});\""
                 break
             case COMP_TYPE_BOOLEAN:
@@ -455,9 +455,14 @@ class PageComponent {
                 break
             case COMP_TYPE_DISPLAY:
                 typeAt=""
+                if (asHtml) {
+                    tagStart="<span"
+                    tagEnd="></span>"
+                    ngModel="ng-bind-html-unsafe=\"COL_FIELD\""
+                }
                 break
             case COMP_TYPE_LITERAL:
-                return "<span $styleAt>" + tran(getPropertiesBaseKey()+".value",CompileService.parseLiteral(value).replaceAll("item.","row.entity."),[],ESC_JS ) + "</span>"
+                return "<span $styleAt>" + tran(getPropertiesBaseKey()+".value",CompileService.parseLiteral(value).replaceAll("item.","row.entity.") ) + "</span>"
                 break
             default :
                 println "***No ng-grid html edit template for $type ${name?name:model}"
