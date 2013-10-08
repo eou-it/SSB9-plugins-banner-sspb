@@ -77,15 +77,6 @@
         <g:set var="localeLanguage"    value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).language}" scope="page" />
         <g:set var="localeBrowserFull" value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).toString().replace('_','-')}" scope="page" />
 
-        <!-- Do we still need the anish-app*.css?
-        <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
-            <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'anish-app-rtl.css')}">
-        </g:if>
-        <g:else>
-            <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'anish-app.css')}">
-        </g:else>
-        -->
-
         <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular.js" />"></script>
         <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular-resource.js"/>"></script>
         <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular-sanitize.js"/>"></script>
@@ -100,7 +91,12 @@
         <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeBrowserFull.toLowerCase()}.js" />"> </script>
         <!-- end from Harry -->
 
-        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'main.css')}">
+        <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
+            <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'main-rtl.css')}">
+        </g:if>
+        <g:else>
+            <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'main.css')}">
+        </g:else>
 
         <script type="text/javascript">
             var rootWebApp = ${createLink(uri: '/')};  //use in controller restful interface

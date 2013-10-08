@@ -16,8 +16,13 @@
     <meta name="menuEndPoint" content="${request.contextPath}/ssb/menu"/>
     <meta name="menuBaseURL" content="${request.contextPath}/ssb"/>
     <meta name="menuDefaultBreadcrumbId" content=""/>
+    <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pageComposer-rtl.css')}">
+    </g:if>
+    <g:else>
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pageComposer.css')}">
+    </g:else>
 
-    <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pageComposer.css')}">
 
     <script src="<g:resource plugin="banner-sspb" dir="js" file="pbDirectives.js" />"> </script>
 
