@@ -138,8 +138,9 @@
             }
         ],
         "sourceRenderDefinitions" : [
-            {"AttributeType":["name",  "title", "label", "style", "importCSS", "submitLabel", "model", "placeholder", "labelKey", "valueKey", "sourceModel", "booleanTrueValue", "booleanFalseValue",             {"AttributeType":["type"], "renderProperty":{"inputType":"select"}},
-                "imageUrl", "url"], "renderProperty":{"inputType":"text"}},
+            {"AttributeType":["name",  "title", "label", "style", "importCSS", "submitLabel", "model", "placeholder", "labelKey", "valueKey", "sourceModel",
+                "booleanTrueValue", "booleanFalseValue", "imageUrl", "url", "labelStyle", "valueStyle"], "renderProperty":{"inputType":"text"}},
+            {"AttributeType":["type"], "renderProperty":{"inputType":"select"}},
             {"AttributeType":["submit", "validation", "value", "onUpdate", "onClick", "onLoad", "sequence", "description", "documentation"], "renderProperty":{"inputType":"textarea"}},
             {"AttributeType":["type"], "renderProperty":{"inputType":"select"}},
             {"AttributeType":["resource"], "renderProperty":{"inputType":"combo", "selectSource":"virtualDomains.pbadmVirtualDomainLookup"}},
