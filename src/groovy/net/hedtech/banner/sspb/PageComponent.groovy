@@ -12,6 +12,7 @@ class PageComponent {
     final static COMP_TYPE_PAGE = "page"
     final static COMP_TYPE_FORM = "form"
     final static COMP_TYPE_GRID = "grid"
+    final static COMP_TYPE_HTABLE = "htable"
     final static COMP_TYPE_SELECT = "select"
     final static COMP_TYPE_LIST = "list"
     final static COMP_TYPE_DETAIL = "detail"
@@ -43,13 +44,13 @@ class PageComponent {
     final static COMP_DISPLAY_TYPES =  [COMP_TYPE_LITERAL,COMP_TYPE_DISPLAY,COMP_TYPE_LINK,COMP_TYPE_HIDDEN]
 
     // Types that have a DataSet associated  - not completely orthogonal yet. COMP_ITEM_TYPES can have it too
-    final static COMP_DATASET_TYPES = [COMP_TYPE_GRID,COMP_TYPE_LIST,COMP_TYPE_SELECT,COMP_TYPE_DETAIL,COMP_TYPE_DATA, COMP_TYPE_RADIO]
+    final static COMP_DATASET_TYPES = [COMP_TYPE_GRID,COMP_TYPE_HTABLE,COMP_TYPE_LIST,COMP_TYPE_SELECT,COMP_TYPE_DETAIL,COMP_TYPE_DATA, COMP_TYPE_RADIO]
 
     // component type that is renderable
     final static COMP_VISUAL_TYPES = [COMP_TYPE_PAGE,COMP_TYPE_FORM, COMP_TYPE_BLOCK, COMP_TYPE_LITERAL,
             COMP_TYPE_DISPLAY,COMP_TYPE_TEXT,COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER,COMP_TYPE_BUTTON,
             COMP_TYPE_DATETIME,COMP_TYPE_EMAIL,COMP_TYPE_TEL,COMP_TYPE_LINK,COMP_TYPE_BOOLEAN,COMP_TYPE_SUBMIT,
-            COMP_TYPE_GRID,COMP_TYPE_LIST,COMP_TYPE_SELECT,COMP_TYPE_DETAIL,COMP_TYPE_RADIO]
+            COMP_TYPE_GRID,COMP_TYPE_HTABLE,COMP_TYPE_LIST,COMP_TYPE_SELECT,COMP_TYPE_DETAIL,COMP_TYPE_RADIO]
 
     final static BINDING_REST = "rest"
     final static BINDING_SQL = "sql"
@@ -172,18 +173,19 @@ class PageComponent {
     def rootProperties = [:]    // the key/value properties (set on page component)
     def globalProperties = [:]  // properties shared in pages
 
-    def styleStr
-    def labelStyleStr
-    def valueStyleStr
+    def styleStr = ""
+    def labelStyleStr = ""
+    def valueStyleStr = ""
 
     def idTxtParam = ""
+    def modelOrigin = "NULL"  //Save model here if is changed in normalization so we know item is not bound to a resource
 
     // map the validation key to angular attributes ? use HTML 5 validation instead with form
     // def validationKeyMap = ["minlength":"ngMinlength", "maxlength":"ngMaxlength", "pattern":"ngPattern"]
 
     static boolean isDataSetEditControl ( PageComponent pc ){
         if (pc)
-            [COMP_TYPE_DETAIL,COMP_TYPE_GRID, COMP_TYPE_LIST].contains(pc?.type)
+            [COMP_TYPE_DETAIL,COMP_TYPE_GRID,COMP_TYPE_HTABLE,COMP_TYPE_LIST].contains(pc?.type)
         else
             false;
     }
@@ -272,15 +274,14 @@ class PageComponent {
     /*
    utility function to generate a unique ID for generated HTML tag
    the id is of the format: pbid-<component_name>-<component-type>-<additional tag>
-   Additional tag is used to differenciate generated controls inside an component (such as new button for grid)
+   Additional tag is used to differentiate generated controls inside an component (such as new button for grid)
    id is used for styling purpose
     */
-    def getId(tag = "") {
-        def s = """id='pbid-$name"""
-        if (tag)
-            s += """-$tag""";
-        s +="'"
-        return s
+    def getIdAttr(tag = "") {
+        def s = """id='pbid-$name${tag?tag:""}'"""
+    }
+    def getIdFor(tag = "") {
+        def s = """for="pbid-$name${tag?tag:""}" """
     }
 
     def recordControlPanel()  {
@@ -288,14 +289,14 @@ class PageComponent {
         def result =
         """
         <!-- pagination -->
-        <span ${getId('pagination-container')} ng-show='${dataSet}.totalCount > ${dataSet}.pagingOptions.pageSize'>
-        <button ${getId('pagination-prev-button')} $styleStr ng-disabled="${dataSet}.pagingOptions.currentPage == 1" ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1">
+        <span ${getIdAttr('pagination-container')} ng-show='${dataSet}.totalCount > ${dataSet}.pagingOptions.pageSize'>
+        <button ${getIdAttr('pagination-prev-button')} $styleStr ng-disabled="${dataSet}.pagingOptions.currentPage == 1" ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1">
                 ${tranGlobal("page.previous.label","Previous")}
         </button>
-        <span ${getId('pagination-page-count')}>
+        <span ${getIdAttr('pagination-page-count')}>
             {{${dataSet}.pagingOptions.currentPage}}/{{${dataSet}.numberOfPages()}}
         </span>
-        <button ${getId('pagination-next-button')}  $styleStr ng-disabled="${dataSet}.pagingOptions.currentPage >= ${dataSet}.totalCount/${dataSet}.pagingOptions.pageSize " ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1">
+        <button ${getIdAttr('pagination-next-button')}  $styleStr ng-disabled="${dataSet}.pagingOptions.currentPage >= ${dataSet}.totalCount/${dataSet}.pagingOptions.pageSize " ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1">
                 ${tranGlobal("page.next.label","Next")}
         </button>
         <br>
@@ -304,26 +305,49 @@ class PageComponent {
         """
 
         if (allowNew) {
-            result += """ <button ${getId('new-button')} $styleStr ng-click="${dataSet}.add()"> ${tranGlobal("newRecord.label","Add New")}  </button>"""
+            result += """ <button ${getIdAttr('new-button')} $styleStr ng-click="${dataSet}.add(${newRecordName()}())"> ${tranGlobal("newRecord.label","Add New")}  </button>"""
         }
         if (allowModify || allowDelete) {
-            result += """ <button ${getId('save-button')} $styleStr ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()"> ${tranGlobal("save.label","Save")} </button>"""
+            result += """ <button ${getIdAttr('save-button')} $styleStr ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()"> ${tranGlobal("save.label","Save")} </button>"""
         }
         if (allowReload) {
-            result += """ <button ${getId('reload-button')} $styleStr ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})"> ${tranGlobal("refresh.label","Refresh")} </button> """
+            result += """ <button ${getIdAttr('reload-button')} $styleStr ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})"> ${tranGlobal("refresh.label","Refresh")} </button> """
         }
         return result
+    }
+
+    String newRecordName() {
+        return "new_$name"
+    }
+
+    String initNewRecordJS() {
+        def initialValues=""
+        components.each { child ->
+            if (child.value && child.modelOrigin) {
+                def  expr = CompileService.parseExpression(child.value)
+                // this is a bit horrible with HTML - can't really distinguish number from string literals
+                if ([child.booleanFalseValue,child.booleanTrueValue].contains(child.value)
+                    && !["true","false"].contains(child.value) ) {
+                    // use quotes
+                    expr="\"$expr\""
+                }
+                CompileService.dataSetIDsIncluded.each { //replace with dataSetIDs
+                    expr=expr.replace(".${it}_",".${it}DS.")
+                }
+                initialValues+="${initialValues?",":""}${child.model}: $expr"
+            }
+        }
+        initialValues="""\$scope.${newRecordName()}=function(){return {$initialValues};}"""
     }
 
     def gridControlPanel()  {
         def dataSet    =  "${name}DS"
         def result = ""
-        styleStr=styleStr?styleStr:""
         if (allowNew) {
-            result += """ <button $styleStr ng-click="${dataSet}.add()"> ${tranGlobal("newRecord.label","Add New",[], ESC_JS)}  </button>"""
+            result += """ <button $styleStr ng-click="${dataSet}.add(${newRecordName()}())"> ${tranGlobal("newRecord.label","Add New",[], ESC_JS)}  </button>"""
         }
         if (allowDelete) {
-            result += """ <button $styleStr ng-click="${dataSet}.delete(${dataSet}.selectedRecords)" ng-disabled="${dataSet}.selectedRecords.length==0"> ${tranGlobal("deleteRecord.label","Delete selected",[], ESC_JS)}  </button>"""
+            result += """ <button $styleStr ng-click="${dataSet}.deleteRecords(${dataSet}.selectedRecords)" ng-disabled="${dataSet}.selectedRecords.length==0"> ${tranGlobal("deleteRecord.label","Delete selected",[], ESC_JS)}  </button>"""
         }
         if (allowModify || allowDelete) {
             result += """ <button $styleStr ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()"> ${tranGlobal("save.label","Save",[], ESC_JS)} </button>"""
@@ -336,6 +360,8 @@ class PageComponent {
         return result
     }
 
+
+
     String gridJS() {
         def dataSet    =  "${name}DS"
         def items =""
@@ -347,10 +373,8 @@ class PageComponent {
             if (items.length()>0)
                 items+=",\n"
             def optional =  (child.type==COMP_TYPE_HIDDEN)? ",visible: false":""
-            //optional+= ro?"":",enableCellEdit: ${!ro}"   // breaks drop-down in firefox and is not really needed
-            //TODO: for sorting need a way to distinguish JSON data from formula's or synthetic columns (i.e. boolean without model)
-            //model gets automatically populated with Name - maybe don't do this and reserve model for JSON columns
-            if (child.type==COMP_TYPE_LITERAL)// needs to be a column in the api to be sortable on server
+            //Only allow sorting if model is originally set
+            if (!child.modelOrigin)// needs to be a column in the api to be sortable on server
                 optional+=",sortable: false"
             items+="""
                    { field: '${child.model}', displayName: '${child.tran("label",ESC_JS)}',
@@ -425,12 +449,11 @@ class PageComponent {
         def tagStart="<input"
         def tagEnd="/>"
         def typeAt="type=\"$type\""
-        def styleAt="style=\"background-color:transparent; border:0; width: 100%; height:{{rowHeight}}px\""
+        def styleAt="class=\"grid-$type\" style=\"background-color:transparent; border:0; width: 100%; height:{{rowHeight}}px\""
         def specialAt=""
         def readonlyAt = (parent.allowModify && !ro)?"":"readonly"
         def requiredAt = required?"required":""
         def validateAt = ""
-        def defaultAt = "" //ng-init seems not to work within grid.javaScriptString(defaultValue())
         def placeholderAt=""
         def ngModel="ng-model=\"COL_FIELD\""    // shorthand for  row.entity[col.field]
         def ngChange="ng-change=\""+(onUpdate?"\$parent.${parent.ID}_${name}_onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity)\""
@@ -443,6 +466,7 @@ class PageComponent {
             //Cannot choose format with time, but lots of options. See http://jqueryui.com/datepicker/
         }
 
+
         switch (type) {
             case COMP_TYPE_SELECT:
                 // SELECT must have a model
@@ -450,7 +474,7 @@ class PageComponent {
                 readonlyAt = (parent.allowModify && !ro)?"":"disabled" //select doesn't have readonly
                 ngChange="ng-change=\""+(onUpdate?"\${name}DS.onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity);${name}DS.setCurrentRecord(row.entity.$model);\""
                 placeholderAt = placeholder?"""<option value="">${tran("placeholder")}</option>""":""
-                return """<select ${styleAt} $ngModel $readonlyAt $ngChange $defaultAt ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName"> $placeholderAt </select>"""
+                return """<select ${styleAt} $ngModel $readonlyAt $ngChange ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName"> $placeholderAt </select>"""
             case [COMP_TYPE_TEXT, COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER, COMP_TYPE_DATETIME, COMP_TYPE_EMAIL, COMP_TYPE_TEL] :
                 validateAt = validation?validation.collect { k,v -> "$k=\"$v\"" }.join(' '):""
                 placeholderAt=placeholder?"placeholder=\"${tran("placeholder")}\"":""
@@ -458,6 +482,7 @@ class PageComponent {
                 break
             case COMP_TYPE_BOOLEAN:
                 typeAt = "type=\"checkbox\""
+                styleAt="style=\"background-color:transparent; border:0; width: 30%; height:{{rowHeight}}px\""
                 specialAt ="""${booleanTrueValue?"ng-true-value=\"$booleanTrueValue\"":""}  ${booleanFalseValue?"ng-false-value=\"$booleanFalseValue\"":""}  """
                 break
             case COMP_TYPE_DISPLAY:
@@ -474,21 +499,17 @@ class PageComponent {
             default :
                 println "***No ng-grid html edit template for $type ${name?name:model}"
         }
-        def result = "$tagStart $typeAt $styleAt $specialAt $readonlyAt $requiredAt $validateAt $defaultAt $placeholderAt" +
+        def result = "$tagStart $typeAt $styleAt $specialAt $readonlyAt $requiredAt $validateAt $placeholderAt" +
                      " $ngModel $ngChange $tagEnd"
         return result
     }
 
+
     /*
     Special compilation for generating table specific controls
      */
-    def gridCompile(int depth=0) {
+    def htableCompile(int depth=0) {
 
-        if (name.endsWith("NGrid")) { //TODO
-            def borderpx=2
-            //headerRowHeight doesn't work in {{ expression }} - assume same as rowHeight hence pageSize+1
-            return """<div class="gridStyle" ng-grid="${name}Grid" style="width:99.5%; height:{{${borderpx*2}+${pageSize+1}*rowHeight+footerRowHeight}}px; border: ${borderpx}px solid rgb(212,212,212);$style"></div>"""
-        }
         // Old code with HTML Table grid -- leave for now as some parts are not implemented yet in new Grid
         def dataSet    =  "${name}DS"
         def repeat = "$GRID_ITEM in ${dataSet}.data"
@@ -499,43 +520,45 @@ class PageComponent {
 
         // add a delete checkbox column if allowDelete is true
         if (allowDelete) {
-            thead = "<th ${getId('delete-column-header')} $styleStr >${tranGlobal("delete.label","Delete")}</th>"
+            thead = "<th ${getIdAttr('delete-column-header')} $styleStr >${tranGlobal("delete.label","Delete")}</th>"
             items = """
-            <td ${getId('delete-column-data-'+idTxtParam)} $styleStr >
-             <input ${getId('delete-column-checkbox-'+idTxtParam)} $styleStr ng-click="${dataSet}.delete($GRID_ITEM)" type="checkbox" style="width:20%"/>
-            </td>
-            """
+                  |<td ${getIdAttr('delete-column-data-'+idTxtParam)} $styleStr >
+                  |<input ${getIdAttr('delete-column-checkbox-'+idTxtParam)} $styleStr ng-click="${dataSet}.deleteRecords($GRID_ITEM)" type="checkbox" />
+                  |</td>
+                  |""".stripMargin()
         }
         // generate all table columns from the data model
         components.each { child ->
             child.parent = this
             if (child.type == COMP_TYPE_HIDDEN) {
-                //no table data or headers
-                items+= child.compileComponent("", depth)
-
-            }   else {
-                //get the labels from child components
-                thead+="<th ${getId('data-header-'+child.name)} $styleStr >${child.tran("label")}</th>"
+                //column not displayed - have to use th/td to keep IE8 happy
+                thead+="<th style=\"display:none;\"></th>"
                 //get the child components
                 child.label=""
-                items+="<td ${getId('data-cell-' + child.name + '-' + idTxtParam )} $styleStr >${child.compileComponent("", depth)}</td>\n"
+                items+="<td style=\"display:none;\"> ${child.compileComponent("", depth)} </td>\n"
+            }   else {
+                //get the labels from child components
+                thead+="<th ${getIdAttr('data-header-'+child.name)} $styleStr >${child.tran("label")}</th>"
+                //get the child components
+                child.label=""
+                items+="<td ${getIdAttr('data-cell-' + child.name + '-' + idTxtParam )} $styleStr >${child.compileComponent("", depth)}</td>\n"
             }
         }
         def click_txt=""
         if (onClick)
             click_txt = "ng-click=${name}_onClick($GRID_ITEM)"
 
-        def result =
-            """<table ${getId()} $styleStr >
-            <thead ${getId('table-header')} ><tr ${getId('table-header-row')} >$thead</tr></thead>
-            <tbody ${getId('table-body')} >
-            <!-- Do this for every object in objects -->
-            <tr ${getId('table-data-row-'+idTxtParam)}  ng-repeat="$repeat" $click_txt>
-              $items
-            </tr>
-            </tbody>
-            </table>
-            """
+        def result =  """
+                   |  <table ${getIdAttr()} $styleStr >
+                   |    <thead ${getIdAttr('table-header')} ><tr ${getIdAttr('table-header-row')} >$thead</tr></thead>
+                   |    <tbody ${getIdAttr('table-body')} >
+                   |      <!-- Do this for every object in objects -->
+                   |      <tr ${getIdAttr('table-data-row-'+idTxtParam)}  ng-repeat="$repeat" $click_txt>
+                   |        $items
+                   |      </tr>
+                   |    </tbody>
+                   |  </table>
+                   |""".stripMargin()
         result +=  recordControlPanel()
         return result
     }
@@ -544,23 +567,22 @@ class PageComponent {
 
 
     def detailCompile(int depth=0) {
-        def dataSet   =  "${name}DS"
+        def dataSet = "${name}DS"
         def repeat = "$GRID_ITEM in ${dataSet}.data"    //GRID_ITEM is confusing
 
-        def result = """<span $styleStr ${getId()}>"""
+        def result = """<span $styleStr ${getIdAttr()}>"""
         if (label)
-            result += "<label ${getId('label')}>${tran("label")}</label>\n"
-        result +="""<div ${getId("container-" + idTxtParam)} $styleStr ng-repeat="$repeat" >\n"""
+            result += "<label class=\"${type}-label\" ${getIdAttr('label')}>${tran("label")}</label>\n"
+        result +="""<div ${getIdAttr("container" + idTxtParam)} $styleStr ng-repeat="$repeat" >\n"""
 
         if (allowDelete) {
+            def idTag="delete-checkbox" + idTxtParam
             result += """
-
-                <div style="text-align:right" ${getId("delete-container" + idTxtParam)}>
-                    <input ${getId("delete-checkbox-" + idTxtParam)} ng-click="${dataSet}.delete($GRID_ITEM)" type="checkbox" />
-                </div>
-                <label style="text-align:left" ${getId("delete-label-" + idTxtParam)}> <strong>${tranGlobal("delete.label","Delete")}</strong></label>
-
-            """
+                    |<div style="text-align:right" ${getIdAttr("delete-container" + idTxtParam)}>
+                    |    <input ${getIdAttr(idTag)} ng-click="${dataSet}.deleteRecords($GRID_ITEM)" type="checkbox" />
+                    |</div>
+                    |<label style="text-align:left" ${getIdAttr("delete-label" + idTxtParam)} ${getIdFor(idTag)}> <strong>${tranGlobal("delete.label","Delete")}</strong></label>
+                    |""".stripMargin()
         }
         // generate all table columns from the data model
         components.each { child ->
@@ -578,20 +600,20 @@ class PageComponent {
      */
     def listCompile(int depth=0) {
 
-        def dataSet   =  "${name}DS"
-        def txt = "<span ${getId()}>"
+        def dataSet = "${name}DS"
+        def txt = "<span ${getIdAttr()}>"
         def repeat = "$LIST_ITEM in ${dataSet}.data"
 
         if (label)
-            txt += """<label ${getId('label')} $styleStr >${tran("label")}</label>"""
+            txt += """<label class="${type}-label" ${getIdAttr('label')} $styleStr >${tran("label")}</label>"""
         // handle click event
         def click_txt=""
         if (onClick)
             click_txt = "ng-click=${name}_onClick($LIST_ITEM)"
         txt +=
-            """<ul ${getId('ul-')} $styleStr >
-            <li ${getId("li-" + idTxtParam)} $click_txt ng-repeat="$repeat">
-             ${onClick?"<a ${getId('a-'+ idTxtParam)} href=\"\">":""} {{$LIST_ITEM.$value}}  ${onClick?"</a>":""}
+            """<ul ${getIdAttr('ul-')} $styleStr >
+            <li ${getIdAttr("li-" + idTxtParam)} $click_txt ng-repeat="$repeat">
+             ${onClick?"<a ${getIdAttr('a-'+ idTxtParam)} href=\"\">":""} {{$LIST_ITEM.$value}}  ${onClick?"</a>":""}
             </li>
             </ul>
             """
@@ -599,191 +621,136 @@ class PageComponent {
         return txt
     }
 
-    def radioCompile(int depth=0) {
-        def arrayName = "${name}DS.data"
-        def result
-        def ngModel = name
-        // TODO handle parent GRID/DETAIL ID generation
-        def labelTxt = label? """<label ${getId('label')} $styleStr for="${name?name:model}">${tran("label")}</label>""":""
-        def updateTxt = ""
-        //def placeholderStr = placeholder?"""<option value="">$placeholder</option>""":""
-        def initTxt = value?"""ng-init="\$parent.$ngModel='$value'" """:""
-        def nameTxt = name
-
-        if(parent.type == COMP_TYPE_DETAIL) {
-            ngModel =  "\$parent.$GRID_ITEM.${model}"
-            updateTxt +="\$parent.\$parent.${parent.name}DS.setModified(\$parent.$GRID_ITEM);"
-            nameTxt += "{{'${name}_' + \$parent.\$index}}"
-        } else if (parent.type == COMP_TYPE_GRID) {
-            ngModel =  "\$parent.$GRID_ITEM.${model}"
-            updateTxt +="\$parent.\$parent.${parent.name}DS.setModified(\$parent.$GRID_ITEM);"
-            nameTxt = "{{'${name}_' + \$parent.\$index}}"
-        } else {
-            ngModel =  "\$parent.$ngModel"
-        }
-        updateTxt += onUpdate?"${name}DS.onUpdate();":""
-        updateTxt = updateTxt?"ng-change=\"$updateTxt\"":""
-
-        def radio = """<div ${getId("container")} $styleStr ng-repeat="$SELECT_ITEM in $arrayName" $initTxt>
-            <input ${getId("radio-"+"{{\$index}}")} $styleStr type="radio"   ng-model=$ngModel name="$nameTxt" $updateTxt
-                value="{{$SELECT_ITEM.$valueKey}}"/> {{$SELECT_ITEM.$labelKey}}
-        </div>"""
-        if(parent.type == COMP_TYPE_DETAIL) {
-            result = """<div $styleStr ><label ${getId("label")}><strong>${tran("label")}</strong></label><span ${getId("radio")}>
-                             $radio
-                            </span> </div>"""
-        } else {
-            // TODO model for select is used for data input, not output - resolve model ambiguity
-            result = """$labelTxt $radio """
-        }
-        return result
-
-    }
-    // ?
-    def flowCompile() {
-
-    }
-
-
-
-    String componentStart(String t, int depth=0) {
-        // determine heading level
-        def heading = ""
-        def MAX_HEADING = 6
-        if (label) {
-            def headingLevel = (depth < MAX_HEADING-1)? depth+1: MAX_HEADING
-            heading = """<h$headingLevel ${getId("label")}>${tran("label")}</h$headingLevel>"""
-        }
-
+     String compileItem(String t, int depth=0){
         // handle ID generation for items in a dataset
         // append -$index to each rendered items
-
         if(isDataSetEditControl(parent) || isDataSetEditControl(this))
-            idTxtParam = "{{\$index}}"
+            idTxtParam = "-{{\$index}}"
+        if (t != COMP_TYPE_HIDDEN) {
+            styleStr = """ ng-class='${name}_$STYLE_ATTR' """
+            labelStyleStr =  labelStyle?""" class="$labelStyle" """:""
+            valueStyleStr =  valueStyle?""" class="$valueStyle" """:""
+        }
+        def labelTxt = label && (parent.type != COMP_TYPE_HTABLE)?"<label class=\"item-label ${type}-item-label\" ${getIdAttr"label"+(idTxtParam)} $labelStyleStr ${getIdFor(idTxtParam)}>${tran("label")}</label>":""
+        def result=""
 
-        //styleStr = style?""" class="$style" """:""
-        styleStr = """ ng-class='${name}_$STYLE_ATTR' """
-        labelStyleStr =  labelStyle?""" class="$labelStyle" """:""
-        valueStyleStr =  valueStyle?""" class="$valueStyle" """:""
-
+        def ngChange=""
+        // if item can be updated (TODO: check readonly)
+        if ( !COMP_DISPLAY_TYPES.contains(type) && t!=COMP_TYPE_SELECT ) {
+            if (isDataSetEditControl(parent)) {
+                if (onUpdate)  {
+                   ngChange="\$parent.${parent.ID}_${name}_onUpdate($GRID_ITEM);"  //
+                }
+                ngChange="""ng-change="$ngChange\$parent.${parent.name}DS.setModified($GRID_ITEM)"  """
+            } else {
+                if (onUpdate)  {
+                    ngChange="""ng-change="${name}_onUpdate()"  """
+                }
+            }
+        }
 
         switch (t) {
-
-            case COMP_TYPE_PAGE:
-                return pageHeader()
-            case COMP_TYPE_GRID:
-                return gridCompile(depth+1)
             case COMP_TYPE_SELECT:
                 // SELECT must have a model
                 def arrayName = "${name}DS.data"
-                def result
                 def ngModel = name
-                def labelTxt = label? """<label ${getId("label")} $styleStr for="${name?name:model}">${tran("label")}</label>""":""
-                def updateTxt = ""
                 def placeholderStr = placeholder?"""<option value="">${tran("placeholder")}</option>""":""
-
+                ngChange = "" //override default
                 if(isDataSetEditControl(parent)) {
                     ngModel =  "$GRID_ITEM.${model}"
-                    updateTxt +="\$parent.${parent.name}DS.setModified($GRID_ITEM); ${name}DS.setCurrentRecord($ngModel);"
+                    ngChange +="\$parent.${parent.name}DS.setModified($GRID_ITEM); ${name}DS.setCurrentRecord($ngModel);"
                 }
-                updateTxt += onUpdate?"${name}DS.onUpdate();":""
-                updateTxt = updateTxt?"ng-change=\"$updateTxt\"":""
-                def select = """<select  ${getId(idTxtParam)} $styleStr ng-model="$ngModel" $updateTxt  ${defaultValue()}
-                                           ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName">
-                                   $placeholderStr
-                                </select>"""
+                ngChange += onUpdate?"${name}DS.onUpdate();":""
+                ngChange = ngChange?"ng-change=\"$ngChange\"":""
+                def select = """
+                           |<select  ${getIdAttr(idTxtParam)} $styleStr ng-model="$ngModel" $ngChange  ${defaultValue()}
+                           |  ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName">
+                           |  $placeholderStr
+                           |</select>""".stripMargin()
                 if(parent.type == COMP_TYPE_DETAIL) {
-                    result = """<div ${getId("container")} $styleStr><label ${getId("label-" + idTxtParam)}>${tran("label")}</label>
-                             $select
-                             </div>"""
+                    result = """
+                           |<div ${getIdAttr("container")} $styleStr> $labelTxt
+                           |$select
+                           |</div>""".stripMargin()
                 } else {
                     // TODO model for select is used for data input, not output - resolve model ambiguity
                     result = """$labelTxt $select"""
                 }
                 return result
-            case COMP_TYPE_DETAIL:
-                return detailCompile(depth+1)
-
-            case COMP_TYPE_LIST:
-                return listCompile((depth+1))
-
             case COMP_TYPE_RADIO:
-                return radioCompile((depth+1))
+                def arrayName = "${name}DS.data"
+                def ngModel = name
+                // TODO handle parent GRID/DETAIL ID generation
+                def initTxt = value?"""ng-init="\$parent.$ngModel='$value'" """:""
+                def nameTxt = name
 
-            case COMP_TYPE_BLOCK:
-                    return """<div ${getId(idTxtParam)} $styleStr id="$name" ng-show="${name}_visible"> $heading
-                """
-            case COMP_TYPE_FORM:
-                def txt = ""
-
-                // handle flow controlled
-                def submitStr=""
-                if (submit)
-                    submitStr+=submit
-                if (root.flowDefs)
-                    submitStr+= "; _activateNextForm('$name');"
-
-                txt += """<form ${getId()} $styleStr name="${name?name:model}" ng-show="${name}_visible"  ${submitStr?"""ng-submit="$submitStr" """:""}>$heading
-                """
-                return txt
-            case COMP_TYPE_LITERAL:
-                //println tran(getPropertiesBaseKey()+".value",CompileService.parseLiteral(value) ) + "\n"
-                return "<span ${getId(idTxtParam)} $styleStr>" + tran(getPropertiesBaseKey()+".value",CompileService.parseLiteral(value) ) + "</span>\n"
-            case COMP_TYPE_DISPLAY:
-                def ret = ""
-                if (parent.type == COMP_TYPE_DETAIL) {
-                    ret += "<div ${getId("container-" + idTxtParam)} $styleStr>" +
-                            """<label ${getId("label-"+ idTxtParam)}> ${tran("label")}</label>"""
-                    if (asHtml) {
-                        ret += "<span ${getId(idTxtParam)} $styleStr  ng-bind-html-unsafe='$GRID_ITEM.$model'></span>"
-                    }
-                    else   {
-                        // TODO handle value in details for display
-                        def val = "{{$GRID_ITEM.$model}}"
-                        ret += "<span ${getId(idTxtParam)} $styleStr> $val</span>"
-                    }
-                    // for display in detail control take the parent model
-                    ret += "</div>"
-                } else if (parent.type == COMP_TYPE_GRID) {
-                    if (asHtml)
-                        ret = " <span ${getId(idTxtParam)} $styleStr ng-bind-html-unsafe='$GRID_ITEM.$model'> </span>";
-                    else
-                        ret = " <span ${getId(idTxtParam)} $styleStr> {{ $GRID_ITEM.${model} }} </span>";
+                ngChange = "" //override default
+                if(parent.type == COMP_TYPE_DETAIL ||parent.type == COMP_TYPE_GRID || parent.type == COMP_TYPE_HTABLE) {
+                    ngModel =  "\$parent.$GRID_ITEM.${model}"
+                    ngChange +="\$parent.\$parent.${parent.name}DS.setModified(\$parent.$GRID_ITEM);"
+                    nameTxt += "{{'${name}_' + \$parent.\$index}}"
                 } else {
-                    // otherwise the value is used
-                    // TODO consolidate value and sourceModel?
-                    // TODO is parseVariable still working after using DataSet as generic data object?
-                    ret  = label?"<label ${getId(idTxtParam)} $styleStr>${tran("label")}</label>":""
-
-
-                    if (asHtml) {
-                        ret += "<span ${getId(idTxtParam)} $styleStr  ng-bind-html-unsafe='${CompileService.parseVariable(value)}'></span>"
+                    ngModel =  "\$parent.$ngModel"
                 }
-                    else   {
-                        ret += value?"${CompileService.parseLiteral(value)}":""
-                        ret  = "<span ${getId(idTxtParam)} $styleStr> $ret</span>"
-                    }
+                ngChange += onUpdate?"${name}DS.onUpdate();":""
+                ngChange = ngChange?"ng-change=\"$ngChange\"":""
+
+                def radio = """
+                  |<div ${getIdAttr("container")} $styleStr ng-repeat="$SELECT_ITEM in $arrayName" $initTxt>
+                  |<input ${getIdAttr("radio-"+"{{\$index}}")} $styleStr type="radio" ng-model=$ngModel name="$nameTxt" $ngChange
+                  |value="{{$SELECT_ITEM.$valueKey}}"/> <label ${getIdAttr("label")} ${getIdFor("radio-"+"{{\$index}}")}> {{$SELECT_ITEM.$labelKey}} </label>
+                  |</div>""".stripMargin()
+                if(parent.type == COMP_TYPE_DETAIL) {
+                    result = """
+                   |<div $styleStr ><label ${getIdAttr("label")}><strong>${tran("label")}</strong></label><span ${getIdAttr("radio")}>
+                   | $radio
+                   |</span> </div>""".stripMargin()
+                } else {
+                    // TODO model for select is used for data input, not output - resolve model ambiguity
+                    result = """$labelTxt $radio """
                 }
-                return ret
+                return result
+            case COMP_TYPE_LITERAL:
+                //Todo: should we do something for safe/unsafe binding as in next item type?
+                return "$labelTxt <span ${getIdAttr(idTxtParam)} $styleStr>" + tran(getPropertiesBaseKey()+".value",CompileService.parseLiteral(value) ) + "</span>\n"
+            case COMP_TYPE_DISPLAY:
+                def modelTxt_unsafe = ""
+                def modelTxt_safe = ""
+                if ( [COMP_TYPE_HTABLE, COMP_TYPE_DETAIL, COMP_TYPE_GRID].contains(parent.type)) {
+                    if (asHtml)
+                        modelTxt_unsafe = "ng-bind-html-unsafe='$GRID_ITEM.$model' "
+                    else
+                        modelTxt_safe = "{{ $GRID_ITEM.${model} }}"
+                } else {
+                    if (asHtml)
+                        modelTxt_unsafe = "ng-bind-html-unsafe='${CompileService.parseVariable(value)}' "
+                    else
+                        modelTxt_safe = "${CompileService.parseLiteral(value)}"
+                }
+                if (parent.type == COMP_TYPE_DETAIL) {
+                    result="""<div ${getIdAttr("container" + idTxtParam)} $styleStr>
+                              $labelTxt <span ${getIdAttr(idTxtParam)} $modelTxt_unsafe> $modelTxt_safe </span>
+                              </div>"""
+                } else {
+                    result=""" $labelTxt <span ${getIdAttr(idTxtParam)} $styleStr $modelTxt_unsafe> $modelTxt_safe </span>""";
+                }
+                return result
+                // TODO handle value in details for display
+                // TODO consolidate value and sourceModel?
+                // TODO is parseVariable still working after using DataSet as generic data object?
             case COMP_TYPE_LINK:
-                def ret = "<div ${getId("container-" + idTxtParam)} $styleStr>"
                 def desc = description?tran("description"):url
                 def clickStr = onClick?"""ng-click="${name}_onClick()" """:""
-
                 // handle open link in new window attr
                 def targetStr =''
                 if (!replaceView)
                     targetStr = 'target="_blank"'
                 // set url to empty string if it is null, otherwise the page is re-directed to a non-existing page
                 url = (url==null)?"":url
-
-                // otherwise the value is used
-                // TODO consolidate value and sourceModel?
-                // TODO is parseVariable still working after using DataSet as generic data object?
-                ret += label?"""<label ${getId("label-" + idTxtParam)}>${tran("label")}</label>""":""
-                ret +=  """<a ${getId(idTxtParam)} ng-href="${CompileService.parseLiteral(url)}" $targetStr $clickStr>$desc</a></div>"""
-                return ret
-
+                result =  """<div ${getIdAttr("container" + idTxtParam)} $styleStr>
+                             $labelTxt <a ${getIdAttr(idTxtParam)} ng-href="${CompileService.parseLiteral(url)}" $targetStr $clickStr>$desc</a>
+                             </div>"""
+                return result
             case COMP_TYPE_TEXT:
             case COMP_TYPE_TEXTAREA:
             case COMP_TYPE_NUMBER:
@@ -791,7 +758,6 @@ class PageComponent {
             case COMP_TYPE_EMAIL:
             case COMP_TYPE_TEL:
             case COMP_TYPE_HIDDEN:
-                def txt = ""
                 def validateStr = ""
                 if (validation) {
                     validateStr = validation.collect { k,v -> "$k=\"$v\"" }.join(' ')
@@ -810,90 +776,115 @@ class PageComponent {
                 }
 
                 // for datetime input do NOT assign an ID otherwise it won't work!
-                def inputIdStr = (type==COMP_TYPE_DATETIME)?"":getId(idTxtParam)
+                def inputIdStr = (type==COMP_TYPE_DATETIME)?"":getIdAttr(idTxtParam)
 
                 //Cannot choose format with time, but lots of options. See http://jqueryui.com/datepicker/
                 if (isDataSetEditControl(parent)) {
-                    def addOnUpdate=""
-                    if (onUpdate)  {  //ToDo: add this to other controls in Grid/Detail
-                        addOnUpdate="\$parent.${parent.ID}_${name}_onUpdate($GRID_ITEM);"
-                    }
-
-                    txt = """
-                          <input ${inputIdStr} $styleDatepicker $styleStr $typeString   name="${name?name:model}" ${parent.allowModify?"":"readonly"}
-                          ng-model="$GRID_ITEM.${model}"  ${defaultValue()}
-                          ng-change="$addOnUpdate\$parent.${parent.name}DS.setModified($GRID_ITEM)" $attributes />
-                          """
+                    //ngChange moved to common part
+                    //defaulValue() removed, now should be handled by initNewRecordJS() call in compileService.
+                    result = """|<input ${inputIdStr} $styleDatepicker $styleStr $typeString   name="${name?name:model}" ${parent.allowModify?"":"readonly"}
+                                | ng-model="$GRID_ITEM.${model}"
+                                | $ngChange $attributes />
+                                |""".stripMargin()
                     if (parent.type==COMP_TYPE_DETAIL) {
-                        txt = """<div ${getId("container-"+idTxtParam)} $styleStr><label ${getId("label-"+idTxtParam)}>${tran("label")}</label>
-
-                                 <span ${getId(idTxtParam)} $styleStr> $txt </span></div> """
+                        result = """<div ${getIdAttr("container"+idTxtParam)} $styleStr>$labelTxt
+                                 <span ${getIdAttr(idTxtParam)} $styleStr> $result </span></div> """
                     }
                 } else {
                     // TODO do we need a value field if ng-model is defined?  //added defaultValue
                     attributes += " ${readonly?"readonly":""}"
-                    txt =  """<label ${getId("label")} $styleStr for="${name?name:model}">${tran("label")}</label>
-                              <input $inputIdStr  $styleDatepicker $typeString $styleStr type="$t"   name="${name?name:model}" ${value?"value=\"{{${CompileService.parseVariable(value)}}}\"":"" }
-                               ${defaultValue()} $attributes """
+                    result = """|$labelTxt
+                                |<input $inputIdStr $styleDatepicker $typeString $styleStr type="$t" name="${name?name:model}" ${value?"value=\"{{${CompileService.parseVariable(value)}}}\"":"" }
+                                |${defaultValue()} $ngChange $attributes
+                                |""".stripMargin()
                     if (model && !readonly) {
                         if (binding != BINDING_PAGE)
-                            txt+="ng-model=\"${ID}DS.currentRecord"    // use DataSet current record
+                            result+="ng-model=\"${ID}DS.currentRecord"    // use DataSet current record
                         else
-                            // there may be a value instead of a model
-                            txt+= """ng-model="$modelRoot"""
+                        // there may be a value instead of a model
+                            result+= """ng-model="$modelRoot"""
                         if (modelComponent)
-                            txt+=".$modelComponent"
-                        txt+='" '
+                            result+=".$modelComponent"
+                        result+='" '
                     }
-                    // handle change event
-                    if (onUpdate) {
-                        txt += """ng-change="${name}_onUpdate()"  """
-                        println "****WARNING**** check if  property ${name}_onUpdate() is generated - possibly an inconsistency in generator"
-                    }
-                    txt+="/>\n"
+                    result+="/>\n"
                 }
-                return txt
+                return result
             case COMP_TYPE_BOOLEAN:
-                def txt ="""<input ${getId(idTxtParam)} $styleStr type="checkbox" name="${name?name:model}"
+                result ="""<input ${getIdAttr(idTxtParam)} $styleStr type="checkbox" name="${name?name:model}"
                            ${booleanTrueValue?"ng-true-value=\"$booleanTrueValue\"":""}  ${booleanFalseValue?"ng-false-value=\"$booleanFalseValue\"":""}
-                           ${value?"value=\"{{$value}}\"":"" } ${defaultValue()}"""  // is value needed ever? Doesn't do anything if ng-model is used.
-                // add change event handler for items in a table so the item can be marked dirty for save
+                           $ngChange
+                           """
+                // add change event handler for items in DataSet so the item can be marked dirty for save
                 if (isDataSetEditControl(parent)) {
-                    def addOnUpdate=""
-                    if (onUpdate)  {  //ToDo: add this to other controls in Grid/Detail
-                        addOnUpdate="\$parent.${parent.ID}_${name}_onUpdate($GRID_ITEM);"
-                    }
-                    return txt + """ ng-change="$addOnUpdate\$parent.${parent.name}DS.setModified($GRID_ITEM)" ${(parent.allowModify && !readonly)?"":"readonly"} ng-model="$GRID_ITEM.${model}"
-                                      /> """
+                    result+= """ ${(parent.allowModify && !readonly)?"":"readonly"} ng-model="$GRID_ITEM.${model}" /> $labelTxt """
+                    return result
                 }
                 else  {
-                    // handle change event
-                    if (onUpdate) {
-                        txt += """ng-change="${name}_onUpdate()"  """
-                        //println "****WARNING**** check if  property ${name}_onUpdate() is generated - possibly an inconsistency in generator"
-                    }
-                    // if not in a table, add label for checkbox
-                    return txt +  """ ${getId()} ng-model="$model" ${readonly?"readonly":""} /> <label ${getId("label")}>${tran("label")}</label>
-                    """
+                    // is value needed ever? Doesn't do anything if ng-model is used.
+                    return result +  """  ng-model="$model" ${readonly?"readonly":""} ${value?"value=\"{{$value}}\"":"" } ${defaultValue()}/> $labelTxt """
                 }
             case COMP_TYPE_SUBMIT:
-                return """<input ${getId()} $styleStr type="submit" value="${tran("label")}"/>
-                """
+                return """<input ${getIdAttr()} $styleStr type="submit" value="${tran("label")}"/> """
             case COMP_TYPE_BUTTON:
                 // TODO for SQL generate the action ID for each method, assign ID to each click action
                 if (onClick)
-                    return """<button ${getId(idTxtParam)} $styleStr ng-click="${name}_onClick()">${tran("label")}</button>\n"""
-
-            case COMP_TYPE_RESOURCE:      //fall through
-            case COMP_TYPE_DATA:
-            case COMP_TYPE_FLOW:
-                // nothing to generate in HTML
-                return ""
+                    return """<button ${getIdAttr(idTxtParam)} $styleStr ng-click="${name}_onClick()">${tran("label")}</button>\n"""
             default :
                 // TODO log and ignore not implemented component
-                println "***Not supported component: $type ${name?name:model}"
+                println "*** WARNING: No HTML generated for component: $type ${name?name:model} ***"
                 return ""
+
         }
+
+    }
+
+    String componentStart(String t, int depth=0) {
+        // determine heading level
+        def heading = ""
+        def MAX_HEADING = 6
+        if (label) {
+            def headingLevel = (depth < MAX_HEADING-1)? depth+1: MAX_HEADING
+            heading = """<h$headingLevel class="${t}-label" ${getIdAttr("label")}>${tran("label")}</h$headingLevel>"""
+        }
+        styleStr = """ ng-class='${name}_$STYLE_ATTR' """
+        def result = ""
+        switch (t) { //Handle Non Items
+            case COMP_TYPE_PAGE:
+                return pageHeader()
+            case COMP_TYPE_HTABLE:
+                return htableCompile(depth+1)
+            case COMP_TYPE_GRID:
+                def borderpx=2
+                //headerRowHeight doesn't work in {{ expression }} - assume same as rowHeight hence pageSize+1
+                //style="...{{expression }}..."  does not evaluate properly in IE8 - fixed using ng-style
+                return """<div class="gridStyle" ng-grid="${name}Grid" style="width:99.5%;border: ${borderpx}px solid rgb(212,212,212);${style?style:""};" ng-style="{height: (${borderpx*2}+${pageSize+1}*rowHeight+footerRowHeight) + 'px' }"></div>"""
+            case COMP_TYPE_DETAIL:
+                return detailCompile(depth+1)
+            case COMP_TYPE_LIST:
+                return listCompile((depth+1))
+            case COMP_TYPE_BLOCK:
+                return """<div ${getIdAttr(idTxtParam)} $styleStr id="$name" ng-show="${name}_visible"> $heading \n"""
+            case COMP_TYPE_FORM:
+                // handle flow controlled
+                def submitStr=""
+                if (submit)
+                    submitStr+=submit
+                if (root.flowDefs)
+                    submitStr+= "; _activateNextForm('$name');"
+                result += """<form ${getIdAttr()} $styleStr name="${name?name:model}" ng-show="${name}_visible"  ${submitStr?"""ng-submit="$submitStr" """:""}>$heading \n"""
+                return result
+            case COMP_TYPE_RESOURCE: //fall through
+            case COMP_TYPE_DATA:
+            case COMP_TYPE_FLOW:
+                return "" // nothing to generate in HTML
+            default :
+                // Handle Items
+                result = compileItem(t,depth)
+                if (!result)
+                    println "*** WARNING: No HTML generated for component: $type ${name?name:model} ***"
+        }
+        return result
     }
 
     // handle non-terminal nodes
@@ -920,8 +911,8 @@ class PageComponent {
                     } else {
                         labelStr = tran('submitLabel')
                     }
-                    nextTxt += """<div ${getId("submit-container")} $styleStr>
-                    <input ${getId("submit")} type="submit" value="$labelStr"/>
+                    nextTxt += """<div ${getIdAttr("submit-container")} $styleStr>
+                    <input ${getIdAttr("submit")} type="submit" value="$labelStr"/>
                     </div>
                     """
                 }
@@ -948,40 +939,40 @@ class PageComponent {
             cssImp += """<link type="text/css" rel="stylesheet" href="$importPath?name=${css.trim()}" />\n"""
         }
 
-"""
-<head>
-<!-- sitemesh -->
-<meta name="layout" content="bannerSelfServicePBPage"/>
-
-<meta name="menuEndPoint" content="\${request.contextPath}/ssb/menu"/>
-<meta name="menuBaseURL" content="\${request.contextPath}/ssb"/>
-
-<!--meta name="layout" content="simple"/-->
-<title>${tran("title")}</title>
-<script>
-var pageID = "$name"
- // inject services and controller modules to be registered with the global ng-app
- var myCustomServices = ['ngResource','ngGrid','ui', 'pbrun.directives'];
-</script>
-<!-- inject global functions -->
- <script type="text/javascript">
-    // Inject controller code here
-    $CONTROLLER_PLACEHOLDER
-</script>
-
-<!-- import custom stylesheets -->
-$cssImp
-</head>
-<body>
-   <div id="content" ng-controller="CustomPageController"  class="customPage">
-   ${label?"<h1 ${getId('label')}>${tran("label")}</h1>":""}
- """
+        """
+        |<head>
+        |<!-- sitemesh -->
+        |<meta name="layout" content="bannerSelfServicePBPage"/>
+        |
+        |<meta name="menuEndPoint" content="\${request.contextPath}/ssb/menu"/>
+        |<meta name="menuBaseURL" content="\${request.contextPath}/ssb"/>
+        |
+        |<!--meta name="layout" content="simple"/-->
+        |<title>${tran("title")}</title>
+        |<script>
+        |var pageID = "$name"
+        | // inject services and controller modules to be registered with the global ng-app
+        | var myCustomServices = ['ngResource','ngGrid','ui', 'pbrun.directives'];
+        |</script>
+        |<!-- inject global functions -->
+        | <script type="text/javascript">
+        |    // Inject controller code here
+        |    $CONTROLLER_PLACEHOLDER
+        |</script>
+        |
+        |<!-- import custom stylesheets -->
+        |$cssImp
+        |</head>
+        |<body>
+        |   <div id="content" ng-controller="CustomPageController"  class="customPage">
+        |   ${label?"<h1 ${getIdAttr('label')}>${tran("label")}</h1>":""}
+         """.stripMargin()
     }
 
     def compileComponent(String inS, int depth=0){
         String result=inS
         result += componentStart(type, depth)
-        if (this.type != COMP_TYPE_GRID && this.type != COMP_TYPE_DETAIL) {   //grid, detail will take care of its child objects
+        if (this.type != COMP_TYPE_GRID &&this.type != COMP_TYPE_HTABLE && this.type != COMP_TYPE_DETAIL) {   //grid, detail will take care of its child objects
             components.each {
                 //def child=inherit(new PageComponent(it))
                 // JSON parser does not automatically convert child components to pageComponent(s) type

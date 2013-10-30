@@ -91,6 +91,7 @@
         <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeBrowserFull.toLowerCase()}.js" />"> </script>
         <!-- end from Harry -->
 
+
         <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
             <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'main-rtl.css')}">
         </g:if>
@@ -98,22 +99,24 @@
             <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'main.css')}">
         </g:else>
 
+
+
+
         <script type="text/javascript">
             var rootWebApp = ${createLink(uri: '/')};  //use in controller restful interface
             var templatesLocation = "<g:resource plugin="banner-sspb" dir="template" />";
             var user = ${PBUser.get()?.encodeAsJSON()};
             var gridLocale = '${localeBrowserFull.toLowerCase()}';
             var params = ${params?.encodeAsJSON()};
+            if (!window.console)
+                console = {log: function() {}};
         </script>
 
-        <!-- layout head contains angular module declaration and need to be placed before app.js -->
+
+        <!-- layout head contains angular module declaration and need to be placed before pbRunApp.js -->
         <g:layoutHead />
-        <%--  next resources seem not needed by pagebuilder - comment out and remove if no issues occur.
-        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/js" file="controllers.js" />"> </script>
-        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/js" file="services.js" />"> </script>
-        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/js" file="directives.js" />"> </script>
-        --%>
-        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/js" file="app.js" />"> </script>
+
+        <script src="<g:resource plugin="banner-sspb" dir="js" file="pbRunApp.js" />"> </script>
 
         <g:customStylesheetIncludes/>
 

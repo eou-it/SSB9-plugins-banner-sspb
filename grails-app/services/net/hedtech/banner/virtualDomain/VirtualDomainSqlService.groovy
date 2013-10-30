@@ -302,12 +302,14 @@ class VirtualDomainSqlService {
                 // if a date is returned from datepicker it appends "Z" at the end
                 try {
                     // date string is 1981-06-10T04:00:00.000Z, adjusted for GMT by browser
-                    // convert to 1981-06-10T04:00:00+00:00
-                    // date/time stored on server is assumed to be GMT
-                    it.value = it.value.substring(0, 19)
-                    it.value += "+00:00"
+                    // HvT: remove this.
+                        // convert to 1981-06-10T04:00:00+00:00
+                        // date/time stored on server is assumed to be GMT
+                        // it.value = it.value.substring(0, 19)
+                        // it.value += "+00:00"
                     def date = javax.xml.bind.DatatypeConverter.parseDateTime(it.value)
                     it.value=new java.sql.Timestamp(date.getTime().time)
+                    println "java.sql.Timestamp value: ${it.value}  Milliseconds past 1970 ${it.value.getTime()} date milli: ${date.getTimeInMillis()}"
                 } catch (e) {
                     //do nothing it is not a date so it should be ok
                 }

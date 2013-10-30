@@ -224,9 +224,8 @@ class CompileService {
 
         //should only COMP_TYPE_DATA have loadInitially?
         def autoPopulate = "true"
-        if ( (component.type == PageComponent.COMP_TYPE_DATA ||
-              PageComponent.COMP_DATASET_TYPES.contains(component.type) )
-            && !component.loadInitially) {
+        if ( (component.type == PageComponent.COMP_TYPE_DATA || PageComponent.COMP_DATASET_TYPES.contains(component.type) )
+             && !component.loadInitially) {
             autoPopulate = "false"
         }
         // first handle data binding
@@ -263,11 +262,14 @@ class CompileService {
               |        $optionalParams
               |    });
               |""".stripMargin()
-        if (component.type == PageComponent.COMP_TYPE_GRID)
+        if (component.type == PageComponent.COMP_TYPE_GRID) {
             result +=component.gridJS()
-        if ( [PageComponent.COMP_TYPE_DETAIL,PageComponent.COMP_TYPE_LIST].contains( component.type))
+            result +=component.initNewRecordJS()
+        }
+        if ( [PageComponent.COMP_TYPE_HTABLE,PageComponent.COMP_TYPE_DETAIL,PageComponent.COMP_TYPE_LIST].contains( component.type)) {
             result +=component.dataSetWatches()
-
+            result +=component.initNewRecordJS()
+        }
         return result
     }
 
@@ -341,7 +343,7 @@ class CompileService {
                     def uiControlCode =  getUIControlCode (component, dataComponent)
                     functions << uiControlCode
                 } else {
-                    //TODO HvT- find out for what use case this is needed still
+                    //TODO - find out for what use case this is needed still
                     def dataVarName = "_"+dataComponent.name.toLowerCase()
                     println "****WARNING**** generating control $component.name $component.type - check generator"
                     // implicitly define a $scope variable  ${dataVarName}_${component.ID}
@@ -481,7 +483,7 @@ class CompileService {
 
     def static buildControlVar(pageComponent, depth = 0) {
         def code = ""
-         if ( [PageComponent.COMP_TYPE_BUTTON,PageComponent.COMP_TYPE_LIST, PageComponent.COMP_TYPE_GRID, PageComponent.COMP_TYPE_LINK].contains( pageComponent.type ) ) {
+         if ( [PageComponent.COMP_TYPE_BUTTON,PageComponent.COMP_TYPE_LIST, PageComponent.COMP_TYPE_GRID, PageComponent.COMP_TYPE_HTABLE, PageComponent.COMP_TYPE_LINK].contains( pageComponent.type ) ) {
             // generate a control function for each button/list/link/grid 'click' property
             if (pageComponent.onClick) {
                 // handle variable and constant in expression
@@ -491,7 +493,7 @@ class CompileService {
                 }
                 // if we are dealing with clicking on an item from a list or table then pass the current selection to the control function
                 def arg = "";
-                if (pageComponent.type==PageComponent.COMP_TYPE_LIST || pageComponent.type==PageComponent.COMP_TYPE_GRID)
+                if (pageComponent.type==PageComponent.COMP_TYPE_LIST || pageComponent.type==PageComponent.COMP_TYPE_GRID ||pageComponent.type==PageComponent.COMP_TYPE_HTABLE)
                     arg = PageComponent.CURRENT_ITEM
 
                 code += """    \$scope.${pageComponent.name}_onClick = function($arg) { $expr}; \n"""
@@ -521,7 +523,7 @@ class CompileService {
              def duplicateExpr =""
              if ((pageComponent.type == PageComponent.COMP_TYPE_SELECT || pageComponent.type == PageComponent.COMP_TYPE_RADIO)&&
                      (pageComponent.parent.type == PageComponent.COMP_TYPE_DETAIL
-                             || pageComponent.parent.type == PageComponent.COMP_TYPE_GRID) ) {
+                      || pageComponent.parent.type == PageComponent.COMP_TYPE_GRID || pageComponent.parent.type == PageComponent.COMP_TYPE_HTABLE) ) {
                  // if a select is used in a grid or detail control its model is bound to parent model, we need to copy
                  // the model to $<selectName> in order for it to be referenced by other controls
                  println "****WARNING**** using duplicate - is this still needed?"
@@ -532,7 +534,7 @@ class CompileService {
              }
 
              // add onUpdate for grid/detail items
-             if ( [pageComponent.COMP_TYPE_GRID,pageComponent.COMP_TYPE_DETAIL].contains( pageComponent.parent.type ) )  {
+             if ( [pageComponent.COMP_TYPE_GRID,pageComponent.COMP_TYPE_HTABLE,pageComponent.COMP_TYPE_DETAIL].contains( pageComponent.parent.type ) )  {
                  def parentID = pageComponent.parent.ID
                  code += """
                        |    \$scope.${parentID}_${pageComponent.name}_onUpdate = function(current_item) {
@@ -694,11 +696,10 @@ class CompileService {
             pageComponent.sourceParameters = newParam
         }
 
-
         pageComponent.components?.eachWithIndex {it, index ->
             it.parent = pageComponent
             it.root = pageComponent.root
-
+            it.modelOrigin=it.model
             // if a child component does not have a name, assign a name of format parent_child{componentIndex}
             if (!it.name)
                 it.name = "${pageComponent.name}_child$index"

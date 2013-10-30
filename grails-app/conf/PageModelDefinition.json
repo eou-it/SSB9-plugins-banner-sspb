@@ -15,24 +15,31 @@
                 "requiredAttributes":[],
                 "optionalAttributes":["title", "scriptingLanguage", "label", "style", "importCSS"],
                 "requiredChildren":[],
-                "optionalChildren":["flow", "form", "block", "grid", "select", "radio", "list", "detail", "data", "resource", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button"]
+                "optionalChildren":["flow", "form", "block", "grid", "htable", "select", "radio", "list", "detail", "data", "resource", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button"]
             },
             {
                 "componentType":["block"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "style", "showInitially"],
                 "requiredChildren":[],
-                "optionalChildren":["block", "form", "grid", "select", "radio", "list", "detail", "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
+                "optionalChildren":["block", "form", "grid", "htable", "select", "radio", "list", "detail", "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
             },
             {
                 "componentType":["form"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "style", "submit","submitLabel", "nextButtonLabel", "showInitially"],
                 "requiredChildren":[],
-                "optionalChildren":["grid", "select", "radio", "list", "detail", "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
+                "optionalChildren":["grid", "htable", "select", "radio", "list", "detail", "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
             },
             {
                 "componentType":["grid"],
+                "requiredAttributes":["model"],
+                "optionalAttributes":["label", "style", "parameters", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize","onClick", "loadInitially"],
+                "requiredChildren":[],
+                "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal","hidden" ]
+            },
+            {
+                "componentType":["htable"],
                 "requiredAttributes":["model"],
                 "optionalAttributes":["label", "style", "parameters", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize","onClick", "loadInitially"],
                 "requiredChildren":[],
@@ -144,24 +151,24 @@
             {"AttributeType":["submit", "validation", "value", "onUpdate", "onClick", "onLoad", "sequence", "description", "documentation"], "renderProperty":{"inputType":"textarea"}},
             {"AttributeType":["type"], "renderProperty":{"inputType":"select"}},
             {"AttributeType":["resource"], "renderProperty":{"inputType":"combo", "selectSource":"virtualDomains.pbadmVirtualDomainLookup"}},
-            {"AttributeType":["scriptingLanguage"], "renderProperty":{"inputType":"text", "default":"JavaScript"}},
-            {"AttributeType":["binding"], "renderProperty":{"inputType":"text", "default":"rest"}},
-            {"AttributeType":["nextButtonLabel"], "renderProperty":{"inputType":"text", "default":"Next"}},
-            {"AttributeType":["asHtml"], "renderProperty":{"inputType":"boolean", "default":false}},
-            {"AttributeType":["showInitially"], "renderProperty":{"inputType":"boolean", "default":true}},
-            {"AttributeType":["allowNew"], "renderProperty":{"inputType":"boolean", "default":false}},
-            {"AttributeType":["allowModify"], "renderProperty":{"inputType":"boolean", "default":false}},
-            {"AttributeType":["allowDelete"], "renderProperty":{"inputType":"boolean", "default":false}},
-            {"AttributeType":["allowReload"], "renderProperty":{"inputType":"boolean", "default":false}},
-            {"AttributeType":["required"], "renderProperty":{"inputType":"boolean", "default":false}},
-            {"AttributeType":["readonly"], "renderProperty":{"inputType":"boolean", "default":false}},
-            {"AttributeType":["replaceView"], "renderProperty":{"inputType":"boolean", "default":true}},
-            {"AttributeType":["loadInitially"], "renderProperty":{"inputType":"boolean", "default":true}},
-            {"AttributeType":["activated"], "renderProperty":{"inputType":"boolean", "default":false}},
+            {"AttributeType":["scriptingLanguage"], "renderProperty":{"inputType":"text", "defaultValue":"JavaScript"}},
+            {"AttributeType":["binding"], "renderProperty":{"inputType":"text", "defaultValue":"rest"}},
+            {"AttributeType":["nextButtonLabel"], "renderProperty":{"inputType":"text", "defaultValue":"Next"}},
+            {"AttributeType":["asHtml"], "renderProperty":{"inputType":"boolean", "defaultValue":false}},
+            {"AttributeType":["showInitially"], "renderProperty":{"inputType":"boolean", "defaultValue":true}},
+            {"AttributeType":["allowNew"], "renderProperty":{"inputType":"boolean", "defaultValue":false}},
+            {"AttributeType":["allowModify"], "renderProperty":{"inputType":"boolean", "defaultValue":false}},
+            {"AttributeType":["allowDelete"], "renderProperty":{"inputType":"boolean", "defaultValue":false}},
+            {"AttributeType":["allowReload"], "renderProperty":{"inputType":"boolean", "defaultValue":false}},
+            {"AttributeType":["required"], "renderProperty":{"inputType":"boolean", "defaultValue":false}},
+            {"AttributeType":["readonly"], "renderProperty":{"inputType":"boolean", "defaultValue":false}},
+            {"AttributeType":["replaceView"], "renderProperty":{"inputType":"boolean", "defaultValue":true}},
+            {"AttributeType":["loadInitially"], "renderProperty":{"inputType":"boolean", "defaultValue":true}},
+            {"AttributeType":["activated"], "renderProperty":{"inputType":"boolean", "defaultValue":false}},
             {"AttributeType":["parameters", "sourceParameters"], "renderProperty":{"inputType":"map"}},
-            {"AttributeType":["pageSize"], "renderProperty":{"inputType":"number", "default":5}},
+            {"AttributeType":["pageSize"], "renderProperty":{"inputType":"number", "defaultValue":5}},
             {"AttributeType":["sourceValue"], "renderProperty":{"inputType":"arrayOfMap"}},
-            {"AttributeType":["default"], "renderProperty":{"inputType":"text"}}
+            {"AttributeType":["defaultValue"], "renderProperty":{"inputType":"text"}}
         ],
         "documentation":"TODO - specify validation for scriptingLanguage, binding as select, default value, hint, etc."
     }

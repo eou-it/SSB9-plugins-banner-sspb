@@ -427,7 +427,7 @@ tr>td:last-child, tr>th:last-child {
 td, th {
 	line-height: 1.5em;
 	padding: 0.5em 0.6em;
-	text-align: start;
+	text-align: left;
 	vertical-align: top;
 }
 

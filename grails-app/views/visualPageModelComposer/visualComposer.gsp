@@ -107,8 +107,8 @@
           if the value is defined then return the current value
           */
          $scope.setDefaultValue = function (attributeName, value) {
-            if (value == undefined && $scope.attrRenderProps[attributeName].default!=undefined)
-                return  $scope.attrRenderProps[attributeName].default;
+            if (value == undefined && $scope.attrRenderProps[attributeName].defaultValue!=undefined)
+                return  $scope.attrRenderProps[attributeName].defaultValue;
             else
                 return value;
 
@@ -240,7 +240,7 @@
             tr['attribute.default'          ]="${message(code:'sspb.model.attribute.default')}";
             tr['attribute.description'      ]="${message(code:'sspb.model.attribute.description')}";
             tr['attribute.importCSS'        ]="${message(code:'sspb.model.attribute.importCSS')}";
-            tr['attribute.replaceView'        ]="${message(code:'sspb.model.attribute.replaceView')}";
+            tr['attribute.replaceView'      ]="${message(code:'sspb.model.attribute.replaceView')}";
 
 
             tr['type.page'        ]="${message(code:'sspb.model.type.page'     )}";
@@ -248,6 +248,7 @@
             tr['type.form'        ]="${message(code:'sspb.model.type.form'     )}";
             tr['type.block'       ]="${message(code:'sspb.model.type.block'    )}";
             tr['type.grid'        ]="${message(code:'sspb.model.type.grid'     )}";
+            tr['type.htable'      ]="${message(code:'sspb.model.type.htable'   )}";
             tr['type.select'      ]="${message(code:'sspb.model.type.select'   )}";
             tr['type.radio'       ]="${message(code:'sspb.model.type.radio'    )}";
             tr['type.list'        ]="${message(code:'sspb.model.type.list'     )}";
@@ -266,7 +267,7 @@
             tr['type.boolean'     ]="${message(code:'sspb.model.type.boolean'  )}";
             tr['type.button'      ]="${message(code:'sspb.model.type.button'   )}";
             tr['type.hidden'      ]="${message(code:'sspb.model.type.hidden'   )}";
-            tr['type.style'      ]="${message(code:'sspb.model.type.style'   )}";
+            tr['type.style'       ]="${message(code:'sspb.model.type.style'   )}";
 
 
             tr['sspb.page.visualbuilder.edit.map.title' ] = "${message(code:'sspb.page.visualbuilder.edit.map.title',encodeAs: 'JavaScript')}";
@@ -283,10 +284,10 @@
             tr['pb.template.arraymap.add.label'         ] = "${message(code:'pb.template.arraymap.add.label',encodeAs: 'JavaScript')}";
             tr['pb.template.arraymap.ok.label'          ] = "${message(code:'pb.template.arraymap.ok.label',encodeAs: 'JavaScript')}";
             tr['pb.template.arraymap.new.value.label'   ] = "${message(code:'pb.template.arraymap.new.value.label',encodeAs: 'JavaScript')}";
-            tr['pb.template.textarea.ok.label'               ] = "${message(code:'pb.template.textarea.ok.label',encodeAs: 'JavaScript')}";
-            tr['pb.template.combo.loadsource.label'               ] = "${message(code:'pb.template.combo.loadsource.label',encodeAs: 'JavaScript')}";
-            tr['pb.template.combo.edit.label'               ] = "${message(code:'pb.template.combo.edit.label',encodeAs: 'JavaScript')}";
-            tr['pb.template.combo.select.label'               ] = "${message(code:'pb.template.combo.select.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.textarea.ok.label'          ] = "${message(code:'pb.template.textarea.ok.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.combo.loadsource.label'     ] = "${message(code:'pb.template.combo.loadsource.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.combo.edit.label'           ] = "${message(code:'pb.template.combo.edit.label',encodeAs: 'JavaScript')}";
+            tr['pb.template.combo.select.label'         ] = "${message(code:'pb.template.combo.select.label',encodeAs: 'JavaScript')}";
 
 
             var res=tr[key];
@@ -305,7 +306,7 @@
 
         $scope.attributeIsTranslatable = function (attr) {
             var attributes = ${PageComponent.translatableAttributes.encodeAsJSON()};
-            return (attributes.indexOf(attr) != -1); // seems not to work in IE8
+            return (attributes.indexOf(attr) != -1); // seems not to work in IE8 - indexOf is added by one of the JS libraries
         }
 
         // recursively check if 'component1' is a direct or indirect child of 'component'
@@ -543,7 +544,7 @@
                  isArray:false,
                  headers:{'Content-Type':'application/json', 'Accept':'application/json'}
              },
-             delete: {
+             remove: {   // cannot use delete as method name in IE8
                  method:"DELETE",
                  isArray:false,
                  headers:{'Content-Type':'application/json', 'Accept':'application/json'}
@@ -688,7 +689,7 @@
                   return;
               }
 
-              Page.delete({constantName:$scope.pageCurName }, function() {
+              Page.remove({constantName:$scope.pageCurName }, function() {
                   // on success
                   alert("${message(code:'sspb.page.visualbuilder.deletion.success.message')}");
                   // clear the page name field and page source
@@ -834,8 +835,9 @@
                                    value='dataHolder.selectedComponent[attr.name]' pb-Parent="dataHolder.selectedComponent" pb-Attrname="attr.name"
                                    pb-loadsourcelist="loadVdList()" load-source-label="{{i18nGet('pb.template.combo.loadsource.label')}}" edit-value-label="{{i18nGet('pb.template.combo.edit.label')}}"
                                    select-label="{{i18nGet('pb.template.combo.select.label')}}" source-list="vdlist"></pb-Combo>
-                            <select ng-switch-when="select" ng-options="type for type in dataHolder.selectedCompatibleTypes"
-                                ng-model="dataHolder.selectedComponent[attr.name]"></select>
+                            <select ng-switch-when="select" ng-options="type as i18nGet('type.'+type) for type in dataHolder.selectedCompatibleTypes"
+                                ng-model="dataHolder.selectedComponent[attr.name]" ng-change="handleAttrChange()"></select>
+                            <%--HvT re-introduced ng-change in previous line because changing type may cause issues. Seems to help. Not sure why it was removed?--%>
                             <input ng-switch-when="text" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-model="dataHolder.selectedComponent[attr.name]"/>
                             <input ng-switch-when="number" style="text-align:start;" type="number" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'

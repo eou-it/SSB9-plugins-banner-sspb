@@ -203,7 +203,7 @@ function CreateDataSet(params){
     /*
     delete selected record(s)
      */
-    this.delete = function(items) {
+    this.deleteRecords = function(items) {
         if (this.data.remove(items) ) {
             // we got a single record
             if (this.deleted.indexOf(items) == -1)

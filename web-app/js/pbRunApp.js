@@ -16,6 +16,14 @@ Array.prototype.removeAll=function(){
     this.splice(0,this.length);
 };
 
+// IE 8 missing Array methods
+if (!('forEach' in Array.prototype)) {
+    Array.prototype.forEach= function(action, that /*opt*/) {
+        for (var i= 0, n= this.length; i<n; i++)
+            if (i in this)
+                action.call(that, this[i], i, this);
+    };
+}
 
 //build a sub list from elements of "sourceList" as identified by indices in "indexList"
 //Return - the sub list
@@ -72,7 +80,7 @@ appModule.filter('startFrom', function() {
 
 
 appModule.run( function($templateCache )  {
-    console.log("App module.run started");
+    console.log("App module.run started" );
     $templateCache.put('gridFooter.html',
         "<div ng-show=\"showFooter\" class=\"ngFooterPanel\" ng-class=\"{'ui-widget-content': jqueryUITheme, 'ui-corner-bottom': jqueryUITheme}\" ng-style=\"footerStyle()\">" +
         "    <div class=\"paging-container \" ng-show=\"enablePaging\" >" +
@@ -91,11 +99,11 @@ appModule.run( function($templateCache )  {
         "             </select>" +
         "        </div>"+
         "    </div>" +
-        "    <div class=\"ngFooterTotalItems\" ng-class=\"{'ngNoMultiSelect': !multiSelect}\" style=\"float: {{i18n.styleRight}};\ >" +
+        "    <div class=\"ngFooterTotalItems\" ng-class=\"{'ngNoMultiSelect': !multiSelect}\" ng-style=\"{float: '{{i18n.styleRight}}'}\" >" +
         "        <span class=\"ngLabel\">{{i18n.ngTotalItemsLabel}} {{maxRows()}}</span>" +
         "        <span ng-show=\"filterText.length > 0\" class=\"ngLabel\">({{i18n.ngShowingItemsLabel}} {{totalFilteredItemsLength()}})</span>" +
         "    </div>" +
-        "    <div style=\"position: absolute; bottom:2px; {{i18n.styleRight}}:2px\"> #gridControlPanel# </div>" +
+        "    <div style=\"position: absolute; bottom:2px;\" ng-style=\"{ {{i18n.styleRight}}:'2px'}\"> #gridControlPanel# </div>" +
         "</div>");
 });
 

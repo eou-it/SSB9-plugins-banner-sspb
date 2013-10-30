@@ -11,7 +11,7 @@ modules = {
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'ng-grid.css']
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'angular-ui.css']
 
-        // don't add angular.js twice (it is in the layout page) some button habdler will be called twice!
+        // don't add angular.js twice (it is in the layout page) some button handler will be called twice!
         //resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular', file: "angular.js"]
         //resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular', file: "angular-resource.js"]
 
@@ -32,15 +32,11 @@ modules = {
         //TODO: duplicate below
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular-ui', file: "ui-bootstrap-tpls-0.3.0.js"]
 
-        // TODO check if all of below is needed , loading order in page does not work --> cause angular module not found
-        // app.js is needed rest not
-        /*
-        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/js', file: "controllers.js"]
-        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/js', file: "services.js"]
-        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/js', file: "directives.js"]
-        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/js', file: "app.js"]
-        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/jquery/plugins/jstree', file: "jquery.jstree.js"]
-        */
+        // TODO loading order in page does not work --> cause angular module not found
+        //resource url:[plugin: 'banner-sspb', dir: 'js', file: "pbRunApp.js"]
+        resource url:[plugin: 'banner-sspb', file: 'js/misc/es5-shim.js'],
+                disposition: 'head',
+                wrapper: { s -> "<!--[if lt IE 9]>$s<![endif]-->" }
     }
 
 
