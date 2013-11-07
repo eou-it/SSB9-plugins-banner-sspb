@@ -14,7 +14,12 @@
 
   <title>CSS Stylesheet Manager</title>
 
-    <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pageComposer.css')}">
+    <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pbDeveloper-rtl.css')}">
+    </g:if>
+    <g:else>
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pbDeveloper.css')}">
+    </g:else>
 
     <script src="<g:resource plugin="banner-sspb" dir="js" file="pbDirectives.js" />"> </script>
 

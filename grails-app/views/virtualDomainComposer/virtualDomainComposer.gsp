@@ -11,7 +11,7 @@
 
     <meta name="menuDefaultBreadcrumbId" content=""/>
 
-
+<%--
 <style>
     div.customPage {
         overflow-x: auto;
@@ -27,7 +27,7 @@
 
     }
 </style>
-
+--%>
 
 
 <%

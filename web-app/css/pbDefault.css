@@ -1,0 +1,134 @@
+/* XE input with date picker does not line up well  */
+input.hasDatepicker {
+    height:  18px; /* set back to bootstrap height */
+    margin: 0;
+    border: 1px solid #cccccc;
+}
+input.hasDatepicker.pb-form {
+    height:1.7em;
+    width:  210px; /* bootstrap */
+    margin: 0;
+    border: 1px solid #cccccc;
+}
+.columns-2 {
+    width:50%;
+    float:left;
+}
+
+.pb-form-item-container {
+    /* .columns-2 */
+    width:50%;
+    float:left;
+}
+.pb-form-item-container.pb-button  {
+    width:inherit;
+}
+
+label.pb-detail.pb-item.pb-label, label.pb-text.pb-form.pb-item.pb-label,
+label.pb-datetime.pb-form.pb-item.pb-label,
+label.pb-select.pb-form.pb-item.pb-label
+{
+    display: inline-block;
+    width: 48%;
+    font-size:small;
+    font-weight:bold;
+    text-align: right;
+    padding: 0.2em 0 0.2em 0;
+    margin: 0.1em 0.1em 0.1em 0.1em;
+}
+
+label.pb-boolean {
+    width: 48%;
+    text-align: left;
+}
+
+.radioVertical {
+    display: table-row;
+}
+
+input.pb-detail.pb-item,select.pb-detail.pb-item, input.pb-form.pb-item
+{
+    width: 48%;
+    height: 18px;
+    padding:  4px 0px 4px 2px;
+    margin: 0.1em 0.1em 0.1em 0.1em;
+    border: 1px solid #cccccc;
+}
+
+input[type='checkbox'].pb-form.pb-item {
+    width: auto;
+}
+
+input.pb-htable.pb-item,select.pb-htable.pb-item
+{
+    width: 100%;
+    padding:  4px 0px 4px 2px;
+    margin: 0.1em 0.1em 0.1em 0.1em;
+    border: 1px solid #cccccc;
+}
+
+input.pb-htable.pb-item.pb-boolean
+{
+    width: auto;
+}
+
+
+select.pb-detail.pb-item
+{
+    width:48.5%;
+    padding: 2px 2px 2px 0px;
+}
+
+.pb-form, .new-line {
+    clear: both;
+}
+.pb-form-label {
+    font-size:x-large;
+}
+.pb-detail.pb-label {
+    font-size:large;
+    text-align:center;
+}
+button {
+    width:auto;
+}
+
+
+.record-control {
+    float: left;
+    clear: both;
+}
+
+
+
+input.ng-invalid, select.ng-invalid, textarea.ng-invalid {
+    background: #fff3f3;
+    border-color: #ffaaaa;
+    color: #cc0000;
+}
+input.ng-invalid:focus, select.ng-invalid:focus, textarea.ng-invalid:focus {
+    border: 1px solid #ffaaaa;
+    -moz-box-shadow: 0 0 0.5em #ffaaaa;
+    -webkit-box-shadow: 0 0 0.5em #ffaaaa;
+    box-shadow: 0 0 0.5em #ffaaaa;
+}
+
+*.margin
+{
+    margin-top: 10px;
+    margin-left:10px;
+    margin-right:10px;
+    overflow-y:scroll;
+    overflow-x:auto;
+}
+
+/* XE default overrides for content*/
+#content {
+    text-align:start;
+    margin: 4px;
+    width: 99%;
+}
+
+
+
+

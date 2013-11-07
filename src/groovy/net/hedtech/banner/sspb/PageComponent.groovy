@@ -8,6 +8,8 @@
  */
 package net.hedtech.banner.sspb
 
+import net.hedtech.banner.css.Css
+
 class PageComponent {
     final static COMP_TYPE_PAGE = "page"
     final static COMP_TYPE_FORM = "form"
@@ -74,6 +76,9 @@ class PageComponent {
     final static ESC_0 = 0 //no escape
     final static ESC_H = 1 //escape HTML
     final static ESC_JS = 2 //escape
+
+    //default style sheet
+    final static DEFAULT_STYLESHEET = "pbDefault"
 
     String type        // -> Generic property for component type
     String name        // -> Generic property. Maybe use componentId?
@@ -153,7 +158,8 @@ class PageComponent {
     String resource    // -> Form Data Component. uri: <path>/resourceName e.g. rest/todo
     String binding = BINDING_REST    // method of data binding (sql, api, rest, page)
 
-    def validation       // specify any validation definition as a map
+    def validation      // specify any validation definition as a map
+    def fractionDigits
     String onUpdate     // an code blovk to execute if the current component value is changed
 
                         // TODO deduce this from model automatically
@@ -289,30 +295,34 @@ class PageComponent {
         def result =
         """
         <!-- pagination -->
-        <span ${getIdAttr('pagination-container')} ng-show='${dataSet}.totalCount > ${dataSet}.pagingOptions.pageSize'>
-        <button ${getIdAttr('pagination-prev-button')} $styleStr ng-disabled="${dataSet}.pagingOptions.currentPage == 1" ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1">
+        <span ${getIdAttr('-pagination-container')} ng-show='${dataSet}.totalCount > ${dataSet}.pagingOptions.pageSize'>
+        <button ${getIdAttr('-pagination-prev-button')} $styleStr ng-disabled="${dataSet}.pagingOptions.currentPage == 1" ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1">
                 ${tranGlobal("page.previous.label","Previous")}
         </button>
-        <span ${getIdAttr('pagination-page-count')}>
+        <span ${getIdAttr('-pagination-page-count')}>
             {{${dataSet}.pagingOptions.currentPage}}/{{${dataSet}.numberOfPages()}}
         </span>
-        <button ${getIdAttr('pagination-next-button')}  $styleStr ng-disabled="${dataSet}.pagingOptions.currentPage >= ${dataSet}.totalCount/${dataSet}.pagingOptions.pageSize " ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1">
+        <button ${getIdAttr('-pagination-next-button')}  $styleStr ng-disabled="${dataSet}.pagingOptions.currentPage >= ${dataSet}.totalCount/${dataSet}.pagingOptions.pageSize " ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1">
                 ${tranGlobal("page.next.label","Next")}
         </button>
         <br>
         </span>
 
         """
-
+        def changeData = ""
         if (allowNew) {
-            result += """ <button ${getIdAttr('new-button')} $styleStr ng-click="${dataSet}.add(${newRecordName()}())"> ${tranGlobal("newRecord.label","Add New")}  </button>"""
+            changeData += """ <button ${getIdAttr('-new-button')} $styleStr ng-click="${dataSet}.add(${newRecordName()}())"> ${tranGlobal("newRecord.label","Add New")}  </button>"""
         }
         if (allowModify || allowDelete) {
-            result += """ <button ${getIdAttr('save-button')} $styleStr ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()"> ${tranGlobal("save.label","Save")} </button>"""
+            changeData += """ <button ${getIdAttr('-save-button')} $styleStr ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()"> ${tranGlobal("save.label","Save")} </button>"""
         }
         if (allowReload) {
-            result += """ <button ${getIdAttr('reload-button')} $styleStr ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})"> ${tranGlobal("refresh.label","Refresh")} </button> """
+            changeData += """ <button ${getIdAttr('-reload-button')} $styleStr ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})"> ${tranGlobal("refresh.label","Refresh")} </button> """
         }
+        if (changeData)
+            changeData =  "<span ${getIdAttr('-change-data-container')} > $changeData </span>"
+        result += changeData
+        result = " <p> <div ${getIdAttr('-record-control-container')} class=\"record-control\"> $result </div>"
         return result
     }
 
@@ -449,7 +459,7 @@ class PageComponent {
         def tagStart="<input"
         def tagEnd="/>"
         def typeAt="type=\"$type\""
-        def styleAt="class=\"grid-$type\" style=\"background-color:transparent; border:0; width: 100%; height:{{rowHeight}}px\""
+        def styleAt="class=\"pb-${parent.type} pb-$type ${valueStyle?valueStyle:""}\" ng-class=\"${name}_$STYLE_ATTR\" style=\"background-color:transparent; border:0; width: 100%; height:{{rowHeight}}px\""
         def specialAt=""
         def readonlyAt = (parent.allowModify && !ro)?"":"readonly"
         def requiredAt = required?"required":""
@@ -457,8 +467,9 @@ class PageComponent {
         def placeholderAt=""
         def ngModel="ng-model=\"COL_FIELD\""    // shorthand for  row.entity[col.field]
         def ngChange="ng-change=\""+(onUpdate?"\$parent.${parent.ID}_${name}_onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity)\""
-         if (type == COMP_TYPE_NUMBER ) {
-            typeAt="type=\"text\" pb-number " //angular-ui doesn't use localized validators
+        if (type == COMP_TYPE_NUMBER ) {
+            //angular-ui doesn't use localized validators - use own (but rather limited still)
+            typeAt="""type="text" pb-number ${fractionDigits?"fraction-digits=\"$fractionDigits\"":""} """
         }
         else if (type == COMP_TYPE_DATETIME ) {
             typeAt="ui-date=\"{ changeMonth: true, changeYear: true}\" "
@@ -517,13 +528,13 @@ class PageComponent {
         // generate table column headers
         def thead=""
         def items=""
-
+        idTxtParam="-{{\$index}}"
         // add a delete checkbox column if allowDelete is true
         if (allowDelete) {
             thead = "<th ${getIdAttr('delete-column-header')} $styleStr >${tranGlobal("delete.label","Delete")}</th>"
             items = """
-                  |<td ${getIdAttr('delete-column-data-'+idTxtParam)} $styleStr >
-                  |<input ${getIdAttr('delete-column-checkbox-'+idTxtParam)} $styleStr ng-click="${dataSet}.deleteRecords($GRID_ITEM)" type="checkbox" />
+                  |<td ${getIdAttr('delete-column-data'+idTxtParam)} $styleStr >
+                  |<input ${getIdAttr('delete-column-checkbox'+idTxtParam)} $styleStr ng-click="${dataSet}.deleteRecords($GRID_ITEM)" type="checkbox" />
                   |</td>
                   |""".stripMargin()
         }
@@ -541,7 +552,7 @@ class PageComponent {
                 thead+="<th ${getIdAttr('data-header-'+child.name)} $styleStr >${child.tran("label")}</th>"
                 //get the child components
                 child.label=""
-                items+="<td ${getIdAttr('data-cell-' + child.name + '-' + idTxtParam )} $styleStr >${child.compileComponent("", depth)}</td>\n"
+                items+="<td ${getIdAttr('-td-' + child.name + idTxtParam )} $styleStr >${child.compileComponent("", depth)}</td>\n"
             }
         }
         def click_txt=""
@@ -550,10 +561,10 @@ class PageComponent {
 
         def result =  """
                    |  <table ${getIdAttr()} $styleStr >
-                   |    <thead ${getIdAttr('table-header')} ><tr ${getIdAttr('table-header-row')} >$thead</tr></thead>
-                   |    <tbody ${getIdAttr('table-body')} >
+                   |    <thead ${getIdAttr('-th')} ><tr ${getIdAttr('-thr')} >$thead</tr></thead>
+                   |    <tbody ${getIdAttr('-tb')} >
                    |      <!-- Do this for every object in objects -->
-                   |      <tr ${getIdAttr('table-data-row-'+idTxtParam)}  ng-repeat="$repeat" $click_txt>
+                   |      <tr ${getIdAttr('-tr'+idTxtParam)}  ng-repeat="$repeat" $click_txt>
                    |        $items
                    |      </tr>
                    |    </tbody>
@@ -569,10 +580,12 @@ class PageComponent {
     def detailCompile(int depth=0) {
         def dataSet = "${name}DS"
         def repeat = "$GRID_ITEM in ${dataSet}.data"    //GRID_ITEM is confusing
-
         def result = """<span $styleStr ${getIdAttr()}>"""
+        idTxtParam="-{{\$index}}"
+        styleStr = """ ng-class='${name}_$STYLE_ATTR' """
+
         if (label)
-            result += "<label class=\"${type}-label\" ${getIdAttr('label')}>${tran("label")}</label>\n"
+            result += "<label class=\"pb-$type pb-label\" ${getIdAttr('label')}>${tran("label")}</label>\n"
         result +="""<div ${getIdAttr("container" + idTxtParam)} $styleStr ng-repeat="$repeat" >\n"""
 
         if (allowDelete) {
@@ -599,13 +612,15 @@ class PageComponent {
     Special compilation for generating table specific controls
      */
     def listCompile(int depth=0) {
-
         def dataSet = "${name}DS"
         def txt = "<span ${getIdAttr()}>"
         def repeat = "$LIST_ITEM in ${dataSet}.data"
+        idTxtParam = "-{{\$index}}"
+        styleStr = """ ng-class='${name}_$STYLE_ATTR' """
+        labelStyleStr =  labelStyle?""" class="$labelStyle" """:""
 
         if (label)
-            txt += """<label class="${type}-label" ${getIdAttr('label')} $styleStr >${tran("label")}</label>"""
+            txt += """<label class="${type} label" ${getIdAttr('label')} $styleStr $labelStyleStr >${tran("label")}</label>"""
         // handle click event
         def click_txt=""
         if (onClick)
@@ -621,17 +636,18 @@ class PageComponent {
         return txt
     }
 
-     String compileItem(String t, int depth=0){
+    String compileItem(String t, int depth=0){
+        def autoStyleStr //generate class attributes from model
         // handle ID generation for items in a dataset
         // append -$index to each rendered items
         if(isDataSetEditControl(parent) || isDataSetEditControl(this))
             idTxtParam = "-{{\$index}}"
         if (t != COMP_TYPE_HIDDEN) {
-            styleStr = """ ng-class='${name}_$STYLE_ATTR' """
+            autoStyleStr = """class="pb-${parent.type} pb-$type pb-item"  """
             labelStyleStr =  labelStyle?""" class="$labelStyle" """:""
             valueStyleStr =  valueStyle?""" class="$valueStyle" """:""
         }
-        def labelTxt = label && (parent.type != COMP_TYPE_HTABLE)?"<label class=\"item-label ${type}-item-label\" ${getIdAttr"label"+(idTxtParam)} $labelStyleStr ${getIdFor(idTxtParam)}>${tran("label")}</label>":""
+        def labelTxt = label && (parent.type != COMP_TYPE_HTABLE)?"<label class=\"pb-${parent.type} pb-$type pb-item pb-label \" ${getIdAttr("label"+idTxtParam)} $labelStyleStr ${getIdFor(idTxtParam)}>${tran("label")}</label>":""
         def result=""
 
         def ngChange=""
@@ -639,7 +655,7 @@ class PageComponent {
         if ( !COMP_DISPLAY_TYPES.contains(type) && t!=COMP_TYPE_SELECT ) {
             if (isDataSetEditControl(parent)) {
                 if (onUpdate)  {
-                   ngChange="\$parent.${parent.ID}_${name}_onUpdate($GRID_ITEM);"  //
+                    ngChange="\$parent.${parent.ID}_${name}_onUpdate($GRID_ITEM);"  //
                 }
                 ngChange="""ng-change="$ngChange\$parent.${parent.name}DS.setModified($GRID_ITEM)"  """
             } else {
@@ -662,21 +678,13 @@ class PageComponent {
                 }
                 ngChange += onUpdate?"${name}DS.onUpdate();":""
                 ngChange = ngChange?"ng-change=\"$ngChange\"":""
-                def select = """
-                           |<select  ${getIdAttr(idTxtParam)} $styleStr ng-model="$ngModel" $ngChange  ${defaultValue()}
+                result = """
+                           |<select  ${getIdAttr(idTxtParam)} $valueStyleStr $autoStyleStr ng-model="$ngModel" $ngChange  ${defaultValue()}
                            |  ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName">
                            |  $placeholderStr
                            |</select>""".stripMargin()
-                if(parent.type == COMP_TYPE_DETAIL) {
-                    result = """
-                           |<div ${getIdAttr("container")} $styleStr> $labelTxt
-                           |$select
-                           |</div>""".stripMargin()
-                } else {
-                    // TODO model for select is used for data input, not output - resolve model ambiguity
-                    result = """$labelTxt $select"""
-                }
-                return result
+
+                break;
             case COMP_TYPE_RADIO:
                 def arrayName = "${name}DS.data"
                 def ngModel = name
@@ -685,38 +693,36 @@ class PageComponent {
                 def nameTxt = name
 
                 ngChange = "" //override default
-                if(parent.type == COMP_TYPE_DETAIL ||parent.type == COMP_TYPE_GRID || parent.type == COMP_TYPE_HTABLE) {
+                def idxStr
+                if(parent.type == COMP_TYPE_DETAIL || parent.type == COMP_TYPE_HTABLE) {
                     ngModel =  "\$parent.$GRID_ITEM.${model}"
                     ngChange +="\$parent.\$parent.${parent.name}DS.setModified(\$parent.$GRID_ITEM);"
-                    nameTxt += "{{'${name}_' + \$parent.\$index}}"
+                    nameTxt = "{{'${parent.name}_${name}' + \$parent.\$index}}"
+                    idxStr= "{{\$parent.\$index}}-{{\$index}}" //include parent index to make id's unique
                 } else {
                     ngModel =  "\$parent.$ngModel"
+                    idxStr= "{{\$index}}"
                 }
                 ngChange += onUpdate?"${name}DS.onUpdate();":""
                 ngChange = ngChange?"ng-change=\"$ngChange\"":""
+                def radioLabelStyleStr= """class="pb-${parent.type} pb-item pb-radiolabel" """
 
-                def radio = """
-                  |<div ${getIdAttr("container")} $styleStr ng-repeat="$SELECT_ITEM in $arrayName" $initTxt>
-                  |<input ${getIdAttr("radio-"+"{{\$index}}")} $styleStr type="radio" ng-model=$ngModel name="$nameTxt" $ngChange
-                  |value="{{$SELECT_ITEM.$valueKey}}"/> <label ${getIdAttr("label")} ${getIdFor("radio-"+"{{\$index}}")}> {{$SELECT_ITEM.$labelKey}} </label>
-                  |</div>""".stripMargin()
-                if(parent.type == COMP_TYPE_DETAIL) {
-                    result = """
-                   |<div $styleStr ><label ${getIdAttr("label")}><strong>${tran("label")}</strong></label><span ${getIdAttr("radio")}>
-                   | $radio
-                   |</span> </div>""".stripMargin()
-                } else {
-                    // TODO model for select is used for data input, not output - resolve model ambiguity
-                    result = """$labelTxt $radio """
-                }
-                return result
+                result = """
+                  |<span $valueStyleStr ng-repeat="$SELECT_ITEM in $arrayName" $initTxt >
+                  | <input ${getIdAttr("-radio-$idxStr")} type="radio" ng-model=$ngModel name="$nameTxt" $ngChange value="{{$SELECT_ITEM.$valueKey}}"/>
+                  | <label  ${getIdAttr("-label-$idxStr")} ${getIdFor("-radio-$idxStr")} $radioLabelStyleStr> {{$SELECT_ITEM.$labelKey}} </label>
+                  |</span>""".stripMargin()
+
+                result = """<span ${getIdAttr(idTxtParam)} $autoStyleStr> $result </span>"""
+                break;
             case COMP_TYPE_LITERAL:
                 //Todo: should we do something for safe/unsafe binding as in next item type?
-                return "$labelTxt <span ${getIdAttr(idTxtParam)} $styleStr>" + tran(getPropertiesBaseKey()+".value",CompileService.parseLiteral(value) ) + "</span>\n"
+                result = "<span ${getIdAttr(idTxtParam)} $valueStyleStr $autoStyleStr>" + tran(getPropertiesBaseKey()+".value",CompileService.parseLiteral(value) ) + "</span>\n"
+                break;
             case COMP_TYPE_DISPLAY:
                 def modelTxt_unsafe = ""
                 def modelTxt_safe = ""
-                if ( [COMP_TYPE_HTABLE, COMP_TYPE_DETAIL, COMP_TYPE_GRID].contains(parent.type)) {
+                if ( [COMP_TYPE_HTABLE, COMP_TYPE_DETAIL].contains(parent.type)) {
                     if (asHtml)
                         modelTxt_unsafe = "ng-bind-html-unsafe='$GRID_ITEM.$model' "
                     else
@@ -727,17 +733,11 @@ class PageComponent {
                     else
                         modelTxt_safe = "${CompileService.parseLiteral(value)}"
                 }
-                if (parent.type == COMP_TYPE_DETAIL) {
-                    result="""<div ${getIdAttr("container" + idTxtParam)} $styleStr>
-                              $labelTxt <span ${getIdAttr(idTxtParam)} $modelTxt_unsafe> $modelTxt_safe </span>
-                              </div>"""
-                } else {
-                    result=""" $labelTxt <span ${getIdAttr(idTxtParam)} $styleStr $modelTxt_unsafe> $modelTxt_safe </span>""";
-                }
-                return result
-                // TODO handle value in details for display
-                // TODO consolidate value and sourceModel?
-                // TODO is parseVariable still working after using DataSet as generic data object?
+                result = """<span ${getIdAttr(idTxtParam)} $valueStyleStr $autoStyleStr $modelTxt_unsafe> $modelTxt_safe </span>""";
+                break;
+        // TODO handle value in details for display
+        // TODO consolidate value and sourceModel?
+        // TODO is parseVariable still working after using DataSet as generic data object?
             case COMP_TYPE_LINK:
                 def desc = description?tran("description"):url
                 def clickStr = onClick?"""ng-click="${name}_onClick()" """:""
@@ -747,10 +747,11 @@ class PageComponent {
                     targetStr = 'target="_blank"'
                 // set url to empty string if it is null, otherwise the page is re-directed to a non-existing page
                 url = (url==null)?"":url
-                result =  """<div ${getIdAttr("container" + idTxtParam)} $styleStr>
-                             $labelTxt <a ${getIdAttr(idTxtParam)} ng-href="${CompileService.parseLiteral(url)}" $targetStr $clickStr>$desc</a>
-                             </div>"""
-                return result
+                result =  """
+                          |<a ${getIdAttr(idTxtParam)} ng-href="${CompileService.parseLiteral(url)}" $targetStr $clickStr>
+                          |<span $valueStyleStr $autoStyleStr> $desc </span></a>
+                          |""".stripMargin()
+                break;
             case COMP_TYPE_TEXT:
             case COMP_TYPE_TEXTAREA:
             case COMP_TYPE_NUMBER:
@@ -765,43 +766,32 @@ class PageComponent {
                 def attributes = "$validateStr ${required?"required":""} ${placeholder?"placeholder=\"${tran("placeholder")}\"":""}".trim()
                 def typeString= "type=\"$t\""
                 if (type == COMP_TYPE_NUMBER) {  // angular-ui doesn't use localized validators
-                    typeString="type=\"text\" pb-number "
+                    typeString="""type="text" pb-number ${fractionDigits?"fraction-digits=\"$fractionDigits\"":""} """
                 }
 
-                def styleDatepicker= ""
                 if (type == COMP_TYPE_DATETIME)  { //Assume format comes from jquery.ui.datepicker-<locale>.js
                     typeString=" ui-date=\"{ changeMonth: true, changeYear: true}\" "
-                    // override the datepicker style which is defined in banner-ss-ui.css, which causes layout issue
-                    styleDatepicker = 'style="width:auto; margin-bottom:2px;" '
                 }
-
                 // for datetime input do NOT assign an ID otherwise it won't work!
                 def inputIdStr = (type==COMP_TYPE_DATETIME)?"":getIdAttr(idTxtParam)
-
                 //Cannot choose format with time, but lots of options. See http://jqueryui.com/datepicker/
                 if (isDataSetEditControl(parent)) {
                     //ngChange moved to common part
                     //defaulValue() removed, now should be handled by initNewRecordJS() call in compileService.
-                    result = """|<input ${inputIdStr} $styleDatepicker $styleStr $typeString   name="${name?name:model}" ${parent.allowModify?"":"readonly"}
+                    result = """|<input $inputIdStr $typeString $autoStyleStr $valueStyleStr name="${name?name:model}" ${parent.allowModify && !readonly?"":"readonly"}
                                 | ng-model="$GRID_ITEM.${model}"
                                 | $ngChange $attributes />
                                 |""".stripMargin()
-                    if (parent.type==COMP_TYPE_DETAIL) {
-                        result = """<div ${getIdAttr("container"+idTxtParam)} $styleStr>$labelTxt
-                                 <span ${getIdAttr(idTxtParam)} $styleStr> $result </span></div> """
-                    }
                 } else {
                     // TODO do we need a value field if ng-model is defined?  //added defaultValue
                     attributes += " ${readonly?"readonly":""}"
-                    result = """|$labelTxt
-                                |<input $inputIdStr $styleDatepicker $typeString $styleStr type="$t" name="${name?name:model}" ${value?"value=\"{{${CompileService.parseVariable(value)}}}\"":"" }
+                    result = """|<input $inputIdStr $typeString $autoStyleStr $valueStyleStr name="${name?name:model}" ${value?"value=\"{{${CompileService.parseVariable(value)}}}\"":"" }
                                 |${defaultValue()} $ngChange $attributes
                                 |""".stripMargin()
                     if (model && !readonly) {
-                        if (binding != BINDING_PAGE)
-                            result+="ng-model=\"${ID}DS.currentRecord"    // use DataSet current record
-                        else
-                        // there may be a value instead of a model
+                        if (binding != BINDING_PAGE) // use DataSet current record
+                            result+="ng-model=\"${ID}DS.currentRecord"
+                        else // there may be a value instead of a model
                             result+= """ng-model="$modelRoot"""
                         if (modelComponent)
                             result+=".$modelComponent"
@@ -809,34 +799,45 @@ class PageComponent {
                     }
                     result+="/>\n"
                 }
-                return result
+                break;
             case COMP_TYPE_BOOLEAN:
-                result ="""<input ${getIdAttr(idTxtParam)} $styleStr type="checkbox" name="${name?name:model}"
+                result ="""<input ${getIdAttr(idTxtParam)} $autoStyleStr $valueStyleStr type="checkbox" name="${name?name:model}"
                            ${booleanTrueValue?"ng-true-value=\"$booleanTrueValue\"":""}  ${booleanFalseValue?"ng-false-value=\"$booleanFalseValue\"":""}
                            $ngChange
                            """
                 // add change event handler for items in DataSet so the item can be marked dirty for save
                 if (isDataSetEditControl(parent)) {
                     result+= """ ${(parent.allowModify && !readonly)?"":"readonly"} ng-model="$GRID_ITEM.${model}" /> $labelTxt """
-                    return result
                 }
                 else  {
                     // is value needed ever? Doesn't do anything if ng-model is used.
-                    return result +  """  ng-model="$model" ${readonly?"readonly":""} ${value?"value=\"{{$value}}\"":"" } ${defaultValue()}/> $labelTxt """
+                    result += """  ng-model="$model" ${readonly?"readonly":""} ${value?"value=\"{{$value}}\"":"" } ${defaultValue()}/> $labelTxt """
                 }
+                break;
             case COMP_TYPE_SUBMIT:
-                return """<input ${getIdAttr()} $styleStr type="submit" value="${tran("label")}"/> """
+                result = """<input ${getIdAttr(idTxtParam)} $autoStyleStr $valueStyleStr type="submit" value="${tran("label")}"/> """
             case COMP_TYPE_BUTTON:
                 // TODO for SQL generate the action ID for each method, assign ID to each click action
                 if (onClick)
-                    return """<button ${getIdAttr(idTxtParam)} $styleStr ng-click="${name}_onClick()">${tran("label")}</button>\n"""
+                    result = """<button ${getIdAttr(idTxtParam)} ng-click="${name}_onClick()">${tran("label")}</button>\n"""
+                break;
             default :
                 // TODO log and ignore not implemented component
                 println "*** WARNING: No HTML generated for component: $type ${name?name:model} ***"
-                return ""
-
+                result = ""
         }
-
+        if ([COMP_TYPE_BOOLEAN,COMP_TYPE_BUTTON, COMP_TYPE_SUBMIT].contains(type))
+            labelTxt="" //No labels in front
+        if (parent.type==COMP_TYPE_DETAIL) {
+            result = """|<div ${getIdAttr("-container"+idTxtParam)} $styleStr class="pb-${parent.type}-item-container pb-$type">
+                        |$labelTxt $result
+                        |</div>""".stripMargin()
+        } else {
+            result = """|<div ${getIdAttr("-container"+idTxtParam)} $styleStr class="pb-${parent.type}-item-container pb-$type">
+                        | $labelTxt $result
+                        |</div> """.stripMargin()
+        }
+        return result
     }
 
     String componentStart(String t, int depth=0) {
@@ -845,7 +846,7 @@ class PageComponent {
         def MAX_HEADING = 6
         if (label) {
             def headingLevel = (depth < MAX_HEADING-1)? depth+1: MAX_HEADING
-            heading = """<h$headingLevel class="${t}-label" ${getIdAttr("label")}>${tran("label")}</h$headingLevel>"""
+            heading = """<h$headingLevel class="pb-${t}-label" ${getIdAttr("label")}>${tran("label")}</h$headingLevel>"""
         }
         styleStr = """ ng-class='${name}_$STYLE_ATTR' """
         def result = ""
@@ -864,7 +865,7 @@ class PageComponent {
             case COMP_TYPE_LIST:
                 return listCompile((depth+1))
             case COMP_TYPE_BLOCK:
-                return """<div ${getIdAttr(idTxtParam)} $styleStr id="$name" ng-show="${name}_visible"> $heading \n"""
+                return """<div ${getIdAttr(idTxtParam)} $styleStr class="pb-\$t" ng-show="${name}_visible"> $heading \n"""
             case COMP_TYPE_FORM:
                 // handle flow controlled
                 def submitStr=""
@@ -872,7 +873,8 @@ class PageComponent {
                     submitStr+=submit
                 if (root.flowDefs)
                     submitStr+= "; _activateNextForm('$name');"
-                result += """<form ${getIdAttr()} $styleStr name="${name?name:model}" ng-show="${name}_visible"  ${submitStr?"""ng-submit="$submitStr" """:""}>$heading \n"""
+                //don not use ng-form, this breaks page flows!
+                result += """<form ${getIdAttr()} $styleStr class="pb-$t" name="${name?name:model}" ng-show="${name}_visible"  ${submitStr?"""ng-submit="$submitStr" """:""}>$heading \n"""
                 return result
             case COMP_TYPE_RESOURCE: //fall through
             case COMP_TYPE_DATA:
@@ -933,10 +935,17 @@ class PageComponent {
         // TODO: generate unique page ID
         def importPath = "../../cssRender"
         def cssImp = ""
+        // start css list with our default style sheet
+        def tempList = DEFAULT_STYLESHEET
+        if (importCSS)
+            tempList+=","+importCSS
         //split the string into a list
-        def is = importCSS?.tokenize(',')
+        def is = tempList?.tokenize(',')
         for (css in is) {
-            cssImp += """<link type="text/css" rel="stylesheet" href="$importPath?name=${css.trim()}" />\n"""
+            if (Css.findByConstantName(css))
+                cssImp += """<link type="text/css" rel="stylesheet" href="$importPath?name=${css.trim()}" />\n"""
+            else
+                println "Warning: Style sheet $css will not be imported as it does not exist."
         }
 
         """
@@ -944,6 +953,8 @@ class PageComponent {
         |<!-- sitemesh -->
         |<meta name="layout" content="bannerSelfServicePBPage"/>
         |
+        |<!-- import custom stylesheets -->
+        |$cssImp
         |<meta name="menuEndPoint" content="\${request.contextPath}/ssb/menu"/>
         |<meta name="menuBaseURL" content="\${request.contextPath}/ssb"/>
         |
@@ -960,8 +971,6 @@ class PageComponent {
         |    $CONTROLLER_PLACEHOLDER
         |</script>
         |
-        |<!-- import custom stylesheets -->
-        |$cssImp
         |</head>
         |<body>
         |   <div id="content" ng-controller="CustomPageController"  class="customPage">

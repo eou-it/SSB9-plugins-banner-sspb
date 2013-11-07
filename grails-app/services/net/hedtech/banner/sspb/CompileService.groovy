@@ -30,6 +30,7 @@ class CompileService {
         def slurper = new groovy.json.JsonSlurper()
         def page
         def errors=[]
+        def warn=[]
         def valid = true
         def pageValidation = [:]
         //reset global arrays
@@ -44,11 +45,12 @@ class CompileService {
             def pageBuilderModel = slurper.parseText(pageDefText)
             pageModelValidator.setPageBuilderModel(pageBuilderModel)
             // validate the raw Page JSON data
-            def validateResult =  pageModelValidator.validatePage(json)
+            def validateResult =  pageModelValidator.validatePage(json) //
 
             // validate the unmarshalled page model
             if (!validateResult.valid)
-                return  [valid:false, pageComponent:page, error:validateResult.error]
+                return  [valid:false, pageComponent:page, error:validateResult.error, warn:validateResult.warn]
+            warn=validateResult.warn
 
             def jsonResult = slurper.parseText(json)
             page = new PageComponent(jsonResult)
@@ -67,7 +69,7 @@ class CompileService {
         //populate components to be used in name resolution
         //dataSets=page.findComponents(PageComponent.COMP_DATASET_TYPES)
         //return results
-        return [valid:valid, pageComponent:page, error:errors]
+        return [valid:valid, pageComponent:page, error:errors, warn:warn]
     }
 
 //major step 2.
@@ -150,7 +152,7 @@ class CompileService {
             // set the initial value if specified in the page definition
             def style = pageComponent.style?"'${pageComponent.style}'":"''"
             // add a scope variable to for dynamic CSS manipulation
-            ret += """\$scope.${pageComponent.name}_${PageComponent.STYLE_ATTR}=$style;\n"""
+            ret += """  \$scope.${pageComponent.name}_${PageComponent.STYLE_ATTR}=$style;\n"""
         }
         pageComponent.components.each { child ->
             ret+= initializeStyle(child)

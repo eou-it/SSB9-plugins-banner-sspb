@@ -144,8 +144,9 @@ class PageService {
 
             } else {
                 ret = [statusCode: 2, statusMessage:"Page validation error. Page is not saved."] //TODO: I18N
-                ret << [pageValidationResult:[errors: validateResult.error.join('\n')] ]
             }
+            ret << [pageValidationResult:[errors: validateResult.error.join('\n'),
+                                          warn: validateResult.warn?"\nWarnings:\n"+validateResult.warn.join('\n'):""] ]
         } else
             ret = [statusCode: 1, statusMessage:"Page source is empty. Page is not compiled."]  //TODO: I18N
 

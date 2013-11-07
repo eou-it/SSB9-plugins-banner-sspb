@@ -17,10 +17,10 @@
     <meta name="menuBaseURL" content="${request.contextPath}/ssb"/>
     <meta name="menuDefaultBreadcrumbId" content=""/>
     <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
-        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pageComposer-rtl.css')}">
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pbDeveloper-rtl.css')}">
     </g:if>
     <g:else>
-        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pageComposer.css')}">
+        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pbDeveloper.css')}">
     </g:else>
 
 
@@ -39,7 +39,7 @@
 
 
      // define angular controller
-     function VisualPageComposerController( $scope, $http, $resource, $parse) {
+     function VisualPageComposerController( $scope, $http, $resource, $parse, $filter) {
         $scope.component_entry_style = ["componentEntry", "componentEntry_selected"];
 
         $scope.pageName = "";
@@ -241,6 +241,9 @@
             tr['attribute.description'      ]="${message(code:'sspb.model.attribute.description')}";
             tr['attribute.importCSS'        ]="${message(code:'sspb.model.attribute.importCSS')}";
             tr['attribute.replaceView'      ]="${message(code:'sspb.model.attribute.replaceView')}";
+            tr['attribute.fractionDigits'   ]="${message(code:'sspb.model.attribute.fractionDigits')}";
+            tr['attribute.labelStyle'       ]="${message(code:'sspb.model.attribute.labelStyle')}";
+            tr['attribute.valueStyle'       ]="${message(code:'sspb.model.attribute.valueStyle')}";
 
 
             tr['type.page'        ]="${message(code:'sspb.model.type.page'     )}";
@@ -644,6 +647,8 @@
                 //console.log("save response = " + response.statusCode + ", " +response.statusMessage);
                 if (response.statusCode == 0) {
                     $scope.pageStatus.message = response.statusMessage;
+                    if (response.pageValidationResult.warn)
+                        $scope.pageStatus.message+= response.pageValidationResult.warn
                     $scope.statusHolder.isPageModified = false;
                 }
                 else {
@@ -654,7 +659,7 @@
                         $scope.pageStatus.message = $scope.i18nGet(msg,[response.statusMessage, ""]);
                 }
                 alert($scope.pageStatus.message);
-
+                $scope.pageStatus.message = $filter('date')(new Date(), 'medium')+ ': '+$scope.pageStatus.message;
                 // refresh the page list in case new page is added
                 $scope.loadPageNames();
             }, function(response) {
@@ -783,10 +788,10 @@
     <button ng-click="previewPageSource()"><g:message code="sspb.page.visualbuilder.preview.label" /></button>
     <button ng-click='deletePageSource()'><g:message code="sspb.page.visualbuilder.delete.label" /></button>
 
-    <table style="height:80%;">
+    <table style="height:80%; min-width: 60em">
         <tr>
             <th style="width:50%"><g:message code="sspb.page.visualbuilder.page.view.label" /></th>
-            <th style="width:40%"><g:message code="sspb.page.visualbuilder.component.propertyview.label" /></th>
+            <th style="width:50%"><g:message code="sspb.page.visualbuilder.component.propertyview.label" /></th>
         </tr>
         <tr height="99%">
             <td>
@@ -908,7 +913,7 @@
 
 
     <textArea name="statusMessage" readonly="true" ng-model="pageStatus.message"
-              rows="3" cols="120" style="width:99%; height:10%"></textArea>
+              style="width:99.7%; height: 10%;"></textArea>
 
 </div>
 </body>

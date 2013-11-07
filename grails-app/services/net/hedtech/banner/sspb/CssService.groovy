@@ -131,12 +131,13 @@ class CssService {
     }
 
     // note the content-type header still needs to be set in the request even we don't send in any content in the body
-    void delete(id,Map content) {
+    void delete(id,Map content, params) {
         Css.withTransaction {
             def css = Css.find{constantName==id}
             css.delete(failOnError:true)
         }
     }
+
 
 
     public def checkOptimisticLock( domainObject, content ) {

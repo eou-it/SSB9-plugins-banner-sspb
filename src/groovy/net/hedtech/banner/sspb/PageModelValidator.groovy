@@ -47,10 +47,10 @@ class PageModelValidator {
             def slurper = new groovy.json.JsonSlurper()
             page = slurper.parseText(pageSource)
         } catch (groovy.json.JsonException ex) {
-            return [valid:false, error:[PageModelErrors.getError(error:PageModelErrors.MODEL_PARSING_ERR, args: [ex.getLocalizedMessage()] )  ]]
+            return [valid:false, warn:[], error:[PageModelErrors.getError(error:PageModelErrors.MODEL_PARSING_ERR, args: [ex.getLocalizedMessage()] )  ]]
         }
-
-        return validateComponent(page)
+        def res = validateComponent(page)
+        return res
 
     }
 
@@ -61,7 +61,7 @@ class PageModelValidator {
     def validateComponent(component, path = "") {
         // find if the component type is valid
         path += "/$component.name(type=$component.type)"
-        def res = [error:[], valid:true ]
+        def res = [warn:[], error:[], valid:true ]
 
         // check if type if missing
         if (!component.type) {
@@ -91,14 +91,14 @@ class PageModelValidator {
                 }
             }
 
-            // check invalid attributes
+            // check invalid attributes  - changed behaviour, will generate a warning instead of an error
             component.each { prop, val ->
                 if ( prop!= "components" && (!compDef.all.optionalAttributes.contains(prop) &&
                         !compDef.all.requiredAttributes.contains(prop) &&
                 !compDef[component.type].requiredAttributes.contains(prop) &&
                 !compDef[component.type].optionalAttributes.contains(prop))) {
-                    res.valid = false
-                    res.error << PageModelErrors.getError(error: PageModelErrors.MODEL_ATTR_INVALID_ERR, path: path, args: [prop,component.type])
+                    //res.valid = false
+                    res.warn << PageModelErrors.getError(error: PageModelErrors.MODEL_ATTR_INVALID_ERR, path: path, args: [prop,component.type])
                 }
             }
             // get the list of all children of the component
@@ -127,6 +127,7 @@ class PageModelValidator {
             res.valid = res.valid && childRes.valid
             if (!childRes.valid)
                 res.error += childRes.error
+            res.warn += childRes.warn
         }
 
         return res

@@ -113,13 +113,22 @@
         </script>
 
 
-        <!-- layout head contains angular module declaration and need to be placed before pbRunApp.js -->
-        <g:layoutHead />
 
-        <script src="<g:resource plugin="banner-sspb" dir="js" file="pbRunApp.js" />"> </script>
+
+
+
+        <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
+            <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pbDefault-rtl.css')}">
+        </g:if>
+        <g:else>
+            <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pbDefault.css')}">
+        </g:else>
 
         <g:customStylesheetIncludes/>
-
+        <!-- layout head contains angular module declaration and need to be placed before pbRunApp.js -->
+        <g:layoutHead />
+        <script src="<g:resource plugin="banner-sspb" dir="js" file="pbRunApp.js" />"> </script>
+<%--
         <style>
             *.margin
             {
@@ -142,8 +151,21 @@
                 bottom: 30px;
                 left:0;	/* rtl fix for ie */
             }
-        </style>
 
+            input.ng-invalid, select.ng-invalid, textarea.ng-invalid {
+                background: #fff3f3;
+                border-color: #ffaaaa;
+                color: #cc0000;
+            }
+            input.ng-invalid:focus, select.ng-invalid:focus, textarea.ng-invalid:focus {
+                border: 1px solid #ffaaaa;
+                -moz-box-shadow: 0 0 0.5em #ffaaaa;
+                -webkit-box-shadow: 0 0 0.5em #ffaaaa;
+                box-shadow: 0 0 0.5em #ffaaaa;
+            }
+
+        </style>
+--%>
     </head>
     <body>
         <div id="splash"></div>
