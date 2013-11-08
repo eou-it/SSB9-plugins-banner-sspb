@@ -70,7 +70,8 @@ class PageComponent {
 
     final static NEXT_BUTTON_DEFAULT_LABEL = "Next"
 
-    final static translatableAttributes = ["title","label","submitLabel","nextButtonLabel","placeholder","value","description"]
+    final static translatableAttributes = ["title","label","submitLabel","nextButtonLabel","placeholder","value","description",
+                                           "newRecordLabel","deleteRecordLabel","saveDataLabel","refreshDataLabel"]
 
     //escape flags for translatable strings
     final static ESC_0 = 0 //no escape
@@ -86,6 +87,13 @@ class PageComponent {
     String scriptingLanguage = "JavaScript" // -> page property that specifies the scripting language to use in page model
     String importCSS   // specify what custom stylesheets to import, comma separated list of custom stylesheet names (without the .css extension )
     String label       // -> Items (inputs, display)
+
+    String newRecordLabel        //Grid/HTable  label
+    String deleteRecordLabel     //Grid/HTable  label
+    String saveDataLabel         //Grid/HTable  label
+    String refreshDataLabel      //Grid/HTable  label
+
+
     String placeholder // -> Input Items (is text shown when no input is provided)
     String model       // -> top level data model should have first letter in upper case, data declared in controller will be lower case
                         // in grid the model will point to the property name of the parent model
@@ -292,37 +300,38 @@ class PageComponent {
 
     def recordControlPanel()  {
         def dataSet    =  "${name}DS"
-        def result =
-        """
-        <!-- pagination -->
-        <span ${getIdAttr('-pagination-container')} ng-show='${dataSet}.totalCount > ${dataSet}.pagingOptions.pageSize'>
-        <button ${getIdAttr('-pagination-prev-button')} $styleStr ng-disabled="${dataSet}.pagingOptions.currentPage == 1" ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1">
-                ${tranGlobal("page.previous.label","Previous")}
-        </button>
-        <span ${getIdAttr('-pagination-page-count')}>
-            {{${dataSet}.pagingOptions.currentPage}}/{{${dataSet}.numberOfPages()}}
-        </span>
-        <button ${getIdAttr('-pagination-next-button')}  $styleStr ng-disabled="${dataSet}.pagingOptions.currentPage >= ${dataSet}.totalCount/${dataSet}.pagingOptions.pageSize " ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1">
-                ${tranGlobal("page.next.label","Next")}
-        </button>
-        <br>
-        </span>
-
-        """
+        def result = """|
+                   |<!-- pagination -->
+                   |<span ${getIdAttr('-pagination-container')} class="pb-pagination-control" ng-show='${dataSet}.totalCount > ${dataSet}.pagingOptions.pageSize'>
+                   |    <button ${getIdAttr('-pagination-prev-button')} $styleStr ng-disabled="${dataSet}.pagingOptions.currentPage == 1" ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1">
+                   |            ${tranGlobal("page.previous.label","Previous")}
+                   |    </button>
+                   |    <span ${getIdAttr('-pagination-page-count')}>
+                   |        {{${dataSet}.pagingOptions.currentPage}}/{{${dataSet}.numberOfPages()}}
+                   |    </span>
+                   |    <button ${getIdAttr('-pagination-next-button')}  $styleStr ng-disabled="${dataSet}.pagingOptions.currentPage >= ${dataSet}.totalCount/${dataSet}.pagingOptions.pageSize " ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1">
+                   |            ${tranGlobal("page.next.label","Next")}
+                   |    </button>
+                   |</span>
+                   |""".stripMargin()
         def changeData = ""
+        def btnLabel
         if (allowNew) {
-            changeData += """ <button ${getIdAttr('-new-button')} $styleStr ng-click="${dataSet}.add(${newRecordName()}())"> ${tranGlobal("newRecord.label","Add New")}  </button>"""
+            btnLabel=newRecordLabel?tran("newRecordLabel"):tranGlobal("newRecord.label","Add New")
+            changeData += """ <button ${getIdAttr('-new-button')} $styleStr ng-click="${dataSet}.add(${newRecordName()}())"> $btnLabel </button>"""
         }
         if (allowModify || allowDelete) {
-            changeData += """ <button ${getIdAttr('-save-button')} $styleStr ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()"> ${tranGlobal("save.label","Save")} </button>"""
+            btnLabel=saveDataLabel?tran("saveDataLabel"):tranGlobal("save.label","Save")
+            changeData += """ <button ${getIdAttr('-save-button')} $styleStr ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()"> $btnLabel </button>"""
         }
         if (allowReload) {
-            changeData += """ <button ${getIdAttr('-reload-button')} $styleStr ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})"> ${tranGlobal("refresh.label","Refresh")} </button> """
+            btnLabel=refreshDataLabel?tran("refreshDataLabel"):tranGlobal("refresh.label","Refresh")
+            changeData += """ <button ${getIdAttr('-reload-button')} $styleStr ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})"> $btnLabel </button> """
         }
         if (changeData)
-            changeData =  "<span ${getIdAttr('-change-data-container')} > $changeData </span>"
+            changeData =  "<span ${getIdAttr('-change-data-container')} class=\"pb-change-data-control\" > $changeData </span>"
         result += changeData
-        result = " <p> <div ${getIdAttr('-record-control-container')} class=\"record-control\"> $result </div>"
+        result = " <div ${getIdAttr('-record-control-container')} class=\"pb-record-control\"> $result </div>"
         return result
     }
 
@@ -353,17 +362,22 @@ class PageComponent {
     def gridControlPanel()  {
         def dataSet    =  "${name}DS"
         def result = ""
+        def btnLabel
         if (allowNew) {
-            result += """ <button $styleStr ng-click="${dataSet}.add(${newRecordName()}())"> ${tranGlobal("newRecord.label","Add New",[], ESC_JS)}  </button>"""
+            btnLabel=newRecordLabel?tran("newRecordLabel",ESC_JS):tranGlobal("newRecord.label","Add New",[], ESC_JS)
+            result += """ <button $styleStr ng-click="${dataSet}.add(${newRecordName()}())"> $btnLabel  </button>"""
         }
         if (allowDelete) {
-            result += """ <button $styleStr ng-click="${dataSet}.deleteRecords(${dataSet}.selectedRecords)" ng-disabled="${dataSet}.selectedRecords.length==0"> ${tranGlobal("deleteRecord.label","Delete selected",[], ESC_JS)}  </button>"""
+            btnLabel=deleteRecordLabel?tran("deleteRecordLabel",ESC_JS):tranGlobal("deleteRecord.label","Delete selected",[], ESC_JS)
+            result += """ <button $styleStr ng-click="${dataSet}.deleteRecords(${dataSet}.selectedRecords)" ng-disabled="${dataSet}.selectedRecords.length==0"> $btnLabel  </button>"""
         }
         if (allowModify || allowDelete) {
-            result += """ <button $styleStr ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()"> ${tranGlobal("save.label","Save",[], ESC_JS)} </button>"""
+            btnLabel=saveDataLabel?tran("saveDataLabel",ESC_JS):tranGlobal("save.label","Save",[], ESC_JS)
+            result += """ <button $styleStr ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()"> $btnLabel </button>"""
         }
         if (allowReload) {
-            result += """ <button $styleStr ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})"> ${tranGlobal("refresh.label","Refresh",[], ESC_JS)} </button> """
+            btnLabel=refreshDataLabel?tran("refreshDataLabel",ESC_JS):tranGlobal("refresh.label","Refresh",[], ESC_JS)
+            result += """ <button $styleStr ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})"> $btnLabel </button> """
         }
         // alas, but cannot dynamically toggle multiSelect property of grid
         //result += "<input type=\"checkbox\" ng-model=\"${name}Grid.multiSelect\">Select multiple</input>"
@@ -531,7 +545,8 @@ class PageComponent {
         idTxtParam="-{{\$index}}"
         // add a delete checkbox column if allowDelete is true
         if (allowDelete) {
-            thead = "<th ${getIdAttr('delete-column-header')} $styleStr >${tranGlobal("delete.label","Delete")}</th>"
+            def deleteLabel=deleteRecordLabel?tran("deleteRecordLabel"):tranGlobal("delete.label","Delete")
+            thead = "<th ${getIdAttr('delete-column-header')} $styleStr >$deleteLabel</th>"
             items = """
                   |<td ${getIdAttr('delete-column-data'+idTxtParam)} $styleStr >
                   |<input ${getIdAttr('delete-column-checkbox'+idTxtParam)} $styleStr ng-click="${dataSet}.deleteRecords($GRID_ITEM)" type="checkbox" />
@@ -580,13 +595,13 @@ class PageComponent {
     def detailCompile(int depth=0) {
         def dataSet = "${name}DS"
         def repeat = "$GRID_ITEM in ${dataSet}.data"    //GRID_ITEM is confusing
-        def result = """<span $styleStr ${getIdAttr()}>"""
+        def result = """<div $styleStr ${getIdAttr()} class="pb-$type-container">"""
         idTxtParam="-{{\$index}}"
         styleStr = """ ng-class='${name}_$STYLE_ATTR' """
 
         if (label)
             result += "<label class=\"pb-$type pb-label\" ${getIdAttr('label')}>${tran("label")}</label>\n"
-        result +="""<div ${getIdAttr("container" + idTxtParam)} $styleStr ng-repeat="$repeat" >\n"""
+        result +="""<div ${getIdAttr("container" + idTxtParam)} $styleStr class="pb-$type-record" ng-repeat="$repeat" >\n"""
 
         if (allowDelete) {
             def idTag="delete-checkbox" + idTxtParam
@@ -604,7 +619,7 @@ class PageComponent {
         }
         result+= "</div>\n"
         result+= recordControlPanel()
-        result += "</span>"
+        result += "</div>"
         return result
     }
 
@@ -627,8 +642,8 @@ class PageComponent {
             click_txt = "ng-click=${name}_onClick($LIST_ITEM)"
         txt +=
             """<ul ${getIdAttr('ul-')} $styleStr >
-            <li ${getIdAttr("li-" + idTxtParam)} $click_txt ng-repeat="$repeat">
-             ${onClick?"<a ${getIdAttr('a-'+ idTxtParam)} href=\"\">":""} {{$LIST_ITEM.$value}}  ${onClick?"</a>":""}
+            <li ${getIdAttr("-li" + idTxtParam)} $click_txt ng-repeat="$repeat">
+             ${onClick?"<a ${getIdAttr('-a'+ idTxtParam)} href=\"\">":""} {{$LIST_ITEM.$value}}  ${onClick?"</a>":""}
             </li>
             </ul>
             """
@@ -859,13 +874,13 @@ class PageComponent {
                 def borderpx=2
                 //headerRowHeight doesn't work in {{ expression }} - assume same as rowHeight hence pageSize+1
                 //style="...{{expression }}..."  does not evaluate properly in IE8 - fixed using ng-style
-                return """<div class="gridStyle" ng-grid="${name}Grid" style="width:99.5%;border: ${borderpx}px solid rgb(212,212,212);${style?style:""};" ng-style="{height: (${borderpx*2}+${pageSize+1}*rowHeight+footerRowHeight) + 'px' }"></div>"""
+                return """\n<div ${getIdAttr(idTxtParam)} class="gridStyle" ng-grid="${name}Grid" $styleStr ng-style="{height: (${borderpx*2}+${pageSize+1}*rowHeight+footerRowHeight) + 'px' }"></div>\n"""
             case COMP_TYPE_DETAIL:
                 return detailCompile(depth+1)
             case COMP_TYPE_LIST:
                 return listCompile((depth+1))
             case COMP_TYPE_BLOCK:
-                return """<div ${getIdAttr(idTxtParam)} $styleStr class="pb-\$t" ng-show="${name}_visible"> $heading \n"""
+                return """\n<div ${getIdAttr(idTxtParam)} $styleStr class="pb-$t" ng-show="${name}_visible"> $heading \n"""
             case COMP_TYPE_FORM:
                 // handle flow controlled
                 def submitStr=""
@@ -899,9 +914,12 @@ class PageComponent {
                 if (root.flowDefs || submit) {
                     def labelStr = ""
                     if (root.flowDefs) {
+                        // TODO: probably only need one Button label - then we don't need the i18n incorrect concatenation using 'and'
+                        // Proposed change: Only have Submit Label.
+                        // Use NEXT_BUTTON_DEFAULT_LABEL if form is in a flowdef or has a submit handler
                         if (submitLabel) {
                             def key ="${getPropertiesBaseKey()}.submitAndNextLabel"
-                            labelStr = "$submitLabel and $nextButtonLabel"
+                            labelStr = "$submitLabel and $nextButtonLabel"  //TODO: I18N  or make logic different
                             tran(key,labelStr)
                         } else {
                             if ( nextButtonLabel == NEXT_BUTTON_DEFAULT_LABEL)
@@ -909,12 +927,11 @@ class PageComponent {
                             else
                                 labelStr = tran("nextButtonLabel")
                         }
-                        //labelStr += labelStr?" and $nextButtonLabel":nextButtonLabel
                     } else {
                         labelStr = tran('submitLabel')
                     }
-                    nextTxt += """<div ${getIdAttr("submit-container")} $styleStr>
-                    <input ${getIdAttr("submit")} type="submit" value="$labelStr"/>
+                    nextTxt += """<div ${getIdAttr("submit-container")} class="pb-form-submit" $styleStr>
+                    <input ${getIdAttr("submit")}  type="submit" value="$labelStr"/>
                     </div>
                     """
                 }

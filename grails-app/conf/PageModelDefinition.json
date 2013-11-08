@@ -34,14 +34,14 @@
             {
                 "componentType":["grid"],
                 "requiredAttributes":["model"],
-                "optionalAttributes":["label", "style", "parameters", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize","onClick", "loadInitially"],
+                "optionalAttributes":["label", "style", "parameters", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize","onClick", "loadInitially", "newRecordLabel","deleteRecordLabel","saveDataLabel","refreshDataLabel"],
                 "requiredChildren":[],
-                "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal","hidden" ]
+                "optionalChildren":["select", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal","hidden" ]
             },
             {
                 "componentType":["htable"],
                 "requiredAttributes":["model"],
-                "optionalAttributes":["label", "style", "parameters", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize","onClick", "loadInitially"],
+                "optionalAttributes":["label", "style", "parameters", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize","onClick", "loadInitially", "newRecordLabel","deleteRecordLabel","saveDataLabel","refreshDataLabel"],
                 "requiredChildren":[],
                 "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal","hidden" ]
             },
@@ -153,7 +153,8 @@
         ],
         "sourceRenderDefinitions" : [
             {"AttributeType":["name",  "title", "label", "style", "importCSS", "submitLabel", "model", "placeholder", "labelKey", "valueKey", "sourceModel",
-                "booleanTrueValue", "booleanFalseValue", "imageUrl", "url", "labelStyle", "valueStyle"], "renderProperty":{"inputType":"text"}},
+                "booleanTrueValue", "booleanFalseValue", "imageUrl", "url", "labelStyle", "valueStyle","newRecordLabel","deleteRecordLabel","saveDataLabel",
+                "refreshDataLabel" ], "renderProperty":{"inputType":"text"}},
             {"AttributeType":["type"], "renderProperty":{"inputType":"select"}},
             {"AttributeType":["submit", "value", "onUpdate", "onClick", "onLoad", "sequence", "description", "documentation"], "renderProperty":{"inputType":"textarea"}},
             {"AttributeType":["validation"],"renderProperty":{"inputType":"map"}},

@@ -5,7 +5,7 @@ input.hasDatepicker {
     border: 1px solid #cccccc;
 }
 input.hasDatepicker.pb-form {
-    height:1.7em;
+    /*height:1.7em; */
     width:  210px; /* bootstrap */
     margin: 0;
     border: 1px solid #cccccc;
@@ -15,18 +15,37 @@ input.hasDatepicker.pb-form {
     float:left;
 }
 
+.pb-block-item-container,
 .pb-form-item-container {
     /* .columns-2 */
-    width:50%;
+    width:30em;
     float:left;
 }
 .pb-form-item-container.pb-button  {
-    width:inherit;
+    width:auto;
 }
 
-label.pb-detail.pb-item.pb-label, label.pb-text.pb-form.pb-item.pb-label,
+label.pb-block.pb-item,
+
+label.pb-text.pb-form.pb-item.pb-label,
+label.pb-email.pb-form.pb-item.pb-label,
+label.pb-number.pb-form.pb-item.pb-label,
 label.pb-datetime.pb-form.pb-item.pb-label,
 label.pb-select.pb-form.pb-item.pb-label
+{
+    display: inline-block;
+    width: 12em;
+    font-size:small;
+    font-weight:bold;
+    text-align: right;
+    padding: 0.2em 0 0.2em 0;
+    margin: 0.1em 0.1em 0.1em 0.1em;
+}
+.pb-form-item-container.pb-literal {
+    width:100%;
+}
+
+label.pb-detail.pb-item.pb-label
 {
     display: inline-block;
     width: 48%;
@@ -36,6 +55,7 @@ label.pb-select.pb-form.pb-item.pb-label
     padding: 0.2em 0 0.2em 0;
     margin: 0.1em 0.1em 0.1em 0.1em;
 }
+
 
 label.pb-boolean {
     width: 48%;
@@ -49,7 +69,7 @@ label.pb-boolean {
 input.pb-detail.pb-item,select.pb-detail.pb-item, input.pb-form.pb-item
 {
     width: 48%;
-    height: 18px;
+    /*height: 18px;*/
     padding:  4px 0px 4px 2px;
     margin: 0.1em 0.1em 0.1em 0.1em;
     border: 1px solid #cccccc;
@@ -72,16 +92,25 @@ input.pb-htable.pb-item.pb-boolean
     width: auto;
 }
 
-
+.pb-detail-container {
+    width:100%;
+    clear:both;
+}
 select.pb-detail.pb-item
 {
     width:48.5%;
     padding: 2px 2px 2px 0px;
 }
 
-.pb-form, .new-line {
+.pb-form, .pb-form-submit, .pb-block, .gridStyle, .new-line {
     clear: both;
 }
+
+.gridStyle {
+    width:99.5%;
+    border: 2px solid rgb(212,212,212);
+}
+
 .pb-form-label {
     font-size:x-large;
 }
@@ -94,9 +123,19 @@ button {
 }
 
 
-.record-control {
+.pb-record-control {
     float: left;
     clear: both;
+    width:100%;
+    display: inline-block;
+}
+.pb-pagination-control {
+    margin-right:2em;
+    display: inline-block;
+}
+.pb-change-data-control {
+    margin-left: 1em;
+    display: inline-block;
 }
 
 

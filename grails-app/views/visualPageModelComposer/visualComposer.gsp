@@ -245,6 +245,11 @@
             tr['attribute.labelStyle'       ]="${message(code:'sspb.model.attribute.labelStyle')}";
             tr['attribute.valueStyle'       ]="${message(code:'sspb.model.attribute.valueStyle')}";
 
+            tr['attribute.newRecordLabel'   ]="${message(code:'sspb.model.attribute.newRecordLabel')}";
+            tr['attribute.deleteRecordLabel']="${message(code:'sspb.model.attribute.deleteRecordLabel')}";
+            tr['attribute.saveDataLabel'    ]="${message(code:'sspb.model.attribute.saveDataLabel')}";
+            tr['attribute.refreshDataLabel' ]="${message(code:'sspb.model.attribute.refreshDataLabel')}";
+
 
             tr['type.page'        ]="${message(code:'sspb.model.type.page'     )}";
             tr['type.flow'        ]="${message(code:'sspb.model.type.flow'     )}";
