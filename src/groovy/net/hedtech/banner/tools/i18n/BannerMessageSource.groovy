@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap
 // from ssh://git@devgit1/banner/plugins/banner_tools.git
 class BannerMessageSource extends PluginAwareResourceBundleMessageSource {
 
-    //String externalDataLocation
+    //String bundleLocation
     private PathMatchingResourcePatternResolver extensibleResourceResolver;
     private ResourceLoader extensibleResourceLoader;
     private Map cachedExtensibleProperties = new ConcurrentHashMap();

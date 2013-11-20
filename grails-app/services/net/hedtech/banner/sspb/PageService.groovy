@@ -10,6 +10,7 @@ import java.security.MessageDigest
 class PageService {
     def compileService
 
+
     def list(Map params) {
 
         log.trace "PageService.list invoked with params $params"
@@ -20,16 +21,22 @@ class PageService {
             // This will throw a validation exception...
             new Page(code:'FAIL', description: 'Code exceeds 2 chars').save(failOnError:true)
         }
-        def max = Math.min( params.max ? params.max.toInteger() : 100,  100)
+        def max = Math.min( params.max ? params.max.toInteger() : 10000,  10000)
         def offset = params.offset ?: 0
-        result = Page.list( offset: offset, max: max, sort: 'constantName' )
+        def qp= [offset: offset, max: max, sort: 'constantName']
+        if  (params.constantName) {
+            result = Page.findAllByConstantNameLike(params.constantName, qp)
+        } else {
+            result = Page.list( qp )
+        }
 
         def listResult = []
 
         result.each {
             //supplementPage( it )
             // trim the object since we only need to return the constantName properties for listing
-            listResult << [page : [constantName : it.constantName, id: it.id, version: it.version]]
+            //listResult << [page : [constantName : it.constantName, id: it.id, version: it.version]]
+            listResult << [constantName : it.constantName, id: it.id, version: it.version]
         }
 
         log.trace "PageService.list is returning a ${result.getClass().simpleName} containing ${result.size()} pages"
@@ -39,7 +46,10 @@ class PageService {
 
     def count(Map params) {
         log.trace "PageService.count invoked"
-        Page.count()
+        if (params.constantName)
+            Page.countByConstantNameLike(params.constantName)
+        else
+            Page.count()
     }
 
 
@@ -62,7 +72,6 @@ class PageService {
     def create(Map content, params) {
         log.trace "PageService.create invoked"
 
-
         if (WebUtils.retrieveGrailsWebRequest().getParameterMap().forceGenericError == 'y') {
             throw new Exception( "generic failure" )
         }
@@ -72,42 +81,28 @@ class PageService {
         Page.withTransaction {
             // compile first
             result = compilePage(content.pageName, content.source)
-            /*
-            def instance = new Page()
-            instance.properties['constantName','modelView'] = content
-
-            instance.save(failOnError:true)
-            result = instance
-            //if (content['parts']) result.parts //force lazy loading
-            //else result.parts = [] as Set
-            */
         }
-        //supplementPage( result )
         log.trace "PageService.create returning $result"
         result
     }
 
-    // update is not used since the client may not know if a page exists or not when submitting (concurrent editing)
+    // update is not used to update pages since the client may not know if a page exists or not when submitting (concurrent editing)
+    // however update does handle export of pages
     def update(def id, Map content, params) {
         log.trace "PageService.update invoked"
-
         checkForExceptionRequest()
-
         def result
-        Page.withTransaction {
-            /* def page = Page.get(id)
-
-            checkOptimisticLock( page, content )
-
-            page.properties = content
-            page.save(failOnError:true)
-            result = page
-            //result.parts //force lazy loading
-            */
-            // note source is in unmarshalled JSON text representation
-            result = compilePage(content.pageName, content.source)
+        if (content.exportPage == "1") {
+            def pageUtilService = new PageUtilService()
+            //println "Exporting ${content.constantName}"
+            pageUtilService.exportToFile(content.constantName)
+            result = content
+        } else if (content.source) {  //do not save empty source - should use delete then
+            Page.withTransaction {
+                 // note source is in unmarshalled JSON text representation
+                result = compilePage(content.pageName, content.source)
+            }
         }
-        //supplementPage( result )
         result
     }
 
@@ -135,7 +130,7 @@ class PageService {
                     pageInstance.modelView=pageSource
                     pageInstance.compiledView = compiledView
                     pageInstance.compiledController=compiledJSCode
-                    pageInstance.save()
+                    pageInstance=pageInstance.save()
                     ret = [statusCode:0, statusMessage:"Page has been compiled and ${overwrite?'updated':'saved'} successfully."]
                     //TODO: I18N - should not use logic to construct message using updated  or saved
                 } catch (e)   {

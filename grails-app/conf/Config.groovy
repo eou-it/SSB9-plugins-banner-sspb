@@ -169,7 +169,6 @@ grails.plugins.springsecurity.interceptUrlMap = [
         '/'            : ['IS_AUTHENTICATED_ANONYMOUSLY'],
         '/develop'     : ['IS_AUTHENTICATED_ANONYMOUSLY'],
         '/login/**'    : ['IS_AUTHENTICATED_ANONYMOUSLY'],
-        //'/menu/**'     : ['ROLE_SCACRSE_BAN_DEFAULT_M'], // not in formControllerMap, so we must explicitly identify a role
         '/ssb/menu/**'     : ['IS_AUTHENTICATED_ANONYMOUSLY'],
         '/index**'     : ['IS_AUTHENTICATED_ANONYMOUSLY'],
         '/logout/**'   : ['IS_AUTHENTICATED_ANONYMOUSLY'],
@@ -182,13 +181,15 @@ grails.plugins.springsecurity.interceptUrlMap = [
         '/api/virtualDomains.*/**'    : ['IS_AUTHENTICATED_ANONYMOUSLY','ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'], // not sure if this is overriding or complementing the filterChain
         '/api/pages/**'               : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
         '/api/csses/**'               : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
-        '/virt/**'                    : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
+        '/internal/pagesecurity/**'     : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
+        '/internal/pageexports/**'      : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
+        '/internal/virtualdomainexports/**'  : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
+        '/internal/cssexports/**'       : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
         '/virtualDomainComposer/**'   : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
         '/visualPageModelComposer/**' : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M','ROLE_SCADETL_BAN_DEFAULT_M'],
         '/cssManager/**'              : ['IS_AUTHENTICATED_ANONYMOUSLY'],
-        '/cssRender/**'              : ['IS_AUTHENTICATED_ANONYMOUSLY'],
-        '/customPage/**'              : ['IS_AUTHENTICATED_ANONYMOUSLY'],   // Controller should deal with privileges
-        '/rest/**'                    : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+        '/cssRender/**'               : ['IS_AUTHENTICATED_ANONYMOUSLY'],
+        //'/customPage/**'              : ['IS_AUTHENTICATED_ANONYMOUSLY'],   // Controller should deal with privileges
         // Not sure if next line should be there - it is commented in other SS modules
         //'/**'          : [ 'ROLE_DETERMINED_DYNAMICALLY' ]
         '/**'          : ['IS_AUTHENTICATED_ANONYMOUSLY']
@@ -245,6 +246,8 @@ restfulApi.page.offset = 'offset'
 
 // API path component to construct the REST API URL
 sspb.apiPath = 'internal'
+// Reveal detailed SQL error messages to users with this role
+sspb.debugRoleName = "SELFSERVICE-WTAILORADMIN"
 
 // ******************************************************************************
 //                       RESTful API Endpoint Configuration
@@ -294,32 +297,6 @@ restfulApiConfig = {
 	
     // Pagebuilder resources
 
-    /*
-    resource 'virtualDomains'  config {  // common service to handle all virtual domain
-
-        representation {
-            mediaTypes = ["application/json"]
-            marshallers {
-                marshaller {
-                    instance = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
-                    priority = 100
-               }
-            }
-            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
-        }
-        representation {
-            mediaTypes = ["application/xml"]
-            //jsonAsXml = true
-            marshallers {
-                marshaller {
-                    instance = new net.hedtech.restfulapi.marshallers.xml.BasicDomainClassMarshaller(app:grailsApplication)
-                    priority = 200
-                }
-            }
-            extractor = new net.hedtech.restfulapi.extractors.xml.MapExtractor()
-        }
-    }
-    */
     resource  'pages' config {
         representation {
             mediaTypes = ["application/json"]
@@ -369,5 +346,5 @@ restfulApiConfig = {
     }
 }
 
-//seems not to work well with virtual domains yet - updates are not being picked up
+//does not to work well with virtual domains yet - updates are not being picked up
 cache.headers.enabled = false

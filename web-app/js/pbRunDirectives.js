@@ -81,6 +81,18 @@ pbRunModule.directive('pbNumber', function($filter, $locale) {
                 }  else {
                     ngModel.$setValidity('float', true);
                 }
+                if (x>Number(attr.max) )  {
+                    ngModel.$setValidity('max', false);
+                    x=undefined
+                } else {
+                    ngModel.$setValidity('max', true);
+                }
+                if (x<Number(attr.min) ) {
+                    ngModel.$setValidity('min', false);
+                    x=undefined
+                } else {
+                    ngModel.$setValidity('min', true);
+                }
                 return x;
                 // return a model-centric value from user input
             }

@@ -776,7 +776,7 @@
 
     <label><g:message code="sspb.page.visualbuilder.load.label" /></label>
     <select name="constantName"
-            ng-options="page.page.constantName as page.page.constantName for page in pageList"
+            ng-options="page.constantName as page.constantName for page in pageList"
                 ng-model="pageName"
                 ng-change="getPageSource()"></select>
 
@@ -785,7 +785,7 @@
 
 
     <label><g:message code="sspb.page.visualbuilder.name.label" /></label>
-    <input type="text" name="constantName" ng-model="pageCurName" required/>
+    <input type="text" name="constantName" ng-model="pageCurName" required ng-maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/">
 
     <button ng-click='newPageSource()'><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
     <button ng-click='submitPageSource()' ng-disabled='sourceEditEnabled'><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>

@@ -9,6 +9,7 @@ import grails.util.Environment
 import org.codehaus.groovy.grails.web.context.GrailsConfigUtils
 import org.codehaus.groovy.grails.web.pages.GroovyPagesTemplateEngine
 import net.hedtech.banner.sspb.PageUtilService
+import net.hedtech.banner.tools.PBPersistenceListener
 
 class BannerSspbGrailsPlugin {
     // the plugin version
@@ -109,7 +110,7 @@ Brief summary/description of the plugin.
         messageSource(BannerMessageSource) {
             basenames = baseNames.toArray()
             fallbackToSystemLocale = false
-            //externalDataLocation = externalbundleloc
+            //bundleLocation = externalbundleloc
             pluginManager = manager
             pageMessageSource = ref (pageMessageSource)
             if (Environment.current.isReloadEnabled() || GrailsConfigUtils.isConfigTrue(application, GroovyPagesTemplateEngine.CONFIG_PROPERTY_GSP_ENABLE_RELOAD)) {
@@ -139,6 +140,7 @@ Brief summary/description of the plugin.
                             println e
                         }
                     }
+                    //println "added message to service class $name"
                 }
                 catch (e) {} // rare case where we'll bury it...
             }
@@ -147,6 +149,9 @@ Brief summary/description of the plugin.
 
     def doWithApplicationContext = { applicationContext ->
         // TODO Implement post initialization spring config (optional)
+        application.mainContext.eventTriggeringInterceptor.datastores.each { k, datastore ->
+            applicationContext.addApplicationListener new PBPersistenceListener(datastore)
+        }
     }
 
     def onChange = { event ->

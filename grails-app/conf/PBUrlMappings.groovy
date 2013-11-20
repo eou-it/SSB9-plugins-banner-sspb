@@ -36,11 +36,6 @@ class PBUrlMappings {
             parseRequest = false
         }
 
-        //used for display records in virtual domain composer - Todo: make sure it can't be used to bypass security
-        "/virt/$virtualDomain/$id?/$other1?/$other2?"  (controller:"VirtualDomain" /*, parseRequest:true */) {
-            action = [GET: "get", POST: "save", PUT: "update", DELETE: "delete"]
-        }
-
         "/"(view:"/index")
         "500"(view:'/error')
 

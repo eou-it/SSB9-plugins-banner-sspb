@@ -14,7 +14,7 @@ import java.text.MessageFormat
 // from ssh://git@devgit1/banner/plugins/banner_tools.git
 class PageMessageSource extends ReloadableResourceBundleMessageSource {
 
-    String externalDataLocation
+    String bundleLocation
 
     static final def globalPropertiesName = "pageGlobal"
     def pageResources = [] // will go into basenames in superclass, since that cannot be accessed, we keep a copy
@@ -57,7 +57,7 @@ class PageMessageSource extends ReloadableResourceBundleMessageSource {
     public void setResourceLoader(ResourceLoader resourceLoader) {
         def rloader = new DefaultResourceLoader() {
             public Resource getResource(String location) {
-                def path=externalDataLocation
+                def path=bundleLocation
                 if ( ! (path.endsWith("/") || path.endsWith("\\")) )
                     path+="/"
                 new FileSystemResource(new File(path + location))
@@ -71,10 +71,10 @@ class PageMessageSource extends ReloadableResourceBundleMessageSource {
         super()
         logger.debug "Initialize PageResources"
         try {
-            externalDataLocation=PageUtilService.getExternalDataLocation()
-            println "External Bundle location : $externalDataLocation (To change specify location in JVM parameter: -D${PageUtilService.propertyDataDir}=\"c:/temp\")"
+            bundleLocation=PageUtilService.getBundleLocation()
+            println "External Bundle location : $bundleLocation (Banner configuration pageBuilder.locations.bundles default: \$temp or \$tmp)"
             //Get the basenames from the external root properties files (assume filename has no underscore)
-            new File(externalDataLocation).eachFileMatch(~/[^_]*.properties/) {   file ->
+            new File(bundleLocation).eachFileMatch(~/[^_]*.properties/) {   file ->
                 String fileName = file.name
                 fileName-= ".properties"  // remove the extension
                 pageResources.add(fileName)

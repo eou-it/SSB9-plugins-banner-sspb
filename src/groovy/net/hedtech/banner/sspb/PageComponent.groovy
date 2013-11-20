@@ -303,13 +303,13 @@ class PageComponent {
         def result = """|
                    |<!-- pagination -->
                    |<span ${getIdAttr('-pagination-container')} class="pb-pagination-control" ng-show='${dataSet}.totalCount > ${dataSet}.pagingOptions.pageSize'>
-                   |    <button ${getIdAttr('-pagination-prev-button')} $styleStr ng-disabled="${dataSet}.pagingOptions.currentPage == 1" ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1">
+                   |    <button ${getIdAttr('-pagination-prev-button')} ng-disabled="${dataSet}.pagingOptions.currentPage == 1" ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1">
                    |            ${tranGlobal("page.previous.label","Previous")}
                    |    </button>
                    |    <span ${getIdAttr('-pagination-page-count')}>
                    |        {{${dataSet}.pagingOptions.currentPage}}/{{${dataSet}.numberOfPages()}}
                    |    </span>
-                   |    <button ${getIdAttr('-pagination-next-button')}  $styleStr ng-disabled="${dataSet}.pagingOptions.currentPage >= ${dataSet}.totalCount/${dataSet}.pagingOptions.pageSize " ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1">
+                   |    <button ${getIdAttr('-pagination-next-button')}  ng-disabled="${dataSet}.pagingOptions.currentPage >= ${dataSet}.totalCount/${dataSet}.pagingOptions.pageSize " ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1">
                    |            ${tranGlobal("page.next.label","Next")}
                    |    </button>
                    |</span>
@@ -318,15 +318,15 @@ class PageComponent {
         def btnLabel
         if (allowNew) {
             btnLabel=newRecordLabel?tran("newRecordLabel"):tranGlobal("newRecord.label","Add New")
-            changeData += """ <button ${getIdAttr('-new-button')} $styleStr ng-click="${dataSet}.add(${newRecordName()}())"> $btnLabel </button>"""
+            changeData += """ <button ${getIdAttr('-new-button')} ng-click="${dataSet}.add(${newRecordName()}())"> $btnLabel </button>"""
         }
         if (allowModify || allowDelete) {
             btnLabel=saveDataLabel?tran("saveDataLabel"):tranGlobal("save.label","Save")
-            changeData += """ <button ${getIdAttr('-save-button')} $styleStr ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()"> $btnLabel </button>"""
+            changeData += """ <button ${getIdAttr('-save-button')} ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()"> $btnLabel </button>"""
         }
         if (allowReload) {
             btnLabel=refreshDataLabel?tran("refreshDataLabel"):tranGlobal("refresh.label","Refresh")
-            changeData += """ <button ${getIdAttr('-reload-button')} $styleStr ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})"> $btnLabel </button> """
+            changeData += """ <button ${getIdAttr('-reload-button')} ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})"> $btnLabel </button> """
         }
         if (changeData)
             changeData =  "<span ${getIdAttr('-change-data-container')} class=\"pb-change-data-control\" > $changeData </span>"
@@ -480,19 +480,23 @@ class PageComponent {
         def validateAt = ""
         def placeholderAt=""
         def ngModel="ng-model=\"COL_FIELD\""    // shorthand for  row.entity[col.field]
-        def ngChange="ng-change=\""+(onUpdate?"\$parent.${parent.ID}_${name}_onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity)\""
+        def ngChange=!ro?"ng-change=\""+(onUpdate?"\$parent.${parent.ID}_${name}_onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity)\"":""
+        def typeInternal = type
+
         if (type == COMP_TYPE_NUMBER ) {
             //angular-ui doesn't use localized validators - use own (but rather limited still)
             typeAt="""type="text" pb-number ${fractionDigits?"fraction-digits=\"$fractionDigits\"":""} """
         }
         else if (type == COMP_TYPE_DATETIME ) {
+            if (readonly)
+                typeInternal=COMP_TYPE_DISPLAY
             typeAt="ui-date=\"{ changeMonth: true, changeYear: true}\" "
             //Assume format comes from jquery.ui.datepicker-<locale>.js
             //Cannot choose format with time, but lots of options. See http://jqueryui.com/datepicker/
         }
 
 
-        switch (type) {
+        switch (typeInternal) {
             case COMP_TYPE_SELECT:
                 // SELECT must have a model
                 def arrayName = "${name}DS.data"
@@ -517,6 +521,12 @@ class PageComponent {
                     tagEnd="></span>"
                     ngModel="ng-bind-html-unsafe=\"COL_FIELD\""
                 }
+                if (type==COMP_TYPE_DATETIME) {
+                    //tagStart="<span"
+                    //tagEnd="></span>"
+                    ngModel="value=\"{{COL_FIELD|date:\\'medium\\'}}\""
+                }
+
                 break
             case COMP_TYPE_LITERAL:
                 return "<span $styleAt>" + tran(getPropertiesBaseKey()+".value",CompileService.parseLiteral(value).replaceAll("item.","row.entity.") ) + "</span>"
@@ -575,7 +585,7 @@ class PageComponent {
             click_txt = "ng-click=${name}_onClick($GRID_ITEM)"
 
         def result =  """
-                   |  <table ${getIdAttr()} $styleStr >
+                   |  <table ${getIdAttr()}>
                    |    <thead ${getIdAttr('-th')} ><tr ${getIdAttr('-thr')} >$thead</tr></thead>
                    |    <tbody ${getIdAttr('-tb')} >
                    |      <!-- Do this for every object in objects -->
@@ -586,6 +596,11 @@ class PageComponent {
                    |  </table>
                    |""".stripMargin()
         result +=  recordControlPanel()
+        //put in div with styleStr
+        result = """|<div $styleStr ${getIdAttr()} class="pb-$type-container">
+                    |$result
+                    |</div>
+                 """.stripMargin()
         return result
     }
 
@@ -597,11 +612,10 @@ class PageComponent {
         def repeat = "$GRID_ITEM in ${dataSet}.data"    //GRID_ITEM is confusing
         def result = """<div $styleStr ${getIdAttr()} class="pb-$type-container">"""
         idTxtParam="-{{\$index}}"
-        styleStr = """ ng-class='${name}_$STYLE_ATTR' """
 
         if (label)
             result += "<label class=\"pb-$type pb-label\" ${getIdAttr('label')}>${tran("label")}</label>\n"
-        result +="""<div ${getIdAttr("container" + idTxtParam)} $styleStr class="pb-$type-record" ng-repeat="$repeat" >\n"""
+        result +="""<div ${getIdAttr("container" + idTxtParam)} class="pb-$type-record" ng-repeat="$repeat" >\n"""
 
         if (allowDelete) {
             def idTag="delete-checkbox" + idTxtParam
@@ -628,20 +642,20 @@ class PageComponent {
      */
     def listCompile(int depth=0) {
         def dataSet = "${name}DS"
-        def txt = "<span ${getIdAttr()}>"
+        def txt = "<span ${getIdAttr()} $styleStr>"
         def repeat = "$LIST_ITEM in ${dataSet}.data"
         idTxtParam = "-{{\$index}}"
-        styleStr = """ ng-class='${name}_$STYLE_ATTR' """
+       // styleStr = """ ng-class='${name}_$STYLE_ATTR' """
         labelStyleStr =  labelStyle?""" class="$labelStyle" """:""
 
         if (label)
-            txt += """<label class="${type} label" ${getIdAttr('label')} $styleStr $labelStyleStr >${tran("label")}</label>"""
+            txt += """<label class="${type} label" ${getIdAttr('label')} $labelStyleStr >${tran("label")}</label>"""
         // handle click event
         def click_txt=""
         if (onClick)
             click_txt = "ng-click=${name}_onClick($LIST_ITEM)"
         txt +=
-            """<ul ${getIdAttr('ul-')} $styleStr >
+            """<ul ${getIdAttr('-ul')}  >
             <li ${getIdAttr("-li" + idTxtParam)} $click_txt ng-repeat="$repeat">
              ${onClick?"<a ${getIdAttr('-a'+ idTxtParam)} href=\"\">":""} {{$LIST_ITEM.$value}}  ${onClick?"</a>":""}
             </li>
@@ -679,8 +693,11 @@ class PageComponent {
                 }
             }
         }
+        def typeInternal=t
+        if (t == COMP_TYPE_DATETIME && readonly) // need to render as display item as date picker isn't disabled.
+                typeInternal=COMP_TYPE_DISPLAY
 
-        switch (t) {
+        switch (typeInternal) {
             case COMP_TYPE_SELECT:
                 // SELECT must have a model
                 def arrayName = "${name}DS.data"
@@ -737,13 +754,20 @@ class PageComponent {
             case COMP_TYPE_DISPLAY:
                 def modelTxt_unsafe = ""
                 def modelTxt_safe = ""
+
                 if ( [COMP_TYPE_HTABLE, COMP_TYPE_DETAIL].contains(parent.type)) {
-                    if (asHtml)
+                    if (type == COMP_TYPE_DATETIME) {
+                        modelTxt_safe = "{{ $GRID_ITEM.${model}|date:'medium' }}"
+                    }
+                    else if (asHtml)
                         modelTxt_unsafe = "ng-bind-html-unsafe='$GRID_ITEM.$model' "
                     else
                         modelTxt_safe = "{{ $GRID_ITEM.${model} }}"
                 } else {
-                    if (asHtml)
+                    if (type == COMP_TYPE_DATETIME) {
+                        modelTxt_safe = "{{value|date:'medium'}}"
+                    }
+                    else if (asHtml)
                         modelTxt_unsafe = "ng-bind-html-unsafe='${CompileService.parseVariable(value)}' "
                     else
                         modelTxt_safe = "${CompileService.parseLiteral(value)}"

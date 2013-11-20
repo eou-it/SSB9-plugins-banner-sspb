@@ -93,7 +93,7 @@ input.pb-htable.pb-item.pb-boolean
 }
 
 .pb-detail-container {
-    width:100%;
+    /*width:100%;*/
     clear:both;
 }
 select.pb-detail.pb-item

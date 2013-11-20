@@ -3,9 +3,7 @@ package net.hedtech.banner.virtualDomain
 import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 
 class VirtualDomainService {
-    def static localizer = { mapToLocalize ->
-        new ValidationTagLib().message( mapToLocalize )
-    }
+
     def virtualDomainSqlService
 
     private String vdPrefix = "virtualDomains."   // Todo: might want to get rid of plural or choose other prefix
@@ -20,19 +18,20 @@ class VirtualDomainService {
     }
 
     // Interface for restful API - TODO may choose to put this in a separate service or move to VirtualDomainSqlService
-    // if the service name can be configured, which fails now.
+
     def list(Map params) {
         def queryResult
         def result
+        def serviceName = vdName(params)
         def vd = loadVirtualDomain(vdName(params))
         if (vd.error) {
-            throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message") )//TODO  how should we handle with restful API?, i18n
+            throw new VirtualDomainException( message(code:"sspb.virtualdomain.invalid.service.message", args:[serviceName]))
         }
         queryResult = virtualDomainSqlService.get(vd.virtualDomain, params)
         if (queryResult.error == "") {
             result = queryResult.rows
         } else {
-            throw new Exception(queryResult.error )
+            throw new VirtualDomainException( queryResult.error )
         }
         result
     }
@@ -44,24 +43,26 @@ class VirtualDomainService {
     def count(Map params) {
         def queryResult
         def result
-        def vd = loadVirtualDomain(vdName(params))
+        def serviceName = vdName(params)
+        def vd = loadVirtualDomain(serviceName)
         if (vd.error) {
-            throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message") )//TODO  how should we handle errors with restful API?, i18n
+            throw new VirtualDomainException( message(code:"sspb.virtualdomain.invalid.service.message", args:[serviceName]))
         }
         queryResult = virtualDomainSqlService.count(vd.virtualDomain, params)
         if (queryResult.error == "") {
             result = queryResult.totalCount
         } else {
-            throw new Exception(queryResult.error )
+            throw new VirtualDomainException(queryResult.error )
         }
         result
     }
 
     def create (Map data, params) {
         println "Data for post/save/create:" + data
-        def vd = loadVirtualDomain(vdName(params))
+        def serviceName = vdName(params)
+        def vd = loadVirtualDomain(serviceName)
         if (vd.error) {
-            throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message"))
+            throw new VirtualDomainException( message(code:"sspb.virtualdomain.invalid.service.message", args:[serviceName]))
         }
         virtualDomainSqlService.create(vd.virtualDomain,params,data)
         //data
@@ -70,9 +71,10 @@ class VirtualDomainService {
 
     def update (def id, Map data, params) {
         println "Data for put/update:" + data
-        def vd = loadVirtualDomain(vdName(params))
+        def serviceName = vdName(params)
+        def vd = loadVirtualDomain(serviceName)
         if (vd.error) {
-            throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message"))
+            throw new VirtualDomainException( message(code:"sspb.virtualdomain.invalid.service.message", args:[serviceName]))
         }
         virtualDomainSqlService.update(vd.virtualDomain,params,data)
         //data
@@ -81,9 +83,10 @@ class VirtualDomainService {
 
     def delete (def id, Map data,  params) {
         println "Data for DELETE:" + data
-        def vd = loadVirtualDomain(vdName(params))
+        def serviceName = vdName(params)
+        def vd = loadVirtualDomain(serviceName)
         if (vd.error) {
-            throw new Exception( localizer(code:"sspb.virtualdomain.invalid.service.message"))
+            throw new VirtualDomainException( message(code:"sspb.virtualdomain.invalid.service.message", args:[serviceName]))
         }
         virtualDomainSqlService.delete(vd.virtualDomain,params)
     }
@@ -126,7 +129,7 @@ class VirtualDomainService {
 
         log.info "---------- load $vdServiceName (VirtualDomainService)-------------"
         def success = false
-        def error = "$vdServiceName not found"
+        def error = message(code:"sspb.virtualdomain.invalid.service.message", args:[vdServiceName])
         def vd = null
 
         try {

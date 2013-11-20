@@ -10,11 +10,8 @@ import net.hedtech.banner.sspb.PBUser
 
 class VirtualDomainSqlService {
 
-    def static localizer = { mapToLocalize ->
-        new ValidationTagLib().message( mapToLocalize )
-    }
-
-    def sessionFactory  //injected by Spring
+    def sessionFactory    //injected by Spring
+    def grailsApplication //ditto
 
     //allow connecting to 2 different datasources, depending on VirtualDomain.dataSource
     //to make development easy, but maybe also useful
@@ -70,7 +67,7 @@ class VirtualDomainSqlService {
     /* Check the user roles against the virtual domain roles
      */
     private def userAccessRights = { vd, userRoles ->
-        def result=[get: false, put: false, post: false, delete: false ]
+        def result=[get: false, put: false, post: false, delete: false, debug: false ]
         for (it in userRoles) {
             //objectName is like SELFSERVICE-ALUMNI
             //role is BAN_DEFAULT_M
@@ -82,6 +79,8 @@ class VirtualDomainSqlService {
                 result.post |= it.allowPost
                 result.delete |= it.allowDelete
             }
+            if ( it.objectName == grailsApplication.config.sspb.debugRoleName)
+                result.debug=true
         }
         result
     }
@@ -141,8 +140,9 @@ class VirtualDomainSqlService {
     def get(vd, params) {
         def parameters = getNormalized(params) // some tweaks and work arounds
         addUser(parameters)
-        def logmsg=localizer(code:"sspb.virtualdomain.sqlservice.param", args:[vd.serviceName,parameters])
-        if (!userAccessRights(vd, parameters.user_authorities).get) {
+        def logmsg=message(code:"sspb.virtualdomain.sqlservice.param", args:[vd.serviceName,parameters])
+        def privs=userAccessRights(vd, parameters.user_authorities)
+        if (!privs.get) {
             throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.user_loginName}"))
         }
         def sql = getSql(vd.dataSource)
@@ -150,7 +150,7 @@ class VirtualDomainSqlService {
         def statement = vd.codeGet
         //maybe remove metaData - what value?
         def metaData = { meta ->
-            logmsg += localizer(code:"sspb.virtualdomain.sqlservice.numbercolumns", args:[meta.columnCount])
+            logmsg += message(code:"sspb.virtualdomain.sqlservice.numbercolumns", args:[meta.columnCount])
         }
         def rows
         try {
@@ -175,24 +175,28 @@ class VirtualDomainSqlService {
             rows = sql.rows(statement,parameters,metaData)
             rows = idEncodeRows(rows)
             rows = handleClobRows(rows)
-            logmsg += " "+localizer(code:"sspb.virtualdomain.sqlservice.numberrows", args:[rows?.size(),parameters.offset])
+            logmsg += " "+message(code:"sspb.virtualdomain.sqlservice.numberrows", args:[rows?.size(),parameters.offset])
 
         } catch(e) {
-            logmsg += localizer(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
+            logmsg += message(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
 
             errorMessage=logmsg
         } finally {
             sql.close()
         }
         println logmsg
+        if (!privs.debug) {// do not reveal sql error unless user has the right to debug
+            errorMessage = "Unable to get resources."
+        }
         return [error: errorMessage, rows:rows, totalCount: rows?.size()]
     }
 
     def count(vd, params) {
         def parameters = getNormalized(params) // some tweaks and work arounds
         addUser(parameters)
-        def logmsg=localizer(code:"sspb.virtualdomain.sqlservice.param.count", args:[vd.serviceName,parameters])
-        if (!userAccessRights(vd, parameters.user_authorities).get) {
+        def logmsg=message(code:"sspb.virtualdomain.sqlservice.param.count", args:[vd.serviceName,parameters])
+        def privs=userAccessRights(vd, parameters.user_authorities)
+        if (!privs.get) {
             throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.user_loginName}"))
         }
         def sql = getSql(vd.dataSource)
@@ -207,12 +211,15 @@ class VirtualDomainSqlService {
             rows = sql.rows(statement,parameters)
             totalCount = rows[0].COUNT
         } catch(e) {
-            logmsg += localizer(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
+            logmsg += message(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
             errorMessage=logmsg
         } finally {
             sql.close()
         }
         println logmsg
+        if (!privs.debug) {// do not reveal sql error unless user has the right to debug
+            errorMessage = "Unable to get resource count."
+        }
         return [error: errorMessage, totalCount:totalCount.longValue()]
     }
 
@@ -220,7 +227,8 @@ class VirtualDomainSqlService {
         def parameters = params
         addUser(parameters)
         data = prepareData(data, parameters)
-        if (!userAccessRights(vd, parameters.user_authorities).put) {
+        def privs=userAccessRights(vd, parameters.user_authorities)
+        if (!privs.put) {
             throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.user_loginName}"))
         }
         def sql
@@ -230,7 +238,7 @@ class VirtualDomainSqlService {
         }
         catch(e) {
             println "exception in update statement: $e"
-            throw(e)
+            throw new VirtualDomainException( privs.debug?e.getLocalizedMessage():"Unable to update resource.")
         }
         finally {
             sql?.close()
@@ -242,7 +250,8 @@ class VirtualDomainSqlService {
         def parameters = params
         addUser(parameters)
         data = prepareData(data, parameters)
-        if (!userAccessRights(vd, parameters.user_authorities).post){
+        def privs=userAccessRights(vd, parameters.user_authorities)
+        if (!privs.post){
             throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.user_loginName}"))
         }
         def sql
@@ -252,7 +261,7 @@ class VirtualDomainSqlService {
         }
         catch(e) {
             println "exception in create statement: $e"
-            throw(e)
+            throw new VirtualDomainException( privs.debug?e.getLocalizedMessage():"Unable to create resource.")
         }
         finally {
             sql?.close()
@@ -263,7 +272,8 @@ class VirtualDomainSqlService {
     def delete(vd, params) {
         def parameters = params
         addUser(parameters)
-        if (!userAccessRights(vd, parameters.user_authorities).delete){
+        def privs=userAccessRights(vd, parameters.user_authorities)
+        if (!privs.delete){
             throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.user_loginName}"))
         }
         parameters.id = urlPathDecode(parameters.id)
@@ -274,7 +284,7 @@ class VirtualDomainSqlService {
         }
         catch(e) {
             println "exception in delete statement: $e"
-            throw(e)
+            throw new VirtualDomainException( privs.debug?e.getLocalizedMessage():"Unable to delete resource.")
         }
         finally {
             sql?.close()
@@ -376,7 +386,7 @@ class VirtualDomainSqlService {
             try {
                 return reader.getText()
             } catch (IOException e) {
-                throw new SQLException(localizer(code:"sspb.virtualdomain.sqlservice.clob.error.message", args:[e.getMessage()]))
+                throw new SQLException(message(code:"sspb.virtualdomain.sqlservice.clob.error.message", args:[e.getMessage()]))
             }
         }
         else {

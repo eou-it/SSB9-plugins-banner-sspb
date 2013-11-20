@@ -6,8 +6,7 @@ class PageRole {
     Boolean allow = true     // assume access is allowed for a role - can change to temporarily disable
 
     static constraints = {
-        roleName nullable: false,  maxSize: 30
-
+        roleName nullable: false,  maxSize: 30, unique : 'page'
     }
 
     static mapping = {

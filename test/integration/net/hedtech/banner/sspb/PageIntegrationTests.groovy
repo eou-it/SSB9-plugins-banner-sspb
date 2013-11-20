@@ -19,7 +19,7 @@ class PageIntegrationTests {
     void testImport() {
         def pageUtilService = new PageUtilService()
         def pagePath = "test/testData/model"
-        pageUtilService.importAllFromFile(pagePath)
+        pageUtilService.importAllFromDir(pagePath)
         def errors = pageUtilService.compileAll()
         assert errors.empty
     }

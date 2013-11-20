@@ -73,7 +73,7 @@
 <br/>
 <g:form name="ComposeVDForm" action="saveVirtualDomain">
     <label><g:message code="sspb.page.virtualdomain.servicename.label" /></label>
-    <input type="text" name="vdServiceName" value="${pageInstance?.vdServiceName}" required />
+    <input maxlength="60"  pattern="^[a-zA-Z]+[a-zA-Z0-9\_-]*$" type="text" name="vdServiceName" value="${pageInstance?.vdServiceName}" required />
     <g:actionSubmit action="saveVirtualDomain" value="${message(code:"sspb.page.virtualdomain.save.label")}" />
     <g:actionSubmit action="deleteVirtualDomain" value="${message(code:"sspb.page.virtualdomain.delete.label")}" />
 <br/>
@@ -113,21 +113,43 @@
 <%
     if (pageInstance?.vdServiceName)  {
     out << """
-    <br/>
     <h4>${message(code:"sspb.page.virtualdomain.query.result.label")} </h4>
-    ${message(code:"sspb.page.virtualdomain.query.result.parameters.label")} <input type="text" name="vdTestParameters" value="${pageInstance?.vdTestParameters}" />
-    ${message(code:"sspb.page.virtualdomain.query.result.parameters.enter")}
+    ${message(code:"sspb.page.virtualdomain.query.result.parameters.label")}
+    <input type="text" id="vdTestParameters" name="vdTestParameters" value="${pageInstance.vdTestParameters?pageInstance.vdTestParameters:""}" />
     <input type="hidden"  name="vdServiceName" value="${pageInstance?.vdServiceName}" />
+    <input type="button" value="Test" id="getDataButton"/>
     <br/>
-    <iframe width="95%" height="20%" src="${createLink(uri: '/')}virt/${pageInstance?.vdServiceName}?debug=true&${pageInstance?.vdTestParameters?.replace('%','%25')}">
-    </iframe>
+    <textarea id="testarea1" rows="5" readonly style="width:98%"></textarea>
     """
-//It should not be very difficult to write an AngularJS page to submit the JSON shown in the iframe above.
+//It should not be very difficult to write an AngularJS page to submit the JSON shown in the texarea above.
 //When debug=true, the service should add a rollback statement to the DML statement...
 //This way a round trip test can be done making sure the SQL is valid.
+
 }
 %>
 </g:form>
+<%
+    if (pageInstance?.vdServiceName)  {
+    out << """
+    <script>
+        function testApi() {
+            var param = \$("#vdTestParameters").val();
+            param =  param.replace(/%/g,'%25');
+            \$.get("${createLink(uri: '/')}${grailsApplication.config.sspb.apiPath}/virtualDomains.${pageInstance?.vdServiceName}?debug=true&"+param, {},
+                    function(data) {
+                        \$('#testarea1').val(JSON.stringify(data));
+                    });
+            return false;
+        };
+        \$("#getDataButton").click(function() {
+            testApi();
+        });
+        testApi();
+
+    </script>
+    """
+    }
+%>
 </div> <!--class customPage-->
 </body>
 </html>
