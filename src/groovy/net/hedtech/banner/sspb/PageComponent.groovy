@@ -1036,8 +1036,9 @@ class PageComponent {
         return result
     }
 
+
     //recursively find components with types in componentTypes
-    def findComponents(componentTypes) {
+    def findComponents(componentTypes ) {
         def result=[]
         if (componentTypes.contains(this.type))
             result << this
@@ -1045,6 +1046,27 @@ class PageComponent {
             result += it.findComponents(componentTypes)
         }
         return result
+    }
+
+    //Lists structure of page (very simple view)
+    String showHierarchy (int depth = 0) {
+        def result = "".padRight(depth*2," ")+this.name
+        components.each {
+            result += "\n"+it.showHierarchy(depth+1)
+        }
+        result
+    }
+
+    //light weight conversion without any validation
+    static PageComponent parseJSON(jsonComp)  {
+        def result = new PageComponent( jsonComp )
+        def componentList = []
+        jsonComp.components.each {
+            def child = parseJSON(it)
+            componentList.push(child)
+        }
+        result.components = componentList
+        result
     }
 
 }

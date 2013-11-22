@@ -18,7 +18,7 @@ class PageService {
 
         // TODO: Do validation testing in create or update -- this is temporary
         if (params.forceValidationError == 'y') {
-            // This will throw a validation exception...
+            // This will throw a validation exception...                      Log
             new Page(code:'FAIL', description: 'Code exceeds 2 chars').save(failOnError:true)
         }
         def max = Math.min( params.max ? params.max.toInteger() : 10000,  10000)

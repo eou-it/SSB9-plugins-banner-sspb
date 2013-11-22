@@ -2,8 +2,6 @@ package net.hedtech.banner.css
 
 class Css {
 
-    static hasMany = [cssRoles: CssRole] // not used ?
-
     String constantName
     String css
     String description

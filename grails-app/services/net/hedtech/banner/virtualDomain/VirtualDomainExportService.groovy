@@ -1,5 +1,8 @@
 package net.hedtech.banner.virtualDomain
 
+import net.hedtech.banner.sspb.Page
+import net.hedtech.banner.sspb.PageComponent
+
 class VirtualDomainExportService {
     static transactional = false //Getting error connection closed without this
 
@@ -28,14 +31,23 @@ class VirtualDomainExportService {
         def max = Math.min(params.max ? params.max.toInteger() : 10000, 10000)
         def offset = params.offset ?: 0
         def sortBy = []
+        def vdSet
 
         if (params.sortby) {
             sortBy = normalizeSortBy(params.sortby)
+        }
+        if (params.pageLike  ) {
+            vdSet = vdForPages(params.pageLike)
+            if (vdSet.empty)
+                vdSet << "~"
         }
         def cr = VirtualDomain.createCriteria()
         def result = cr.list(offset: offset, max: max, paginationEnabledList: false) {
             if (params.serviceName) {
                 like("serviceName", params.serviceName)
+            }
+            if (vdSet) {
+                'in'("serviceName",vdSet)
             }
             if (sortBy[0]) {
                 sortBy.each {
@@ -55,9 +67,8 @@ class VirtualDomainExportService {
         listResult
     }
 
-
+    //Todo: add pageLike criteria
     def count(Map params) {
-        log.trace "VirtualDomainExportService.count invoked"
         def result
         if (params.serviceName)
             result = VirtualDomain.countByServiceNameLike(params.serviceName)
@@ -67,20 +78,17 @@ class VirtualDomainExportService {
     }
 
     def create(Map content, params) {
-        log.trace "VirtualDomainExportService.create invoked"
         def result
         if (content.exportVirtualDomain == "1") {
             def vdUtilService = new VirtualDomainUtilService()
-            vdUtilService.exportToFile(content.serviceName)
+            vdUtilService.exportToFile(content.serviceName, content.pageLike)
             result = content
         }
-        log.trace "VirtualDomainExportService.create returning $result"
         result
     }
 
-    // handle export of single
+    // handle export of single vd
     def update(def id, Map content, params) {
-        log.trace "VirtualDomainExportService.update invoked"
         def result
         if (content.exportVirtualDomain == "1") {
             def vdUtilService = new VirtualDomainUtilService()
@@ -88,5 +96,26 @@ class VirtualDomainExportService {
             result = content
         }
         result
+    }
+
+    // return a list of referenced virtual domains
+    def vdForPages(pageNameLike) {
+        def slurper = new groovy.json.JsonSlurper()
+        Set vdSet = new HashSet()
+        def pages = Page.findAllByConstantNameLike(pageNameLike)
+        //this is gonna be pretty expensive probably
+        pages.each{ p ->
+            def jsonPage = slurper.parseText(p.modelView)
+            def pComponent = PageComponent.parseJSON(jsonPage)
+            def vds = pComponent.findComponents([PageComponent.COMP_TYPE_RESOURCE])
+            //println pComponent.showHierarchy()
+
+            vds.each { res ->
+                if ( res.resource.startsWith(VirtualDomainService.vdPrefix)) {
+                    vdSet << res.resource.substring(VirtualDomainService.vdPrefix.length())
+                }
+            }
+        }
+        vdSet
     }
 }

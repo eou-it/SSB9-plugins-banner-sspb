@@ -14,14 +14,11 @@ class PageIntegrationTests {
         // Tear down logic here
     }
 
-
     @Test
     void testImport() {
         def pageUtilService = new PageUtilService()
         def pagePath = "test/testData/model"
         pageUtilService.importAllFromDir(pagePath)
-        def errors = pageUtilService.compileAll()
-        assert errors.empty
     }
 
     @Test
@@ -37,6 +34,5 @@ class PageIntegrationTests {
         def errors = pageUtilService.compileAll()
         assert errors.empty
     }
-
 
 }

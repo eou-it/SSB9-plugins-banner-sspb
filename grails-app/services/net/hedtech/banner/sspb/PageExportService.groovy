@@ -1,7 +1,6 @@
 package net.hedtech.banner.sspb
 
 class PageExportService {
-
     static transactional = false  //Getting error connection closed without this
 
     def normalizeSortBy = {sortBy ->
@@ -24,18 +23,15 @@ class PageExportService {
         result
     }
 
-
     def list( params) {
         def max = Math.min( params.max ? params.max.toInteger() : 10000,  10000)
         def offset = params.offset ?: 0
         def sortBy = []
-        //def pageUtilService = new PageUtilService()
-
         if (params.sortby) {
             sortBy=normalizeSortBy(params.sortby)
         }
         def cr = Page.createCriteria()
-        def result = cr.list (offset: offset, max: max, paginationEnabledList : false)  {
+        def result = cr.list (offset: offset, max: max) {
             if  (params.constantName) {
                 like ("constantName",params.constantName )
             }
@@ -61,13 +57,10 @@ class PageExportService {
             listResult << [constantName : it.constantName, id: it.id, lastUpdated: it.lastUpdated,
                            fileTimestamp: it.fileTimestamp, version: it.version]
         }
-
         listResult
     }
 
-
     def count(Map params) {
-        log.trace "PageService.count invoked"
         def result
         if (params.constantName)
             result = Page.countByConstantNameLike(params.constantName)
@@ -77,20 +70,16 @@ class PageExportService {
     }
 
     def create(Map content, params) {
-        log.trace "PageUtilService.create invoked"
         def result
         if (content.exportPage == "1") {
             def pageUtilService = new PageUtilService()
             pageUtilService.exportToFile(content.constantName)
             result = content
         }
-        log.trace "PageExportService.create returning $result"
         result
     }
 
-    // handle export of single
     def update(def id, Map content, params) {
-        log.trace "PageUtilService.update invoked"
         def result
         if (content.exportPage == "1") {
             def pageUtilService = new PageUtilService()
@@ -99,5 +88,4 @@ class PageExportService {
         }
         result
     }
-
 }

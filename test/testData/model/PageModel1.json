@@ -1,217 +1,36 @@
 {
-      "type": "page",
-      "name": "Todo-master-detail",
-      "title": "Todo Master Detail page",
-      "label": "Todo Page",
-      "components": [
-            {
-                  "type": "resource",
-                  "name": "Todo",
-                  "binding": "rest",
-                  "resource": "todos"
-            },
-            {
-                  "type": "resource",
-                  "name": "Dept",
-                  "binding": "rest",
-                  "resource": "virtualDomains.department"
-            },
-            {
-                  "type": "link",
-                  "name": "showLink",
-                  "label": "This is a link",
-                  "url": "http://google.com",
-                  "description": "Link to google",
-                  "imageUrl": ""
-            },
-            {
-                  "type": "select",
-                  "name": "showSelect",
-                  "label": "Select Gender",
-                  "sourceValue": [
-                        {
-                              "label": "Female",
-                              "sex": "F"
-                        },
-                        {
-                              "label": "Unknown",
-                              "sex": "U"
-                        },
-                        {
-                              "label": "Transgender",
-                              "sex": "T"
-                        },
-                        {
-                              "label": "Male",
-                              "sex": "M"
-                        }
-                  ],
-                  "labelKey": "label",
-                  "valueKey": "sex",
-                  "sourceParameters": {},
-                  "required": false
-            },
-            {
-                  "type": "literal",
-                  "value": "<div>Selected sex is: $showSelect</div>"
-            },
-            {
-                  "type": "radio",
-                  "name": "showRadio",
-                  "label": "Select Age",
-                  "sourceValue": [
-                        {
-                              "ageLabel": "Adult",
-                              "age": "A"
-                        },
-                        {
-                              "ageLabel": "Child",
-                              "age": "C"
-                        }
-                  ],
-                  "labelKey": "ageLabel",
-                  "valueKey": "age",
-                  "value": "C",
-                  "sourceParameters": {},
-                  "required": false,
-                  "loadInitially": true
-            },
-            {
-                  "type": "literal",
-                  "value": "<div>Selected age is: $showRadio</div>"
-            },
-            {
-                  "type": "radio",
-                  "name": "deptRadio",
-                  "label": "Select Department",
-                  "sourceModel": "Dept",
-                  "labelKey": "DNAME",
-                  "valueKey": "DEPTNO",
-                  "value": "30"
-            },
-            {
-                  "type": "literal",
-                  "value": "<div>Selected department is: $deptRadio</div>"
-            },
-            {
-                  "type": "form",
-                  "name": "SelectForm",
-                  "label": "Search Forms to show",
-                  "components": [
-                        {
-                              "type": "boolean",
-                              "name": "showSearchTodo",
-                              "label": "Show Search Todo Form 1",
-                              "readonly": false
-                        },
-                        {
-                              "type": "boolean",
-                              "name": "showEditTodoList",
-                              "label": "Show Edit Todos Form"
-                        },
-                        {
-                              "type": "button",
-                              "name": "applyFormVisibilityChanges",
-                              "label": "Apply Changes",
-                              "onClick": "$SearchTodo.$visible=$showSearchTodo; $EditTodoList.$visible = $showEditTodoList;"
-                        }
-                  ],
-                  "nextButtonLabel": "Next",
-                  "showInitially": true
-            },
-            {
-                  "type": "form",
-                  "name": "SearchTodo",
-                  "label": "Search Todo",
-                  "components": [
-                        {
-                              "type": "text",
-                              "name": "SelectedId",
-                              "label": "Search Todo by index",
-                              "onUpdate": "$SelectedTodoDesc.$load();",
-                              "parameters": {},
-                              "required": false
-                        },
-                        {
-                              "type": "text",
-                              "name": "SelectedTodoDesc",
-                              "model": "Todo.description",
-                              "parameters": {
-                                    "id": "parseInt($SelectedId)+1"
-                              },
-                              "label": "Selected Todo Description:"
-                        }
-                  ]
-            },
-            {
-                  "type": "form",
-                  "name": "EditTodoList",
-                  "label": "Edit Todos",
-                  "components": [
-                        {
-                              "type": "boolean",
-                              "name": "filt_complete",
-                              "value": false,
-                              "label": "Is Complete",
-                              "readonly": false
-                        },
-                        {
-                              "type": "button",
-                              "name": "apply_filt_complete",
-                              "label": "Apply Filter",
-                              "onClick": "$EditTodo.$load();"
-                        },
-                        {
-                              "type": "button",
-                              "name": "remove_filt_complete",
-                              "label": "Remove Filter",
-                              "onClick": "$filt_complete=null; $EditTodo.$load();"
-                        },
-                        {
-                              "type": "grid",
-                              "model": "Todo",
-                              "parameters": {
-                                    "complete": "$filt_complete"
-                              },
-                              "name": "EditTodo",
-                              "allowNew": true,
-                              "allowModify": true,
-                              "allowDelete": true,
-                              "allowReload": true,
-                              "pageSize": 5,
-                              "components": [
-                                    {
-                                          "type": "display",
-                                          "model": "id",
-                                          "label": "Id"
-                                    },
-                                    {
-                                          "type": "text",
-                                          "model": "description",
-                                          "label": "Description",
-                                          "parameters": {},
-                                          "required": false
-                                    },
-                                    {
-                                          "name": "email",
-                                          "type": "email",
-                                          "model": "email",
-                                          "parameters": {},
-                                          "required": false,
-                                          "label": "E-mail"
-                                    },
-                                    {
-                                          "type": "boolean",
-                                          "model": "complete",
-                                          "label": "Is Complete",
-                                          "readonly": false
-                                    }
-                              ]
-                        }
-                  ],
-                  "nextButtonLabel": "Next",
-                  "showInitially": true
-            }
-      ],
-      "scriptingLanguage": "JavaScript"
+   "id": null,
+   "compiledView": null,
+   "compiledController": null,
+   "pageRoles": [
+      {
+         "id": null,
+         "allow": true,
+         "page": {
+            "_ref": "../..",
+            "class": "net.hedtech.banner.sspb.Page"
+         },
+         "class": "net.hedtech.banner.sspb.PageRole",
+         "roleName": "WEBUSER",
+         "version": null
+      },
+      {
+         "id": null,
+         "allow": true,
+         "page": {
+            "_ref": "../..",
+            "class": "net.hedtech.banner.sspb.Page"
+         },
+         "class": "net.hedtech.banner.sspb.PageRole",
+         "roleName": "WTAILORADMIN",
+         "version": null
+      }
+   ],
+   "lastUpdated": null,
+   "fileTimestamp": "2013-11-21T16:36:12Z",
+   "dateCreated": null,
+   "class": "net.hedtech.banner.sspb.Page",
+   "modelView": "{\n      \"type\": \"page\",\n      \"name\": \"Todo_master_detail\",\n      \"title\": \"Todo Master Detail page\",\n      \"label\": \"Todo Page\",\n      \"components\": [\n            {\n                  \"type\": \"resource\",\n                  \"name\": \"Todo\",\n                  \"binding\": \"rest\",\n                  \"resource\": \"todos\"\n            },\n            {\n                  \"type\": \"resource\",\n                  \"name\": \"Dept\",\n                  \"binding\": \"rest\",\n                  \"resource\": \"virtualDomains.department\"\n            },\n            {\n                  \"type\": \"link\",\n                  \"name\": \"showLink\",\n                  \"label\": \"This is a link\",\n                  \"url\": \"http://google.com\",\n                  \"description\": \"Link to google\",\n                  \"imageUrl\": \"\",\n                  \"labelStyle\": \"myLinkLabelStyle\",\n                  \"style\": \"myLinkStyle\",\n                  \"valueStyle\": \"myLinkValueStyle\",\n                  \"replaceView\": true\n            },\n            {\n                  \"type\": \"select\",\n                  \"name\": \"showSelect\",\n                  \"label\": \"Select Gender\",\n                  \"sourceValue\": [\n                        {\n                              \"label\": \"Female\",\n                              \"sex\": \"F\"\n                        },\n                        {\n                              \"label\": \"Unknown\",\n                              \"sex\": \"U\"\n                        },\n                        {\n                              \"label\": \"Transgender\",\n                              \"sex\": \"T\"\n                        },\n                        {\n                              \"label\": \"Male\",\n                              \"sex\": \"M\"\n                        }\n                  ],\n                  \"labelKey\": \"label\",\n                  \"valueKey\": \"sex\",\n                  \"sourceParameters\": {},\n                  \"required\": false,\n                  \"style\": \"mySelectStyle\",\n                  \"labelStyle\": \"mySelectLabelStyle\",\n                  \"valueStyle\": \"mySelectValueStyle\",\n                  \"loadInitially\": true\n            },\n            {\n                  \"type\": \"literal\",\n                  \"value\": \"<div> Selected sex is: $showSelect <\/div>\",\n                  \"label\": \"\",\n                  \"labelStyle\": \"myLiteralLabelStyle\",\n                  \"style\": \"myLiteralStyle\",\n                  \"valueStyle\": \"myLiteralValueStyle\"\n            },\n            {\n                  \"type\": \"radio\",\n                  \"name\": \"showRadio\",\n                  \"label\": \"Select Age\",\n                  \"sourceValue\": [\n                        {\n                              \"ageLabel\": \"Adult\",\n                              \"age\": \"A\"\n                        },\n                        {\n                              \"ageLabel\": \"Child\",\n                              \"age\": \"C\"\n                        }\n                  ],\n                  \"labelKey\": \"ageLabel\",\n                  \"valueKey\": \"age\",\n                  \"value\": \"C\",\n                  \"sourceParameters\": {},\n                  \"required\": false,\n                  \"loadInitially\": true,\n                  \"style\": \"myRadioStyle\",\n                  \"labelStyle\": \"myRadioLabelStyle\",\n                  \"valueStyle\": \"myRadioLabelStyle\"\n            },\n            {\n                  \"type\": \"literal\",\n                  \"value\": \"<div>Selected age is: $showRadio<\/div>\"\n            },\n            {\n                  \"type\": \"radio\",\n                  \"name\": \"deptRadio\",\n                  \"label\": \"Select Department\",\n                  \"sourceModel\": \"Dept\",\n                  \"labelKey\": \"DNAME\",\n                  \"valueKey\": \"DEPTNO\",\n                  \"value\": \"30\",\n                  \"sourceParameters\": {},\n                  \"sourceValue\": [],\n                  \"required\": false,\n                  \"loadInitially\": true\n            },\n            {\n                  \"type\": \"literal\",\n                  \"value\": \"<div>Selected department is: $deptRadio<\/div>\"\n            },\n            {\n                  \"type\": \"form\",\n                  \"name\": \"SelectForm\",\n                  \"label\": \"Search Forms to show\",\n                  \"components\": [\n                        {\n                              \"type\": \"boolean\",\n                              \"name\": \"showSearchTodo\",\n                              \"label\": \"Show Search Todo Form 1\",\n                              \"readonly\": false\n                        },\n                        {\n                              \"type\": \"boolean\",\n                              \"name\": \"showEditTodoList\",\n                              \"label\": \"Show Edit Todos Form\"\n                        },\n                        {\n                              \"type\": \"button\",\n                              \"name\": \"applyFormVisibilityChanges\",\n                              \"label\": \"Apply Changes\",\n                              \"onClick\": \"$SearchTodo.$visible=$showSearchTodo; $EditTodoList.$visible = $showEditTodoList;\"\n                        }\n                  ],\n                  \"nextButtonLabel\": \"Next\",\n                  \"showInitially\": true\n            },\n            {\n                  \"type\": \"form\",\n                  \"name\": \"SearchTodo\",\n                  \"label\": \"Search Todo\",\n                  \"components\": [\n                        {\n                              \"type\": \"text\",\n                              \"name\": \"SelectedId\",\n                              \"label\": \"Search Todo by index\",\n                              \"onUpdate\": \"$SelectedTodoDesc.$load();\",\n                              \"required\": false,\n                              \"parameters\": {},\n                              \"validation\": {},\n                              \"loadInitially\": true\n                        },\n                        {\n                              \"type\": \"text\",\n                              \"name\": \"SelectedTodoDesc\",\n                              \"model\": \"Todo.description\",\n                              \"parameters\": {\n                                    \"id\": \"Number($SelectedId)\"\n                              },\n                              \"label\": \"Selected Todo Description:\",\n                              \"required\": false,\n                              \"loadInitially\": true,\n                              \"validation\": {}\n                        }\n                  ]\n            },\n            {\n                  \"type\": \"form\",\n                  \"name\": \"EditTodoList\",\n                  \"label\": \"Edit Todos\",\n                  \"components\": [\n                        {\n                              \"type\": \"boolean\",\n                              \"name\": \"filt_complete\",\n                              \"value\": false,\n                              \"label\": \"Is Complete\",\n                              \"readonly\": false\n                        },\n                        {\n                              \"type\": \"button\",\n                              \"name\": \"apply_filt_complete\",\n                              \"label\": \"Apply Filter\",\n                              \"onClick\": \"$EditTodo.$load();\",\n                              \"style\": \"new-line\"\n                        },\n                        {\n                              \"type\": \"button\",\n                              \"name\": \"remove_filt_complete\",\n                              \"label\": \"Remove Filter\",\n                              \"onClick\": \"$filt_complete=null; $EditTodo.$load();\"\n                        },\n                        {\n                              \"type\": \"htable\",\n                              \"model\": \"Todo\",\n                              \"parameters\": {\n                                    \"complete\": \"$filt_complete\"\n                              },\n                              \"name\": \"EditTodo\",\n                              \"allowNew\": true,\n                              \"allowModify\": true,\n                              \"allowDelete\": true,\n                              \"allowReload\": true,\n                              \"pageSize\": 5,\n                              \"components\": [\n                                    {\n                                          \"type\": \"display\",\n                                          \"model\": \"id\",\n                                          \"label\": \"Id\"\n                                    },\n                                    {\n                                          \"type\": \"text\",\n                                          \"model\": \"description\",\n                                          \"label\": \"Description\",\n                                          \"required\": false,\n                                          \"parameters\": {},\n                                          \"validation\": {},\n                                          \"loadInitially\": true\n                                    },\n                                    {\n                                          \"name\": \"email\",\n                                          \"type\": \"email\",\n                                          \"model\": \"email\",\n                                          \"required\": false,\n                                          \"label\": \"E-mail\"\n                                    },\n                                    {\n                                          \"type\": \"boolean\",\n                                          \"model\": \"complete\",\n                                          \"label\": \"Is Complete\",\n                                          \"readonly\": false\n                                    }\n                              ],\n                              \"loadInitially\": true\n                        }\n                  ],\n                  \"nextButtonLabel\": \"Next\",\n                  \"showInitially\": true\n            }\n      ],\n      \"scriptingLanguage\": \"JavaScript\"\n}",
+   "constantName": "PageModel1",
+   "version": null
 }

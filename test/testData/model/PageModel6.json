@@ -1,26 +1,23 @@
 {
-      "type": "page",
-      "name": "ValidationDemoPage",
-      "title": "Validation Control Demo Page",
-      "components": [
-            {
-                  "type": "form",
-                  "name": "form1",
-                  "label": "Common Form",
-                  "submit": "$form1.$visible=false",
-                  "submitLabel": "Hide",
-                  "components": [
-                        {
-                              "type": "text",
-                              "name": "input11",
-                              "label": "This is a required field",
-                              "required": true,
-                              "validation": {
-                                    "pattern": "\\d+",
-                                    "maxlength": 2
-                              }
-                        }
-                  ]
-            }
-      ]
+   "id": null,
+   "compiledView": null,
+   "compiledController": null,
+   "pageRoles": [{
+      "id": null,
+      "allow": true,
+      "page": {
+         "_ref": "../..",
+         "class": "net.hedtech.banner.sspb.Page"
+      },
+      "class": "net.hedtech.banner.sspb.PageRole",
+      "roleName": "WTAILORADMIN",
+      "version": null
+   }],
+   "lastUpdated": null,
+   "fileTimestamp": "2013-11-21T16:36:13Z",
+   "dateCreated": null,
+   "class": "net.hedtech.banner.sspb.Page",
+   "modelView": "{\n      \"type\": \"page\",\n      \"name\": \"ValidationDemoPage\",\n      \"title\": \"Validation Control Demo Page\",\n      \"components\": [\n            {\n                  \"type\": \"form\",\n                  \"name\": \"form1\",\n                  \"label\": \"Common Form\",\n                  \"submit\": \"$form1.$visible=false\",\n                  \"submitLabel\": \"Hide\",\n                  \"components\": [\n                        {\n                              \"type\": \"text\",\n                              \"name\": \"input11\",\n                              \"label\": \"This is a required field\",\n                              \"required\": true,\n                              \"validation\": {\n                                    \"pattern\": \"\\\\d+\",\n                                    \"maxlength\": 3,\n                                    \"minlength\": 2\n                              },\n                              \"parameters\": {},\n                              \"loadInitially\": true\n                        },\n                        {\n                              \"name\": \"number2\",\n                              \"type\": \"number\",\n                              \"label\": \"Number Not required\",\n                              \"parameters\": {},\n                              \"validation\": {\n                                    \"pb-decimals\": 2\n                              },\n                              \"required\": false,\n                              \"loadInitially\": true\n                        }\n                  ],\n                  \"nextButtonLabel\": \"Next\",\n                  \"showInitially\": true\n            }\n      ],\n      \"scriptingLanguage\": \"JavaScript\"\n}",
+   "constantName": "PageModel6",
+   "version": null
 }

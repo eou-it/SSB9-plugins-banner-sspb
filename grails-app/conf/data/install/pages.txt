@@ -1,2 +1,5 @@
 pbadm.PageRoles.json
 pbadm.VirtualDomainRoles.json
+pbadm.ExportCss.json
+pbadm.ExportPages.json
+pbadm.ExportVirtualDomains.json

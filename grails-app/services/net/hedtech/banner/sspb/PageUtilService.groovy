@@ -39,8 +39,8 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 def file = new File("$path/${page.constantName}.json")
                 JSON.use("deep")
                 def pageStripped = new Page()
-                //nullify data that is derivable or not applicable in other environment
-                pageStripped.properties[ 'constantName', 'modelView'] = page.properties
+                //nullify data that is not applicable in other environment
+                pageStripped.properties[ 'constantName', 'modelView', 'fileTimestamp'] = page.properties
                 page.pageRoles.each { role ->
                     pageStripped.addToPageRoles(new PageRole( roleName:role.roleName))
                 }
@@ -62,119 +62,86 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
 
 
     //Load pages required for Page Builder administration
-    //For now use text file with just the pageModel
-    //TODO: refactor to use the same methods as for importing applications built with PB
-    void importInitially(mode=loadSkipExisting) {
+     void importInitially(mode=loadSkipExisting) {
         def fileNames = PageUtilService.class.classLoader.getResourceAsStream( "data/install/pages.txt" ).text
         def count=0
         bootMsg "Checking/loading system required page builder pages."
         fileNames.eachLine {  fileName ->
             def pageName = fileName.substring(0,fileName.lastIndexOf(".json"))
-            def modelView=PageUtilService.class.classLoader.getResourceAsStream( "data/install/$fileName" ).text
-            count+=savePage(pageName, modelView, mode)
+            def stream = PageUtilService.class.classLoader.getResourceAsStream( "data/install/$fileName" )
+            count+=loadStream(pageName, stream, mode )
         }
         bootMsg "Finished checking/loading system required page builder pages. Pages loaded: $count"
-        importAllNewFromDir()
-    }
-    //Original method to save a page
-    int savePage (pageName, modelView, mode=loadRenameExisting) {
-        def existingPage = Page.findByConstantName(pageName)
-        def msg
-        if (existingPage && mode==loadSkipExisting)
-            return 0
-        else if (existingPage && mode==loadRenameExisting) {
-            existingPage.constantName += "."+nowAsIsoInFileName()+".bak"
-            existingPage.save(flush: true)
-            msg=message(code:"sspb.pageutil.import.duplicate.page.done.message", args:[pageName])
-        }
-        else if (existingPage && mode==loadOverwriteExisting) {
-            existingPage.delete(flush: true)
-            msg=message(code:"sspb.pageutil.import.page.done.message", args:[pageName])
-        }
-
-        def page = new Page(constantName: pageName, modelView: modelView)
-        println msg
-        if (page.constantName.startsWith("pbadm.")){
-            //add a WTAILORADMIN role so the pages can be used
-            def role=new PageRole(roleName: "WTAILORADMIN")
-            page.addToPageRoles(role)
-        }
-        page = page.save(flush: true)
-        compileAll(pageName)
-        return 1
-    }
-
-    // Used in integration test - TODO: refactor to use importAllNewFromDir
-    void importAllFromDir(String path, mode=loadRenameExisting) {
-        new File(path).eachFileMatch(~/.*.json/) {   file ->
-            def pageName = file.name.substring(0,file.name.lastIndexOf(".json"))
-            def modelView = file.getText()
-            savePage(pageName, modelView, mode)
-        }
     }
 
     //Import/Install Utility
-    void importAllNewFromDir(String path=pbConfig.locations.page, mode=loadIfNew) {
+    void importAllFromDir(String path=pbConfig.locations.page, mode=loadIfNew) {
         bootMsg "Importing updated or new pages from $path."
         def count=0
         new File(path).eachFileMatch(~/.*.json/) {   file ->
-            count+=savePageNew(file, mode)
+            count+=loadFile( file, mode)
         }
         bootMsg "Finished importing updated or new pages from $path. Pages loaded: $count"
     }
 
-    int savePageNew(File file, mode) {
-        def pageName = file.name.substring(0,file.name.lastIndexOf(".json"))
-        def doLoad = true
+    int loadStream(name, stream, mode) {
+        load(name, stream, null, mode)
+    }
+    int loadFile(file, mode) {
+        load(null, null, file, mode)
+    }
+
+    //Load a page, save and compile it
+    int load( name, stream, file, mode ) {
+        // either name + stream is needed or file
+        def pageName = name?name:file.name.substring(0,file.name.lastIndexOf(".json"))
         def page = Page.findByConstantName(pageName)
         def result=0
-        switch ( mode )  {
-            case loadIfNew:
-                def ft = page?.fileTimestamp?.getTime()? page.fileTimestamp.getTime():0
-                doLoad = (page == null) ||  (file.lastModified() > Math.max(ft,page.lastUpdated.getTime() )  )
-                break
-            case loadOverwriteExisting:
-                break
-            case loadRenameExisting:
-                if (page) {
-                    page.constantName += "."+nowAsIsoInFileName()+".bak"
-                    page.save(flush: true)
-                    page = null // create a new page
-                }
-                break
-            case loadSkipExisting:
-                doLoad = (page == null)
-                break
+        def jsonString
+        if (file)
+            jsonString = loadFileMode (file, mode, page)
+        else if (stream && name )
+            jsonString = loadStreamMode(stream, mode, page)
+        else {
+            println "Error, either file or stream and name is required, both cannot be null"
+            return 0
         }
-        if (doLoad) {
-            if ( !page )  {
-                page = new Page(constantName:pageName)
-            }
-            def jsonString = file.getText()
+        if (jsonString) {
+            if ( !page ) { page = new Page(constantName:pageName) }
             JSON.use("deep")
             def json = JSON.parse(jsonString)
-            page.modelView = json.modelView
-            if (!json.pageRoles.equals(null)) {  //have to use equals for JSONObject as it is not really null
+            if (json.has('modelView')) // file contains a marshaled page
+                page.properties[ 'modelView' /*, 'fileTimestamp'*/] = json
+            else // file is a representation of the page modelView
+                page.modelView=jsonString
+            if (!json.pageRoles.equals(null)){  //have to use equals for JSONObject as it is not really null
                 json.pageRoles.each { newRole ->
                     if ( newRole.roleName && !page.pageRoles.find{ it.roleName == newRole.roleName } ) {
                         page.addToPageRoles(new PageRole(newRole))
                     }
                 }
-            }
-            page.fileTimestamp=new Date(file.lastModified())
-            if (!page.save(flush:true))
-                page.errors.each {
-                    println it
+            } else {
+                if (page.constantName.startsWith("pbadm.")){
+                    //add a WTAILORADMIN role so the pages can be used
+                    def role=new PageRole(roleName: "WTAILORADMIN")
+                    page.addToPageRoles(role)
                 }
-
-            def compilationResult =  pageService.compilePage( page.constantName, page.modelView)
-            if (compilationResult.statusCode>0) {
-                println compilationResult
-                def errorFile = new File(file.getCanonicalPath()+".err")
-                errorFile.text = compilationResult
             }
-            else {
-                file.renameTo(file.getCanonicalPath()+'.'+nowAsIsoInFileName()+".imp"  )
+            page.fileTimestamp=json2date(json.fileTimestamp)
+            if (file)
+                page.fileTimestamp=new Date(file.lastModified())
+
+            saveObject(page)
+            def compilationResult =  pageService.compilePage( page.constantName, page.modelView)
+            if (file) {
+                if (compilationResult.statusCode>0) {
+                    log.info compilationResult
+                    def errorFile = new File(file.getCanonicalPath()+".err")
+                    errorFile.text = compilationResult
+                }
+                else {
+                    file.renameTo(file.getCanonicalPath()+'.'+nowAsIsoInFileName()+".imp"  )
+                }
             }
             result++
         }
@@ -191,7 +158,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             def result=pageService.compilePage( page.constantName, page.modelView)
             if (result.statusCode>0)
                 errors << result
-            println result
+            log.info result
         }
         errors
     }

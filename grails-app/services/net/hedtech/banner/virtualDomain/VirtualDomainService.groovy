@@ -6,7 +6,7 @@ class VirtualDomainService {
 
     def virtualDomainSqlService
 
-    private String vdPrefix = "virtualDomains."   // Todo: might want to get rid of plural or choose other prefix
+    final static String vdPrefix = "virtualDomains."   // Todo: might want to get rid of plural or choose other prefix
 
     private def vdName (params) {
         String resourceName=params.pluralizedResourceName

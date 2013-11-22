@@ -34,7 +34,7 @@ prompt Install SSPBMGR tables
 @tab_sspb_page
 @tab_sspb_page_role
 @tab_sspb_css
-@tab_sspb_css_role
+
 @tab_sspb_requestmap
 
 prompt Perform Upgrades

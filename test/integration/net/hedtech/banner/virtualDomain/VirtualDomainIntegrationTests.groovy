@@ -19,7 +19,7 @@ class VirtualDomainIntegrationTests {
     void testImport() {
         def vdUtilService = new VirtualDomainUtilService()
         def vdPath = "test/testData/virtualDomain"
-        vdUtilService.importAllNewFromDir(vdPath)
+        vdUtilService.importAllFromDir(vdPath)
     }
 
     @Test
