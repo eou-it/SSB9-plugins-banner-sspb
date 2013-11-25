@@ -27,7 +27,14 @@ class PBPersistenceListener extends AbstractPersistenceEventListener {
 
     @Override
     public boolean supportsEventType(Class<? extends ApplicationEvent> eventType) {
-        return true
+        switch (eventType) {
+            case EventType.PreInsert:
+            case EventType.PreUpdate:
+                return true
+                break
+            default:
+                return false
+        }
     }
 
     //seems Grails updating lastUpdated automatically is broken (or fragile)... do it here

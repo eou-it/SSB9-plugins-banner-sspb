@@ -71,13 +71,8 @@ class PageService {
     // TODO for now update(post) handles both update and creation to simplify client side logic
     def create(Map content, params) {
         log.trace "PageService.create invoked"
-
-        if (WebUtils.retrieveGrailsWebRequest().getParameterMap().forceGenericError == 'y') {
-            throw new Exception( "generic failure" )
-        }
-
+        checkForExceptionRequest()
         def result
-
         Page.withTransaction {
             // compile first
             result = compilePage(content.pageName, content.source)
@@ -87,23 +82,9 @@ class PageService {
     }
 
     // update is not used to update pages since the client may not know if a page exists or not when submitting (concurrent editing)
-    // however update does handle export of pages
     def update(def id, Map content, params) {
         log.trace "PageService.update invoked"
-        checkForExceptionRequest()
-        def result
-        if (content.exportPage == "1") {
-            def pageUtilService = new PageUtilService()
-            //println "Exporting ${content.constantName}"
-            pageUtilService.exportToFile(content.constantName)
-            result = content
-        } else if (content.source) {  //do not save empty source - should use delete then
-            Page.withTransaction {
-                 // note source is in unmarshalled JSON text representation
-                result = compilePage(content.pageName, content.source)
-            }
-        }
-        result
+        create(content, params)
     }
 
     def compilePage( pageName, pageSource) {
@@ -187,6 +168,9 @@ class PageService {
      **/
     private void checkForExceptionRequest() {
         def params = WebUtils.retrieveGrailsWebRequest().getParameterMap()
+        if (params.forceGenericError == 'y') {
+            throw new Exception( "generic failure" )
+        }
         if (params.throwOptimisticLock == 'y') {
             throw new OptimisticLockingFailureException( "requested optimistic lock for testing" )
         }

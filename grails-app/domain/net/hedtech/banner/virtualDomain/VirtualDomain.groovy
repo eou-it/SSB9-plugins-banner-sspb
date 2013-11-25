@@ -31,7 +31,7 @@ class VirtualDomain {
 
     //uncomment first time if db object is created
     static mapping = {
-        autoTimestamp true
+        //autoTimestamp true
         datasource 'sspb' //virtual domains can be stored in a separate data store
         //codeGet type: "clob"
         //codePost type: "clob"

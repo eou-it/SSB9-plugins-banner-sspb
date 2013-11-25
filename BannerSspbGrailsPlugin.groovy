@@ -151,6 +151,7 @@ Brief summary/description of the plugin.
         // TODO Implement post initialization spring config (optional)
         application.mainContext.eventTriggeringInterceptor.datastores.each { k, datastore ->
             applicationContext.addApplicationListener new PBPersistenceListener(datastore)
+            println "Added PersistenceListener to $datastore"
         }
     }
 

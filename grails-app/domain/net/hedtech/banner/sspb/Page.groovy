@@ -24,7 +24,7 @@ class Page {
     }
 
     static mapping = {
-        autoTimestamp true
+        //autoTimestamp true
         datasource 'sspb'
         //uncomment first time if db object is created
         //modelView type: "clob"

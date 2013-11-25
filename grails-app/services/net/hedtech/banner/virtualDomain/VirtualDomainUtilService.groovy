@@ -26,8 +26,10 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
                     def vdStripped = new VirtualDomain()
                     //nullify data that is derivable or not applicable in other environment
                     vdStripped.properties[ 'serviceName', 'typeOfCode', 'dataSource', 'codeGet', 'codePost', 'codePut', 'codeDelete', 'fileTimestamp'] = vd.properties
-                      vd.virtualDomainRoles.each { role ->
-                        vdStripped.addToVirtualDomainRoles(new VirtualDomainRole( roleName:role.roleName))
+                    vd.virtualDomainRoles.each { role ->
+                        def r = new VirtualDomainRole()
+                        r.properties ['roleName', 'allowGet', 'allowPost','allowPut','allowDelete'] = role.properties
+                        vdStripped.addToVirtualDomainRoles(r)
                     }
                     def json =  new JSON(vdStripped)
                     def jsonString = json.toString(true)

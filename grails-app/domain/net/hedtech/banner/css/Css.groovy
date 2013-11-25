@@ -21,7 +21,7 @@ class Css {
       //uncomment first time if db object is created
     static mapping = {
         datasource 'sspb'
-        autoTimestamp true
+        //autoTimestamp true
     }
 
 

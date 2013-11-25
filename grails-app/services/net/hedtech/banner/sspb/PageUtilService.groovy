@@ -42,7 +42,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 //nullify data that is not applicable in other environment
                 pageStripped.properties[ 'constantName', 'modelView', 'fileTimestamp'] = page.properties
                 page.pageRoles.each { role ->
-                    pageStripped.addToPageRoles(new PageRole( roleName:role.roleName))
+                    pageStripped.addToPageRoles(new PageRole( roleName:role.roleName, allow: role.allow))
                 }
                 def json =  new JSON(pageStripped)
                 def jsonString = json.toString(true)
