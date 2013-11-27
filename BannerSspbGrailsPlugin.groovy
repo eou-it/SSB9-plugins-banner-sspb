@@ -1,4 +1,4 @@
-
+import net.hedtech.banner.sspb.PageModelValidator
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.core.io.ContextResource
@@ -125,7 +125,10 @@ Brief summary/description of the plugin.
     }
 
     def doWithDynamicMethods = { applicationContext ->
-        application.serviceClasses.each {
+        //add a message method to the following classes
+        def classes = application.serviceClasses
+        classes += net.hedtech.banner.sspb.PageModelErrors
+        classes.each {
             // Note: weblogic throws an error if we try to inject the method if it is already present
             if (!it.metaClass.methods.find { m -> m.name.matches("message") }) {
                 def name = it.name // needed as this 'it' is not visible within the below closure...
@@ -151,7 +154,7 @@ Brief summary/description of the plugin.
         // TODO Implement post initialization spring config (optional)
         application.mainContext.eventTriggeringInterceptor.datastores.each { k, datastore ->
             applicationContext.addApplicationListener new PBPersistenceListener(datastore)
-            println "Added PersistenceListener to $datastore"
+            //println "Added PersistenceListener to $datastore"
         }
     }
 

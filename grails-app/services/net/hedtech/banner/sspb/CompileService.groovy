@@ -79,8 +79,8 @@ class CompileService {
     */
     def static compileController(page) {
         // find all data definition in page
-        def modelComponents = findDataItems(page)
-
+        def modelComponents = page.findComponents([PageComponent.COMP_TYPE_RESOURCE])
+        def resourceUsage = []  // map with resource and usage
         // JS code segment to add
         def codeList = []
         // each each model, depending on the type of binding, generate all JS functions or services
@@ -92,23 +92,15 @@ class CompileService {
             - per grid control
                 - pagination variables and functions per grid control,
             - function bind to each button or change event
-        for top level REST resource:
-            - class declaration to get, query, save, delete/remove
-            - per grid - list of retrieved objects from list, modified, added and deleted object list
-            - initial load function
-            - keys for query
-        for top level SQL resource:   //TODO remove, we don't have direct SQL support
-            - functions to get, list, update, create and delete
-            - per grid - list of retrieved objects from list, modified, added and deleted object list
-            - initial load
-            - keys for query
 
          */
         modelComponents.each {
-            preBuildCode(it)  // populates   dataSetIDsIncluded
+            def ru =  [resource:it, usedBy: findUsageComponents(page, it)]
+            addDataSets(ru)// populates   dataSetIDsIncluded
+            resourceUsage += ru
         }
-        // is order important?
-        modelComponents.each {
+
+        resourceUsage.each {
             codeList << buildCode(it)
         }
 
@@ -129,15 +121,14 @@ class CompileService {
         // TODO: refactor so it can be in a separate js.
         def common = CompileService.class.classLoader.getResourceAsStream( 'data/sspbCommon.js' ).text
 
+        //  Removed Dependencies: $http,$resource,$cacheFactory,$parse (now in pbDataSet )
         result = """
-               |function CustomPageController( \$scope, \$http, \$resource, \$parse, \$locale, \$templateCache,\$cacheFactory) {
-               |    // copy global var to scope - HvT: do we really need this?
+               |function CustomPageController(\$scope ,\$locale,\$templateCache,pbDataSet,pbAddCommon) {
+               |    // copy global var to scope
                |    \$scope._user = user;
                |    \$scope._params = params;
-               |
                |    // page specific code
                |    $result
-               |    //common code TODO - move out of this controller
                |    $common
                |}//End Controller
                |""".stripMargin()
@@ -231,13 +222,24 @@ class CompileService {
             autoPopulate = "false"
         }
         // first handle data binding
-        if (dataComponent.binding == PageComponent.BINDING_REST) {
+        if (dataComponent.binding == PageComponent.BINDING_REST && dataComponent.resource) {
             dataSource = "resourceURL: rootWebApp+'$apiPath/${dataComponent.resource}'"
             // transform parameters to angular $scope variable
             queryParameters = getQueryParameters(component, dataComponent)
-        } else {
-            dataSource =  "data: $dataComponent.data"
+        } else if (dataComponent.staticData){
+            def data
+            if ( PageComponent.COMP_DATASET_DISPLAY_TYPES.contains(component.type)  && dataComponent.staticData ){
+                component.sourceModel = component.name //Not clear why this is needed.
+                component.staticData = dataComponent.staticData // clone data to component
+                data = groovy.json.JsonOutput.toJson(component.tranSourceValue())  // translate labels
+            }
+            else {
+                data = dataComponent.staticData
+            }
+            dataSource =  "data: $data"
             autoPopulate = "false"
+        } else {
+            throw new Exception("Error Compiling UI. Either a Rest Resource or Static Data is required for Resource ${dataComponent.name}")
         }
 
         def dataSetName = "${component.ID}DS"
@@ -250,9 +252,10 @@ class CompileService {
             optionalParams+=",pageSize: $component.pageSize"
         if (component.onUpdate)
             optionalParams+=",onUpdate: function() {${parseOnEventFunction(component.onUpdate, component)} }"
+
         result = """
               |    //\$scope.$component.ID=[];
-              |    \$scope.$dataSetName = new CreateDataSet (
+              |    \$scope.$dataSetName = pbDataSet ( \$scope,
               |    {
               |        componentId: "$component.ID",
               |        $dataSource,
@@ -264,6 +267,7 @@ class CompileService {
               |        $optionalParams
               |    });
               |""".stripMargin()
+
         if (component.type == PageComponent.COMP_TYPE_GRID) {
             result +=component.gridJS()
             result +=component.initNewRecordJS()
@@ -307,15 +311,13 @@ class CompileService {
         return result
     }
 
-    // prepare build Code
     // determine which DataSets we are going to build so we can replace references appropriately
-    // use the same logic as in buildCode
-    private def static preBuildCode(dataComponent) {
-        def referenceComponents = findUsageComponents(dataComponent.parent, dataComponent)
-        referenceComponents.each {component->
+    // logic to match buildCode
+    private def static addDataSets(resourceUsage) {
+        resourceUsage.usedBy.each {component->
             if (PageComponent.COMP_DATASET_TYPES.contains(component.type)) {
                 dataSetIDsIncluded<<component.ID   //remember  - used to replace variable names
-            } else if (dataComponent.binding != "page"){
+            } else if (resourceUsage.resource.binding != PageComponent.BINDING_PAGE){
                 if ( PageComponent.COMP_ITEM_TYPES.contains(component.type)){
                     dataSetIDsIncluded<<component.ID   //remember  - used to replace variable names
                 }
@@ -327,37 +329,30 @@ class CompileService {
         input: pageComponent - data definirion
         return a string of the variables and JS function
      */
-    private def static buildCode(dataComponent) {
+    private def static buildCode(resourceUsage) {
         def functions = []
+        def dataComponent = resourceUsage.resource
         // generate all scope variables / arrays for each component that uses the model
-        // TODO recursive to find all children
-        def referenceComponents = findUsageComponents(dataComponent.parent, dataComponent)
         // generate variable declarations for each usage of this model
-        referenceComponents.each {component->
-            // following same logic as in preBuildCode
-            if (PageComponent.COMP_DATASET_TYPES.contains(component.type)) {
+        resourceUsage.usedBy.each {component->
+            if (PageComponent.COMP_DATASET_TYPES.contains(component.type)
+                || (PageComponent.COMP_ITEM_TYPES.contains(component.type) && dataComponent.binding != "page") ) {
+
                 def uiControlCode =  getUIControlCode (component, dataComponent)
                 functions << uiControlCode
             } else if (dataComponent.binding != "page") {
-                if ( PageComponent.COMP_ITEM_TYPES.contains(component.type)){
-                    // try to make consistent with DS  - possibly should add something to enforce get instead of query
-                    // when loading the data  possibly
-                    def uiControlCode =  getUIControlCode (component, dataComponent)
-                    functions << uiControlCode
-                } else {
-                    //TODO - find out for what use case this is needed still
-                    def dataVarName = "_"+dataComponent.name.toLowerCase()
-                    println "****WARNING**** generating control $component.name $component.type - check generator"
-                    // implicitly define a $scope variable  ${dataVarName}_${component.ID}
-                    def queryParameters = getQueryParameters(component,dataComponent)
-                    def functionDef = """
-                                    |    // initialize value
-                                    |    \$scope.${component.ID}_load = function() {
-                                    |    \$scope.${dataVarName}_${component.ID} = ${dataComponent.name}.get($queryParameters);
-                                    |    };
-                                    |""".stripMargin()
-                    functions << functionDef
-                }
+                //TODO - find out for what use case this is needed still
+                def dataVarName = "_"+dataComponent.name.toLowerCase()
+                println "****WARNING**** generating control $component.name $component.type - check generator"
+                // implicitly define a $scope variable  ${dataVarName}_${component.ID}
+                def queryParameters = getQueryParameters(component,dataComponent)
+                def functionDef = """
+                                |    // initialize value
+                                |    \$scope.${component.ID}_load = function() {
+                                |    \$scope.${dataVarName}_${component.ID} = ${dataComponent.name}.get($queryParameters);
+                                |    };
+                                |""".stripMargin()
+                functions << functionDef
             }
         }
         return functions.join("\n")
@@ -501,14 +496,6 @@ class CompileService {
                 code += """    \$scope.${pageComponent.name}_onClick = function($arg) { $expr}; \n"""
                 println "onClick expression for $pageComponent.name $pageComponent.onClick -> $expr"
             }
-         } else if ((pageComponent.type == PageComponent.COMP_TYPE_SELECT || pageComponent.type == PageComponent.COMP_TYPE_RADIO) && pageComponent.sourceValue) {
-             // static select: handle sourceValue for select sourceValue is already in javascript format
-             pageComponent.sourceModel = pageComponent.name
-             def dataComponent = [static: true, data: groovy.json.JsonOutput.toJson(pageComponent.tranSourceValue())]
-             def uiControlCode =  getUIControlCode (pageComponent, dataComponent)
-             dataSetIDsIncluded<<pageComponent.ID   //remember  - used to replace variable names
-             //TODO - could be added too late to the *Included  collections?
-             code += uiControlCode
          } else if (pageComponent.submit) {
              // parse submit action
              // do not need $scope. prefix or {{ }}
@@ -638,31 +625,6 @@ class CompileService {
 
     }
 
-    // recursively find all component of type "data" and return the list
-    // TODO eliminate potential duplicate if validation does not check for it?
-    def static findDataItems(pageComponent) {
-        def myDataList = []
-        if (pageComponent.type==PageComponent.COMP_TYPE_RESOURCE) {
-            myDataList << pageComponent
-        }
-        pageComponent.components.each {
-            myDataList += findDataItems(it)
-        }
-        return myDataList
-    }
-
-
-/* seems obsolete
-    // accept a normalized pageComponent
-    def static compile2js(page) {
-        def codeList = []
-        codeList = page.addJsItems(codeList)   //first do items so they are available already when generating controller
-        codeList = page.compileComponentJS(codeList)
-        String pageJS=finalizeJS(codeList)
-        return pageJS
-    }
-*/
-
     /* TODO normalize model name etc for code generation
     * model needs to be at least two letters long and camel cased
     * set parent for each component
@@ -675,10 +637,15 @@ class CompileService {
                           PageComponent.COMP_TYPE_EMAIL, PageComponent.COMP_TYPE_NUMBER, PageComponent.COMP_TYPE_DATETIME,
                           PageComponent.COMP_TYPE_TEL, PageComponent.COMP_TYPE_SELECT, PageComponent.COMP_TYPE_RADIO]
 
-        if (pageComponent.type == PageComponent.COMP_TYPE_PAGE) {
-            pageComponent.parent = null
-            pageComponent.root = pageComponent
+        switch (pageComponent.type) {
+            case PageComponent.COMP_TYPE_PAGE:
+                pageComponent.parent = null
+                pageComponent.root = pageComponent
+                break
+            case PageComponent.COMP_TYPE_RESOURCE:
+                pageComponent.binding = pageComponent.resource? PageComponent.BINDING_REST : PageComponent.BINDING_PAGE
         }
+
         // parse parameters
         if (pageComponent.parameters) {
             def newParam = [:]
@@ -728,18 +695,15 @@ class CompileService {
            pageComponent.modelRoot = model.substring(0, model.indexOf("."))
             pageComponent.modelComponent = model.substring(model.indexOf(".") + 1, model.length())
         }
-
         return pageComponent
     }
 
-    //TODO develop page validation
     /*  parse, normalize and validate page model
         check all required field for each component recursively
         check name and data uniqueness
         return validation and a normalized page component
         or error messages with component tree
     */
-
 
     // validate a component and all its children
     def static validateComponent(pageComponent, nameSet = []) {

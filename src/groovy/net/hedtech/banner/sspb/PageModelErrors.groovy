@@ -12,10 +12,6 @@ import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
  */
 class PageModelErrors {
 
-    def static localizer = { mapToLocalize ->
-        new ValidationTagLib().message( mapToLocalize )
-    }
-
     def static MODEL_PARSING_ERR                = [code:  -1, message: "sspb.modelValidation.modelParsingErr.message"]
     def static MODEL_MISSING_DEFINITION_ERR     = [code:   0, message: "sspb.modelValidation.modelMissingDefinitionErr.message"]
     def static MODEL_TYPE_MISSING_ERR           = [code:   1, message: "sspb.modelValidation.modelMissingTypeErr.message"]
@@ -28,16 +24,18 @@ class PageModelErrors {
     def static MODEL_UNKNOWN_ERR                = [code: 100, message: "sspb.modelValidation.modelUnknownErr.message"]
 
     def static getError( errorDetails )  {
+
         def err = [ code:  errorDetails.error.code,
-                    message: localizer(code: errorDetails.error.message, args: errorDetails.args),
+                    message: message(code: errorDetails.error.message, args: errorDetails.args),
                     path: errorDetails.path
                    ]
     }
-
+/*
     def static getMessage(code, args = []) {
         def grailsApplication = new DefaultGrailsApplication()
         def appCtx = grailsApplication.parentContext
         return appCtx.getMessage(code, args)
     }
+    */
 
 }

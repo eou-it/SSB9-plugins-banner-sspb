@@ -236,7 +236,7 @@
             tr['attribute.pageSize'         ]="${message(code:'sspb.model.attribute.pageSize')}";
             tr['attribute.imageUrl'         ]="${message(code:'sspb.model.attribute.imageUrl')}";
             tr['attribute.url'              ]="${message(code:'sspb.model.attribute.url')}";
-            tr['attribute.sourceValue'      ]="${message(code:'sspb.model.attribute.sourceValue')}";
+            tr['attribute.staticData'      ]="${message(code:'sspb.model.attribute.staticData')}";
             tr['attribute.default'          ]="${message(code:'sspb.model.attribute.default')}";
             tr['attribute.description'      ]="${message(code:'sspb.model.attribute.description')}";
             tr['attribute.importCSS'        ]="${message(code:'sspb.model.attribute.importCSS')}";

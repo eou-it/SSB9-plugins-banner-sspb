@@ -48,6 +48,9 @@ class PageComponent {
     // Types that have a DataSet associated  - not completely orthogonal yet. COMP_ITEM_TYPES can have it too
     final static COMP_DATASET_TYPES = [COMP_TYPE_GRID,COMP_TYPE_HTABLE,COMP_TYPE_LIST,COMP_TYPE_SELECT,COMP_TYPE_DETAIL,COMP_TYPE_DATA, COMP_TYPE_RADIO]
 
+    // Data Set types only for display
+    final static COMP_DATASET_DISPLAY_TYPES = [COMP_TYPE_SELECT,COMP_TYPE_RADIO]
+
     // component type that is renderable
     final static COMP_VISUAL_TYPES = [COMP_TYPE_PAGE,COMP_TYPE_FORM, COMP_TYPE_BLOCK, COMP_TYPE_LITERAL,
             COMP_TYPE_DISPLAY,COMP_TYPE_TEXT,COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER,COMP_TYPE_BUTTON,
@@ -55,9 +58,9 @@ class PageComponent {
             COMP_TYPE_GRID,COMP_TYPE_HTABLE,COMP_TYPE_LIST,COMP_TYPE_SELECT,COMP_TYPE_DETAIL,COMP_TYPE_RADIO]
 
     final static BINDING_REST = "rest"
-    final static BINDING_SQL = "sql"
+    //final static BINDING_SQL = "sql"
     final static BINDING_PAGE = "page"
-    final static BINDING_API = "api"
+    //final static BINDING_API = "api"
 
     final static GRID_ITEM="item"
     final static LIST_ITEM="item"
@@ -98,15 +101,15 @@ class PageComponent {
     String model       // -> top level data model should have first letter in upper case, data declared in controller will be lower case
                         // in grid the model will point to the property name of the parent model
                         // in grid and detail component model is used for both retrieve and update to a single resource
-                        // TODO add constant support in the form of an array of maps (for grid) or map (for List, Select)
+
     String modelRoot    // internal - represent the root class of a model - e.g Todo.description root class is Todo
     String modelComponent // internal - represent the component of a model after the root, excluding the leading ".". e.g Todo.description model component is description
     def parameters     // -> parameters for data query, for REST this is a Map of key:value, where key is the property name of the resource attribute, value can be
     // another data item name . This is attached to the component that uses the data, not the data definition itself
 
     String sourceModel       // for component with both input(pre-populate) and output like "select" use this specify the input model
-                            // TODO add constant support in the form of an array (for List) or map (for Select)
-    def sourceValue      // for select using a constant map of value:
+
+    def sourceValue         // for select using a constant map of value. Todo: remove, this is obsolete
     def sourceParameters    // used for query with sourceModel
 
     // flow control
@@ -164,11 +167,12 @@ class PageComponent {
 
     // data properties
     String resource    // -> Form Data Component. uri: <path>/resourceName e.g. rest/todo
-    String binding = BINDING_REST    // method of data binding (sql, api, rest, page)
+    def staticData  // -> JSON Array [{"sex": "M", "descr": "Male"}, {"sex": "F", "descr": "FEMALE"}]   e.g. for static Select or Radio
+    String binding = BINDING_REST    // method of data binding (rest, page)
 
     def validation      // specify any validation definition as a map
     def fractionDigits
-    String onUpdate     // an code blovk to execute if the current component value is changed
+    String onUpdate     // code block to execute if the current component value is changed
 
                         // TODO deduce this from model automatically
     String ID           // generated ID, do we need this?
@@ -217,9 +221,9 @@ class PageComponent {
     }
 
     def tranSourceValue() {
-        def result = sourceValue
+        def result = staticData
         result.each {
-            def key ="${getPropertiesBaseKey()}.sourceValue.${it."$valueKey"}"
+            def key ="${getPropertiesBaseKey()}.staticData.${it."$valueKey"}"
             def label=it."$labelKey"
             label = tran(key,label,[] as List,ESC_JS)
             it."$labelKey"=label

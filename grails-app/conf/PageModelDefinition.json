@@ -53,13 +53,6 @@
                 "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal","hidden"  ]
             },
             {
-                "componentType":["display"],
-                "requiredAttributes":[],
-                "optionalAttributes":["label", "labelStyle", "style","valueStyle", "value", "model", "loadInitially", "asHtml"],
-                "requiredChildren":[],
-                "optionalChildren":[]
-            },
-            {
                 "componentType":["link"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "labelStyle", "style", "valueStyle", "description", "url", "onClick", "imageUrl", "replaceView"],
@@ -77,6 +70,41 @@
                 "componentType":[ "number"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "labelStyle", "style","valueStyle", "value", "model", "parameters", "validation", "fractionDigits", "placeholder", "readonly", "required", "onUpdate", "loadInitially"],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            },
+            {
+                "componentType":["select"],
+                "requiredAttributes":["sourceModel","labelKey", "valueKey" ],
+                "optionalAttributes":["label", "style","labelStyle","valueStyle", "sourceParameters", "model", "onUpdate", "required", "placeholder", "value", "loadInitially"],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            },
+            {
+                "componentType":["radio"],
+                "requiredAttributes":["sourceModel","labelKey", "valueKey" ],
+                "optionalAttributes":["label","style","labelStyle","valueStyle", "sourceParameters", "model", "onUpdate", "required", "value","loadInitially"],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            },
+            {
+                "componentType":["list"],
+                "requiredAttributes":["model", "value"],
+                "optionalAttributes":["label", "style","labelStyle","valueStyle", "allowReload", "parameters", "onUpdate", "required", "onClick", "pageSize", "loadInitially"],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            },
+            {
+                "componentType":["boolean"],
+                "requiredAttributes":[],
+                "optionalAttributes":["label", "style","labelStyle","valueStyle", "value", "booleanTrueValue", "booleanFalseValue", "readonly", "onUpdate", "model", "loadInitially"],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            },
+            {
+                "componentType":["display"],
+                "requiredAttributes":[],
+                "optionalAttributes":["label", "labelStyle", "style","valueStyle", "value", "model", "loadInitially", "asHtml"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
@@ -102,37 +130,9 @@
                 "optionalChildren":[]
             },
             {
-                "componentType":["select"],
-                "requiredAttributes":["labelKey", "valueKey" ],
-                "optionalAttributes":["label", "style","labelStyle","valueStyle", "sourceModel", "sourceParameters", "sourceValue", "model", "onUpdate", "required", "placeholder", "value", "loadInitially"],
-                "requiredChildren":[],
-                "optionalChildren":[]
-            },
-            {
-                "componentType":["radio"],
-                "requiredAttributes":["labelKey", "valueKey" ],
-                "optionalAttributes":["label", "style","labelStyle","valueStyle", "sourceModel", "sourceParameters", "sourceValue", "model", "onUpdate", "required", "value","loadInitially"],
-                "requiredChildren":[],
-                "optionalChildren":[]
-            },
-            {
-                "componentType":["list"],
-                "requiredAttributes":["model", "value"],
-                "optionalAttributes":["label", "style","labelStyle","valueStyle", "allowReload", "parameters", "onUpdate", "required", "onClick", "pageSize", "loadInitially"],
-                "requiredChildren":[],
-                "optionalChildren":[]
-            },
-            {
-                "componentType":["boolean"],
-                "requiredAttributes":[],
-                "optionalAttributes":["label", "style","labelStyle","valueStyle", "value", "booleanTrueValue", "booleanFalseValue", "readonly", "onUpdate", "model", "loadInitially"],
-                "requiredChildren":[],
-                "optionalChildren":[]
-            },
-            {
                 "componentType":["resource"],
-                "requiredAttributes":["binding", "resource"],
-                "optionalAttributes":[],
+                "requiredAttributes":[],
+                "optionalAttributes":["resource","staticData" ],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
@@ -158,10 +158,8 @@
             {"AttributeType":["type"], "renderProperty":{"inputType":"select"}},
             {"AttributeType":["submit", "value", "onUpdate", "onClick", "onLoad", "sequence", "description", "documentation"], "renderProperty":{"inputType":"textarea"}},
             {"AttributeType":["validation"],"renderProperty":{"inputType":"map"}},
-            {"AttributeType":["type"], "renderProperty":{"inputType":"select"}},
             {"AttributeType":["resource"], "renderProperty":{"inputType":"combo", "selectSource":"virtualDomains.pbadmVirtualDomainLookup"}},
             {"AttributeType":["scriptingLanguage"], "renderProperty":{"inputType":"text", "defaultValue":"JavaScript"}},
-            {"AttributeType":["binding"], "renderProperty":{"inputType":"text", "defaultValue":"rest"}},
             {"AttributeType":["nextButtonLabel"], "renderProperty":{"inputType":"text", "defaultValue":"Next"}},
             {"AttributeType":["asHtml"], "renderProperty":{"inputType":"boolean", "defaultValue":false}},
             {"AttributeType":["showInitially"], "renderProperty":{"inputType":"boolean", "defaultValue":true}},
@@ -177,10 +175,10 @@
             {"AttributeType":["parameters", "sourceParameters"], "renderProperty":{"inputType":"map"}},
             {"AttributeType":["pageSize"], "renderProperty":{"inputType":"number", "defaultValue":5}},
             {"AttributeType":["fractionDigits"], "renderProperty":{"inputType":"number", "defaultValue":2}},
-            {"AttributeType":["sourceValue"], "renderProperty":{"inputType":"arrayOfMap"}},
+            {"AttributeType":["staticData"], "renderProperty":{"inputType":"arrayOfMap"}},
             {"AttributeType":["defaultValue"], "renderProperty":{"inputType":"text"}}
         ],
-        "documentation":"TODO - specify validation for scriptingLanguage, binding as select, default value, hint, etc."
+        "documentation":"TODO - specify validation for scriptingLanguage, binding as select, default value, hint, etc. Remove duplicate AttributeType type"
     }
 
 }
