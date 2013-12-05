@@ -4,7 +4,7 @@ Common Javascript functions used by pagebuilder applications
 
 //remove by value for arrays. Return if value was remove
 Array.prototype.remove=function(value){
-    var i =  instanceDS.indexOf(value);
+    var i =  this.indexOf(value);
     if (i==-1)
         return false;
     else
@@ -118,6 +118,12 @@ appModule.factory('pbAddCommon', function() {
             } else {
                 console.log ("***setDefault - unhandled case. parent="+parent +" model="+model);
             }
+        }
+        scopeIn.log = function(txt) {
+            console.log(txt);
+        }
+        scopeIn.alert = function(txt) {
+            alert(txt);
         }
     };
     return factory;
@@ -270,7 +276,7 @@ appModule.factory('pbDataSet', function($resource, $cacheFactory, $parse ) {
             //a grid has model.name noop and cannot be assigned a value
             if (model.name != "noop")  {
                 if (item )   {
-                    if (typeof(item) == "string" && this.selectValueKey ) {
+                    if ( (typeof(item) == "string" || typeof(item) == "number") && this.selectValueKey ) {
                         // assume item is a selected string and we are in the DataSet for a select item
                         // Do we have to do a linear search like done below?
                         var len = this.data.length, found=false;
@@ -285,13 +291,13 @@ appModule.factory('pbDataSet', function($resource, $cacheFactory, $parse ) {
                         this.currentRecord=item;
                     }
                 }
-                console.log(this.currentRecord);
-                if (this.selectValueKey) {  //we have a select
+                if (this.selectValueKey) {  //we have a select -- Next assignment may not be needed as item is already the model
                     model.assign($scope, this.currentRecord[this.selectValueKey]);
                 }  else {
                     model.assign($scope, this.currentRecord);
                 }
                 console.log("Set current record "+ this.currentRecord);
+                console.log(this.currentRecord);
             }
         }
 
@@ -342,6 +348,12 @@ appModule.factory('pbDataSet', function($resource, $cacheFactory, $parse ) {
             });
             this.deleted = [];
             this.cache.removeAll();
+        }
+
+        //post a new record immediately
+        this.post = function (item) {
+            var newItem = new this.Resource(item);
+            newItem.$save();
         }
 
         this.dirty = function() {

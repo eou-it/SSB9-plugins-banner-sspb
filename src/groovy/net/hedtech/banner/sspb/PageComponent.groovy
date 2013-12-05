@@ -273,17 +273,12 @@ class PageComponent {
 
     String defaultValue() {
         def result = ""
-
         if (value && model ) {
-            def  expr = CompileService.parseVariable(value)
-            CompileService.dataSetIDsIncluded.each { //replace with dataSetIDs
-                expr=expr.replace(".${it}_",".${it}DS.")
-            }
+            def  expr = CompileService.compileDOMExpression(value)
             if (value == expr) { //assume a literal value if not changed - not sure if we should do this
                 expr="'$expr'"
             }
             def parentRef = isDataSetEditControl(parent)?"$GRID_ITEM":"this"
-            //result = "ng-init=\"${parentSelect}${model}=snvl(${parentSelect}${model},$expr)\""
             result = "ng-init=\"setDefault($parentRef,'$model',$expr)\""
         }
         result
@@ -347,15 +342,12 @@ class PageComponent {
         def initialValues=""
         components.each { child ->
             if (child.value && child.modelOrigin) {
-                def  expr = CompileService.parseExpression(child.value)
+                def  expr = CompileService.compileCtrlFunction(child.value)
                 // this is a bit horrible with HTML - can't really distinguish number from string literals
                 if ([child.booleanFalseValue,child.booleanTrueValue].contains(child.value)
                     && !["true","false"].contains(child.value) ) {
                     // use quotes
                     expr="\"$expr\""
-                }
-                CompileService.dataSetIDsIncluded.each { //replace with dataSetIDs
-                    expr=expr.replace(".${it}_",".${it}DS.")
                 }
                 initialValues+="${initialValues?",":""}${child.model}: $expr"
             }
@@ -476,6 +468,7 @@ class PageComponent {
         def ro= readonly || COMP_DISPLAY_TYPES.contains(type)
         def tagStart="<input"
         def tagEnd="/>"
+        def nameAt="name=\"$name\""
         def typeAt="type=\"$type\""
         def styleAt="class=\"pb-${parent.type} pb-$type ${valueStyle?valueStyle:""}\" ng-class=\"${name}_$STYLE_ATTR\" style=\"background-color:transparent; border:0; width: 100%; height:{{rowHeight}}px\""
         def specialAt=""
@@ -533,12 +526,12 @@ class PageComponent {
 
                 break
             case COMP_TYPE_LITERAL:
-                return "<span $styleAt>" + tran(getPropertiesBaseKey()+".value",CompileService.parseLiteral(value).replaceAll("item.","row.entity.") ) + "</span>"
+                return "<span $styleAt>" + tran(getPropertiesBaseKey()+".value",CompileService.compileDOMDisplay(value).replaceAll("item.","row.entity.") ) + "</span>"
                 break
             default :
                 println "***No ng-grid html edit template for $type ${name?name:model}"
         }
-        def result = "$tagStart $typeAt $styleAt $specialAt $readonlyAt $requiredAt $validateAt $placeholderAt" +
+        def result = "$tagStart $nameAt $typeAt $styleAt $specialAt $readonlyAt $requiredAt $validateAt $placeholderAt" +
                      " $ngModel $ngChange $tagEnd"
         return result
     }
@@ -711,8 +704,10 @@ class PageComponent {
                 if(isDataSetEditControl(parent)) {
                     ngModel =  "$GRID_ITEM.${model}"
                     ngChange +="\$parent.${parent.name}DS.setModified($GRID_ITEM); ${name}DS.setCurrentRecord($ngModel);"
+                } else {
+                    ngChange += "${name}DS.setCurrentRecord($name);"
                 }
-                ngChange += onUpdate?"${name}DS.onUpdate();":""
+                ngChange += onUpdate?"${name}DS.onUpdate(item);":""
                 ngChange = ngChange?"ng-change=\"$ngChange\"":""
                 result = """
                            |<select  ${getIdAttr(idTxtParam)} $valueStyleStr $autoStyleStr ng-model="$ngModel" $ngChange  ${defaultValue()}
@@ -753,7 +748,7 @@ class PageComponent {
                 break;
             case COMP_TYPE_LITERAL:
                 //Todo: should we do something for safe/unsafe binding as in next item type?
-                result = "<span ${getIdAttr(idTxtParam)} $valueStyleStr $autoStyleStr>" + tran(getPropertiesBaseKey()+".value",CompileService.parseLiteral(value) ) + "</span>\n"
+                result = "<span ${getIdAttr(idTxtParam)} $valueStyleStr $autoStyleStr>" + tran(getPropertiesBaseKey()+".value",CompileService.compileDOMDisplay(value) ) + "</span>\n"
                 break;
             case COMP_TYPE_DISPLAY:
                 def modelTxt_unsafe = ""
@@ -772,9 +767,9 @@ class PageComponent {
                         modelTxt_safe = "{{value|date:'medium'}}"
                     }
                     else if (asHtml)
-                        modelTxt_unsafe = "ng-bind-html-unsafe='${CompileService.parseVariable(value)}' "
+                        modelTxt_unsafe = "ng-bind-html-unsafe='${CompileService.compileDOMExpression(value)}' "
                     else
-                        modelTxt_safe = "${CompileService.parseLiteral(value)}"
+                        modelTxt_safe = "${CompileService.compileDOMDisplay(value)}"
                 }
                 result = """<span ${getIdAttr(idTxtParam)} $valueStyleStr $autoStyleStr $modelTxt_unsafe> $modelTxt_safe </span>""";
                 break;
@@ -791,7 +786,7 @@ class PageComponent {
                 // set url to empty string if it is null, otherwise the page is re-directed to a non-existing page
                 url = (url==null)?"":url
                 result =  """
-                          |<a ${getIdAttr(idTxtParam)} ng-href="${CompileService.parseLiteral(url)}" $targetStr $clickStr>
+                          |<a ${getIdAttr(idTxtParam)} ng-href="${CompileService.compileDOMDisplay(url)}" $targetStr $clickStr>
                           |<span $valueStyleStr $autoStyleStr> $desc </span></a>
                           |""".stripMargin()
                 break;
@@ -828,7 +823,7 @@ class PageComponent {
                 } else {
                     // TODO do we need a value field if ng-model is defined?  //added defaultValue
                     attributes += " ${readonly?"readonly":""}"
-                    result = """|<input $inputIdStr $typeString $autoStyleStr $valueStyleStr name="${name?name:model}" ${value?"value=\"{{${CompileService.parseVariable(value)}}}\"":"" }
+                    result = """|<input $inputIdStr $typeString $autoStyleStr $valueStyleStr name="${name?name:model}" ${value?"value=\"{{${CompileService.compileDOMExpression(value)}}}\"":"" }
                                 |${defaultValue()} $ngChange $attributes
                                 |""".stripMargin()
                     if (model && !readonly) {
