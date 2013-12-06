@@ -25,31 +25,6 @@ if (!('forEach' in Array.prototype)) {
     };
 }
 
-//build a sub list from elements of "sourceList" as identified by indices in "indexList"
-//Return - the sub list
-
-function buildList(sourceList, indexList) {
-    var newList = new Array();
-    for (var i = 0; i < indexList.length; i++) {
-        newList.push(sourceList[indexList[i]]);
-    }
-    return newList;
-}
-
-/*
- build an expression by replacing tokens on the "statement" with values passed in the "paramList"
- usage - buildExpression("select * from table where col1=? and col2=?", "?", ["'val1'", "'val2'"])
- Return - new statement with tokens replaced. e.g. "select * from table where col1='val1' and col2='val2'"
-
- TODO - escape ? if it is in the statement e.g.  in the subsitute variables
- */
-function buildExpression(statement, token, paramList) {
-    for (var i=0; i < paramList.length; i++)
-        statement = statement.replace(token, paramList[i]);
-    return statement;
-}
-
-
 //function to avoid undefined
 function nvl(val,def){
     if ( (val == undefined) || (val == null ) ) {
@@ -104,7 +79,7 @@ appModule.run( function($templateCache )  {
         "</div>");
 });
 
-//Init
+//Add some functions to the scope
 appModule.factory('pbAddCommon', function() {
     function factory(scopeIn) {
         scopeIn.setDefault = function(parent,model,def)   {
@@ -129,17 +104,62 @@ appModule.factory('pbAddCommon', function() {
     return factory;
 });
 
+//Factory for resources
+appModule.factory('pbResource', function($resource ) {
+    function PBResource(resourceURL )  {
+        this.resourceURL=resourceURL
+        this.Resource=null;
+
+        //get a new resource from the factory
+        this.getResource = function(cache) {
+            return $resource(this.resourceURL+'/:id',
+                {id:'@id'}, //parameters
+                {//custom methods
+                    update: {method:'PUT', params: {id:'@id'}},
+                    list: {method:'GET',cache: cache, isArray:true}
+                }
+            );
+        }
+
+        //post (create) a new record immediately
+        this.post = function (item) {
+            if (this.Resource == null) {
+                this.Resource = this.getResource();
+            }
+            var newItem = new this.Resource(item);
+            newItem.$save();
+        }
+
+        //put (update) a record immediately
+        this.put = function (item) {
+            if (this.Resource == null) {
+                this.Resource = this.getResource();
+            }
+            var newItem = new this.Resource(item);
+            newItem.$update();
+        }
+    };
+
+    function PBResourceFactory(resourceURL) {
+        var result = new PBResource(resourceURL)
+        return result;
+    };
+
+    return PBResourceFactory;
+});
+
+
 //Factory for data sets
-appModule.factory('pbDataSet', function($resource, $cacheFactory, $parse ) {
+appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
     // Use function to create a post query function associated with
     // a DataSet instance
     var $scope;
-    function CreatePostQuery(instanceIn, userFunction) {
+    function CreatePostEventHandlers(instanceIn, userPostQuery, userOnError) {
         console.log("Post Query Constructor for DataSet " + instanceIn.componentId);
         this.go = function(it, response) {
             var instance=instanceIn;
-            var uf=userFunction;
-            console.log("Executing Post for DataSet="+instance.componentId+" size="+it.length) ;
+            var uf=userPostQuery;
+            console.log("Executing Post Load for DataSet="+instance.componentId+" size="+it.length) ;
             instance.currentRecord=instance.data[0];  //set the current record
             instance.setInitialRecord();
             instance.totalCount=parseInt(response("X-hedtech-totalCount")) ;
@@ -147,7 +167,12 @@ appModule.factory('pbDataSet', function($resource, $cacheFactory, $parse ) {
                 //causes requery
                 instance.pagingOptions.currentPage=instance.numberOfPages();
             }
-            if (uf) { uf(); }
+            if (uf) { uf(it, response); }
+        };
+        this.error = function (response ) {
+            var uf=userOnError;
+            if (uf) {uf(response);}
+            //alert("Error: "+response.data.errors[0].errorMessage);
         };
         return this;
     }
@@ -156,16 +181,11 @@ appModule.factory('pbDataSet', function($resource, $cacheFactory, $parse ) {
     function PBDataSet(params)  {
         this.componentId=params.componentId;
         this.data=params.data;
-        if (params.resourceURL) {
+        if (params.resource) {
             this.cache = $cacheFactory(this.componentId);
+            this.Resource=params.resource.getResource(this.cache);
         }
-        this.Resource=$resource(params.resourceURL+'/:id',
-            {id:'@id'}, //parameters
-            {//custom methods
-                update: {method:'PUT', params: {id:'@id'}},
-                list: {method:'GET',cache: this.cache, isArray:true}
-            }
-        );
+
         this.queryParams=params.queryParams;
         this.selectValueKey=params.selectValueKey;
         this.selectInitialValue=params.selectInitialValue;
@@ -203,7 +223,7 @@ appModule.factory('pbDataSet', function($resource, $cacheFactory, $parse ) {
                 this.pagingOptions.currentPage=1;
         }
 
-        var post = new CreatePostQuery(this,params.postQuery);
+        var post = new CreatePostEventHandlers(this,params.postQuery, params.onError);
 
         this.get = function() {
             this.init();
@@ -212,7 +232,7 @@ appModule.factory('pbDataSet', function($resource, $cacheFactory, $parse ) {
             console.log("Query Parameters:") ;
             console.log( params);
             this.data=[];
-            this.data[0] = this.Resource.get(params, post.go);
+            this.data[0] = this.Resource.get(params, post.go, post.error);
         }
 
         this.load = function(p) {
@@ -243,10 +263,10 @@ appModule.factory('pbDataSet', function($resource, $cacheFactory, $parse ) {
             console.log( params);
             if (this.useGet)  {
                 this.data=[];
-                this.data[0] = this.Resource.get(params, post.go  );
+                this.data[0] = this.Resource.get(params, post.go, post.error  );
             }
             else {
-                this.data = this.Resource.list(params, post.go  );
+                this.data = this.Resource.list(params, post.go, post.error  );
             }
         }
 
@@ -334,26 +354,24 @@ appModule.factory('pbDataSet', function($resource, $cacheFactory, $parse ) {
             }
         }
 
+        var success = function (response) {
+            console.log(response);
+        }
+
         this.save = function() {
             this.added.forEach( function(item)  {
-                item.$save();
+                item.$save({},success, post.error);
             });
             this.added = [];
             this.modified.forEach( function(item)  {
-                item.$update();
+                item.$update({}, success, post.error);
             });
             this.modified = [];
             this.deleted.forEach( function(item)  {
-                item.$delete({id:item.id});
+                item.$delete({id:item.id}, success, post.error);
             });
             this.deleted = [];
             this.cache.removeAll();
-        }
-
-        //post a new record immediately
-        this.post = function (item) {
-            var newItem = new this.Resource(item);
-            newItem.$save();
         }
 
         this.dirty = function() {

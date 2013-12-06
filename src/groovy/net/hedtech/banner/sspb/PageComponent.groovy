@@ -108,28 +108,25 @@ class PageComponent {
     // another data item name . This is attached to the component that uses the data, not the data definition itself
 
     String sourceModel       // for component with both input(pre-populate) and output like "select" use this specify the input model
-
-    def sourceValue         // for select using a constant map of value. Todo: remove, this is obsolete
     def sourceParameters    // used for query with sourceModel
 
     // flow control
     String sequence
     Boolean activated = false
     def nextButtonLabel=NEXT_BUTTON_DEFAULT_LABEL //"Next"    //translated in tranGlobalInit
-    //def lastButtonLabel=USE_DEFAULT //"Finish"  //seems not to be in use
     def submitLabel = ""
     //String condition
 
     // data
     String onLoad=""
+    String onError=""
     Boolean loadInitially = true   // specify if  data (query) from resource should be loaded after page is loaded
 
-    def errorHandling = [:] // a map of error code-> code block that specifies what actions to take if an error is encountered during resource operation
-    String value       // -> Item value, read only  for display type - also used to initialize an input type
+    def errorHandling = [:]       // a map of error code-> code block that specifies what actions to take if an error is encountered during resource operation
+    String value                  // -> Item value, read only  for display type - also used to initialize an input type
     Boolean required=false
     Boolean readonly=false
-    String onClick       // a code block to execute when a button is clicked
-   // String controller  // -> Now associated with page (body), possibly use a controller per form - TODO depreciate - we always use one controller "CustomPageController"
+    String onClick               // a code block to execute when a button is clicked
 
     // Show properties
     Boolean showInitially = true
@@ -137,11 +134,11 @@ class PageComponent {
 
     // grid properties
     String submit      // -> Controller function to be called when submitting a form
-    Boolean allowNew = false  // grid property - indicate a new entity entry and a submit button should be added to the table
+    Boolean allowNew    = false // grid property - indicate a new entity entry and a submit button should be added to the table
     Boolean allowModify = false // grid property - indicate table can be modified and a submit button should be added
     Boolean allowDelete = false // grid property - indicate table entry can be deleted and a selection checkbox and a submit button should be added
-    Boolean allowReload = false  // grid property - add a reload button automatically to re-execute the query
-    int pageSize = 5        // grid property - number of items to display per page
+    Boolean allowReload = false // grid property - add a reload button automatically to re-execute the query
+    int pageSize = 5            // grid property - number of items to display per page
 
     // select properties
     String labelKey       // property name of the model to use for displaying in the drop down list
@@ -167,15 +164,14 @@ class PageComponent {
 
     // data properties
     String resource    // -> Form Data Component. uri: <path>/resourceName e.g. rest/todo
-    def staticData  // -> JSON Array [{"sex": "M", "descr": "Male"}, {"sex": "F", "descr": "FEMALE"}]   e.g. for static Select or Radio
-    String binding = BINDING_REST    // method of data binding (rest, page)
+    def staticData     // -> JSON Array [{"sex": "M", "descr": "Male"}, {"sex": "F", "descr": "FEMALE"}]   e.g. for static Select or Radio
+    String binding = BINDING_REST    // internal method of data binding (rest, page). Implicitly derived from resource/staticData.
 
     def validation      // specify any validation definition as a map
-    def fractionDigits
+    def fractionDigits  // specify how numbers are displayed
     String onUpdate     // code block to execute if the current component value is changed
 
-                        // TODO deduce this from model automatically
-    String ID           // generated ID, do we need this?
+    String ID           // normalized ID from name (space to _), do we need this? Better to forbid space in name.
     String documentation    // for page development documentation purpose, not used by code generator
 
     List<PageComponent> components    // child components
@@ -196,7 +192,7 @@ class PageComponent {
     def valueStyleStr = ""
 
     def idTxtParam = ""
-    def modelOrigin = "NULL"  //Save model here if is changed in normalization so we know item is not bound to a resource
+    def modelOrigin = "NULL"  //Save model here if  changed in normalization so we know item is not bound to a resource
 
     // map the validation key to angular attributes ? use HTML 5 validation instead with form
     // def validationKeyMap = ["minlength":"ngMinlength", "maxlength":"ngMaxlength", "pattern":"ngPattern"]
@@ -335,7 +331,7 @@ class PageComponent {
     }
 
     String newRecordName() {
-        return "new_$name"
+        return "pbNew_$name"
     }
 
     String initNewRecordJS() {
@@ -479,7 +475,6 @@ class PageComponent {
         def ngModel="ng-model=\"COL_FIELD\""    // shorthand for  row.entity[col.field]
         def ngChange=!ro?"ng-change=\""+(onUpdate?"\$parent.${parent.ID}_${name}_onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity)\"":""
         def typeInternal = type
-
         if (type == COMP_TYPE_NUMBER ) {
             //angular-ui doesn't use localized validators - use own (but rather limited still)
             typeAt="""type="text" pb-number ${fractionDigits?"fraction-digits=\"$fractionDigits\"":""} """
@@ -491,8 +486,6 @@ class PageComponent {
             //Assume format comes from jquery.ui.datepicker-<locale>.js
             //Cannot choose format with time, but lots of options. See http://jqueryui.com/datepicker/
         }
-
-
         switch (typeInternal) {
             case COMP_TYPE_SELECT:
                 // SELECT must have a model
@@ -502,9 +495,8 @@ class PageComponent {
                 placeholderAt = placeholder?"""<option value="">${tran("placeholder")}</option>""":""
                 return """<select ${styleAt} $ngModel $readonlyAt $ngChange ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName"> $placeholderAt </select>"""
             case [COMP_TYPE_TEXT, COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER, COMP_TYPE_DATETIME, COMP_TYPE_EMAIL, COMP_TYPE_TEL] :
-                validateAt = validation?validation.collect { k,v -> "$k=\"$v\"" }.join(' '):""
+                validateAt = validationAttributes()
                 placeholderAt=placeholder?"placeholder=\"${tran("placeholder")}\"":""
-                //specialAt="onClick=\"console.log(${javaScriptString("'Row  :{{row.rowIndex}}'")});\""
                 break
             case COMP_TYPE_BOOLEAN:
                 typeAt = "type=\"checkbox\""
@@ -519,11 +511,8 @@ class PageComponent {
                     ngModel="ng-bind-html-unsafe=\"COL_FIELD\""
                 }
                 if (type==COMP_TYPE_DATETIME) {
-                    //tagStart="<span"
-                    //tagEnd="></span>"
                     ngModel="value=\"{{COL_FIELD|date:\\'medium\\'}}\""
                 }
-
                 break
             case COMP_TYPE_LITERAL:
                 return "<span $styleAt>" + tran(getPropertiesBaseKey()+".value",CompileService.compileDOMDisplay(value).replaceAll("item.","row.entity.") ) + "</span>"
@@ -797,11 +786,7 @@ class PageComponent {
             case COMP_TYPE_EMAIL:
             case COMP_TYPE_TEL:
             case COMP_TYPE_HIDDEN:
-                def validateStr = ""
-                if (validation) {
-                    validateStr = validation.collect { k,v -> "$k=\"$v\"" }.join(' ')
-                }
-                def attributes = "$validateStr ${required?"required":""} ${placeholder?"placeholder=\"${tran("placeholder")}\"":""}".trim()
+                def attributes = "${validationAttributes()} ${required?"required":""} ${placeholder?"placeholder=\"${tran("placeholder")}\"":""}".trim()
                 def typeString= "type=\"$t\""
                 if (type == COMP_TYPE_NUMBER) {  // angular-ui doesn't use localized validators
                     typeString="""type="text" pb-number ${fractionDigits?"fraction-digits=\"$fractionDigits\"":""} """
@@ -1056,6 +1041,31 @@ class PageComponent {
         result
     }
 
+    def validationAttributes() {
+        def trKey ={ k ->
+            //map some attributes to angular attributes and others to standard html
+            //angular attributes do not really prevent inputting; e.g. maxlength really restricts the length input
+            def trMap = [minlength:"ng-minlength",maxlength:"maxlength", pattern:"ng-pattern"]
+            def result = trMap[k]?trMap[k]:k
+            result
+        }
+        def trVal = { k,v ->
+            def result = v
+            if (k=="pattern") {
+                switch (v[0]) {
+                    case "/" : break //assume value is a regular expression as expected by angular
+                    case "\$":       //assume a variable
+                        result = CompileService.compileDOMExpression(v)
+                        break
+                    default :
+                        result = "/$v/" // angularjs ng-pattern wants regular expression like this
+                }
+            }
+            result
+        }
+        validation?validation.collect { k,v -> "${trKey(k)}=\"${trVal(k,v)}\"" }.join(' '):""
+    }
+
     //light weight conversion without any validation
     static PageComponent parseJSON(jsonComp)  {
         def result = new PageComponent( jsonComp )
@@ -1067,5 +1077,6 @@ class PageComponent {
         result.components = componentList
         result
     }
+
 
 }

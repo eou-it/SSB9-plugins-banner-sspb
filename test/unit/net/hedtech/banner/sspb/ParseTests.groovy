@@ -3,71 +3,39 @@ package net.hedtech.banner.sspb
 class ParseTests extends GroovyTestCase  {
     def cs = new CompileService()
 
-    //Expressions to test old parseExpression functions
-    def expressions = [
-            [in:"\$var.\$property"  , out:"\$scope.var_property"         , outv:"var_property" ],
-            [in:"\$\$var.\$property", out:"\$scope._var.\$.property"     , outv:"_var.\$property"],
-            [in:"var.property"      , out:"var.property"                 , outv:"var.property" ],
-            [in:"\$var.property"    , out:"\$scope.var.property"         , outv:"var.property" ],
-            [in:"\$var.\$visible"   , out:"\$scope.var_visible"          , outv:"var_visible"  ],
-            [in:"\$var.\$style"     , out:"\$scope.var_style"            , outv:"var_style"    ],
-
-            [where:"onLoad",in:"if (\$EmployeeData.JOB =='MANAGER') \$\$activateFlow('managerFlow'); else \$\$activateFlow('employeeFlow');",
-                    out:"if (\$scope.EmployeeData.JOB =='MANAGER') \$scope._activateFlow('managerFlow'); else \$scope._activateFlow('employeeFlow');",
-                    outv:"if (EmployeeData.JOB =='MANAGER') _activateFlow('managerFlow'); else _activateFlow('employeeFlow');"
-            ],
-
-            [where:"onUpdate",in:"\$EmployeeData.\$load();",
-                    out:"\$scope.EmployeeData_load();",
-                    outv:"EmployeeData_load();"
-            ],
-            [where:"onClick",in:"\$SearchTodo.\$visible=\$showSearchTodo; \$EditTodoList.\$visible = \$showEditTodoList;",
-                    out:"\$scope.SearchTodo_visible=\$scope.showSearchTodo; \$scope.EditTodoList_visible = \$scope.showEditTodoList;",
-                    outv:"SearchTodo_visible=showSearchTodo; EditTodoList_visible = showEditTodoList;"
-            ],
-            [where:"param"  , in:"\$selectEmployee", out:"\$scope.selectEmployee", outv:"selectEmployee" ],
-            [where:"globals", in:"\$\$user"        , out:"\$scope._user",          outv:"_user"],
-
-            [where:"value", in:"Complete \$EmployeeData.JOB forms for \$EmployeeData.ENAME",
-                    out:"Complete \$scope.EmployeeData.JOB forms for \$scope.EmployeeData.ENAME",
-                    outv:"Complete EmployeeData.JOB forms for EmployeeData.ENAME"
-            ],
-            [where:"value", in:"\$EmployeeDetails.selectedRecords",
-                    out:"\$scope.EmployeeDetails.selectedRecords",
-                    outv:"EmployeeDetails.selectedRecords"
-            ],
-    ]
 
     //Expressions to test new compileExpression method for targets CtrlFunction, DOMExpression
     def expressionsFunc = [
-            [in:" \$var.property"   , out:" \$scope.var.property"        ],
-            [in:"\$var.property"    , out:"\$scope.var.property"         ],
-            [in:"\$\$var.\$property", out:"\$scope._var.\$property"      ],
-            [in:"var.property"      , out:"var.property"                 ],
-            [in:"\$var.\$visible"   , out:"\$scope.var_visible"          ],
-            [in:"\$var.\$style"     , out:"\$scope.var_style"            ],
-            [in:"\$var.\$property"  , out:"\$scope.var.\$property"       ],
-            [in:"\$F1.\$dirty"    , out:"\$scope.F1.\$dirty"           ],
-
+            [in:"\$todoResource.\$post({page:'p'})", out:"\$scope.todoResource.post({page:'p'})" ],
+            [in:"\$todoResource.\$put({page:'p'})" , out:"\$scope.todoResource.put({page:'p'})" ],
+            [in:" \$var.property"                  , out:" \$scope.var.property"        ],
+            [in:"\$var.property"                   , out:"\$scope.var.property"         ],
+            [in:"\$\$var.\$property"               , out:"\$scope._var.\$property"      ],
+            [in:"var.property"                     , out:"var.property"                 ],
+            [in:"\$var.\$visible"                  , out:"\$scope.var_visible"          ],
+            [in:"\$var.\$style"                    , out:"\$scope.var_style"            ],
+            [in:"\$var.\$property"                 , out:"\$scope.var.\$property"       ],
+            [in:"\$F1.\$dirty"                     , out:"\$scope.F1.\$dirty"           ],
+            [in:"\$EmployeeData.\$data"            , out:"\$scope.EmployeeDataDS.data"    ],
+            [in:"\$EmployeeData.\$save"            , out:"\$scope.EmployeeDataDS.save"    ],
+            [in:"\$EmployeeData.\$load"            , out:"\$scope.EmployeeDataDS.load"    ],
+            [in:"\$EmployeeData.\$currentRecord"   , out:"\$scope.EmployeeDataDS.currentRecord"    ],
+            [in:"\$EmployeeData.\$selection"       , out:"\$scope.EmployeeDataDS.selectedRecords"    ],
             [where:"onLoad",in:"if (\$EmployeeData.JOB =='MANAGER') \$\$activateFlow('managerFlow'); else \$\$activateFlow('employeeFlow');",
-                    out:"if (\$scope.EmployeeData.JOB =='MANAGER') \$scope._activateFlow('managerFlow'); else \$scope._activateFlow('employeeFlow');",
-            ],
-
-            [where:"onUpdate",in:"\$EmployeeData.\$load();",
-                    out:"\$scope.EmployeeDataDS.load();",
+                           out:"if (\$scope.EmployeeData.JOB =='MANAGER') \$scope._activateFlow('managerFlow'); else \$scope._activateFlow('employeeFlow');",
             ],
             [where:"onClick",in:"\$SearchTodo.\$visible=\$showSearchTodo; \$EditTodoList.\$visible = \$showEditTodoList;",
-                    out:"\$scope.SearchTodo_visible=\$scope.showSearchTodo; \$scope.EditTodoList_visible = \$scope.showEditTodoList;",
+                            out:"\$scope.SearchTodo_visible=\$scope.showSearchTodo; \$scope.EditTodoList_visible = \$scope.showEditTodoList;",
             ],
-            [where:"param"  , in:"\$selectEmployee", out:"\$scope.selectEmployee", outv:"selectEmployee" ],
-            [where:"globals", in:"\$\$user"        , out:"\$scope._user",          outv:"_user"],
+            [where:"param"  , in:"\$selectEmployee", out:"\$scope.selectEmployee"],
+            [where:"globals", in:"\$\$user"        , out:"\$scope._user"],
 
             [where:"value", in:"Complete \$EmployeeData.JOB forms for \$EmployeeData.ENAME",
-                    out:"Complete \$scope.EmployeeData.JOB forms for \$scope.EmployeeData.ENAME",
+                           out:"Complete \$scope.EmployeeData.JOB forms for \$scope.EmployeeData.ENAME",
             ],
             [where:"value", in:"\$EmployeeDetails.selectedRecords",
-                    out:"\$scope.EmployeeDetails.selectedRecords",
-            ],
+                           out:"\$scope.EmployeeDetails.selectedRecords",
+            ]
     ]
 
     //Expressions to test new compileExpression method for targets DOMDisplay
@@ -98,7 +66,7 @@ class ParseTests extends GroovyTestCase  {
         expressionsDOMDisplay.each{
             def okIndicator = "---->:"
             def failIndicator = "-FAIL:"
-            def result =  cs.compileExpression(it.in,CompileService.ExpressionTarget.DOMDisplay, ["EmployeeData"])
+            def result =  cs.compileExpression(it.in,CompileService.ExpressionTarget.DOMDisplay, ["EmployeeData"], ["todoResource"])
             def ok = result == it.out
             def test = ok ? okIndicator : failIndicator
             def expected = ok ?"" : "  <- Expected: "+it.out
@@ -112,7 +80,7 @@ class ParseTests extends GroovyTestCase  {
         expressionsFunc.each{
             def okIndicator = "---->:"
             def failIndicator = "-FAIL:"
-            def result =  cs.compileExpression(it.in,CompileService.ExpressionTarget.CtrlFunction, ["EmployeeData"])
+            def result =  cs.compileExpression(it.in,CompileService.ExpressionTarget.CtrlFunction, ["EmployeeData"], ["todoResource"])
             def ok = result == it.out
             def test = ok ? okIndicator : failIndicator
             def expected = ok ?"" : "  <- Expected: "+it.out
@@ -127,7 +95,7 @@ class ParseTests extends GroovyTestCase  {
             def okIndicator = "---->:"
             def failIndicator = "-FAIL:"
             def shouldBe = it.out.replace("\$scope.","")
-            def result =  cs.compileExpression(it.in,CompileService.ExpressionTarget.DOMExpression, ["EmployeeData"])
+            def result =  cs.compileExpression(it.in,CompileService.ExpressionTarget.DOMExpression, ["EmployeeData"], ["todoResource"])
             def ok = result == shouldBe
             def test = ok ? okIndicator : failIndicator
             def expected = ok ?"" : "  <- Expected: "+shouldBe
@@ -156,52 +124,7 @@ class ParseTests extends GroovyTestCase  {
 
     */
 
-    void XtestParseExpression() {
-        expressions.each{
-            def okIndicator = "---->:"
-            def failIndicator = "-FAIL:"
-            def result =  cs.parseExpression(it.in)
-            def test = result == it.out? okIndicator : failIndicator
-            println "input: ${it.in} \n$test $result "
-            //assert result == it.out
-        }
-    }
 
-    /* Usage parseVariable: (for code put directly in the DOM e.g. ng-submit)
-    submit -> submit for Form ng-submit.   !not post processed, a bug?
-    value -> expression to set default value using ng-init. Post processed to replace .<ds>_ with .$DS.
-    value -> expression to render display type as HTML for items not bound to parent data set.  !not post processed, a bug?
-    value -> expression to set input value attribute. !not post processed, a bug?
-
-    In principle, parse variable does the same as parse expression, except that the latter prefixes variables with $scope.
-    */
-    void XtestParseVariable() {
-        expressions.each{
-            def okIndicator = "---->:"
-            def failIndicator = "-FAIL:"
-            def result =  cs.parseVariable(it.in)
-            def test = result == it.outv? okIndicator : failIndicator
-            println "input: ${it.in} \n$test $result "
-            //assert result == it.outv
-        }
-    }
-
-    /* Usage parseLiteral: (for expressions to be rendered in the dom)
-    value -> expression for rendering grid literal
-    value -> expression for rendering literal in other controls
-    value -> expression for rendering display in non-grid controls
-    url   -> href expression for links in non-grid controls
-     */
-    void XtestParseLiteral() {
-        expressions.each{
-            def okIndicator = "---->:"
-            def failIndicator = "-FAIL:"
-            def result =  cs.parseLiteral(it.in)
-            def test = result == it.out? okIndicator : failIndicator
-            println "input: ${it.in} \n$test $result "
-            //assert result == it.out
-        }
-    }
 
 
 }

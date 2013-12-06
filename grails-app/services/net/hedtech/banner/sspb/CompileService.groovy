@@ -17,6 +17,7 @@ class CompileService {
     def transactional = false
 
     static def dataSetIDsIncluded =[]
+    static def resourceIDsIncluded = []
 
     // Context for parsing expressions
     static enum ExpressionTarget{
@@ -46,6 +47,7 @@ class CompileService {
         def pageValidation = [:]
         //reset global arrays
         dataSetIDsIncluded =[]
+        resourceIDsIncluded = []
 
         try {
             // first validate the raw JSON page model
@@ -109,6 +111,7 @@ class CompileService {
             def ru =  [resource:it, usedBy: findUsageComponents(page, it)]
             addDataSets(ru)// populates   dataSetIDsIncluded
             resourceUsage += ru
+            resourceIDsIncluded += it.ID
         }
 
         resourceUsage.each {
@@ -134,7 +137,7 @@ class CompileService {
 
         //  Removed Dependencies: $http,$resource,$cacheFactory,$parse (now in pbDataSet )
         result = """
-               |function CustomPageController(\$scope ,\$locale,\$templateCache,pbDataSet,pbAddCommon) {
+               |function CustomPageController(\$scope ,\$locale,\$templateCache,pbDataSet,pbResource,pbAddCommon) {
                |    // copy global var to scope
                |    \$scope._user = user;
                |    \$scope._params = params;
@@ -224,8 +227,6 @@ class CompileService {
         def result = ""
         def dataSource
         def queryParameters = "null"
-        def apiPath = CH.config.sspb.apiPath;
-
         //should only COMP_TYPE_DATA have loadInitially?
         def autoPopulate = "true"
         if ( (component.type == PageComponent.COMP_TYPE_DATA || PageComponent.COMP_DATASET_TYPES.contains(component.type) )
@@ -234,7 +235,7 @@ class CompileService {
         }
         // first handle data binding
         if (dataComponent.binding == PageComponent.BINDING_REST && dataComponent.resource) {
-            dataSource = "resourceURL: rootWebApp+'$apiPath/${dataComponent.resource}'"
+            dataSource = "resource: \$scope.${dataComponent.name}"
             // transform parameters to angular $scope variable
             queryParameters = getQueryParameters(component, dataComponent)
         } else if (dataComponent.staticData){
@@ -254,17 +255,18 @@ class CompileService {
         }
 
         def dataSetName = "${component.ID}DS"
-        def postQuery = component.onLoad ? compileCtrlFunction(component.onLoad) : ""
-
         def optionalParams=""
-        def onUpdate =""
-
         if  (PageComponent.COMP_ITEM_TYPES.contains(component.type)) //items don't support arrays, use the get
             optionalParams+=",useGet: true"
         if (component.type != PageComponent.COMP_TYPE_SELECT)
              optionalParams+=",pageSize: $component.pageSize"
         if (component.onUpdate)
-            optionalParams+=",onUpdate: function(item) {$onUpdate ${compileCtrlFunction(component.onUpdate)} }"
+            optionalParams+="\n,onUpdate: function(item){\n${compileCtrlFunction(component.onUpdate)}}"
+        if (component.onLoad)
+            optionalParams+="\n,postQuery: function(data,response){\n${compileCtrlFunction(component.onLoad)}}"
+        if (component.onError)
+            optionalParams+="\n,onError: function(response){\n${compileCtrlFunction(component.onError)}}"
+
 
         result = """
               |    //\$scope.$component.ID=[];
@@ -274,20 +276,18 @@ class CompileService {
               |        $dataSource,
               |        queryParams: $queryParameters,
               |        autoPopulate: $autoPopulate,
-              |        postQuery: function() {$postQuery},
               |        selectValueKey: ${component.valueKey ? "\"$component.valueKey\"" : null},
               |        selectInitialValue: ${component.value?"\"$component.value\"":"null"}
               |        $optionalParams
               |    });
               |""".stripMargin()
 
+        def initNew = component.allowNew? component.initNewRecordJS(): ""
         if (component.type == PageComponent.COMP_TYPE_GRID) {
-            result +=component.gridJS()
-            result +=component.initNewRecordJS()
+            result +=component.gridJS() + initNew
         }
         if ( [PageComponent.COMP_TYPE_HTABLE,PageComponent.COMP_TYPE_DETAIL,PageComponent.COMP_TYPE_LIST].contains( component.type)) {
-            result +=component.dataSetWatches()
-            result +=component.initNewRecordJS()
+            result +=component.dataSetWatches() + initNew
         }
         return result
     }
@@ -315,6 +315,12 @@ class CompileService {
     private def static buildCode(resourceUsage) {
         def functions = []
         def dataComponent = resourceUsage.resource
+        if (dataComponent.binding == PageComponent.BINDING_REST && dataComponent.resource) {
+            def apiPath = CH.config.sspb.apiPath;
+            def url = "rootWebApp+'$apiPath/${dataComponent.resource}'"
+            functions << """\$scope.${dataComponent.name} = pbResource($url);"""
+        }
+
         // generate all scope variables / arrays for each component that uses the model
         // generate variable declarations for each usage of this model
         resourceUsage.usedBy.each {component->
@@ -548,28 +554,46 @@ class CompileService {
         parts
     }
 
+
+    // parse expression defined in page model for use in scope functions
+    // $var --> $scope.var
+    // $$var --> reserved page model variables
+    // custom variable cannot start with '_'
+    // var.property will be transformed to var_property
+    // var --> constant -> not change
+
     // Context for parsing expressions
     // enum ExpressionTarget {CtrlFunction, DOMExpression, DOMDisplay}
     def static compileExpression(expression,
                                  ExpressionTarget target=ExpressionTarget.CtrlFunction,
-                                 ArrayList dataSets=dataSetIDsIncluded) {
+                                 ArrayList dataSets=dataSetIDsIncluded,
+                                 ArrayList resources=resourceIDsIncluded ) {
 
         final def dataSetReplacements = [
                 [from:  ".\$populateSource"  , to:"DS.load"],
                 [from:  ".\$load"            , to:"DS.load"],
                 [from:  ".\$save"            , to:"DS.save"],
-                [from:  ".\$post"            , to:"DS.post"],
                 [from:  ".\$get"             , to:"DS.get" ],
                 [from:  ".\$currentRecord"   , to:"DS.currentRecord" ],
                 [from:  ".\$selection"       , to:"DS.selectedRecords" ],
+                [from:  ".\$data"            , to:"DS.data" ],
                 [from:  ".\$dirty"           , to:"DS.dirty()" ]
+        ]
+        final def resourceReplacements = [
+                [from:  ".\$post"            , to:".post"],
+                [from:  ".\$put"             , to:".put"]
         ]
         final def pbProperties = ["visible", "style"]
         final def pbFunctions = ["eval"] //to be called with $$function
 
-        def dataSetReplace = { result->
+        def componentReplace = { result->
             dataSetReplacements.each {pattern ->
                 dataSets.each { pcId ->
+                    result=result.replace("\$${pcId}$pattern.from","\$${pcId}$pattern.to" )
+                }
+            }
+            resourceReplacements.each { pattern ->
+                resources.each { pcId ->
                     result=result.replace("\$${pcId}$pattern.from","\$${pcId}$pattern.to" )
                 }
             }
@@ -577,7 +601,7 @@ class CompileService {
         }
         def expressionReplace = { result ->
             if (result) {
-                result = dataSetReplace(result)
+                result = componentReplace(result)
                 //replace pb variables
                 result = result.replaceAll('\\$\\$(\\w*)', '#scope._$1')
                 //replace pb properties
@@ -598,7 +622,7 @@ class CompileService {
             }
         }
         def literalReplace = { result ->
-            result = dataSetReplace(result)
+            result = componentReplace(result)
             result = result?.replaceAll('\\$([\\w\\.\\$]*)', '{{ $1 }}')       // grab the variable expressions and make it an angular expression
             result = result?.replaceAll('\\{\\{ \\$([\\w\\.\\$]*)', '{{ _$1')  // if the variable starts with a $ still it was $$ and it needs to start with _
             pbProperties.each {
@@ -629,90 +653,6 @@ class CompileService {
         result
     }
 
-
-
-    // parse expression defined in page model for use in scope functions
-    // $var --> $scope.var
-    // $$var --> reserved page model variables
-    // custom variable cannot start with '_'
-    // var.property will be transformed to var_property
-    // var --> constant -> not change
-    // to work around an angularJS object property binding issue we need to replace '.' with '_' to use plain scope variables
-    def static parseExpression(rawExp) {
-        // do a replacement of global $$reservedVar.property with __reservedVar_property?
-        // $$reservedVar with __reservedVar
-        //def ret = rawExp.replaceAll('\\$\\$(\\w*)\\.(\\w*)', '__$1_$2')
-        def ret = rawExp?.replaceAll('\\$\\$(\\w*)', '#scope._$1')
-        // replace $myVar with $scope.myVar, $myVar.prop with $scope.myVar_prop
-        ret = ret?.replaceAll('\\$(\\w*)\\.\\$(\\w*)', '#scope.$1_$2')
-        ret = ret?.replace('$', '$scope.')
-        // finalize
-        ret = ret?.replace('#', '$')
-
-        return ret
-    }
-
-    // parse variable defined in page model, allow use of expression in submit, details, display and link
-    // $var --> var
-    // $$var --> reserved page model variables _
-    // custom variable cannot start with '_'
-    // var.property will be transformed to var_property
-    // var --> constant -> not change
-    // to work around an angularJS object property binding issue we need to replace '.' with '_' to use plain scope variables
-    def static parseVariable(rawExp) {
-        //do a replacement of $$reservedVar.property with $scope._reservedVar_property
-        //                    $$reservedVar with $scope._reservedVar
-        //def ret = rawExp.replaceAll('\\$\\$(\\w*)\\.(\\w*)', '#scope._$1_$2')
-        //ret = ret.replaceAll('\\$\\$(\\w*)', '#scope._$1')
-        //replace $myVar with $scope.myVar, $myVar.prop with $scope.myVar_prop
-        //ret = ret.replaceAll('\\$(\\w*)\\.(\\w*)', '#scope.$1_$2')
-        def ret = rawExp?.replaceAll('\\$\\$([\\w\\.]*)', '_$1')
-        ret = ret?.replaceAll('\\$(\\w*)\\.\\$(\\w*)', '$1_$2')
-        ret = ret?.replace('$', '')
-        // finalize
-        ret = ret.replace('#', '$')
-
-        return ret
-    }
-
-    // allow use of $var in literal string as {{...}} angular value binding
-    def static parseLiteral(rawExp) {
-        def ret = rawExp?.replaceAll('\\$([\\w\\.\\$]*)', '{{ $1 }}')  //grab the variable expressions and put brackets around it
-        ret = ret?.replaceAll('\\{\\{ \\$([\\w\\.\\$]*)', '{{ _$1')  // if the variable starts with a $ still it was $$ and it needs to start with _
-        return ret
-    }
-
-    private def static parseOnEventFunction(expr, pageComponent) {
-        // $SelectCollege.$populateSource(); $SelectCampus.$populateSource(); $SelectLevel.$populateSource();
-        //->
-        //  $scope.SelectCollegeDS.load(); ...
-
-        def patterns = [[from:".\$populateSource", to:"DS.load"],
-                [from: ".\$load"          ,to:"DS.load"],
-                [from: ".\$get"           ,to:"DS.get"]   ]
-        def result=expr
-        if (result) {
-
-            patterns.each {pattern ->
-                dataSetIDsIncluded.each { pcId ->
-                    //result=result.replace("\$${pcId}$pattern.from","\$scope.${pcId}$pattern.to" )
-                    //remove $scope, now done by parseExpression
-                    result=result.replace("\$${pcId}$pattern.from","\$${pcId}$pattern.to" )
-                }
-            }
-
-            // fix 2013-07-02
-            // add logic onClick - the show/hide block feature doesn't work in on change
-            result=parseExpression(result)
-            //end fix
-            if (result == expr) {
-                println "Warning: onEvent expression for $pageComponent.ID not changed."
-            } else {
-                println "onEvent expression for $pageComponent.ID $expr -> $result"
-            }
-        }
-        return result
-    }
 
     // find all component that uses this data component, search child components
     def static findUsageComponents(component, dataComponent) {
