@@ -295,8 +295,11 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
             var model = $parse(this.componentId);
             //a grid has model.name noop and cannot be assigned a value
             if (model.name != "noop")  {
-                if (item )   {
-                    if ( (typeof(item) == "string" || typeof(item) == "number") && this.selectValueKey ) {
+                this.currentRecord = null;
+                if (item === undefined )   {
+                    ; //do nothing
+                } else {
+                    if ( (typeof(item) == "string" || typeof(item) == "number" || item === null) && this.selectValueKey ) {
                         // assume item is a selected string and we are in the DataSet for a select item
                         // Do we have to do a linear search like done below?
                         var len = this.data.length, found=false;
@@ -312,11 +315,12 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
                     }
                 }
                 if (this.selectValueKey) {  //we have a select -- Next assignment may not be needed as item is already the model
-                    model.assign($scope, this.currentRecord[this.selectValueKey]);
+                    if (this.currentRecord && this.currentRecord.hasOwnProperty(this.selectValueKey))
+                        model.assign($scope, this.currentRecord[this.selectValueKey]);
                 }  else {
                     model.assign($scope, this.currentRecord);
                 }
-                console.log("Set current record "+ this.currentRecord);
+                console.log("Set current record:");
                 console.log(this.currentRecord);
             }
         }
@@ -389,7 +393,7 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
 
     function PBDataSetFactory(scopeIn, params) {
         $scope = scopeIn;
-        var result = new PBDataSet(params)
+        var result = new PBDataSet(params);
         return result;
     };
 

@@ -411,7 +411,9 @@ class PageComponent {
             footerTemplate: \$templateCache.get('gridFooter.html').replace('#gridControlPanel#',${name}GridControlPanel),
             footerRowHeight: 55,
             jqueryUIDraggable:true,
-            multiSelect: false,
+            multiSelect:false,
+            showSelectionCheckbox:false,
+            selectWithCheckboxOnly:false,
             pagingOptions: \$scope.${dataSet}.pagingOptions,
             selectedItems: \$scope.${dataSet}.selectedRecords,
             showColumnMenu: true,
@@ -442,15 +444,19 @@ class PageComponent {
         }, true);
         """
 
-        if (onClick)  { //TODO: this is not really on click but onSelectionChanged
-            code+=
-        """\$scope.\$watch('${dataSet}.selectedRecords[0]', function(newVal, oldVal) {
-            if (newVal !== oldVal ) {
-                \$scope.${name}_onClick(newVal);
-            }
-        });
-        """
-        }
+        //currentRecord is also set with a click handler. Cannot remove below setting because click does not capture keyboard
+        //navigation
+        def onClick=onClick?"\$scope.${name}_onClick(newVal);":""
+        //TODO: this is not really on click but onSelectionChanged.
+
+         code+=
+            """\$scope.\$watch('${dataSet}.selectedRecords[0]', function(newVal, oldVal) {
+                if (newVal !== oldVal ) {
+                    \$scope.${dataSet}.setCurrentRecord(newVal);
+                    \$scope.${name}_onClick(newVal);
+                }
+            });
+            """
         code
     }
 
@@ -474,6 +480,7 @@ class PageComponent {
         def placeholderAt=""
         def ngModel="ng-model=\"COL_FIELD\""    // shorthand for  row.entity[col.field]
         def ngChange=!ro?"ng-change=\""+(onUpdate?"\$parent.${parent.ID}_${name}_onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity)\"":""
+        def ngClick="""ng-click="\$parent.${parent.name}DS.setCurrentRecord(row.entity)" """
         def typeInternal = type
         if (type == COMP_TYPE_NUMBER ) {
             //angular-ui doesn't use localized validators - use own (but rather limited still)
@@ -493,7 +500,7 @@ class PageComponent {
                 readonlyAt = (parent.allowModify && !ro)?"":"disabled" //select doesn't have readonly
                 ngChange="ng-change=\""+(onUpdate?"\${name}DS.onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity);${name}DS.setCurrentRecord(row.entity.$model);\""
                 placeholderAt = placeholder?"""<option value="">${tran("placeholder")}</option>""":""
-                return """<select ${styleAt} $ngModel $readonlyAt $ngChange ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName"> $placeholderAt </select>"""
+                return """<select ${styleAt} $ngModel $readonlyAt $ngChange $ngClick ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName"> $placeholderAt </select>"""
             case [COMP_TYPE_TEXT, COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER, COMP_TYPE_DATETIME, COMP_TYPE_EMAIL, COMP_TYPE_TEL] :
                 validateAt = validationAttributes()
                 placeholderAt=placeholder?"placeholder=\"${tran("placeholder")}\"":""
@@ -515,13 +522,13 @@ class PageComponent {
                 }
                 break
             case COMP_TYPE_LITERAL:
-                return "<span $styleAt>" + tran(getPropertiesBaseKey()+".value",CompileService.compileDOMDisplay(value).replaceAll("item.","row.entity.") ) + "</span>"
+                return "<span $styleAt $ngClick>" + tran(getPropertiesBaseKey()+".value",CompileService.compileDOMDisplay(value).replaceAll("item.","row.entity.") ) + "</span>"
                 break
             default :
                 println "***No ng-grid html edit template for $type ${name?name:model}"
         }
         def result = "$tagStart $nameAt $typeAt $styleAt $specialAt $readonlyAt $requiredAt $validateAt $placeholderAt" +
-                     " $ngModel $ngChange $tagEnd"
+                     " $ngModel $ngChange $ngClick $tagEnd"
         return result
     }
 
@@ -664,7 +671,7 @@ class PageComponent {
         }
         def labelTxt = label && (parent.type != COMP_TYPE_HTABLE)?"<label class=\"pb-${parent.type} pb-$type pb-item pb-label \" ${getIdAttr("label"+idTxtParam)} $labelStyleStr ${getIdFor(idTxtParam)}>${tran("label")}</label>":""
         def result=""
-
+        def ngClick=""
         def ngChange=""
         // if item can be updated (TODO: check readonly)
         if ( !COMP_DISPLAY_TYPES.contains(type) && t!=COMP_TYPE_SELECT ) {
@@ -673,6 +680,7 @@ class PageComponent {
                     ngChange="\$parent.${parent.ID}_${name}_onUpdate($GRID_ITEM);"  //
                 }
                 ngChange="""ng-change="$ngChange\$parent.${parent.name}DS.setModified($GRID_ITEM)"  """
+                ngClick="""ng-click="\$parent.${parent.name}DS.setCurrentRecord($GRID_ITEM)" """
             } else {
                 if (onUpdate)  {
                     ngChange="""ng-change="${name}_onUpdate()"  """
@@ -737,7 +745,7 @@ class PageComponent {
                 break;
             case COMP_TYPE_LITERAL:
                 //Todo: should we do something for safe/unsafe binding as in next item type?
-                result = "<span ${getIdAttr(idTxtParam)} $valueStyleStr $autoStyleStr>" + tran(getPropertiesBaseKey()+".value",CompileService.compileDOMDisplay(value) ) + "</span>\n"
+                result = "<span ${getIdAttr(idTxtParam)} $valueStyleStr $ngClick $autoStyleStr>" + tran(getPropertiesBaseKey()+".value",CompileService.compileDOMDisplay(value) ) + "</span>\n"
                 break;
             case COMP_TYPE_DISPLAY:
                 def modelTxt_unsafe = ""
@@ -760,7 +768,7 @@ class PageComponent {
                     else
                         modelTxt_safe = "${CompileService.compileDOMDisplay(value)}"
                 }
-                result = """<span ${getIdAttr(idTxtParam)} $valueStyleStr $autoStyleStr $modelTxt_unsafe> $modelTxt_safe </span>""";
+                result = """<span ${getIdAttr(idTxtParam)} $valueStyleStr $ngClick $autoStyleStr $modelTxt_unsafe> $modelTxt_safe </span>""";
                 break;
         // TODO handle value in details for display
         // TODO consolidate value and sourceModel?
@@ -803,7 +811,7 @@ class PageComponent {
                     //defaulValue() removed, now should be handled by initNewRecordJS() call in compileService.
                     result = """|<input $inputIdStr $typeString $autoStyleStr $valueStyleStr name="${name?name:model}" ${parent.allowModify && !readonly?"":"readonly"}
                                 | ng-model="$GRID_ITEM.${model}"
-                                | $ngChange $attributes />
+                                | $ngChange $attributes $ngClick />
                                 |""".stripMargin()
                 } else {
                     // TODO do we need a value field if ng-model is defined?  //added defaultValue
@@ -826,7 +834,7 @@ class PageComponent {
             case COMP_TYPE_BOOLEAN:
                 result ="""<input ${getIdAttr(idTxtParam)} $autoStyleStr $valueStyleStr type="checkbox" name="${name?name:model}"
                            ${booleanTrueValue?"ng-true-value=\"$booleanTrueValue\"":""}  ${booleanFalseValue?"ng-false-value=\"$booleanFalseValue\"":""}
-                           $ngChange
+                           $ngChange $ngClick
                            """
                 // add change event handler for items in DataSet so the item can be marked dirty for save
                 if (isDataSetEditControl(parent)) {
