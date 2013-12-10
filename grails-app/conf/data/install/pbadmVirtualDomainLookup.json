@@ -3,15 +3,15 @@
    "virtualDomainRoles": [{
       "allowGet": true,
       "id": null,
-      "allowPost": false,
-      "allowPut": false,
+      "allowPost": true,
+      "allowPut": true,
       "virtualDomain": {
          "_ref": "../..",
          "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
       },
       "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
       "roleName": "WTAILORADMIN",
-      "allowDelete": false,
+      "allowDelete": true,
       "version": null
    }],
    "codePut": null,
@@ -24,6 +24,6 @@
    "id": null,
    "codePost": null,
    "dateCreated": null,
-   "fileTimestamp": "2013-11-20T17:39:32Z",
+   "fileTimestamp": "2013-12-04T17:43:42Z",
    "typeOfCode": "S"
 }

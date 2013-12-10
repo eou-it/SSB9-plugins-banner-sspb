@@ -111,7 +111,7 @@ class VirtualDomainExportService {
             //println pComponent.showHierarchy()
 
             vds.each { res ->
-                if ( res.resource.startsWith(VirtualDomainService.vdPrefix)) {
+                if ( res.resource?.startsWith(VirtualDomainService.vdPrefix)) {
                     vdSet << res.resource.substring(VirtualDomainService.vdPrefix.length())
                 }
             }

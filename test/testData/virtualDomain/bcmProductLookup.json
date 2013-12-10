@@ -10,7 +10,7 @@
          "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
       },
       "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
-      "roleName": "WEBUSER",
+      "roleName": "WTAILORADMIN",
       "allowDelete": false,
       "version": null
    }],
@@ -18,12 +18,12 @@
    "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
    "lastUpdated": null,
    "codeDelete": null,
-   "codeGet": "select stvnatn_code, stvnatn_nation from stvnatn\r\nunion\r\nselect null, '- select' from dual\r\norder by 2",
+   "codeGet": "select 'GENERAL' owner, 'GENERAL' product, 'General' description from dual\r\nunion all\r\nselect 'SATURN', 'STUDENT', 'Student' from dual\r\nunion all\r\nselect 'TAISMGR', 'ARSYS', 'Accounts Receivable' from dual\r\nunion all\r\nselect 'FAISMGR', 'FINAID', 'Financial Aid' from dual",
    "version": null,
-   "serviceName": "stvnation",
+   "serviceName": "bcmProductLookup",
    "id": null,
    "codePost": null,
    "dateCreated": null,
-   "fileTimestamp": "2013-11-25T11:19:57Z",
+   "fileTimestamp": "2013-12-05T09:20:35Z",
    "typeOfCode": "S"
 }

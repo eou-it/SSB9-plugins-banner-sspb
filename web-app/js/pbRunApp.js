@@ -100,6 +100,14 @@ appModule.factory('pbAddCommon', function() {
         scopeIn.alert = function(txt) {
             alert(txt);
         }
+
+        //function to avoid undefined
+        scopeIn.nvl = function (val,def){
+            if ( (val == undefined) || (val == null ) ) {
+                return def;
+            }
+            return val;
+        }
     };
     return factory;
 });

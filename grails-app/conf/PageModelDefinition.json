@@ -15,21 +15,21 @@
                 "requiredAttributes":[],
                 "optionalAttributes":["title", "scriptingLanguage", "label", "style", "importCSS"],
                 "requiredChildren":[],
-                "optionalChildren":["flow", "form", "block", "grid", "htable", "select", "radio", "list", "detail", "data", "resource", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button"]
+                "optionalChildren":["flow", "form", "block", "grid", "htable", "detail", "select", "radio", "list",  "data", "resource", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button"]
             },
             {
                 "componentType":["block"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "style", "showInitially"],
                 "requiredChildren":[],
-                "optionalChildren":["block", "form", "grid", "htable", "select", "radio", "list", "detail", "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
+                "optionalChildren":["block", "form", "grid", "htable", "detail", "select", "radio", "list", "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
             },
             {
                 "componentType":["form"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "style", "submit","submitLabel", "nextButtonLabel", "showInitially"],
                 "requiredChildren":[],
-                "optionalChildren":["grid", "htable", "select", "radio", "list", "detail", "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
+                "optionalChildren":["grid", "htable", "detail", "select", "radio", "list",  "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
             },
             {
                 "componentType":["grid"],
@@ -48,7 +48,7 @@
             {
                 "componentType":["detail"],
                 "requiredAttributes":["model"],
-                "optionalAttributes":["label", "style", "parameters", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize", "onLoad","onError", "loadInitially"],
+                "optionalAttributes":["label", "style", "parameters", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize", "onLoad","onError", "loadInitially", "newRecordLabel","deleteRecordLabel","saveDataLabel","refreshDataLabel"],
                 "requiredChildren":[],
                 "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal","hidden"  ]
             },
@@ -62,49 +62,49 @@
             {
                 "componentType":["text", "textArea", "datetime", "email", "tel"],
                 "requiredAttributes":[],
-                "optionalAttributes":["label", "labelStyle", "style","valueStyle", "value", "model", "parameters", "validation", "placeholder", "readonly", "required", "onUpdate", "loadInitially"],
+                "optionalAttributes":["label", "labelStyle", "style","valueStyle", "value", "model", "parameters", "validation", "placeholder", "readonly", "required", "onUpdate", "onLoad", "onError", "loadInitially"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
             {
                 "componentType":[ "number"],
                 "requiredAttributes":[],
-                "optionalAttributes":["label", "labelStyle", "style","valueStyle", "value", "model", "parameters", "validation", "fractionDigits", "placeholder", "readonly", "required", "onUpdate", "loadInitially"],
+                "optionalAttributes":["label", "labelStyle", "style","valueStyle", "value", "model", "parameters", "validation", "fractionDigits", "placeholder", "readonly", "required", "onUpdate", "onLoad", "onError", "loadInitially"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
             {
                 "componentType":["select"],
                 "requiredAttributes":["sourceModel","labelKey", "valueKey" ],
-                "optionalAttributes":["label", "style","labelStyle","valueStyle", "sourceParameters", "model", "onUpdate", "required", "placeholder", "value", "loadInitially"],
+                "optionalAttributes":["label", "style","labelStyle","valueStyle", "sourceParameters", "model", "required", "placeholder", "value", "onUpdate", "onLoad", "onError", "loadInitially"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
             {
                 "componentType":["radio"],
                 "requiredAttributes":["sourceModel","labelKey", "valueKey" ],
-                "optionalAttributes":["label","style","labelStyle","valueStyle", "sourceParameters", "model", "onUpdate", "required", "value","loadInitially"],
+                "optionalAttributes":["label","style","labelStyle","valueStyle", "sourceParameters", "model", "required", "value", "onUpdate", "onLoad", "onError", "loadInitially"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
             {
                 "componentType":["list"],
                 "requiredAttributes":["model", "value"],
-                "optionalAttributes":["label", "style","labelStyle","valueStyle", "allowReload", "parameters", "onUpdate", "required", "onClick", "pageSize", "loadInitially"],
+                "optionalAttributes":["label", "style","labelStyle","valueStyle", "allowReload", "parameters",  "required", "onClick", "pageSize", "onUpdate", "onLoad", "onError", "loadInitially"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
             {
                 "componentType":["boolean"],
                 "requiredAttributes":[],
-                "optionalAttributes":["label", "style","labelStyle","valueStyle", "value", "booleanTrueValue", "booleanFalseValue", "readonly", "onUpdate", "model", "loadInitially"],
+                "optionalAttributes":["label", "style","labelStyle","valueStyle", "value", "booleanTrueValue", "booleanFalseValue", "readonly", "onUpdate", "model", "onLoad", "onError", "loadInitially"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
             {
                 "componentType":["display"],
                 "requiredAttributes":[],
-                "optionalAttributes":["label", "labelStyle", "style","valueStyle", "value", "model", "loadInitially", "asHtml"],
+                "optionalAttributes":["label", "labelStyle", "style","valueStyle", "value", "model", "loadInitially", "onLoad","onError", "asHtml"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
@@ -152,7 +152,7 @@
             }
         ],
         "sourceRenderDefinitions" : [
-            {"AttributeType":["name",  "title", "label", "style", "importCSS", "submitLabel", "model", "placeholder", "labelKey", "valueKey", "sourceModel",
+            {"AttributeType":[  "title", "label", "style", "importCSS", "submitLabel", "model", "placeholder", "labelKey", "valueKey", "sourceModel",
                 "booleanTrueValue", "booleanFalseValue", "imageUrl", "url", "labelStyle", "valueStyle","newRecordLabel","deleteRecordLabel","saveDataLabel",
                 "refreshDataLabel" ], "renderProperty":{"inputType":"text"}},
             {"AttributeType":["type"], "renderProperty":{"inputType":"select"}},
@@ -176,7 +176,8 @@
             {"AttributeType":["pageSize"], "renderProperty":{"inputType":"number", "defaultValue":5}},
             {"AttributeType":["fractionDigits"], "renderProperty":{"inputType":"number", "defaultValue":2}},
             {"AttributeType":["staticData"], "renderProperty":{"inputType":"arrayOfMap"}},
-            {"AttributeType":["defaultValue"], "renderProperty":{"inputType":"text"}}
+            {"AttributeType":["defaultValue"], "renderProperty":{"inputType":"text"}},
+            {"AttributeType":["name"], "renderProperty":{"inputType":"nameText"}}
         ],
         "documentation":"TODO - specify validation for scriptingLanguage, binding as select, default value, hint, etc. Remove duplicate AttributeType type"
     }

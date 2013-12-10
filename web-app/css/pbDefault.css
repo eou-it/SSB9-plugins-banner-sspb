@@ -79,6 +79,14 @@ input.pb-detail.pb-item,select.pb-detail.pb-item, input.pb-form.pb-item
     margin: 0.1em 0.1em 0.1em 0.1em;
     border: 1px solid #cccccc;
 }
+span.pb-literal.pb-detail.pb-item
+{
+    width: 48%;
+    /*height: 18px;*/
+    padding:  4px 0px 4px 2px;
+    margin: 0.1em 0.1em 0.1em 0.1em;
+    border: 1px solid #cccccc;
+}
 
 input[type='checkbox'].pb-form.pb-item {
     width: auto;
@@ -176,6 +184,12 @@ input.ng-invalid:focus, select.ng-invalid:focus, textarea.ng-invalid:focus {
 .align-right
 {
     text-align:right;
+    /*float:right; */
+    padding-right:0.4em;
+}
+
+.float-right
+{
     float:right;
     padding-right:0.4em;
 }

@@ -1,0 +1,29 @@
+{
+   "dataSource": "B",
+   "virtualDomainRoles": [{
+      "allowGet": true,
+      "id": null,
+      "allowPost": false,
+      "allowPut": false,
+      "virtualDomain": {
+         "_ref": "../..",
+         "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+      },
+      "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
+      "roleName": "WTAILORADMIN",
+      "allowDelete": false,
+      "version": null
+   }],
+   "codePut": null,
+   "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
+   "lastUpdated": null,
+   "codeDelete": null,
+   "codeGet": "select spriden.*,spbpers.*\r\nfrom spriden, spbpers \r\nwhere spriden_pidm=spbpers_pidm and spriden_change_ind is null\r\nand (spriden_id like :spriden_id or :spriden_id is null)\r\nand (spriden_last_name like :spriden_last_name or :spriden_last_name is null)\r\nand (spriden_first_name like :spriden_first_name or :spriden_first_name is null)\r\nand ( spbpers_birth_date between \r\n to_date(substr( nvl(:spbpers_birth_date_min,'1900-01-01'),1,10),'yyyy-mm-dd')\r\n  and \r\n to_date(substr( nvl(:spbpers_birth_date_max,'2100-01-01'),1,10),'yyyy-mm-dd')\r\n or (spbpers_birth_date is null and :spbpers_birth_date_min is null and :spbpers_birth_date_max is null ) \r\n)\r\nand (spbpers_city_birth like :spbpers_city_birth or :spbpers_city_birth is null)",
+   "version": null,
+   "serviceName": "bcmPersonSearch",
+   "id": null,
+   "codePost": null,
+   "dateCreated": null,
+   "fileTimestamp": "2013-12-05T09:20:35Z",
+   "typeOfCode": "S"
+}

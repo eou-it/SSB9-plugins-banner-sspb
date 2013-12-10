@@ -4,20 +4,6 @@
       {
          "allowGet": true,
          "id": null,
-         "allowPost": false,
-         "allowPut": false,
-         "virtualDomain": {
-            "_ref": "../..",
-            "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
-         },
-         "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
-         "roleName": "STUDENT",
-         "allowDelete": false,
-         "version": null
-      },
-      {
-         "allowGet": true,
-         "id": null,
          "allowPost": true,
          "allowPut": true,
          "virtualDomain": {
@@ -27,6 +13,20 @@
          "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
          "roleName": "WTAILORADMIN",
          "allowDelete": true,
+         "version": null
+      },
+      {
+         "allowGet": true,
+         "id": null,
+         "allowPost": false,
+         "allowPut": false,
+         "virtualDomain": {
+            "_ref": "../..",
+            "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+         },
+         "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
+         "roleName": "STUDENT",
+         "allowDelete": false,
          "version": null
       }
    ],
@@ -40,6 +40,6 @@
    "id": null,
    "codePost": null,
    "dateCreated": null,
-   "fileTimestamp": "2013-11-25T09:33:14Z",
+   "fileTimestamp": "2013-11-25T11:19:56Z",
    "typeOfCode": "S"
 }

@@ -40,6 +40,6 @@
    "id": null,
    "codePost": "declare\r\n  l_rowid varchar2(30):=:id;\r\nbegin\r\n  if l_rowid is null then\r\n    raise_application_error(-20000,'Insert of address is not implemented');\r\n  end if;\r\n  update SPRADDR\r\n     set --probably no need to update PIDM and SEQNO\r\n           SPRADDR_STREET_LINE1 = :SPRADDR_STREET_LINE1,\r\n           SPRADDR_STREET_LINE2 = :SPRADDR_STREET_LINE2, \r\n            SPRADDR_STREET_LINE3 = :SPRADDR_STREET_LINE3, \r\n            SPRADDR_STREET_LINE4 = :SPRADDR_STREET_LINE4, \r\n            SPRADDR_HOUSE_NUMBER = :SPRADDR_HOUSE_NUMBER, \r\n            SPRADDR_CITY         = nvl(:SPRADDR_CITY         , SPRADDR_CITY         ), \r\n            SPRADDR_ZIP          = nvl(:SPRADDR_ZIP          , SPRADDR_ZIP          ), \r\n            SPRADDR_STAT_CODE    = :SPRADDR_STAT_CODE,\r\n           SPRADDR_NATN_CODE    = nvl(:SPRADDR_NATN_CODE    , SPRADDR_NATN_CODE    ),\r\n           SPRADDR_FROM_DATE    = nvl(:SPRADDR_FROM_DATE    , SPRADDR_FROM_DATE    ),\r\n           SPRADDR_TO_DATE      = :SPRADDR_TO_DATE\r\n  where ROWID=l_rowid\r\n     and SPRADDR_PIDM=:user_pidm;\r\nend;\r\n",
    "dateCreated": null,
-   "fileTimestamp": "2013-11-25T09:33:14Z",
+   "fileTimestamp": "2013-11-25T11:19:57Z",
    "typeOfCode": "S"
 }

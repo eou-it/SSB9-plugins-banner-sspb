@@ -219,7 +219,6 @@ class CompileService {
             if (component.sourceParameters)
                 queryParameters = buildParameters(component.sourceParameters)
         }
-        println "Query parameters: $queryParameters"
         return queryParameters
     }
 
@@ -469,7 +468,6 @@ class CompileService {
                     arg = PageComponent.CURRENT_ITEM
 
                 code += """    \$scope.${pageComponent.name}_onClick = function($arg) { $expr}; \n"""
-                println "onClick expression for $pageComponent.name $pageComponent.onClick -> $expr"
             }
          } else if (pageComponent.submit) {
              // parse submit action
@@ -574,7 +572,7 @@ class CompileService {
                 [from:  ".\$load"            , to:"DS.load"],
                 [from:  ".\$save"            , to:"DS.save"],
                 [from:  ".\$get"             , to:"DS.get" ],
-                [from:  ".\$currentRecord"   , to:"DS.currentRecord" ],
+               // [from:  ".\$currentRecord"   , to:"DS.currentRecord" ],
                 [from:  ".\$selection"       , to:"DS.selectedRecords" ],
                 [from:  ".\$data"            , to:"DS.data" ],
                 [from:  ".\$dirty"           , to:"DS.dirty()" ]
@@ -609,7 +607,7 @@ class CompileService {
                     def p = "\\\$([\\w\\.]*)\\.[\$]{1}$it"
                     result = result.replaceAll(p, "#scope.\$1_$it")
                 }
-                result = result.replaceAll(/([^\.]|^)\$([\w]*)/, '$1#scope.$2')
+                result = result.replaceAll(/([^\.]|^)\$([\w]+)/, '$1#scope.$2')
                 //replace the underscore with $ for pbFunctions
                 pbFunctions.each {
                     result=result.replace("#scope._$it","#scope.\$$it")
@@ -623,15 +621,20 @@ class CompileService {
         }
         def literalReplace = { result ->
             result = componentReplace(result)
-            result = result?.replaceAll('\\$([\\w\\.\\$]*)', '{{ $1 }}')       // grab the variable expressions and make it an angular expression
+            result = result?.replaceAll('\\$([\\$]*[\\w]+[\\w\\.\\$]*)', '{{ $1 }}')       // grab the variable expressions and make it an angular expression
+            //result = result?.replaceAll('\\$([\\w\\.\\$]*)', '{{ $1 }}')
             result = result?.replaceAll('\\{\\{ \\$([\\w\\.\\$]*)', '{{ _$1')  // if the variable starts with a $ still it was $$ and it needs to start with _
             pbProperties.each {
                 result = result?.replace(".\$$it","_$it")
             }
             result
         }
-
+        if (expression == null) {
+            println "Compile Expression: skip null"
+            return expression
+        }
         def result = expression
+        println "Compile Expression: $expression"
         if (target in [ExpressionTarget.CtrlFunction, ExpressionTarget.DOMExpression] )
             result = expressionReplace(result)
         else {
@@ -650,6 +653,7 @@ class CompileService {
                 }
             }
         }
+        println "-> $result"
         result
     }
 
@@ -797,9 +801,6 @@ class CompileService {
         nameList[0] = "/${nameList[0]}"
 
         return nameList.join("/")
-    }
-    def static getValidChildrenType(pageComponent) {
-        def validPageChildren = [PageComponent.COMP_TYPE_RESOURCE, PageComponent.COMP_TYPE_BLOCK]
     }
 
     /* find all component that matches the criteria (map), starting from pageComponent

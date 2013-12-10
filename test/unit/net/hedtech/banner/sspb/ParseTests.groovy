@@ -19,7 +19,7 @@ class ParseTests extends GroovyTestCase  {
             [in:"\$EmployeeData.\$data"            , out:"\$scope.EmployeeDataDS.data"    ],
             [in:"\$EmployeeData.\$save"            , out:"\$scope.EmployeeDataDS.save"    ],
             [in:"\$EmployeeData.\$load"            , out:"\$scope.EmployeeDataDS.load"    ],
-            [in:"\$EmployeeData.\$currentRecord"   , out:"\$scope.EmployeeDataDS.currentRecord"    ],
+            //[in:"\$EmployeeData.\$currentRecord"   , out:"\$scope.EmployeeDataDS.currentRecord"    ],
             [in:"\$EmployeeData.\$selection"       , out:"\$scope.EmployeeDataDS.selectedRecords"    ],
             [where:"onLoad",in:"if (\$EmployeeData.JOB =='MANAGER') \$\$activateFlow('managerFlow'); else \$\$activateFlow('employeeFlow');",
                            out:"if (\$scope.EmployeeData.JOB =='MANAGER') \$scope._activateFlow('managerFlow'); else \$scope._activateFlow('employeeFlow');",
@@ -40,11 +40,14 @@ class ParseTests extends GroovyTestCase  {
 
     //Expressions to test new compileExpression method for targets DOMDisplay
     def expressionsDOMDisplay = [
+
+
+            [in:"Input with pattern ^\\w+\$"                       , out:"Input with pattern ^\\w+\$" ],
             [in:"{{ \$var.property}}"                              , out:"{{ var.property}}" ],
             [in:"{{ \$var.property }} {{\$EmployeeData.JOB}}"      , out:"{{ var.property }} {{EmployeeData.JOB}}" ],
             [in:"{{\$EmployeeData.\$dirty}}"                       , out:"{{EmployeeDataDS.dirty()}}"              ],
             [in:"{{\$F1.\$dirty}}"                                 , out:"{{F1.\$dirty}}"                          ],
-            [in:"{{\$\$eval(\$value1)}}"                            , out:"{{\$eval(value1)}}"                     ],
+            [in:"{{\$\$eval(\$value1)}}"                           , out:"{{\$eval(value1)}}"                      ],
             [in:"\$var.property"                                   , out:"{{ var.property }}"                      ],
             [in:"\$var.\$style"                                    , out:"{{ var_style }}"                         ],
             [in:"\$var.\$visible"                                  , out:"{{ var_visible }}"                       ],

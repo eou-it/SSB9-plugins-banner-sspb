@@ -773,7 +773,7 @@
 </head>
 <body>
 
-<div id="content" ng-controller="VisualPageComposerController" class="customPage">
+<div id="content" ng-controller="VisualPageComposerController" class="customPage" ng-form="pagemodelform">
 
     <label><g:message code="sspb.page.visualbuilder.load.label" /></label>
     <select name="constantName"
@@ -789,7 +789,7 @@
     <input type="text" name="constantName" ng-model="pageCurName" required ng-maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/">
 
     <button ng-click='newPageSource()'><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
-    <button ng-click='submitPageSource()' ng-disabled='sourceEditEnabled'><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
+    <button ng-click='submitPageSource()' ng-disabled='sourceEditEnabled || !pagemodelform.$valid'><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
     <button ng-click="getPageSource()"><g:message code="sspb.page.visualbuilder.reload.label" /></button>
     <button ng-click="previewPageSource()"><g:message code="sspb.page.visualbuilder.preview.label" /></button>
     <button ng-click='deletePageSource()'><g:message code="sspb.page.visualbuilder.delete.label" /></button>
@@ -851,6 +851,8 @@
                             <%--HvT re-introduced ng-change in previous line because changing type may cause issues. Seems to help. Not sure why it was removed?--%>
                             <input ng-switch-when="text" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-model="dataHolder.selectedComponent[attr.name]"/>
+                            <input ng-switch-when="nameText" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                                   ng-model="dataHolder.selectedComponent[attr.name]" ng-pattern="/^[a-zA-Z]\w*$/"/>
                             <input ng-switch-when="number" style="text-align:start;" type="number" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
                             <input ng-switch-when="url" style="text-align:start;" type="url" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
