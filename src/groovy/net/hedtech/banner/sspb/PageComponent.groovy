@@ -447,14 +447,14 @@ class PageComponent {
 
         //currentRecord is also set with a click handler. Cannot remove below setting because click does not capture keyboard
         //navigation
-        def onClick=onClick?"\$scope.${name}_onClick(newVal);":""
+        def onClickCode=onClick?"\$scope.${name}_onClick(newVal);":""
         //TODO: this is not really on click but onSelectionChanged.
 
          code+=
             """\$scope.\$watch('${dataSet}.selectedRecords[0]', function(newVal, oldVal) {
                 if (newVal !== oldVal ) {
                     \$scope.${dataSet}.setCurrentRecord(newVal);
-                    \$scope.${name}_onClick(newVal);
+                    $onClickCode
                 }
             });
             """
@@ -481,7 +481,8 @@ class PageComponent {
         def placeholderAt=""
         def ngModel="ng-model=\"COL_FIELD\""    // shorthand for  row.entity[col.field]
         def ngChange=!ro?"ng-change=\""+(onUpdate?"\$parent.${parent.ID}_${name}_onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity)\"":""
-        def ngClick="""ng-click="\$parent.${parent.name}DS.setCurrentRecord(row.entity)" """
+        def onClickCode=onClick?"\$scope.${name}_onClick(row.entity);":""
+        def ngClick="""ng-click="\$parent.${parent.name}DS.setCurrentRecord(row.entity);$onClickCode" """
         def typeInternal = type
         if (type == COMP_TYPE_NUMBER ) {
             //angular-ui doesn't use localized validators - use own (but rather limited still)
