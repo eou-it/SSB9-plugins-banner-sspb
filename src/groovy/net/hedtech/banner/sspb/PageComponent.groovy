@@ -668,7 +668,7 @@ class PageComponent {
         if (t != COMP_TYPE_HIDDEN) {
             autoStyleStr = """class="pb-${parent.type} pb-$type pb-item $valueStyle"  """
         }
-        def labelTxt = label && (parent.type != COMP_TYPE_HTABLE)?"<label class=\"pb-${parent.type} pb-$type pb-item pb-label $labelStyle \" ${getIdAttr("label"+idTxtParam)} ${getIdFor(idTxtParam)}>${tran("label")}</label>":""
+        def labelTxt = label && (parent.type != COMP_TYPE_HTABLE)?"<label class=\"pb-${parent.type} pb-$type pb-item pb-label $labelStyle \" ${getIdAttr("-label"+idTxtParam)} ${getIdFor(idTxtParam)}>${tran("label")}</label>":""
         def result=""
         def ngClick=""
         def ngChange=""
@@ -876,7 +876,7 @@ class PageComponent {
         def MAX_HEADING = 6
         if (label && t in [COMP_TYPE_BLOCK,COMP_TYPE_FORM]) {
             def headingLevel = (depth < MAX_HEADING-1)? depth+1: MAX_HEADING
-            heading = """<h$headingLevel class="pb-${t}-label" ${getIdAttr("label")}>${tran("label")}</h$headingLevel>"""
+            heading = """<h$headingLevel class="pb-${t}-label" ${getIdAttr("-label")}>${tran("label")}</h$headingLevel>"""
         }
         styleStr = """ ng-class='${name}_$STYLE_ATTR' """
         def result = ""

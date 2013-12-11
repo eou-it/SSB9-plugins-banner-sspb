@@ -20,6 +20,7 @@ input.hasDatepicker.pb-form {
     /* .columns-2 */
     width:30em;
     float:left;
+    max-width:100%;
 }
 .pb-form-item-container.pb-button  {
     width:auto;
