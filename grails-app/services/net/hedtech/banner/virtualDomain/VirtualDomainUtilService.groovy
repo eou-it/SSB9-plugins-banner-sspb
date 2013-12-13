@@ -112,8 +112,8 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
             saveObject(vd)
             if (file && !vd.hasErrors()) {
                 file.renameTo(file.getCanonicalPath() + '.' + nowAsIsoInFileName() + ".imp")
-                result ++
             }
+            result ++
         }
         result
     }
