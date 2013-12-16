@@ -180,6 +180,9 @@ class PageComponent {
     PageComponent parent    // record parent component for special code generation in grid, etc.
     PageComponent root      // the root (page) component
 
+    def resourceIDsIncluded = []   // record which resourceIDs are used in a page (only populate on root)
+    def dataSetIDsIncluded  = []   // record which dataSets are used in a page (only populate on root)
+
     def flowDefs = []       // global flow definitions, a list of map {flowName:"", sequence:["form1","form2"], condition, ""}
     def activeFlow = ""     // the initially activated flow
     def formSet = []        // the set of all form names on this page

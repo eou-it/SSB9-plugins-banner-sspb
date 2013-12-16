@@ -31,7 +31,7 @@ class PBUtilServiceBase {
     }
 
     def saveObject = { o ->
-        if (!o.save(flush:true)) {
+        if (!o.save(/*flush:true*/)) {
             o.errors.each {
                 println it
             }

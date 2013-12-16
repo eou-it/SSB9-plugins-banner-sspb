@@ -10,6 +10,13 @@ import java.security.MessageDigest
 class PageService {
     def compileService
 
+    def get(String constantName) {
+        def result = Page.findByConstantName(constantName)
+    }
+
+    def getNew(String constantName) {
+        def result = new Page(constantName:constantName)
+    }
 
     def list(Map params) {
 
@@ -75,7 +82,7 @@ class PageService {
         def result
         Page.withTransaction {
             // compile first
-            result = compilePage(content.pageName, content.source)
+            result = compileAndSavePage(content.pageName, content.source)
         }
         log.trace "PageService.create returning $result"
         result
@@ -87,9 +94,8 @@ class PageService {
         create(content, params)
     }
 
-    def compilePage( pageName, pageSource) {
-        log.trace "in compilePage: \npageSource=$pageSource"
-
+    def compileAndSavePage( pageName, pageSource) {
+        log.trace "in compileAndSavePage: pageName=$pageName"
         def overwrite=false
         def pageInstance  = Page.findByConstantName(pageName)
         def ret
@@ -97,38 +103,48 @@ class PageService {
         if (pageInstance) {
             overwrite = true;
         }
-
         if (pageSource)  {
-            def validateResult =  compileService.preparePage(pageSource)
-            if (validateResult.valid) {
-                try {
-                    def compiledJSCode=compileService.compileController(validateResult.pageComponent)
-                    log.trace "JavaScript is compiled\n"
-                    def compiledView = compileService.compile2page(validateResult.pageComponent)
-                    log.trace "Page is compiled\n"
-                    if (!pageInstance)
-                        pageInstance = new Page([constantName:pageName])
-                    pageInstance.modelView=pageSource
-                    pageInstance.compiledView = compiledView
-                    pageInstance.compiledController=compiledJSCode
-                    pageInstance=pageInstance.save()
-                    ret = [statusCode:0, statusMessage:"Page has been compiled and ${overwrite?'updated':'saved'} successfully."]
-                    //TODO: I18N - should not use logic to construct message using updated  or saved
-                } catch (e)   {
-                    ret = [statusCode: 2, statusMessage:e.getMessage()+"\n"]
-                }
-
-            } else {
-                ret = [statusCode: 2, statusMessage:"Page validation error. Page is not saved."] //TODO: I18N
+            if (!pageInstance)
+                pageInstance = new Page([constantName:pageName])
+            pageInstance.modelView=pageSource
+            ret = compilePage(pageInstance)
+            if (ret.statusCode == 0) {
+                ret.page.save()
             }
-            ret << [pageValidationResult:[errors: validateResult.error.join('\n'),
-                                          warn: validateResult.warn?"\nWarnings:\n"+validateResult.warn.join('\n'):""] ]
         } else
             ret = [statusCode: 1, statusMessage:"Page source is empty. Page is not compiled."]  //TODO: I18N
 
         ret << [overwrite:overwrite]
-
         return ret
+    }
+
+    def compilePage(Page page) {
+        log.trace "in compilePage: pageName=$page.constantName"
+        def result
+        def pageSource = page.modelView
+        def validateResult =  compileService.preparePage(pageSource)
+        if (validateResult.valid) {
+            try {
+                def compiledJSCode=compileService.compileController(validateResult.pageComponent)
+                log.trace "JavaScript is compiled\n"
+                def compiledView = compileService.compile2page(validateResult.pageComponent)
+                log.trace "Page is compiled\n"
+                page.modelView=pageSource
+                page.compiledView = compiledView
+                page.compiledController=compiledJSCode
+                result = [statusCode:0, statusMessage:"Page has been compiled and ${overwrite?'updated':'saved'} successfully."]
+                //TODO: I18N - should not use logic to construct message using updated  or saved
+
+            } catch (e)   {
+                result = [statusCode: 2, statusMessage:e.getMessage()+"\n"]
+            }
+            result << [page: page] // pass the page in the result
+        } else {
+            result = [statusCode: 2, statusMessage:"Page validation error. Page is not saved."] //TODO: I18N
+        }
+        result << [pageValidationResult:[errors: validateResult.error.join('\n'),
+                                          warn: validateResult.warn?"\nWarnings:\n"+validateResult.warn.join('\n'):""] ]
+        return result
     }
 
     // note the content-type header still needs to be set in the request even we don't send in any content in the body

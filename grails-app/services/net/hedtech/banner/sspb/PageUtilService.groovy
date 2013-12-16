@@ -85,17 +85,37 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     int loadStream(name, stream, mode) {
-        load(name, stream, null, mode)
+        Page.withTransaction {
+            load(name, stream, null, mode)
+        }
     }
     int loadFile(file, mode) {
-        load(null, null, file, mode)
+        Page.withNewTransaction {
+            load(null, null, file, mode)
+        }
+    }
+
+    private def associateRoles = { page, roles ->
+        if (!roles.equals(null)){  //have to use equals for JSONObject as it is not really null
+            roles.each { newRole ->
+                if ( newRole.roleName && !page.pageRoles.find{ it.roleName == newRole.roleName } ) {
+                    page.addToPageRoles(new PageRole(newRole))
+                }
+            }
+        } else {
+            if (page.constantName.startsWith("pbadm.")){
+                //add a WTAILORADMIN role so the pages can be used
+                def role=new PageRole(roleName: "WTAILORADMIN")
+                page.addToPageRoles(role)
+            }
+        }
     }
 
     //Load a page, save and compile it
     int load( name, stream, file, mode ) {
         // either name + stream is needed or file
         def pageName = name?name:file.name.substring(0,file.name.lastIndexOf(".json"))
-        def page = Page.findByConstantName(pageName)
+        def page = pageService.get(pageName)
         def result=0
         def jsonString
         if (file)
@@ -107,32 +127,22 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             return 0
         }
         if (jsonString) {
-            if ( !page ) { page = new Page(constantName:pageName) }
+            if ( !page )
+                page=pageService.getNew(pageName)
             JSON.use("deep")
             def json = JSON.parse(jsonString)
             if (json.has('modelView')) // file contains a marshaled page
                 page.properties[ 'modelView' /*, 'fileTimestamp'*/] = json
             else // file is a representation of the page modelView
                 page.modelView=jsonString
-            if (!json.pageRoles.equals(null)){  //have to use equals for JSONObject as it is not really null
-                json.pageRoles.each { newRole ->
-                    if ( newRole.roleName && !page.pageRoles.find{ it.roleName == newRole.roleName } ) {
-                        page.addToPageRoles(new PageRole(newRole))
-                    }
-                }
-            } else {
-                if (page.constantName.startsWith("pbadm.")){
-                    //add a WTAILORADMIN role so the pages can be used
-                    def role=new PageRole(roleName: "WTAILORADMIN")
-                    page.addToPageRoles(role)
-                }
-            }
+            def compilationResult =  pageService.compilePage(page)
+            page=compilationResult.page
             page.fileTimestamp=json2date(json.fileTimestamp)
             if (file)
                 page.fileTimestamp=new Date(file.lastModified())
 
+            associateRoles(page,json.pageRoles)
             saveObject(page)
-            def compilationResult =  pageService.compilePage( page.constantName, page.modelView)
             if (file) {
                 if (compilationResult.statusCode>0) {
                     log.info compilationResult
@@ -155,7 +165,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         def pages = Page.findAllByConstantNameLike(pat)
         def errors =[]
         pages.each { page ->
-            def result=pageService.compilePage( page.constantName, page.modelView)
+            def result=pageService.compileAndSavePage( page.constantName, page.modelView)
             if (result.statusCode>0)
                 errors << result
             log.info result

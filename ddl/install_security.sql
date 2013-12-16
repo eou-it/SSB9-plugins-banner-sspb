@@ -2,7 +2,6 @@ connect baninst1/&&BANINST1_PASSWORD
 
 prompt Grant privileges
 grant all on css to ban_ss_user;
-grant all on css_role to ban_ss_user;
 grant all on page to ban_ss_user;
 grant all on page_role to ban_ss_user;
 grant all on requestmap to ban_ss_user;
@@ -10,7 +9,6 @@ grant all on virtual_domain to ban_ss_user;
 grant all on virtual_domain_role to ban_ss_user;
 
 grant all on css to banproxy;
-grant all on css_role to banproxy;
 grant all on page to banproxy;
 grant all on page_role to banproxy;
 grant all on requestmap to banproxy;
