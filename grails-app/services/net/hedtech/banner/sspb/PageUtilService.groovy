@@ -85,21 +85,23 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     int loadStream(name, stream, mode) {
-        Page.withTransaction {
-            load(name, stream, null, mode)
-        }
+        load(name, stream, null, mode)
     }
     int loadFile(file, mode) {
-        Page.withNewTransaction {
-            load(null, null, file, mode)
-        }
+        load(null, null, file, mode)
     }
 
     private def associateRoles = { page, roles ->
         if (!roles.equals(null)){  //have to use equals for JSONObject as it is not really null
             roles.each { newRole ->
                 if ( newRole.roleName && !page.pageRoles.find{ it.roleName == newRole.roleName } ) {
-                    page.addToPageRoles(new PageRole(newRole))
+                    try {
+                        def role = new PageRole(newRole)
+                        role.validate()
+                        page.addToPageRoles(role)
+                    } catch(e) {
+                        println "Exception adding role: ${e.message}"
+                    }
                 }
             }
         } else {
@@ -140,11 +142,10 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             page.fileTimestamp=json2date(json.fileTimestamp)
             if (file)
                 page.fileTimestamp=new Date(file.lastModified())
-
             associateRoles(page,json.pageRoles)
             saveObject(page)
             if (file) {
-                if (compilationResult.statusCode>0) {
+                if ( compilationResult.statusCode>0) {
                     log.info compilationResult
                     def errorFile = new File(file.getCanonicalPath()+".err")
                     errorFile.text = compilationResult

@@ -1,7 +1,7 @@
 package net.hedtech.banner.sspb
 
 class ParseTests extends GroovyTestCase  {
-    def cs = new CompileService()
+    def page = new PageComponent()
 
 
     //Expressions to test new compileExpression method for targets CtrlFunction, DOMExpression
@@ -69,7 +69,7 @@ class ParseTests extends GroovyTestCase  {
         expressionsDOMDisplay.each{
             def okIndicator = "---->:"
             def failIndicator = "-FAIL:"
-            def result =  cs.compileExpression(it.in,CompileService.ExpressionTarget.DOMDisplay, ["EmployeeData"], ["todoResource"])
+            def result =  page.compileExpression(it.in,PageComponent.ExpressionTarget.DOMDisplay, ["EmployeeData"], ["todoResource"])
             def ok = result == it.out
             def test = ok ? okIndicator : failIndicator
             def expected = ok ?"" : "  <- Expected: "+it.out
@@ -83,7 +83,7 @@ class ParseTests extends GroovyTestCase  {
         expressionsFunc.each{
             def okIndicator = "---->:"
             def failIndicator = "-FAIL:"
-            def result =  cs.compileExpression(it.in,CompileService.ExpressionTarget.CtrlFunction, ["EmployeeData"], ["todoResource"])
+            def result =  page.compileExpression(it.in,PageComponent.ExpressionTarget.CtrlFunction, ["EmployeeData"], ["todoResource"])
             def ok = result == it.out
             def test = ok ? okIndicator : failIndicator
             def expected = ok ?"" : "  <- Expected: "+it.out
@@ -98,7 +98,7 @@ class ParseTests extends GroovyTestCase  {
             def okIndicator = "---->:"
             def failIndicator = "-FAIL:"
             def shouldBe = it.out.replace("\$scope.","")
-            def result =  cs.compileExpression(it.in,CompileService.ExpressionTarget.DOMExpression, ["EmployeeData"], ["todoResource"])
+            def result =  page.compileExpression(it.in,PageComponent.ExpressionTarget.DOMExpression, ["EmployeeData"], ["todoResource"])
             def ok = result == shouldBe
             def test = ok ? okIndicator : failIndicator
             def expected = ok ?"" : "  <- Expected: "+shouldBe

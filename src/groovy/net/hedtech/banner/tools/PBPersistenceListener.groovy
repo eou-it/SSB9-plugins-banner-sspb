@@ -40,12 +40,22 @@ class PBPersistenceListener extends AbstractPersistenceEventListener {
     //seems Grails updating lastUpdated automatically is broken (or fragile)... do it here
     def preUpdate( entity) {
         if (entity.hasProperty( 'lastUpdated' )) {
-            entity.lastUpdated = new Date()
+            try {
+                entity.lastUpdated = new Date()
+            }
+            catch (e) {
+                println "error adding last updated"
+            }
         }
     }
     def preInsert( entity) {
         if (entity.hasProperty( 'dateCreated' )) {
-            entity.dateCreated = new Date()
+            try {
+                entity.dateCreated = new Date()
+            }
+            catch (e) {
+                println "error adding date created"
+            }
         }
     }
 }

@@ -11,6 +11,18 @@ package net.hedtech.banner.sspb
 import net.hedtech.banner.css.Css
 
 class PageComponent {
+
+    // Context for parsing expressions
+    static enum ExpressionTarget{
+        CtrlFunction,  // Controller function (need to use $scope)
+        DOMExpression, // Expression in a place that will be evaluated by Angular (ng-change etc.)
+        DOMDisplay     // Expression with AngularJS expression between curly braces
+    }
+
+    final static exprBra ="{{"    // start expression
+    final static exprKet ="}}"    // end expression
+
+    // Page Component Types
     final static COMP_TYPE_PAGE = "page"
     final static COMP_TYPE_FORM = "form"
     final static COMP_TYPE_GRID = "grid"
@@ -180,8 +192,10 @@ class PageComponent {
     PageComponent parent    // record parent component for special code generation in grid, etc.
     PageComponent root      // the root (page) component
 
+    // for compiler
     def resourceIDsIncluded = []   // record which resourceIDs are used in a page (only populate on root)
     def dataSetIDsIncluded  = []   // record which dataSets are used in a page (only populate on root)
+    def resourceUsage = []        // resources and its usage (only populate on root)
 
     def flowDefs = []       // global flow definitions, a list of map {flowName:"", sequence:["form1","form2"], condition, ""}
     def activeFlow = ""     // the initially activated flow
@@ -245,7 +259,7 @@ class PageComponent {
     def tran(String prop, esc = ESC_H ) {
         def defTranslation = this[prop]
         if (defTranslation && translatableAttributes.contains(prop))  {
-            defTranslation=CompileService.compileDOMDisplay(defTranslation)
+            defTranslation=compileDOMDisplay(defTranslation)
             def key ="${getPropertiesBaseKey()}.$prop"
             root.rootProperties[key] = defTranslation
             return tranMsg(key,[] as List, esc)
@@ -274,7 +288,7 @@ class PageComponent {
     String defaultValue() {
         def result = ""
         if (value && model ) {
-            def  expr = CompileService.compileDOMExpression(value)
+            def  expr = compileDOMExpression(value)
             if (value == expr) { //assume a literal value if not changed - not sure if we should do this
                 expr="'$expr'"
             }
@@ -342,7 +356,7 @@ class PageComponent {
         def initialValues=""
         components.each { child ->
             if (child.value && child.modelOrigin) {
-                def  expr = CompileService.compileCtrlFunction(child.value)
+                def  expr = compileCtrlFunction(child.value)
                 // this is a bit horrible with HTML - can't really distinguish number from string literals
                 if ([child.booleanFalseValue,child.booleanTrueValue].contains(child.value)
                     && !["true","false"].contains(child.value) ) {
@@ -527,7 +541,7 @@ class PageComponent {
                 }
                 break
             case COMP_TYPE_LITERAL:
-                return "<span $styleAt $ngClick>" + tran(getPropertiesBaseKey()+".value",CompileService.compileDOMDisplay(value).replaceAll("item.","row.entity.") ) + "</span>"
+                return "<span $styleAt $ngClick>" + tran(getPropertiesBaseKey()+".value",compileDOMDisplay(value).replaceAll("item.","row.entity.") ) + "</span>"
                 break
             default :
                 println "***No ng-grid html edit template for $type ${name?name:model}"
@@ -747,7 +761,7 @@ class PageComponent {
                 break;
             case COMP_TYPE_LITERAL:
                 //Todo: should we do something for safe/unsafe binding as in next item type?
-                result = "<span ${getIdAttr(idTxtParam)}  $ngClick $autoStyleStr>" + tran(getPropertiesBaseKey()+".value",CompileService.compileDOMDisplay(value) ) + "</span>\n"
+                result = "<span ${getIdAttr(idTxtParam)}  $ngClick $autoStyleStr>" + tran(getPropertiesBaseKey()+".value",compileDOMDisplay(value) ) + "</span>\n"
                 break;
             case COMP_TYPE_DISPLAY:
                 def modelTxt_unsafe = ""
@@ -766,9 +780,9 @@ class PageComponent {
                         modelTxt_safe = "{{value|date:'medium'}}"
                     }
                     else if (asHtml)
-                        modelTxt_unsafe = "ng-bind-html-unsafe='${CompileService.compileDOMExpression(value)}' "
+                        modelTxt_unsafe = "ng-bind-html-unsafe='${compileDOMExpression(value)}' "
                     else
-                        modelTxt_safe = "${CompileService.compileDOMDisplay(value)}"
+                        modelTxt_safe = "${compileDOMDisplay(value)}"
                 }
                 result = """<span ${getIdAttr(idTxtParam)} $ngClick $autoStyleStr $modelTxt_unsafe> $modelTxt_safe </span>""";
                 break;
@@ -785,7 +799,7 @@ class PageComponent {
                 // set url to empty string if it is null, otherwise the page is re-directed to a non-existing page
                 url = (url==null)?"":url
                 result =  """
-                          |<a ${getIdAttr(idTxtParam)} ng-href="${CompileService.compileDOMDisplay(url)}" $targetStr $clickStr>
+                          |<a ${getIdAttr(idTxtParam)} ng-href="${compileDOMDisplay(url)}" $targetStr $clickStr>
                           |<span $autoStyleStr> $desc </span></a>
                           |""".stripMargin()
                 break;
@@ -818,7 +832,7 @@ class PageComponent {
                 } else {
                     // TODO do we need a value field if ng-model is defined?  //added defaultValue
                     attributes += " ${readonly?"readonly":""}"
-                    result = """|<input $inputIdStr $typeString $autoStyleStr  name="${name?name:model}" ${value?"value=\"{{${CompileService.compileDOMExpression(value)}}}\"":"" }
+                    result = """|<input $inputIdStr $typeString $autoStyleStr  name="${name?name:model}" ${value?"value=\"{{${compileDOMExpression(value)}}}\"":"" }
                                 |${defaultValue()} $ngChange $attributes
                                 |""".stripMargin()
                     if (model && !readonly) {
@@ -1065,7 +1079,7 @@ class PageComponent {
                 switch (v[0]) {
                     case "/" : break //assume value is a regular expression as expected by angular
                     case "\$":       //assume a variable
-                        result = CompileService.compileDOMExpression(v)
+                        result = compileDOMExpression(v)
                         break
                     default :
                         result = "/$v/" // angularjs ng-pattern wants regular expression like this
@@ -1085,6 +1099,189 @@ class PageComponent {
             componentList.push(child)
         }
         result.components = componentList
+        result
+    }
+
+    // Refactoring, moved methods from static CompileService to page component
+
+    // find all component that uses a data component, search child components
+    private def static findUsageComponents(component, dataComponent) {
+        def compList = []
+        if (component.ID != dataComponent.ID) {
+            if (component.model==dataComponent.name || component.model?.startsWith("${dataComponent.name}.")
+                    || component.sourceModel==dataComponent.name || component.sourceModel?.startsWith("${dataComponent.name}.")) {
+                compList.push(component)
+                component.binding = dataComponent.binding
+            }
+        }
+        component.components?.each {
+            compList += findUsageComponents(it, dataComponent)
+        }
+        return compList
+    }
+
+    // determine which DataSets we are going to build so we can replace references appropriately
+    // logic to match buildCode
+    private def addDataSets(resourceUsage) {
+        resourceUsage.usedBy.each {component->
+            if (COMP_DATASET_TYPES.contains(component.type)) {
+                dataSetIDsIncluded<<component.ID   //remember  - used to replace variable names
+            } else if (resourceUsage.resource.binding != BINDING_PAGE){
+                if ( COMP_ITEM_TYPES.contains(component.type)){
+                    dataSetIDsIncluded<<component.ID   //remember  - used to replace variable names
+                }
+            }
+        }
+    }
+
+    // Initialize resourceUsage, dataSetIDsIncluded and resourceIDsIncluded
+    def initPreCompile (){
+        // find all data definition in this page
+        def modelComponents = this.findComponents([COMP_TYPE_RESOURCE])
+
+        modelComponents.each {
+            def ru =  [resource:it, usedBy: findUsageComponents(root, it)]
+            addDataSets(ru)// populates   dataSetIDsIncluded
+            resourceUsage += ru
+            resourceIDsIncluded += it.ID
+        }
+    }
+
+    // Shorthand Expression compilation methods
+    def compileCtrlFunction(expression) {
+        compileExpression(expression,ExpressionTarget.CtrlFunction)
+    }
+
+    def compileDOMExpression(expression) {
+        compileExpression(expression,ExpressionTarget.DOMExpression)
+    }
+    def compileDOMDisplay(expression) {
+        compileExpression(expression,ExpressionTarget.DOMDisplay)
+    }
+
+    // split an expression " L1 <bra>E1<ket>L2<bra>E1<ket>L3"
+    // into an array of [ preBra: Li, expression, postKet: Lj ]
+    // where bra = {{ AngularJS expression start
+    //   and ket = }} AngularJS expression end
+    def static splitAngularBrackets( String expr ) {
+        def prep = expr.tokenize(exprBra)
+        def parts = []
+        prep.eachWithIndex { str, i ->
+            def subParts = str.tokenize(exprKet)
+            if (subParts.size()==1) {   // did not find exprKet or there is no part after it
+                if (i==0 && !expr.startsWith(exprBra) )
+                    parts += [preBra:subParts[0]]
+                else
+                    parts += [expression:subParts[0]]
+            }
+            else
+                parts += [expression:subParts[0], postKet:subParts[1]]
+        }
+        parts
+    }
+
+
+    // parse expression defined in page model for use in scope functions
+    // $var --> $scope.var
+    // $$var --> reserved page model variables
+    // custom variable cannot start with '_'
+    // var.property will be transformed to var_property
+    // var --> constant -> not change
+
+    // Context for parsing expressions
+    // enum ExpressionTarget {CtrlFunction, DOMExpression, DOMDisplay}
+    def compileExpression(expression,
+                          ExpressionTarget target=ExpressionTarget.CtrlFunction,
+                          ArrayList dataSets=root.dataSetIDsIncluded,
+                          ArrayList resources=root.resourceIDsIncluded ) {
+
+        final def dataSetReplacements = [
+                [from:  ".\$populateSource"  , to:"DS.load"],
+                [from:  ".\$load"            , to:"DS.load"],
+                [from:  ".\$save"            , to:"DS.save"],
+                [from:  ".\$get"             , to:"DS.get" ],
+                // [from:  ".\$currentRecord"   , to:"DS.currentRecord" ],
+                [from:  ".\$selection"       , to:"DS.selectedRecords" ],
+                [from:  ".\$data"            , to:"DS.data" ],
+                [from:  ".\$dirty"           , to:"DS.dirty()" ]
+        ]
+        final def resourceReplacements = [
+                [from:  ".\$post"            , to:".post"],
+                [from:  ".\$put"             , to:".put"]
+        ]
+        final def pbProperties = ["visible", "style"]
+        final def pbFunctions = ["eval"] //to be called with $$function
+
+        def componentReplace = { result->
+            dataSetReplacements.each {pattern ->
+                dataSets.each { pcId ->
+                    result=result.replace("\$${pcId}$pattern.from","\$${pcId}$pattern.to" )
+                }
+            }
+            resourceReplacements.each { pattern ->
+                resources.each { pcId ->
+                    result=result.replace("\$${pcId}$pattern.from","\$${pcId}$pattern.to" )
+                }
+            }
+            result
+        }
+        def expressionReplace = { result ->
+            if (result) {
+                result = componentReplace(result)
+                //replace pb variables
+                result = result.replaceAll('\\$\\$(\\w*)', '#scope._$1')
+                //replace pb properties
+                pbProperties.each {
+                    def p = "\\\$([\\w\\.]*)\\.[\$]{1}$it"
+                    result = result.replaceAll(p, "#scope.\$1_$it")
+                }
+                result = result.replaceAll(/([^\.]|^)\$([\w]+)/, '$1#scope.$2')
+                //replace the underscore with $ for pbFunctions
+                pbFunctions.each {
+                    result=result.replace("#scope._$it","#scope.\$$it")
+                }
+                if (target == ExpressionTarget.CtrlFunction)
+                    result = result.replace('#scope.', '$scope.')
+                else {
+                    result = result.replace('#scope.', '')
+                }
+            }
+        }
+        def literalReplace = { result ->
+            result = componentReplace(result)
+            result = result?.replaceAll('\\$([\\$]*[\\w]+[\\w\\.\\$]*)', '{{ $1 }}')       // grab the variable expressions and make it an angular expression
+            //result = result?.replaceAll('\\$([\\w\\.\\$]*)', '{{ $1 }}')
+            result = result?.replaceAll('\\{\\{ \\$([\\w\\.\\$]*)', '{{ _$1')  // if the variable starts with a $ still it was $$ and it needs to start with _
+            pbProperties.each {
+                result = result?.replace(".\$$it","_$it")
+            }
+            result
+        }
+        if (expression == null) {
+            println "Compile Expression: skip null"
+            return expression
+        }
+        def result = expression
+        println "Compile Expression: $expression"
+        if (target in [ExpressionTarget.CtrlFunction, ExpressionTarget.DOMExpression] )
+            result = expressionReplace(result)
+        else {
+            def parts = splitAngularBrackets(result)
+            if (parts.size()==1 && !parts[0].expression) { // expression doesn't have {{... }}
+                result = literalReplace(result) // do original literal processing
+            } else {
+                result="" // build the result from the parts
+                parts.each { part ->
+                    if (part.preBra)
+                        result+=part.preBra
+                    if (part.expression)
+                        result+="{{${expressionReplace(part.expression)}}}"
+                    if (part.postKet)
+                        result+=part.postKet
+                }
+            }
+        }
+        println "-> $result"
         result
     }
 
