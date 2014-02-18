@@ -179,15 +179,12 @@ class VirtualDomainSqlService {
 
         } catch(e) {
             logmsg += message(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
-
-            errorMessage=logmsg
+            errorMessage=privs.debug?logmsg :"Unable to get resources."
         } finally {
             sql.close()
         }
         println logmsg
-        if (!privs.debug) {// do not reveal sql error unless user has the right to debug
-            errorMessage = "Unable to get resources."
-        }
+
         return [error: errorMessage, rows:rows, totalCount: rows?.size()]
     }
 
@@ -212,14 +209,11 @@ class VirtualDomainSqlService {
             totalCount = rows[0].COUNT
         } catch(e) {
             logmsg += message(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
-            errorMessage=logmsg
+            errorMessage=privs.debug?logmsg : "Unable to get resource count."
         } finally {
             sql.close()
         }
         println logmsg
-        if (!privs.debug) {// do not reveal sql error unless user has the right to debug
-            errorMessage = "Unable to get resource count."
-        }
         return [error: errorMessage, totalCount:totalCount.longValue()]
     }
 
