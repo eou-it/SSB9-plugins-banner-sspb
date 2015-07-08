@@ -14,7 +14,7 @@ class PageSecurityService {
     def springSecurityService
 
     // For Restful interface
-    def update(def id, Map content, params)  {
+    def update(/*def id,*/ Map content, params)  {
         def page=Page.get(id);
         def rm=mergePage(page)
     }

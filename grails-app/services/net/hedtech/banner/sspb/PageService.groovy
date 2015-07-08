@@ -89,7 +89,7 @@ class PageService {
     }
 
     // update is not used to update pages since the client may not know if a page exists or not when submitting (concurrent editing)
-    def update(def id, Map content, params) {
+    def update( /*def id,*/ Map content, params) {
         log.trace "PageService.update invoked"
         create(content, params)
     }

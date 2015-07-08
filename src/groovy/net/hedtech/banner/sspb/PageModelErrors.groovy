@@ -1,8 +1,5 @@
 package net.hedtech.banner.sspb
 
-import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
-import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
-
 /**
  * Created with IntelliJ IDEA.
  * User: jzhong
@@ -11,6 +8,7 @@ import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
  * To change this template use File | Settings | File Templates.
  */
 class PageModelErrors {
+
 
     def static MODEL_PARSING_ERR                = [code:  -1, message: "sspb.modelValidation.modelParsingErr.message"]
     def static MODEL_MISSING_DEFINITION_ERR     = [code:   0, message: "sspb.modelValidation.modelMissingDefinitionErr.message"]
@@ -25,17 +23,19 @@ class PageModelErrors {
 
     def static getError( errorDetails )  {
 
+        // Work around for unit testing
+        if (grails.util.Holders.servletContext == null) {
+            return [ code:  errorDetails.error.code,
+                     message: "code: ${errorDetails.error.message}, args: ${errorDetails.args}",
+                     path: errorDetails.path
+            ]
+        }
+
         def err = [ code:  errorDetails.error.code,
                     message: message(code: errorDetails.error.message, args: errorDetails.args),
                     path: errorDetails.path
                    ]
+
     }
-/*
-    def static getMessage(code, args = []) {
-        def grailsApplication = new DefaultGrailsApplication()
-        def appCtx = grailsApplication.parentContext
-        return appCtx.getMessage(code, args)
-    }
-    */
 
 }

@@ -80,7 +80,7 @@ class CssService {
     }
 
     // update is not used since the client may not know if a CSS exists or not when submitting (concurrent editing)
-    def update(def id, Map content) {
+    def update(/*def id,*/ Map content) {
         log.trace "CssService.update invoked"
 
         checkForExceptionRequest()

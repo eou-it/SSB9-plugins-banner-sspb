@@ -69,7 +69,7 @@ class VirtualDomainService {
         //Should really be querying the record again so any database trigger changes get reflected in client
     }
 
-    def update (def id, Map data, params) {
+    def update (/*def id,*/ Map data, params) {
         println "Data for put/update:" + data
         def serviceName = vdName(params)
         def vd = loadVirtualDomain(serviceName)

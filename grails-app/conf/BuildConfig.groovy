@@ -2,7 +2,7 @@ grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 
-grails.plugin.location.'restful-api'="../restful-api.git"
+//grails.plugin.location.'restful-api'="../restful-api.git"
 grails.plugin.location.'banner_ui_ss'="../banner_ui_ss.git"
 grails.plugin.location.'banner-core'="../banner_core.git"
 grails.plugin.location.'banner-codenarc'="../banner_codenarc.git"
@@ -28,6 +28,7 @@ grails.project.dependency.resolution = {
         // from public Maven repositories
         mavenLocal()
         mavenCentral()
+        mavenRepo "https://repo.grails.org/grails/plugins"
         //mavenRepo "http://snapshots.repository.codehaus.org"
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
@@ -64,6 +65,8 @@ grails.project.dependency.resolution = {
         compile ':selenium:0.8'
         compile ':selenium-rc:1.0.2'
         compile  ":inflector:0.2"
+        compile ':restful-api:1.0.0'
+
         // compatibility?
         //compile ":tomcat:1.3.7"
         //compile ":hibernate:1.3.7"

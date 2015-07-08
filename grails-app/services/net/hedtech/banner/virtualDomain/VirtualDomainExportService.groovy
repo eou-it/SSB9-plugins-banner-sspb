@@ -88,7 +88,7 @@ class VirtualDomainExportService {
     }
 
     // handle export of single vd
-    def update(def id, Map content, params) {
+    def update(/*def id,*/ Map content, params) {
         def result
         if (content.exportVirtualDomain == "1") {
             def vdUtilService = new VirtualDomainUtilService()

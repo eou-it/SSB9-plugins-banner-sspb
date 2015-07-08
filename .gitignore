@@ -2,3 +2,6 @@
 /.idea
 /target
 /*.iml
+*-rtl.css
+/**/selenium*
+grails-app/conf/SeleniumConfig.groovy

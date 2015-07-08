@@ -79,7 +79,7 @@ class PageExportService {
         result
     }
 
-    def update(def id, Map content, params) {
+    def update(/*def id,*/ Map content, params) {
         def result
         if (content.exportPage == "1") {
             def pageUtilService = new PageUtilService()

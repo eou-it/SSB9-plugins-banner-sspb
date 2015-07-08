@@ -93,7 +93,7 @@ class CssExportService {
     }
 
     // handle export of single css file
-    def update(def id, Map content, params) {
+    def update(/*def id,*/ Map content, params) {
         def result
         if (content.exportCss == "1") {
             def cssUtilService = new CssUtilService()
