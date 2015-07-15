@@ -6,7 +6,7 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
 
     //Used in integration test
     void exportAllToFile(String path) {
-        exportToFile( "%", path, true)
+        exportToFile( "%",null, path, true)
     }
 
     //Export one or more virtual domains to the configured directory

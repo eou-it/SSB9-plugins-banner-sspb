@@ -132,9 +132,9 @@ class PageService {
                 page.modelView=pageSource
                 page.compiledView = compiledView
                 page.compiledController=compiledJSCode
+                compileService.updateProperties(validateResult.pageComponent)
                 result = [statusCode:0, statusMessage:"Page has been compiled and ${overwrite?'updated':'saved'} successfully."]
                 //TODO: I18N - should not use logic to construct message using updated  or saved
-
             } catch (e)   {
                 result = [statusCode: 2, statusMessage:e.getMessage()+"\n"]
             }

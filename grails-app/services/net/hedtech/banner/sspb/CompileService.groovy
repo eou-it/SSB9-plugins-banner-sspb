@@ -13,6 +13,8 @@ class CompileService {
     }
     */
 
+    def static pageBuilderModel = (new groovy.json.JsonSlurper())
+            .parseText(CompileService.class.classLoader.getResourceAsStream( 'PageModelDefinition.json' ).text)
     // TODO configure Hibernate
     def transactional = false
 
@@ -35,21 +37,16 @@ class CompileService {
         try {
             // first validate the raw JSON page model
             def pageModelValidator = new PageModelValidator()
-            // TODO parsing of model definition should be done once
-            def pageDefText = CompileService.class.classLoader.getResourceAsStream( 'PageModelDefinition.json' ).text
-            slurper = new groovy.json.JsonSlurper()
-            def pageBuilderModel = slurper.parseText(pageDefText)
             pageModelValidator.setPageBuilderModel(pageBuilderModel)
             // validate the raw Page JSON data
-            def validateResult =  pageModelValidator.validatePage(json) //
+            def validateResult =  pageModelValidator.parseAndValidatePage(json) //
 
             // validate the unmarshalled page model
             if (!validateResult.valid)
-                return  [valid:false, pageComponent:page, error:validateResult.error, warn:validateResult.warn]
+                return  [valid:false, pageComponent:validateResult.page, error:validateResult.error, warn:validateResult.warn]
             warn=validateResult.warn
 
-            def jsonResult = slurper.parseText(json)
-            page = new PageComponent(jsonResult)
+            page = new PageComponent(validateResult.page)
             page = normalizeComponent(page)
             // run second validation
             pageValidation = validateComponent(page)
@@ -144,11 +141,15 @@ class CompileService {
     // output
     def static compile2page(pageComponent) {
         def pageTxt=pageComponent.compileComponent("")
+        return pageTxt
+    }
+
+    //this needs to be executed to update properties as part of compilation
+    def static updateProperties(pageComponent) {
         def pageUtilService = new PageUtilService()
         pageUtilService.updateProperties(pageComponent.rootProperties,propertiesFileName(pageComponent.name))
         pageUtilService.updateProperties(pageComponent.globalProperties,PageMessageSource.globalPropertiesName)
         pageUtilService.reloadBundles()
-        return pageTxt
     }
 
     def static propertiesFileName(String pageName) {

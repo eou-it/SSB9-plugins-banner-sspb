@@ -991,7 +991,8 @@ class PageComponent {
         //split the string into a list
         def is = tempList?.tokenize(',')
         for (css in is) {
-            if (Css.findByConstantName(css))
+            //Cannot Unit test the findBy  statement
+            if (!Css.metaClass.getStaticMetaMethod("findByConstantName", String) || Css.findByConstantName(css) )
                 cssImp += """<link type="text/css" rel="stylesheet" href="$importPath?name=${css.trim()}" />\n"""
             else
                 println "Warning: Style sheet $css will not be imported as it does not exist."

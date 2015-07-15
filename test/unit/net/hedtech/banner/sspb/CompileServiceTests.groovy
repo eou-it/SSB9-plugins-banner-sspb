@@ -19,42 +19,35 @@ class CompileServiceTests extends GroovyTestCase  {
 
     void testCompileAll() {
         // test all page model compilation
-        def modelIds = 1..1
+        def modelIds = 1..6
         def modelPath = "test/testData/model/PageModel"
         def getModelPath = { id -> return modelPath + id + '.json' }
-
-        def pagePath = "target/compiledPage/page"
-        def getPagePath = { id -> return pagePath + id + '.html' }
+        def jsonSlurper = new groovy.json.JsonSlurper()
 
         for (i in modelIds) {
             def modelFilePath = getModelPath(i)
-            def pageFilePath = getPagePath(i)
+            println "\n\ntesting $modelFilePath}"
 
-            println "testing $modelFilePath}"
+            def page = jsonSlurper.parseText(new File(modelFilePath).getText())
 
-            def pageSource = new File(modelFilePath).getText()
-
+            if ( !(page.constantName && page.modelView)) {
+                println "expected page source JSON object to have constantName and modelView properties"
+            }
             // parse, normalize and validate page model
-            def validateResult =  CompileService.preparePage(pageSource)
+            def validateResult =  CompileService.preparePage(page.modelView)
             if (validateResult.valid) {
                 // generate JS first because it will set the binding correctly for some components
                 def compiledJSCode=CompileService.compileController(validateResult.pageComponent)
                 //println "Compiled Controller = $compiledJSCode\n"
                 println "JavaScript is compiled"
-                def htmlOutput= new File('TestJS.js')
-                htmlOutput.text = compiledJSCode
 
                 def compiledView = CompileService.compile2page(validateResult.pageComponent)
                 //println "Compiled View = $compiledView\n"
                 println "HTML is compiled"
-                htmlOutput= new File('TestHtml.html')
-                htmlOutput.text = compiledView
 
                 def combinedView = CompileService.assembleFinalPage(compiledView, compiledJSCode)
                 //println "Compbined View = $combinedView\n"
                 println "Page is compiled"
-                htmlOutput= new File(pageFilePath)
-                htmlOutput.text = combinedView
 
             } else {
                 println "modelFilePath validation error:\n" + validateResult.error.join('\n')

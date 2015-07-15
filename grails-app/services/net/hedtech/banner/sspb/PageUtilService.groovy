@@ -10,7 +10,7 @@ import net.hedtech.banner.tools.i18n.SortedProperties
 
 
 class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
-    def pageService // Injected by Spring
+    def pageService // = new PageService() // Spring Injection failed in integration test
     def static bundleLocation = getBundleLocation()
 
     def static getBundleLocation() {

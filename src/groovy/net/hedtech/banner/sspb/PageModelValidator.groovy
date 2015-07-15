@@ -35,7 +35,7 @@ class PageModelValidator {
      pageComponent - page model source in JSON
      return - map of validation result  [valid: isValid, error [list of [code: errorCode, message: errorMessage, path : path of component that erred ] ] ]
      */
-    def validatePage(pageSource) {
+    def parseAndValidatePage(pageSource) {
         if (!typeDef) {
             def error = PageModelErrors.getError(error: PageModelErrors.MODEL_MISSING_DEFINITION_ERR)
             def ex = [errorCode:error.code, errorMessage:error.message] as PageModelValidationException
@@ -50,8 +50,10 @@ class PageModelValidator {
             return [valid:false, warn:[], error:[PageModelErrors.getError(error:PageModelErrors.MODEL_PARSING_ERR, args: [ex.getLocalizedMessage()] )  ]]
         }
         def res = validateComponent(page)
+        if (res.valid){
+            res.page = page
+        }
         return res
-
     }
 
     /*
