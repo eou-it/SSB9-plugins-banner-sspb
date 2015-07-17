@@ -4,7 +4,9 @@ Copyright 2009-2012 Ellucian Company L.P. and its affiliates.
 
 modules = {
     'pageBuilder' {
-        dependsOn "bannerSelfService"
+        //dependsOn "bannerSelfService" //modify to avoid extensibility
+        dependsOn "bannerSelfServiceWithoutAurora, aurora"
+
         defaultBundle environment == "development" ? false : "pageBuilder"
 
 
@@ -51,5 +53,7 @@ modules = {
 	
     application {
         resource url:'js/application.js'
-    }	
+    }
+
+
 }

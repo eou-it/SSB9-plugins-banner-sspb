@@ -40,7 +40,17 @@ if (undefined == myCustomServices)
     var myCustomServices = [];
 
 
-var appModule = angular.module('BannerOnAngular', myCustomServices);
+var appModule = appModule||angular.module('BannerOnAngular', myCustomServices);
+
+var CustomPageController = CustomPageController||undefined;
+if ( CustomPageController) {
+    appModule.controller("CustomPageController", CustomPageController);
+}
+
+var VisualPageComposerController = VisualPageComposerController||undefined;
+if (VisualPageComposerController) {
+    appModule.controller("VisualPageComposerController", VisualPageComposerController);
+}
 
 // below filter is used for pagination
 appModule.filter('startFrom', function() {

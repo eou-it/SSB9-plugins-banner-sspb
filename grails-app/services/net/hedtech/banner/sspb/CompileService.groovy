@@ -114,7 +114,7 @@ class CompileService {
                |    // page specific code
                |    $result
                |    $common
-               |}//End Controller
+               |};// End Controller
                |""".stripMargin()
         return result
     }

@@ -48,12 +48,13 @@ class CssService {
     def show(Map params) {
         log.trace "CssService.show invoked"
         def result
+        def showResult
         result = Css.find{constantName==params.id}
-
-        supplementCss( result )
-        log.trace "CssService.show returning ${result}"
-        def showResult = [constantName : result.constantName, id: result.id, version: result.version, css: result.css, description: result.description]
-
+        if (result) {
+            supplementCss( result )
+            log.trace "CssService.show returning ${result}"
+            showResult = [constantName : result.constantName, id: result.id, version: result.version, css: result.css, description: result.description]
+        }
         showResult
     }
 
