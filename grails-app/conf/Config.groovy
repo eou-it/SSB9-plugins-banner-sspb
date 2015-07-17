@@ -254,48 +254,49 @@ sspb.debugRoleName = "SELFSERVICE-WTAILORADMIN"
 // ******************************************************************************
 
 restfulApiConfig = {
+    // Pagebuilder resources
 
+    // generic resource for virtual domains
 
-    jsonDomainMarshallerTemplates {
-        template 'jsonDomainAffordance' config {
-            additionalFields {map ->
-                map['json'].property("_href", "/${map['resourceName']}/${map['resourceId']}" )
-            }
-        }
-    }
-
-    xmlDomainMarshallerTemplates {
-        template 'xmlDomainAffordance' config {
-            additionalFields {map ->
-                def xml = map['xml']
-                xml.startNode('_href')
-                xml.convertAnother("/${map['resourceName']}/${map['resourceId']}")
-                xml.end()
-            }
-        }
-    }
-
-    marshallerGroups {
-        group 'json-date-closure' marshallers {
-            marshaller {
-                instance = new org.codehaus.groovy.grails.web.converters.marshaller.ClosureOjectMarshaller<grails.converters.JSON>(
-                    java.util.Date, {return "customized-date:" + it?.format("yyyy-MM-dd'T'HH:mm:ssZ")})
-            }
-        }
-    }
-
-    // This pseudo resource is used when issuing a query using a POST. Such a POST is made
-    // against the actual resource being queried, but using a different URL prefix (e.g., qapi)
-    // so the request is routed to the 'list' method (versus the normal 'create' method).
-    resource 'query-filters' config {
-        // TODO: Add support for 'application/x-www-form-urlencoded'
+    anyResource {
+        serviceName = 'virtualDomainService'
         representation {
             mediaTypes = ["application/json"]
-            jsonExtractor {}
+            marshallers {
+                marshaller {
+                    instance = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
+                    priority = 100
+                }
+            }
+            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
+        }
+        representation {
+            mediaTypes = ["application/xml"]
+            //jsonAsXml = true
+            marshallers {
+                marshaller {
+                    instance = new net.hedtech.restfulapi.marshallers.xml.BasicDomainClassMarshaller(app:grailsApplication)
+                    priority = 200
+                }
+            }
+            extractor = new net.hedtech.restfulapi.extractors.xml.MapExtractor()
         }
     }
-	
-    // Pagebuilder resources
+
+    resource 'pagesecurity' config {
+        serviceName= 'pageSecurityService'
+        representation {
+            mediaTypes = ["application/json"]
+            marshallers {
+                marshaller {
+                    instance = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
+                    priority = 100
+                }
+            }
+            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
+        }
+    }
+
 
     resource  'pages' config {
         representation {
@@ -344,7 +345,131 @@ restfulApiConfig = {
             extractor = new net.hedtech.restfulapi.extractors.xml.MapExtractor()
         }
     }
+
+    resource 'pageexports' config {
+        serviceName= 'pageExportService'
+        representation {
+            mediaTypes = ["application/json"]
+            marshallers {
+                marshaller {
+                    instance = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
+                    priority = 100
+                }
+            }
+            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
+        }
+    }
+    resource 'virtualdomainexports' config {
+        serviceName= 'virtualDomainExportService'
+        representation {
+            mediaTypes = ["application/json"]
+            marshallers {
+                marshaller {
+                    instance = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
+                    priority = 100
+                }
+            }
+            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
+        }
+    }
+    resource 'cssexports' config {
+        serviceName= 'cssExportService'
+        representation {
+            mediaTypes = ["application/json"]
+            marshallers {
+                marshaller {
+                    instance = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
+                    priority = 100
+                }
+            }
+            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
+        }
+    }
+
+    // This pseudo resource is used when issuing a query using a POST. Such a POST is made
+    // against the actual resource being queried, but using a different URL prefix (e.g., qapi)
+    // so the request is routed to the 'list' method (versus the normal 'create' method).
+    resource 'query-filters' config {
+        // TODO: Add support for 'application/x-www-form-urlencoded'
+        representation {
+            mediaTypes = ["application/json"]
+            jsonExtractor {}
+        }
+    }
+
+    // 2 demo resources
+    resource 'todos' config {
+        representation {
+            mediaTypes = ["application/json"]
+            marshallers {
+                marshaller {
+                    instance = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
+                    priority = 100
+                }
+            }
+            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
+        }
+        representation {
+            mediaTypes = ["application/xml"]
+            //jsonAsXml = true
+            marshallers {
+                marshaller {
+                    instance = new net.hedtech.restfulapi.marshallers.xml.BasicDomainClassMarshaller(app:grailsApplication)
+                    priority = 200
+                }
+            }
+            extractor = new net.hedtech.restfulapi.extractors.xml.MapExtractor()
+        }
+    }
+
+    resource 'projects'  config {
+        representation {
+            mediaTypes = ["application/json"]
+            marshallers {
+                marshaller {
+                    instance = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
+                    priority = 100
+                }
+            }
+            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
+        }
+        representation {
+            mediaTypes = ["application/xml"]
+            //jsonAsXml = true
+            marshallers {
+                marshaller {
+                    instance = new net.hedtech.restfulapi.marshallers.xml.BasicDomainClassMarshaller(app:grailsApplication)
+                    priority = 200
+                }
+            }
+            extractor = new net.hedtech.restfulapi.extractors.xml.MapExtractor()
+        }
+    }
+
 }
 
 //does not to work well with virtual domains yet - updates are not being picked up
 cache.headers.enabled = false
+// Uncomment and edit the following lines to start using Grails encoding & escaping improvements
+
+/* remove this line 
+// GSP settings
+grails {
+    views {
+        gsp {
+            encoding = 'UTF-8'
+            htmlcodec = 'xml' // use xml escaping instead of HTML4 escaping
+            codecs {
+                expression = 'html' // escapes values inside null
+                scriptlet = 'none' // escapes output from scriptlets in GSPs
+                taglib = 'none' // escapes output from taglibs
+                staticparts = 'none' // escapes output from static template parts
+            }
+        }
+        // escapes all not-encoded output at final stage of outputting
+        filteringCodecForContentType {
+            //'text/html' = 'html'
+        }
+    }
+}
+remove this line */
