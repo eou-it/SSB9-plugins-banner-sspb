@@ -3,7 +3,7 @@
  *******************************************************************************/
 
 import net.hedtech.banner.configuration.ApplicationConfigurationUtils as ConfigFinder
-import grails.plugins.springsecurity.SecurityConfigType
+import grails.plugin.springsecurity.SecurityConfigType
 
 // ******************************************************************************
 //
@@ -78,7 +78,7 @@ grails.mime.types = [
 grails.views.default.codec = "none" // none, html, base64  **** note: Setting this to html will ensure html is escaped, to prevent XSS attack ****
 grails.views.gsp.encoding = "UTF-8"
 grails.converters.encoding = "UTF-8"
-grails.plugins.springsecurity.logout.afterLogoutUrl = "/"
+grails.plugin.springsecurity.logout.afterLogoutUrl = "/"
 grails.converters.domain.include.version = true
 //grails.converters.json.date = "default"
 
@@ -145,16 +145,16 @@ formControllerMap = [
         'restfulapi'              : ['SELFSERVICE']
 ]
 
-grails.plugins.springsecurity.useRequestMapDomainClass = false
-grails.plugins.springsecurity.providerNames = ['casBannerAuthenticationProvider', 'selfServiceBannerAuthenticationProvider', 'bannerAuthenticationProvider']
-//grails.plugins.springsecurity.rejectIfNoRule = true
+grails.plugin.springsecurity.useRequestMapDomainClass = false
+grails.plugin.springsecurity.providerNames = ['casBannerAuthenticationProvider', 'selfServiceBannerAuthenticationProvider', 'bannerAuthenticationProvider']
+//grails.plugin.springsecurity.rejectIfNoRule = true
 
-grails.plugins.springsecurity.filterChain.chainMap = [
+grails.plugin.springsecurity.filterChain.chainMap = [
         '/api/**': 'authenticationProcessingFilter,basicAuthenticationFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,basicExceptionTranslationFilter,filterInvocationInterceptor',
         '/**': 'securityContextPersistenceFilter,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,exceptionTranslationFilter,filterInvocationInterceptor'
 ]
 
-grails.plugins.springsecurity.securityConfigType = SecurityConfigType.InterceptUrlMap
+grails.plugin.springsecurity.securityConfigType = SecurityConfigType.InterceptUrlMap
 //TODO: evaluate if it makes sense to use grails.plugins.springsecurity.securityConfigType = "Requestmap"
 // This allows dynamic configuration of spring security as we need in page builder (now the security is done 'by hand' in the controller).
 //see http://blog.springsource.com/2010/08/11/simplified-spring-security-with-grails/
@@ -165,7 +165,7 @@ grails.plugins.springsecurity.securityConfigType = SecurityConfigType.InterceptU
 //
 // ******************************************************************************
 
-grails.plugins.springsecurity.interceptUrlMap = [
+grails.plugin.springsecurity.interceptUrlMap = [
         '/'            : ['IS_AUTHENTICATED_ANONYMOUSLY'],
         '/develop'     : ['IS_AUTHENTICATED_ANONYMOUSLY'],
         '/login/**'    : ['IS_AUTHENTICATED_ANONYMOUSLY'],

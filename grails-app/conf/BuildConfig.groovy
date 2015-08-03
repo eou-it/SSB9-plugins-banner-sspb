@@ -21,22 +21,14 @@ grails.project.dependency.resolution = {
     repositories {
         if (System.properties['PROXY_SERVER_NAME']) {
             mavenRepo "${System.properties['PROXY_SERVER_NAME']}"
-        } else
-        {
-			grailsPlugins()
-			grailsHome()
-			grailsCentral()
-			// uncomment the below to enable remote dependency resolution
-			// from public Maven repositories
-			mavenLocal()
-			mavenCentral()
-			mavenRepo "https://repo.grails.org/grails/plugins"
-			//mavenRepo "http://snapshots.repository.codehaus.org"
-			//mavenRepo "http://repository.codehaus.org"
-			//mavenRepo "http://download.java.net/maven/2/"
-			//mavenRepo "http://repository.jboss.com/maven2/"
-		}
+        }
+        mavenRepo "http://repo.grails.org/grails/repo"
+        grailsCentral()
+        mavenCentral()
+        mavenRepo "https://code.lds.org/nexus/content/groups/main-repo"
+        mavenRepo "http://repository.jboss.org/maven2/"
     }
+    
     dependencies {
 ///*
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
@@ -44,7 +36,7 @@ grails.project.dependency.resolution = {
         // runtime 'mysql:mysql-connector-java:5.1.21'
         test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
 /*
-		// HvT: resolve compilation issue with Banner-core
+    // HvT: resolve compilation issue with Banner-core
         // taken from grails-spring-security-cas / grails-app / conf / BuildConfig.groovy
         compile('org.springframework.security:spring-security-cas-client:3.0.7.RELEASE') {
             excludes 'spring-security-core', 'spring-security-web', 'servlet-api',
@@ -60,13 +52,13 @@ grails.project.dependency.resolution = {
 
     plugins {
         //compile ":resources:1.1.6"
-        compile ":spring-security-core:1.2.7.3"
+        compile ":spring-security-core:2.0-RC5"
         compile ":webxml:1.4.1"
-        compile ':cache-headers:1.1.5'
-		compile ":hibernate:3.6.10.10"
-		compile ":tomcat:7.0.52.1"
-		compile ":functional-test:2.0.0"
-		//compile ':codenarc:0.21'
+        compile ':cache-headers:1.1.7'
+        compile ":hibernate:3.6.10.19"
+        compile ":tomcat:7.0.55.2"
+        compile ":functional-test:2.0.0"
+        //compile ':codenarc:0.21'
         //compile ':csv:0.3.1'
         //compile ':feeds:1.5'
 
@@ -74,23 +66,16 @@ grails.project.dependency.resolution = {
         //compile ':selenium-rc:1.0.2'
         //compile  ":inflector:0.2"
         compile ':restful-api:1.0.0'
-		
-		build(
-              ":release:2.2.0",
-              ":rest-client-builder:1.0.3") {
+    
+        build(
+              ":release:3.1.1",
+              ":rest-client-builder:2.1.1") {
             export = false
         }
-
-
-
-
 
         test(":spock:0.7") {
             exclude "spock-grails-support"
         }
-        test ':code-coverage:2.0.3-2',
-		{
-            excludes 'xercesImpl'
-        }
+//        test ':code-coverage:2.0.3-3'
     }
 }
