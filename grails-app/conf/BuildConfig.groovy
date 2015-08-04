@@ -10,6 +10,7 @@ grails.plugin.location.'banner-core'="../banner_core.git"
 //grails.plugin.location.'spring-security-cas'="../spring_security_cas.git"
 //grails.plugin.location.'i18n_core'="../i18n_core.git"
 
+grails.project.dependency.resolver="maven"
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
     inherits("global") {
@@ -28,7 +29,7 @@ grails.project.dependency.resolution = {
         mavenRepo "https://code.lds.org/nexus/content/groups/main-repo"
         mavenRepo "http://repository.jboss.org/maven2/"
     }
-    
+
     dependencies {
 ///*
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
@@ -51,13 +52,13 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        //compile ":resources:1.1.6"
-        compile ":spring-security-core:2.0-RC5"
-        compile ":webxml:1.4.1"
+        //compile ":resources:1.2.8"
+//        compile ":spring-security-core:2.0-RC5"
+//        compile ":webxml:1.4.1"
         compile ':cache-headers:1.1.7'
         compile ":hibernate:3.6.10.19"
         compile ":tomcat:7.0.55.2"
-        compile ":functional-test:2.0.0"
+//        compile ":functional-test:2.0.0"
         //compile ':codenarc:0.21'
         //compile ':csv:0.3.1'
         //compile ':feeds:1.5'
@@ -66,7 +67,7 @@ grails.project.dependency.resolution = {
         //compile ':selenium-rc:1.0.2'
         //compile  ":inflector:0.2"
         compile ':restful-api:1.0.0'
-    
+
         build(
               ":release:3.1.1",
               ":rest-client-builder:2.1.1") {

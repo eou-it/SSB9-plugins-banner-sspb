@@ -1,7 +1,7 @@
 package net.hedtech.banner.tools.i18n
 
 import net.hedtech.banner.sspb.PageUtilService
-import org.codehaus.groovy.grails.commons.ConfigurationHolder as CH
+import grails.util.Holders as CH
 
 import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.core.io.DefaultResourceLoader

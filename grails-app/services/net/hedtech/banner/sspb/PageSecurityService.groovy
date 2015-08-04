@@ -1,6 +1,6 @@
 package net.hedtech.banner.sspb
 
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 /**
  * Created with IntelliJ IDEA.

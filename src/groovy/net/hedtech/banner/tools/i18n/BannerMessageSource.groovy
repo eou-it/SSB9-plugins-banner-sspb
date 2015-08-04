@@ -1,6 +1,6 @@
 package net.hedtech.banner.tools.i18n
 
-import org.codehaus.groovy.grails.commons.ConfigurationHolder as CH
+import grails.util.Holders as CH
 
 import org.codehaus.groovy.grails.context.support.PluginAwareResourceBundleMessageSource
 import org.springframework.core.io.ResourceLoader

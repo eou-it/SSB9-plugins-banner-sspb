@@ -3,7 +3,7 @@ package net.hedtech.banner.sspb
 import net.hedtech.banner.tools.i18n.PageMessageSource
 
 //import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
-import org.codehaus.groovy.grails.commons.ConfigurationHolder as CH
+import grails.util.Holders as CH
 
 class CompileService {
 

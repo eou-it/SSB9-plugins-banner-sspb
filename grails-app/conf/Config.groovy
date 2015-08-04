@@ -155,7 +155,7 @@ grails.plugin.springsecurity.filterChain.chainMap = [
 ]
 
 grails.plugin.springsecurity.securityConfigType = SecurityConfigType.InterceptUrlMap
-//TODO: evaluate if it makes sense to use grails.plugins.springsecurity.securityConfigType = "Requestmap"
+//TODO: evaluate if it makes sense to use grails.plugin.springsecurity.securityConfigType = "Requestmap"
 // This allows dynamic configuration of spring security as we need in page builder (now the security is done 'by hand' in the controller).
 //see http://blog.springsource.com/2010/08/11/simplified-spring-security-with-grails/
 
@@ -452,7 +452,7 @@ restfulApiConfig = {
 cache.headers.enabled = false
 // Uncomment and edit the following lines to start using Grails encoding & escaping improvements
 
-/* remove this line 
+/* remove this line
 // GSP settings
 grails {
     views {
