@@ -604,3 +604,9 @@ ol {
     -moz-padding-start:25px;
     /*margin: 0 0 9px 0;*/
 }
+
+/* temporary fix for aurora-breadcrumb.css */
+
+#breadcrumb-panel, #title-panel {
+    padding-left: 0;
+}

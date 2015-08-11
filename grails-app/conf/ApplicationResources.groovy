@@ -5,7 +5,7 @@ Copyright 2009-2012 Ellucian Company L.P. and its affiliates.
 modules = {
     'pageBuilder' {
         //dependsOn "bannerSelfService" //modify to avoid extensibility
-        dependsOn "bannerSelfServiceWithoutAurora, aurora"
+        dependsOn "bannerSelfServiceCommonLTR"
 
         defaultBundle environment == "development" ? false : "pageBuilder"
 
@@ -43,14 +43,13 @@ modules = {
 
 
     'pageBuilderRTL' {
-        dependsOn "bannerSelfServiceRTL"
+        dependsOn "bannerSelfServiceCommonRTL"
         dependsOn "pageBuilder"
         defaultBundle environment == "development" ? false : "pageBuilderRTL"
         resource url:[plugin: 'banner-sspb', file: 'BannerXE/css/ng-grid-rtl.css']
         resource url:[plugin: 'banner-ui-ss', file: 'css/backbone.pagingcontrols-rtl.css']
         resource url:[plugin: 'banner-sspb', file: 'css/banner-sspb-rtl-patch.css']
     }
-	
     application {
         resource url:'js/application.js'
     }
