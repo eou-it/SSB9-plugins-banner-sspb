@@ -1,25 +1,16 @@
 <%@ page import="net.hedtech.banner.sspb.PBUser;" contentType="text/html;charset=UTF-8" %>
 <%--
-/*********************************************************************************
- Copyright 2009-2012 SunGard Higher Education. All Rights Reserved.
- This copyrighted software contains confidential and proprietary information of
- SunGard Higher Education and its subsidiaries. Any use of this software is limited
- solely to SunGard Higher Education licensees, and is further subject to the terms
- and conditions of one or more written license agreements between SunGard Higher
- Education and the licensee in question. SunGard is either a registered trademark or
- trademark of SunGard Data Systems in the U.S.A. and/or other regions and/or countries.
- Banner and Luminis are either registered trademarks or trademarks of SunGard Higher
- Education in the U.S.A. and/or other regions and/or countries.
- **********************************************************************************/
+Copyright 2009-2015 Ellucian Company L.P. and its affiliates.
 --%>
 <!DOCTYPE html>
 <html ng-app="BannerOnAngular" lang="${message(code: 'default.language.locale')}" dir="${message(code:'default.language.direction')}">
     <head>
-        <r:require module="pageBuilder"/>
-
         <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
-           <r:require module="pageBuilderRTL"/>
+            <r:require modules="pageBuilderRTL"/>
         </g:if>
+        <g:else>
+            <r:require modules="pageBuilderLTR"/>
+        </g:else>
         <g:set var="mep" value="${org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes()?.request?.session?.getAttribute('ssbMepDesc')}"/>
 
         <meta charset="${message(code: 'default.character.encoding')}"/>
@@ -36,6 +27,13 @@
         <meta name="ssbMepDesc" content="${!mep ? '' : mep}"/>
         <meta name="fullName" content="${g.fullName()}"/>
 
+        <meta name="headerAttributes" content=""/>
+        <script type="text/javascript">
+        document.getElementsByName('headerAttributes')[0].content = JSON.stringify({
+            "pageTitle": "<g:layoutTitle/>"
+            <!-- TODO add breadcrumbs -->
+          });
+        </script>
 
         <title><g:layoutTitle default="Banner Page Builder"/></title>
 
@@ -67,19 +65,8 @@
 
         <!-- TODO begin from Harry -->
 
-        <!--  below file fixes datepicker display issue -->
-        <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'jquery-ui.css')}" type="text/css">
-        <!--  below file fixes Error: $digest already in progress issue -->
-        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery-ui-1.8.24.custom.js" />"> </script>
-
-        <!-- above are 2 duplicate imports of newer versions than in ui-ss-->
-
         <g:set var="localeLanguage"    value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).language}" scope="page" />
         <g:set var="localeBrowserFull" value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).toString().replace('_','-')}" scope="page" />
-
-        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular.js" />"></script>
-        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular-resource.js"/>"></script>
-        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular-sanitize.js"/>"></script>
 
         <g:if test="${localeLanguage!='en'}">
             <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery.ui.datepicker-${localeLanguage}.js" />"> </script>
@@ -87,20 +74,7 @@
         <g:if test="${localeBrowserFull!='en-US'}">
             <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery.ui.datepicker-${localeBrowserFull}.js" />"> </script>
         </g:if>
-        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeLanguage}.js" />"> </script>
-        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeBrowserFull.toLowerCase()}.js" />"> </script>
         <!-- end from Harry -->
-
-
-        <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
-            <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'main-rtl.css')}">
-        </g:if>
-        <g:else>
-            <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'main.css')}">
-        </g:else>
-
-
-
 
         <script type="text/javascript">
             var rootWebApp = ${createLink(uri: '/')};  //use in controller restful interface
@@ -112,22 +86,9 @@
                 console = {log: function() {}};
         </script>
 
-
-
-
-
-
-        <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
-            <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pbDefault-rtl.css')}">
-        </g:if>
-        <g:else>
-            <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pbDefault.css')}">
-        </g:else>
-
         <g:customStylesheetIncludes/>
-        <!-- layout head contains angular module declaration and need to be placed before pbRunApp.js -->
+
         <g:layoutHead />
-        <script src="<g:resource plugin="banner-sspb" dir="js" file="pbRunApp.js" />"> </script>
 <%--
         <style>
             *.margin
@@ -178,6 +139,10 @@
         <r:layoutResources/>
 
         <g:customJavaScriptIncludes/>
+
+    <!-- layout resources contains angular module declaration so this needs to be called after that -->
+    <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeLanguage}.js" />"> </script>
+    <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeBrowserFull.toLowerCase()}.js" />"> </script>
 
     <script type="text/javascript">
         window.ngGrid.i18n[gridLocale] = {
