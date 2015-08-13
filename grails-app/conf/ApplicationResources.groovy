@@ -3,14 +3,14 @@ Copyright 2009-2015 Ellucian Company L.P. and its affiliates.
 *******************************************************************************/
 
 modules = {
-    'angular' {
-        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular', file: "angular.js"]
-        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular', file: "angular-resource.js"]
-        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular', file: "angular-sanitize.js"]
-    }
+//    'angular' {
+//        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular', file: "angular.js"]
+//        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular', file: "angular-resource.js"]
+//        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular', file: "angular-sanitize.js"]
+//    }
 
     'pageBuilder' {
-        dependsOn "angular"
+//        dependsOn "angular"
         defaultBundle environment == "development" ? false : "pageBuilder"
 
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/ng-grid', file: "ng-grid.js"]
@@ -29,16 +29,13 @@ modules = {
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular-ui', file: "ui-bootstrap-tpls-0.3.0.js"]
 
         // TODO loading order in page does not work --> cause angular module not found
-        resource url:[plugin: 'banner-sspb', dir: 'js', file: "pbRunApp.js"]
+        //resource url:[plugin: 'banner-sspb', dir: 'js', file: "pbRunApp.js"]
         resource url:[plugin: 'banner-sspb', file: 'js/misc/es5-shim.js'],
                 disposition: 'head',
                 wrapper: { s -> "<!--[if lt IE 9]>$s<![endif]-->" }
-        // below file fixes Error: $digest already in progress issue
-        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/jquery', file: 'jquery-ui-1.8.24.custom.js']
     }
 
     'pageBuilderLTR' {
-        //dependsOn "bannerSelfService" //modify to avoid extensibility
         dependsOn "bannerSelfServiceCommonLTR, pageBuilder"
         defaultBundle environment == "development" ? false : "pageBuilderLTR"
 

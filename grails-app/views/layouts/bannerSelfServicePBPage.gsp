@@ -31,7 +31,7 @@ Copyright 2009-2015 Ellucian Company L.P. and its affiliates.
         <script type="text/javascript">
         document.getElementsByName('headerAttributes')[0].content = JSON.stringify({
             "pageTitle": "<g:layoutTitle/>"
-            <!-- TODO add breadcrumbs -->
+//            TODO add breadcrumbs
           });
         </script>
 
@@ -65,8 +65,17 @@ Copyright 2009-2015 Ellucian Company L.P. and its affiliates.
 
         <!-- TODO begin from Harry -->
 
+        <!--  below file fixes Error: $digest already in progress issue -->
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery-ui-1.8.24.custom.js" />"> </script>
+
+        <!-- above is a duplicate import of newer version than in ui-ss-->
+
         <g:set var="localeLanguage"    value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).language}" scope="page" />
         <g:set var="localeBrowserFull" value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).toString().replace('_','-')}" scope="page" />
+
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular.js" />"></script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular-resource.js"/>"></script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular-sanitize.js"/>"></script>
 
         <g:if test="${localeLanguage!='en'}">
             <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery.ui.datepicker-${localeLanguage}.js" />"> </script>
@@ -74,6 +83,8 @@ Copyright 2009-2015 Ellucian Company L.P. and its affiliates.
         <g:if test="${localeBrowserFull!='en-US'}">
             <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery.ui.datepicker-${localeBrowserFull}.js" />"> </script>
         </g:if>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeLanguage}.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeBrowserFull.toLowerCase()}.js" />"> </script>
         <!-- end from Harry -->
 
         <script type="text/javascript">
@@ -87,8 +98,9 @@ Copyright 2009-2015 Ellucian Company L.P. and its affiliates.
         </script>
 
         <g:customStylesheetIncludes/>
-
+        <!-- layout head contains angular module declaration and need to be placed before pbRunApp.js -->
         <g:layoutHead />
+        <script src="<g:resource plugin="banner-sspb" dir="js" file="pbRunApp.js" />"> </script>
 <%--
         <style>
             *.margin
@@ -139,10 +151,6 @@ Copyright 2009-2015 Ellucian Company L.P. and its affiliates.
         <r:layoutResources/>
 
         <g:customJavaScriptIncludes/>
-
-    <!-- layout resources contains angular module declaration so this needs to be called after that -->
-    <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeLanguage}.js" />"> </script>
-    <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeBrowserFull.toLowerCase()}.js" />"> </script>
 
     <script type="text/javascript">
         window.ngGrid.i18n[gridLocale] = {
