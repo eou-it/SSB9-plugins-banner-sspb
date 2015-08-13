@@ -132,9 +132,9 @@ class CssService {
     }
 
     // note the content-type header still needs to be set in the request even we don't send in any content in the body
-    void delete(id,Map content, params) {
+    void delete(Map content, params) {
         Css.withTransaction {
-            def css = Css.find{constantName==id}
+            def css = Css.find{constantName==params.id}
             css.delete(failOnError:true)
         }
     }

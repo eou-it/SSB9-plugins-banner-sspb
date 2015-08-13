@@ -110,7 +110,7 @@ class PageSecurityService {
         } else {
             if (configAttribute) {
                 rm=new Requestmap (url: url, configAttribute: configAttribute)
-                rm.save()
+                rm.save(validate: false) //try no validate to get rid of annoying message
                 println "Created new Requestmap entry $url : $configAttribute"
             }
         }

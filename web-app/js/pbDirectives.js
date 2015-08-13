@@ -7,7 +7,7 @@ var pagebuilderModule = angular.module('pagebuilder.directives', []);
 pagebuilderModule.directive('pbArrayofmap', function() {
     return {
         restrict:'E',
-        transclude: true,
+        //transclude: true,
         scope:{label:'@', array:'=', pbParent:'=', pbAttrname:'=', pbChange:'&'},
         templateUrl: templatesLocation + '/pbArrayOfMap.html',
         controller: ['$scope', '$element', '$attrs', '$transclude',
@@ -85,7 +85,7 @@ pagebuilderModule.directive('pbArrayofmap', function() {
 pagebuilderModule.directive('pbMap', function() {
     return {
         restrict:'E',
-        transclude: true,
+        //transclude: true,
         scope:{label:'@', map:'=', pbParent:'=', pbAttrname:'=', pbChange:'&'},
         templateUrl: templatesLocation + '/pbMap.html',
         controller: ['$scope', '$element', '$attrs', '$transclude',
@@ -157,7 +157,7 @@ pagebuilderModule.directive('pbMap', function() {
 pagebuilderModule.directive('pbTextarea', function() {
     return {
         restrict:'E',
-        transclude: true,
+        //transclude: true,
         scope:{label:'@', value:'=', pbParent:'=', pbAttrname:'=', pbChange:'&'},
         templateUrl: templatesLocation + '/pbTextarea.html',
         controller: ['$scope', '$element', '$attrs', '$transclude',
@@ -212,7 +212,7 @@ pagebuilderModule.directive('pbTextarea', function() {
 pagebuilderModule.directive('pbCombo', function() {
     return {
         restrict:'E',
-        transclude: true,
+        //transclude: true,
         scope:{loadSourceLabel:'@', editValueLabel:'@', selectLabel:'@', value:'=', sourceList:"=", pbParent:'=', pbAttrname:'=', pbChange:'&', pbLoadsourcelist:'&' },
         template: "<Span>" +
             "<select ng-show='showSelect' ng-model='value'  ng-options='val for val in sourceList' ng-change='processInput()'></select>" +
@@ -253,7 +253,7 @@ pagebuilderModule.directive('pbCombo', function() {
 pagebuilderModule.directive('pbUpload', function() {
     return {
         restrict:'E',
-        transclude: true,
+        //transclude: true,
         scope:{label:'@', status:'=', pbChange:'&'},
         templateUrl: templatesLocation + '/pbUpload.html',
         controller: ['$scope', '$element', '$attrs', '$transclude',

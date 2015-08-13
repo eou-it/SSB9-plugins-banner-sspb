@@ -52,6 +52,12 @@ if (VisualPageComposerController) {
     appModule.controller("VisualPageComposerController", VisualPageComposerController);
 }
 
+var CssManagerController = CssManagerController||undefined;
+if (CssManagerController) {
+    appModule.controller("CssManagerController", CssManagerController);
+}
+
+
 // below filter is used for pagination
 appModule.filter('startFrom', function() {
         return function(input, start) {
@@ -69,7 +75,7 @@ appModule.run( function($templateCache )  {
         "        <div class=\"paging-control first {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageToFirst()\"></div>"+
         "        <div class=\"paging-control previous {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageBackward()\"></div>"+
         "        <span class=\"paging-text page\"> {{i18n.pageLabel}}</span>"+
-        "        <input class=\"page-number\" min=\"1\" max=\"{{maxPages()}}\" type=\"number\" ng-model=\"pagingOptions.currentPage\" style=\"width: 40px; display: inline;\"/>" +
+        "        <input class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"1\" max=\"{{maxPages()}}\" type=\"number\" ng-model=\"pagingOptions.currentPage\" style=\"width: 40px; display: inline;\"/>" +
         "        <span class=\"paging-text page-of\"> {{i18n.maxPageLabel}} </span> <span class=\"paginate_total\"> {{maxPages()}}  </span>"+
         "        <div class=\"paging-control next {{!cantPageForward() && 'enabled'||''}}\" ng-click=\"pageForward()\"></div>" +
         "        <div class=\"paging-control last {{!cantPageToLast()  && 'enabled'||''}}\" ng-click=\"pageToLast()\" ></div>"+
@@ -181,9 +187,14 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
             instance.currentRecord=instance.data[0];  //set the current record
             instance.setInitialRecord();
             instance.totalCount=parseInt(response("X-hedtech-totalCount")) ;
-            if (instance.pagingOptions && instance.pagingOptions.currentPage>instance.numberOfPages() ) {
-                //causes requery
-                instance.pagingOptions.currentPage=instance.numberOfPages();
+            if (instance.pagingOptions) {
+                if (instance.pagingOptions.currentPage>instance.numberOfPages() ) {
+                    //causes requery
+                    instance.pagingOptions.currentPage=instance.numberOfPages();
+                } else if (!instance.pagingOptions.currentPage) {
+                    instance.pagingOptions.currentPage=1;
+                    console.log('Set currentPage to ',instance.pagingOptions.currentPage);
+                }
             }
             if (uf) { uf(it, response); }
         };
@@ -222,7 +233,7 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
         if (this.pageSize>0){
             this.pagingOptions = {  pageSizes: [this.pageSize, this.pageSize*2, this.pageSize*4],
                 pageSize: this.pageSize,
-                currentPage:1
+                currentPage: null
             };
         }
 
@@ -237,8 +248,9 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
             this.added.removeAll();
             this.deleted.removeAll();
             this.totalCount=null;
-            if (this.pageSize>0)
-                this.pagingOptions.currentPage=1;
+            if (this.pageSize>0) {
+                this.pagingOptions.currentPage = 1;
+            }
         }
 
         var post = new CreatePostEventHandlers(this,params.postQuery, params.onError);
@@ -247,8 +259,7 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
             this.init();
             var params;
             eval("params="+this.queryParams+";");
-            console.log("Query Parameters:") ;
-            console.log( params);
+            console.log("Query Parameters:", params) ;
             this.data=[];
             this.data[0] = this.Resource.get(params, post.go, post.error);
         }
@@ -257,8 +268,12 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
             if (p && p.clearCache)
                 this.cache.removeAll();
             if (p && p.paging) {
-                this.currentRecord=null;
-                this.selectedRecords.removeAll();
+                if (this.pagingOptions.currentPage && this.pagingOptions.pageSize) {
+                    this.currentRecord = null;
+                    this.selectedRecords.removeAll();
+                } else {
+                    return; //abort load, watch fired for undefined currentPage or pageSize
+                }
             } else {
                 this.init();
             }
@@ -268,7 +283,7 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
             else
                 params={};
             if (this.pageSize>0) {
-                params.offset=(this.pagingOptions.currentPage-1)*this.pagingOptions.pageSize;
+                params.offset=(nvl(this.pagingOptions.currentPage,1)-1)*this.pagingOptions.pageSize;
                 params.max=this.pagingOptions.pageSize;
             }
             if (this.sortInfo.fields.length>0) {
@@ -277,8 +292,7 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
                     params.sortby[ix] = this.sortInfo.fields[ix] +' '+ this.sortInfo.directions[ix] ;
                 }
             }
-            console.log("Query Parameters:") ;
-            console.log( params);
+            console.log("Query Parameters:", params) ;
             if (this.useGet)  {
                 this.data=[];
                 this.data[0] = this.Resource.get(params, post.go, post.error  );
@@ -338,8 +352,7 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
                 }  else {
                     model.assign($scope, this.currentRecord);
                 }
-                console.log("Set current record:");
-                console.log(this.currentRecord);
+                console.log("Set current record:", this.currentRecord);
             }
         }
 

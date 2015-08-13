@@ -237,7 +237,7 @@ class VirtualDomainSqlService {
         finally {
             sql?.close()
         }
-        return [] //should return updated object from db
+        return data //should return updated object from db
     }
 
     def create(vd, params, data) {
@@ -260,7 +260,7 @@ class VirtualDomainSqlService {
         finally {
             sql?.close()
         }
-        return [] //should return created object from db
+        return [:] //should return created object from db
     }
 
     def delete(vd, params) {
