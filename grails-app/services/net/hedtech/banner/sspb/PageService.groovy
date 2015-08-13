@@ -148,9 +148,9 @@ class PageService {
     }
 
     // note the content-type header still needs to be set in the request even we don't send in any content in the body
-    void delete(id,Map content, params) {
+    void delete(Map content, params) {
         Page.withTransaction {
-            def page = Page.find{constantName==id}
+            def page = Page.find{constantName==params.id}
             page.delete(failOnError:true)
         }
     }

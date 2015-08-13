@@ -152,10 +152,12 @@ Brief summary/description of the plugin.
 
     def doWithApplicationContext = { applicationContext ->
         // TODO Implement post initialization spring config (optional)
+        /*
         application.mainContext.eventTriggeringInterceptor.datastores.each { k, datastore ->
             applicationContext.addApplicationListener new PBPersistenceListener(datastore)
             //println "Added PersistenceListener to $datastore"
         }
+        */
     }
 
     def onChange = { event ->
