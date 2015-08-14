@@ -534,7 +534,7 @@ class PageComponent {
                 if (asHtml) {
                     tagStart="<span"
                     tagEnd="></span>"
-                    ngModel="ng-bind-html-unsafe=\"COL_FIELD\""
+                    ngModel="ng-bind-html=\"COL_FIELD | to_trusted\""
                 }
                 if (type==COMP_TYPE_DATETIME) {
                     ngModel="value=\"{{COL_FIELD|date:\\'medium\\'}}\""
@@ -772,7 +772,7 @@ class PageComponent {
                         modelTxt_safe = "{{ $GRID_ITEM.${model}|date:'medium' }}"
                     }
                     else if (asHtml)
-                        modelTxt_unsafe = "ng-bind-html-unsafe='$GRID_ITEM.$model' "
+                        modelTxt_unsafe = "ng-bind-html='$GRID_ITEM.$model | to_trusted' "
                     else
                         modelTxt_safe = "{{ $GRID_ITEM.${model} }}"
                 } else {
@@ -780,7 +780,7 @@ class PageComponent {
                         modelTxt_safe = "{{value|date:'medium'}}"
                     }
                     else if (asHtml)
-                        modelTxt_unsafe = "ng-bind-html-unsafe='${compileDOMExpression(value)}' "
+                        modelTxt_unsafe = "ng-bind-html='${compileDOMExpression(value)} | to_trusted' "
                     else
                         modelTxt_safe = "${compileDOMDisplay(value)}"
                 }

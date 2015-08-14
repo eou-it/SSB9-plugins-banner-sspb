@@ -66,6 +66,12 @@ appModule.filter('startFrom', function() {
         }
 });
 
+appModule.filter('to_trusted', ['$sce', function($sce){
+    return function(text) {
+        return $sce.trustAsHtml(text);
+    };
+}]);
+
 
 appModule.run( function($templateCache )  {
     console.log("App module.run started" );

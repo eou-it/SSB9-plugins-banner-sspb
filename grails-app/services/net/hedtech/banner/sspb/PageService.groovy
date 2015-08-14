@@ -9,6 +9,7 @@ import java.security.MessageDigest
 
 class PageService {
     def compileService
+    def groovyPagesTemplateEngine
 
     def get(String constantName) {
         def result = Page.findByConstantName(constantName)
@@ -115,6 +116,7 @@ class PageService {
             ret = [statusCode: 1, statusMessage:"Page source is empty. Page is not compiled."]  //TODO: I18N
 
         ret << [overwrite:overwrite]
+        groovyPagesTemplateEngine.clearPageCache() //Make sure that new page gets used
         return ret
     }
 

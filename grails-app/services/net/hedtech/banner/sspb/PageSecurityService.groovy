@@ -15,11 +15,11 @@ class PageSecurityService {
 
     // For Restful interface
     def update(/*def id,*/ Map content, params)  {
-        def page=Page.get(id);
+        def page=Page.get(params.id);
         def rm=mergePage(page)
     }
     def create(Map content, params)  {
-        def rm=update(content.pageId, content, params)
+        def rm=update( /*content.pageId,*/ content, [id:content.pageId])
     }
 
     // Called from application bootstrap
