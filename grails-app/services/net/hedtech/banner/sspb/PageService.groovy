@@ -10,6 +10,7 @@ import java.security.MessageDigest
 class PageService {
     def compileService
     def groovyPagesTemplateEngine
+    def pageSecurityService
 
     def get(String constantName) {
         def result = Page.findByConstantName(constantName)
@@ -151,6 +152,7 @@ class PageService {
 
     // note the content-type header still needs to be set in the request even we don't send in any content in the body
     void delete(Map content, params) {
+        pageSecurityService.delete([:],[constantName:params.id])
         Page.withTransaction {
             def page = Page.find{constantName==params.id}
             page.delete(failOnError:true)

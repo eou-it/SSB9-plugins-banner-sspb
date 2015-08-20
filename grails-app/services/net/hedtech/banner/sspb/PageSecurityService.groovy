@@ -11,6 +11,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
  */
 class PageSecurityService {
     static transactional = true
+    static datasource = 'sspb'
     def springSecurityService
 
     // For Restful interface
@@ -21,18 +22,37 @@ class PageSecurityService {
     def create(Map content, params)  {
         def rm=update( /*content.pageId,*/ content, [id:content.pageId])
     }
+    def delete(Map content, params) {
+        def url = "/customPage/page/${params.constantName}/**"
+        def rm=Requestmap.findByUrl(url)
+        if (rm) {
+            rm.delete()
+        }
+    }
 
     // Called from application bootstrap
     def init () {
         println "************  Initializing Request map **********"
-        Requestmap.executeUpdate("delete Requestmap"); //delete all records to make sure we have a clean start
-        ConfigObject co = SpringSecurityUtils.getSecurityConfig()
-        if (co.securityConfigType.toString() == "Requestmap")   {
-            mergeInterceptUrlMap(co.interceptUrlMap)
-            mergePages()
-            //Clear cache after changing the Requestmap.
-            springSecurityService.clearCachedRequestmaps()
+        //def session = grails.util.Holders.grailsApplication.mainContext.sessionFactory.currentSession
+        //Next delete introduces hibernate errors (that don't seem to matter)
+        //def tx = session.beginTransaction();
+        //Requestmap.executeUpdate("delete Requestmap"); //delete all records to make sure we have a clean start
+        //Requestmap.where { (url!='%') }.updateAll(configAttribute:"ROLE_ADMIN") //give role that users won't have
+        //session.flush()
+        //session.clear()
+        //tx.commit()
+        Requestmap.findAll().each {
+            it.configAttribute="denyAll"
         }
+
+
+       ConfigObject co = SpringSecurityUtils.getSecurityConfig()
+       if (co.securityConfigType.toString() == "Requestmap") {
+           mergeInterceptUrlMap(co.interceptUrlMap)
+           mergePages()
+           //Clear cache after changing the Requestmap.
+           springSecurityService.clearCachedRequestmaps()
+       }
     }
 
     private def mergeInterceptUrlMap( map) {
@@ -58,12 +78,11 @@ class PageSecurityService {
     def mergePages() {
         def pages = Page.getAll()
         for (page in pages) {
-            mergePage(page)
+            mergePage(page, false)
         }
-        //TODO delete Requestmap entries for deleted pages
     }
 
-    def mergePage(Page page) {
+    def mergePage(Page page, clearCache=true) {
         def url = "/customPage/page/${page.constantName}/**"
         def configAttribute=""
         def rm
@@ -84,7 +103,9 @@ class PageSecurityService {
         catch(e) {
             println "Exception merging $url - $configAttribute: \n $e"
         }
-        springSecurityService.clearCachedRequestmaps()
+        if (clearCache) {
+            springSecurityService.clearCachedRequestmaps()
+        }
         return rm
     }
 
