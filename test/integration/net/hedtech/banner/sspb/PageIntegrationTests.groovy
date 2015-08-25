@@ -4,9 +4,21 @@ import org.junit.*
 
 class PageIntegrationTests {
 
+    def pageUtilService
+    def workPath   = "target/testData/model"
+    def sourcePath = "test/testData/model"
+
     @Before
     void setUp() {
         // Setup logic here
+        new File(workPath).mkdirs()
+        new File(workPath).eachFileMatch(~/.*.json/) { file ->
+            file.delete()
+        }
+        new AntBuilder().copy(todir: workPath) {
+            fileset(dir: sourcePath)
+        }
+        //pageUtilService.exportAllToFile(pagePath)
     }
 
     @After
@@ -16,21 +28,16 @@ class PageIntegrationTests {
 
     @Test
     void testImport() {
-        def pageUtilService = new PageUtilService()
-        def pagePath = "test/testData/model"
-        pageUtilService.importAllFromDir(pagePath)
+        pageUtilService.importAllFromDir(workPath)
     }
 
     @Test
     void testExport() {
-        def pageUtilService = new PageUtilService()
-        def pagePath = "test/testData/model"
-        pageUtilService.exportAllToFile(pagePath)
+        pageUtilService.exportAllToFile(workPath)
     }
 
     @Test
     void testCompile() {
-        def pageUtilService = new PageUtilService()
         def errors = pageUtilService.compileAll()
         assert errors.empty
     }

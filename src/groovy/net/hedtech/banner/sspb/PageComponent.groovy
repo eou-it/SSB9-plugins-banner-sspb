@@ -10,6 +10,8 @@ package net.hedtech.banner.sspb
 
 import net.hedtech.banner.css.Css
 
+import java.util.regex.Pattern
+
 class PageComponent {
 
     // Context for parsing expressions
@@ -992,7 +994,7 @@ class PageComponent {
         def is = tempList?.tokenize(',')
         for (css in is) {
             //Cannot Unit test the findBy  statement
-            if (!Css.metaClass.getStaticMetaMethod("findByConstantName", String) || Css.findByConstantName(css) )
+            if ( Css.metaClass.respondsTo(Css,'findByConstantName',String) && Css.findByConstantName(css) )
                 cssImp += """<link type="text/css" rel="stylesheet" href="$importPath?name=${css.trim()}" />\n"""
             else
                 println "Warning: Style sheet $css will not be imported as it does not exist."
@@ -1165,10 +1167,10 @@ class PageComponent {
     // where bra = {{ AngularJS expression start
     //   and ket = }} AngularJS expression end
     def static splitAngularBrackets( String expr ) {
-        def prep = expr.tokenize(exprBra)
+        def prep = expr.split(Pattern.quote(exprBra))
         def parts = []
         prep.eachWithIndex { str, i ->
-            def subParts = str.tokenize(exprKet)
+            def subParts = str.split(Pattern.quote(exprKet))
             if (subParts.size()==1) {   // did not find exprKet or there is no part after it
                 if (i==0 && !expr.startsWith(exprBra) )
                     parts += [preBra:subParts[0]]

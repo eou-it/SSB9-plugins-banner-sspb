@@ -7,7 +7,10 @@ dataSource {
 hibernate {
     cache.use_second_level_cache = true
     cache.use_query_cache = false
-    cache.region.factory_class = 'net.sf.ehcache.hibernate.EhCacheRegionFactory'
+    cache.region.factory_class = 'org.hibernate.cache.SingletonEhCacheRegionFactory' // Hibernate 3
+    //cache.region.factory_class = 'org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory' // Hibernate 4
+    singleSession = true // configure OSIV singleSession mode
+    flush.mode = 'manual' // OSIV session flush mode outside of transactional context
     //show_sql = true
 }
 // environment specific settings
@@ -52,9 +55,6 @@ environments {
             password = "u_pick_it"
             url = "jdbc:oracle:thin:@oracledb:1521:ban83"
             dbCreate = "none" //"validate"
-            //loggingSql = true
-            //logSql =true
-
         }
 
         //Database with sspb
@@ -66,8 +66,8 @@ environments {
             password = "u_pick_it"
             url = "jdbc:oracle:thin:@oracledb:1521:ban83"
             //url = "jdbc:oracle:thin:@149.24.229.150:1521:orcl"
-            dbCreate = "none" //"validate"
-            loggingSql = false //true
+            dbCreate =  "none" //"validate" "update"
+            transactional = false
         }
     }
     production {
