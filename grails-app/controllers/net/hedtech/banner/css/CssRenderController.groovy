@@ -36,7 +36,8 @@ class CssRenderController {
 
 
         // TODO set Last-Modified, Cache-Control, Expires
-        response.setContentType('text/css')
-        render css
+        //response.setContentType('text/css')
+        render (text: css, contentType: "text/css", encoding: "UTF-8")
+        println "rendered css"
     }
 }

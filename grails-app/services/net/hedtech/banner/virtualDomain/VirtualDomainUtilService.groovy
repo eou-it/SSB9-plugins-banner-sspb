@@ -22,19 +22,20 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
                     log.info message(code:"sspb.virtualdomain.export.skipDuplicate.message", args:[vd.serviceName])
                 else {
                     def file = new File("$path/${vd.serviceName}.json")
-                    JSON.use("deep")
-                    def vdStripped = new VirtualDomain()
-                    //nullify data that is derivable or not applicable in other environment
-                    vdStripped.properties[ 'serviceName', 'typeOfCode', 'dataSource', 'codeGet', 'codePost', 'codePut', 'codeDelete', 'fileTimestamp'] = vd.properties
-                    vd.virtualDomainRoles.each { role ->
-                        def r = new VirtualDomainRole()
-                        r.properties ['roleName', 'allowGet', 'allowPost','allowPut','allowDelete'] = role.properties
-                        vdStripped.addToVirtualDomainRoles(r)
+                    JSON.use("deep") {
+                        def vdStripped = new VirtualDomain()
+                        //nullify data that is derivable or not applicable in other environment
+                        vdStripped.properties['serviceName', 'typeOfCode', 'dataSource', 'codeGet', 'codePost', 'codePut', 'codeDelete', 'fileTimestamp'] = vd.properties
+                        vd.virtualDomainRoles.each { role ->
+                            def r = new VirtualDomainRole()
+                            r.properties['roleName', 'allowGet', 'allowPost', 'allowPut', 'allowDelete'] = role.properties
+                            vdStripped.addToVirtualDomainRoles(r)
+                        }
+                        def json = new JSON(vdStripped)
+                        def jsonString = json.toString(true)
+                        log.info message(code:"sspb.virtualdomain.export.done.message", args:[vd.serviceName])
+                        file.text = jsonString
                     }
-                    def json =  new JSON(vdStripped)
-                    def jsonString = json.toString(true)
-                    log.info message(code:"sspb.virtualdomain.export.done.message", args:[vd.serviceName])
-                    file.text = jsonString
                 }
             }
         }
@@ -96,8 +97,10 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
         }
         if (jsonString) {
             if (!vd) { vd = new VirtualDomain(serviceName: vdName) }
-            JSON.use("deep")
-            def json = JSON.parse(jsonString)
+            def json
+            JSON.use("deep") {
+                json = JSON.parse(jsonString)
+            }
             vd.properties[ 'typeOfCode', 'dataSource', 'codeGet', 'codePost', 'codePut', 'codeDelete'/*, 'fileTimestamp'*/] = json
             if (!json.virtualDomainRoles.equals(null)) {  //have to use equals for JSONObject as it is not really null
                 json.virtualDomainRoles.each { newRole ->

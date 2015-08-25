@@ -37,17 +37,18 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 println message(code:"sspb.pageutil.export.skipDuplicate.message", args:[page.constantName])
             else {
                 def file = new File("$path/${page.constantName}.json")
-                JSON.use("deep")
-                def pageStripped = new Page()
-                //nullify data that is not applicable in other environment
-                pageStripped.properties[ 'constantName', 'modelView', 'fileTimestamp'] = page.properties
-                page.pageRoles.each { role ->
-                    pageStripped.addToPageRoles(new PageRole( roleName:role.roleName, allow: role.allow))
+                JSON.use("deep") {
+                    def pageStripped = new Page()
+                    //nullify data that is not applicable in other environment
+                    pageStripped.properties['constantName', 'modelView', 'fileTimestamp'] = page.properties
+                    page.pageRoles.each { role ->
+                        pageStripped.addToPageRoles(new PageRole(roleName: role.roleName, allow: role.allow))
+                    }
+                    def json = new JSON(pageStripped)
+                    def jsonString = json.toString(true)
+                    println message(code:"sspb.pageutil.export.page.done.message", args:[page.constantName])
+                    file.text = jsonString
                 }
-                def json =  new JSON(pageStripped)
-                def jsonString = json.toString(true)
-                println message(code:"sspb.pageutil.export.page.done.message", args:[page.constantName])
-                file.text = jsonString
             }
         }
     }
@@ -131,8 +132,10 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         if (jsonString) {
             if ( !page )
                 page=pageService.getNew(pageName)
-            JSON.use("deep")
-            def json = JSON.parse(jsonString)
+            def json
+            JSON.use("deep") {
+                json = JSON.parse(jsonString)
+            }
             if (json.has('modelView')) // file contains a marshaled page
                 page.properties[ 'modelView' /*, 'fileTimestamp'*/] = json
             else // file is a representation of the page modelView

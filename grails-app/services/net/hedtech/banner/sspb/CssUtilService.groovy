@@ -27,14 +27,15 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                     log.info message(code:"sspb.css.export.skipDuplicate.message", args:[css.constantName])
                 else {
                     def file = new File("$path/${css.constantName}.json")
-                    JSON.use("deep")
-                    def cssStripped = new Css()
-                    //nullify data that is derivable or not applicable in other environment
-                    cssStripped.properties[ 'constantName', 'css', 'description', 'fileTimestamp'] = css.properties
-                    def json =  new JSON(cssStripped)
-                    def jsonString = json.toString(true)
-                    log.info message(code:"sspb.css.export.done.message", args:[css.constantName])
-                    file.text = jsonString
+                    JSON.use("deep") {
+                        def cssStripped = new Css()
+                        //nullify data that is derivable or not applicable in other environment
+                        cssStripped.properties['constantName', 'css', 'description', 'fileTimestamp'] = css.properties
+                        def json = new JSON(cssStripped)
+                        def jsonString = json.toString(true)
+                        log.info message(code: "sspb.css.export.done.message", args: [css.constantName])
+                        file.text = jsonString
+                    }
                 }
             }
         }
@@ -85,8 +86,9 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         }
         if (jsonString) {
             if (!css) { css = new Css(constantName: cssName) }
-            JSON.use("deep")
-            def json = JSON.parse(jsonString)
+            JSON.use("deep") {
+                def json = JSON.parse(jsonString)
+            }
             css.properties['css','description' /*, 'fileTimestamp'*/] = json
             css.fileTimestamp=json2date(json.fileTimestamp)
             if (file)
