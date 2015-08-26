@@ -37,5 +37,6 @@ grails.project.dependency.resolution = {
         runtime ":database-migration:1.4.0"
         compile ':restful-api:1.0.0'
         build  ":tomcat:7.0.55.2"
+        compile  ":tomcat:7.0.55.2" //this avoids prompt for do you want to upgrade/downgrade
     }
 }

@@ -7,6 +7,10 @@ package net.hedtech.banner.sspb
  * Time: 3:43 PM
  * To change this template use File | Settings | File Templates.
  */
+import grails.test.mixin.Mock
+import net.hedtech.banner.css.Css
+
+@Mock(Css)
 class CompileServiceTests extends GroovyTestCase  {
     protected void setUp() {
         super.setUp()
