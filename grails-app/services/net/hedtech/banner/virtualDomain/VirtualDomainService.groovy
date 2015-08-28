@@ -81,7 +81,7 @@ class VirtualDomainService {
         //Should really be querying the record again so any database trigger changes get reflected in client
     }
 
-    def delete (def id, Map data,  params) {
+    def delete (/*def id,*/ Map data,  params) {
         println "Data for DELETE:" + data
         def serviceName = vdName(params)
         def vd = loadVirtualDomain(serviceName)

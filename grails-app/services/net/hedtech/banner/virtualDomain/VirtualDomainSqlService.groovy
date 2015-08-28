@@ -260,7 +260,7 @@ class VirtualDomainSqlService {
         finally {
             sql?.close()
         }
-        return [:] //should return created object from db
+        return null //should return created object from db if changed in sql
     }
 
     def delete(vd, params) {
