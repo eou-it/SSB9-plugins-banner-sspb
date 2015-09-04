@@ -213,6 +213,10 @@ class PageComponent {
     def idTxtParam = ""
     def modelOrigin  //Save model here if  changed in normalization so we know item is not bound to a resource
 
+    def content ="" //Added for template compile
+    def templateName = "" //Added for template compile
+
+
     // map the validation key to angular attributes ? use HTML 5 validation instead with form
     // def validationKeyMap = ["minlength":"ngMinlength", "maxlength":"ngMaxlength", "pattern":"ngPattern"]
 
@@ -1014,7 +1018,7 @@ class PageComponent {
         |<script>
         |var pageID = "$name"
         | // inject services and controller modules to be registered with the global ng-app
-        | var myCustomServices = ['ngResource','ngGrid','ui', 'pbrun.directives'];
+        | var myCustomServices = ['ngResource','ngGrid','ui', 'pbrun.directives', 'ngSanitize'];
         |</script>
         |<!-- inject global functions -->
         | <script type="text/javascript">
@@ -1029,20 +1033,56 @@ class PageComponent {
          """.stripMargin()
     }
 
+    def bindModel = { bindings ->
+
+        bindings.label = label?tran("label"):""
+        bindings.title = title?tran("title"):""
+        // applies to display
+        bindings.modelUnsafe = asHtml? "ng-bind-html=\"$GRID_ITEM.$model | to_trusted\"": ""
+        bindings.modelSafe   = asHtml? "": "{{$GRID_ITEM.$model}}"
+
+    }
+
+    def compileComponentTemplate(  int depth = 0) {
+        // First see if a template exists for parent type and type
+        def templateName = ComponentTemplateEngine.supports("${parent?.type}.$type")?"${parent?.type}.$type":""
+        // Next see if a template exists for type only
+        if (!templateName && ComponentTemplateEngine.supports(type) ) {
+            templateName = type
+        }
+        def result = [compiled:false]
+        if (templateName) {
+            def content = ""
+            components.each {
+                content = it.compileComponent(content, depth +1)
+            }
+            def bindings = this.properties
+            bindings.templateName = templateName
+            bindings.content = content
+            bindModel(bindings)
+            result = [compiled: true, code: ComponentTemplateEngine.render(bindings)]
+        }
+        return result
+    }
+
     def compileComponent(String inS, int depth=0){
         String result=inS
-        result += componentStart(type, depth)
-        if (this.type != COMP_TYPE_GRID &&this.type != COMP_TYPE_HTABLE && this.type != COMP_TYPE_DETAIL) {   //grid, detail will take care of its child objects
-            components.each {
-                //def child=inherit(new PageComponent(it))
-                // JSON parser does not automatically convert child components to pageComponent(s) type
-                //def child=new PageComponent(it)
-                result=it.compileComponent(result, depth+1)
+        def templateResult = compileComponentTemplate(depth)
+        if ( templateResult.compiled) {
+            result += templateResult.code
+        } else {
+            result += componentStart(type, depth)
+            if (this.type != COMP_TYPE_GRID && this.type != COMP_TYPE_HTABLE && this.type != COMP_TYPE_DETAIL) {
+                //grid, detail will take care of its child objects
+                components.each {
+                    result = it.compileComponent(result, depth + 1)
+                }
+            }
+            def endString = componentEnd(type, depth + 1)
+            if (endString) {
+                result += endString
             }
         }
-        def endString = componentEnd(type, depth+1)
-        if (endString)
-            result += endString
         return result
     }
 

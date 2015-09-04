@@ -111,7 +111,12 @@ class PageService {
             pageInstance.modelView=pageSource
             ret = compilePage(pageInstance)
             if (ret.statusCode == 0) {
-                ret.page.save()
+                Page.withTransaction {
+                    if (!ret.page.save()) {
+                        ret.page.errors.allErrors.each { ret.statusMessage += it +"\n" }
+                        ret.statusCode = 3
+                    }
+                }
             }
         } else
             ret = [statusCode: 1, statusMessage:"Page source is empty. Page is not compiled."]  //TODO: I18N

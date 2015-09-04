@@ -85,9 +85,10 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             return 0
         }
         if (jsonString) {
+            def json
             if (!css) { css = new Css(constantName: cssName) }
             JSON.use("deep") {
-                def json = JSON.parse(jsonString)
+                json = JSON.parse(jsonString)
             }
             css.properties['css','description' /*, 'fileTimestamp'*/] = json
             css.fileTimestamp=json2date(json.fileTimestamp)

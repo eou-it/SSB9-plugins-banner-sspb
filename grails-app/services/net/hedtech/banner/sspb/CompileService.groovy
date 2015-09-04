@@ -222,7 +222,10 @@ class CompileService {
             dataSource =  "data: $data"
             autoPopulate = "false"
         } else {
-            throw new Exception("Error Compiling UI. Either a Rest Resource or Static Data is required for Resource ${dataComponent.name}")
+            // Changed. Allow empty data set
+            //throw new Exception("Error Compiling UI. Either a Rest Resource or Static Data is required for Resource ${dataComponent.name}")
+            dataSource =  "data: []"
+            autoPopulate = "false"
         }
 
         def dataSetName = "${component.ID}DS"
