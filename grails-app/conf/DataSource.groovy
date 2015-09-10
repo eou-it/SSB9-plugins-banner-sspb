@@ -24,7 +24,7 @@ environments {
             dialect = "org.hibernate.dialect.Oracle10gDialect"
             username = "baninst1"
             password = "u_pick_it"
-            url = "jdbc:oracle:thin:@oracledb:1521:ban83"
+            url = "jdbc:oracle:thin:@localhost:1521:ban83"
             dbCreate = "none" //"validate"
             //loggingSql = true
             //logSql =true
@@ -38,7 +38,7 @@ environments {
             dialect = "org.hibernate.dialect.Oracle10gDialect"
             username = "sspbmgr"
             password = "u_pick_it"
-            url = "jdbc:oracle:thin:@oracledb:1521:ban83"
+            url = "jdbc:oracle:thin:@localhost:1521:ban83"
             //url = "jdbc:oracle:thin:@149.24.229.150:1521:orcl"
             dbCreate =  "none" //"validate" "update"
             //loggingSql = true
@@ -53,7 +53,7 @@ environments {
             dialect = "org.hibernate.dialect.Oracle10gDialect"
             username = "baninst1"
             password = "u_pick_it"
-            url = "jdbc:oracle:thin:@oracledb:1521:ban83"
+            url = "jdbc:oracle:thin:@localhost:1521:ban83"
             dbCreate = "none" //"validate"
         }
 
@@ -64,7 +64,7 @@ environments {
             dialect = "org.hibernate.dialect.Oracle10gDialect"
             username = "sspbmgr"
             password = "u_pick_it"
-            url = "jdbc:oracle:thin:@oracledb:1521:ban83"
+            url = "jdbc:oracle:thin:@localhost:1521:ban83"
             //url = "jdbc:oracle:thin:@149.24.229.150:1521:orcl"
             dbCreate =  "none" //"validate" "update"
             transactional = false
