@@ -40,6 +40,12 @@
 
      // define angular controller
      function VisualPageComposerController( $scope, $http, $resource, $parse, $filter) {
+
+        var noteType = {
+            success: "success",
+            warning: "warning",
+            error:   "error"
+        }
         $scope.component_entry_style = ["componentEntry", "componentEntry_selected"];
 
         $scope.pageName = "";
@@ -642,41 +648,53 @@
             $scope.statusHolder.isPageModified = false;
           };
 
-          $scope.submitPageSource = function() {
-            //check if page name is set
-              if ($scope.pageCurName== undefined || $scope.pageCurName == '') {
-                  alert("${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
-                  return;
-              }
+          $scope.submitPageSource = function () {
+             var saveErrorId = "saveErrorId";
+             var note = {type: noteType.success, id: saveErrorId, flash: true};
 
-              Page.save({pageName:$scope.pageCurName, source:$scope.pageSourceView }, function(response) {
-                //console.log("save response = " + response.statusCode + ", " +response.statusMessage);
-                if (response.statusCode == 0) {
-                    $scope.pageStatus.message = response.statusMessage;
-                    if (response.pageValidationResult.warn)
-                        $scope.pageStatus.message+= response.pageValidationResult.warn
-                    $scope.statusHolder.isPageModified = false;
-                }
-                else {
-                    var msg="${message(code:'sspb.page.validation.error.message')}";
-                    if (response.pageValidationResult != undefined)
-                        $scope.pageStatus.message = $scope.i18nGet(msg,[response.statusMessage,response.pageValidationResult.errors]);
-                    else
-                        $scope.pageStatus.message = $scope.i18nGet(msg,[response.statusMessage, ""]);
-                }
-                alert($scope.pageStatus.message);
-                $scope.pageStatus.message = $filter('date')(new Date(), 'medium')+ ': '+$scope.pageStatus.message;
-                // refresh the page list in case new page is added
-                $scope.loadPageNames();
-            }, function(response) {
-                  var msg ="${message(code: 'sspb.page.visualcomposer.page.submit.failed.message', encodeAs: 'JavaScript')}";;
-                  if (response.data != undefined && response.data.errors!=undefined)
-                    msg =  $scope.i18nGet(msg, [response.data.errors[0].errorMessage]);
-                  else
-                      msg = $scope.i18nGet(msg, ['']);
+             //Remove error from previous compilation if exists
+             var saveError =  notifications.get(saveErrorId);
+             if (saveError) {
+                 notifications.remove(saveError);
+             }
 
-              alert(msg);
-          });
+             //check if page name is set
+             if ($scope.pageCurName == undefined || $scope.pageCurName == '') {
+                 alert("${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
+                 return;
+             }
+
+             Page.save({pageName: $scope.pageCurName, source: $scope.pageSourceView},
+                 function (response) {
+                     if (response.statusCode == 0) {
+                         $scope.pageStatus.message = response.statusMessage;
+                         if (response.pageValidationResult.warn) {
+                             $scope.pageStatus.message += response.pageValidationResult.warn;
+                             note.type = noteType.warning;
+                         }
+                         $scope.statusHolder.isPageModified = false;
+                     }
+                     else {
+                         var msg = "${message(code:'sspb.page.validation.error.message')}";
+                         var err = response.pageValidationResult && response.pageValidationResult.errors?response.pageValidationResult.errors:"";
+                         note.type  = noteType.error;
+                         $scope.pageStatus.message = $scope.i18nGet(msg, [response.statusMessage, err]);
+                     }
+                     note.message = $scope.pageStatus.message
+                     notifications.addNotification(new Notification(note));
+                     $scope.pageStatus.message = $filter('date')(new Date(), 'medium') + ': ' + $scope.pageStatus.message;
+                     // refresh the page list in case new page is added
+                     $scope.loadPageNames();
+                 },
+                 function (response) {
+                     var msg = "${message(code: 'sspb.page.visualcomposer.page.submit.failed.message', encodeAs: 'JavaScript')}";
+                     var err = response.data && response.data.errors ? response.data.errors[0].errorMessage : "";
+                     msg = $scope.i18nGet(msg, [err]);
+                     note.message = msg;
+                     note.type = noteType.success;
+                     notifications.addNotification(new Notification(note));
+                 }
+             );
 
           }
 

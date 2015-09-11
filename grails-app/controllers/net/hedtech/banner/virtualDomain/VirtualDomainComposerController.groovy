@@ -43,13 +43,13 @@ class VirtualDomainComposerController {
     }
 
     def deleteVirtualDomain = {
-        def pageInstance = params
-        if (pageInstance.vdServiceName)  {
-            def loadResult =  virtualDomainService.loadVirtualDomain(pageInstance.vdServiceName)
-            (VirtualDomain) loadResult.virtualDomain.delete()
-
+        if (params.vdServiceName)  {
+            def loadResult =  virtualDomainService.loadVirtualDomain(params.vdServiceName)
+            VirtualDomain.withTransaction {
+                def vd = VirtualDomain.find{serviceName==params.vdServiceName}
+                vd.delete(failOnError:true)
+            }
         }
-
         render (view:"virtualDomainComposer", model: [pageInstance: null])
     }
 

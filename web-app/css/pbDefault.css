@@ -18,7 +18,7 @@ input.hasDatepicker.pb-form {
 .pb-block-item-container,
 .pb-form-item-container {
     /* .columns-2 */
-    width:30em;
+    width:40%;
     float:left;
     max-width:100%;
 }

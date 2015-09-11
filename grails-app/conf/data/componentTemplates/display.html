@@ -1,0 +1,26 @@
+<%
+    label = label?thiz.tran("label"):""
+    title = title?thiz.tran("title"):""
+    def modelUnsafe
+    def modelSafe
+    if ( [thiz.COMP_TYPE_HTABLE, thiz.COMP_TYPE_DETAIL].contains(thiz.parent.type)) {
+        index = "-{{\$index}}"
+        modelUnsafe = asHtml? "ng-bind-html=\"$GRID_ITEM.$model | to_trusted\"": ""
+        modelSafe   = asHtml? "": "{{$GRID_ITEM.$model}}"
+    } else {
+        index = ""
+        modelUnsafe = asHtml? "ng-bind-html=\"${thiz.compileDOMExpression(value)} | to_trusted\"": ""
+        modelSafe   = asHtml? "": "${thiz.compileDOMDisplay(value)}"
+    }
+
+%>
+<div id="pbid-${name}-container$index" ng-class="${name}_style"  class="pb-detail-item-container pb-display">
+    <% if (label)
+    out <<"""
+    <label class="pb-${thiz.parent.type}  pb-${type} pb-item pb-label" id="pbid-${name}-label$index" for="pbid-${name}$index" >
+        $label
+    </label>
+    """
+    %>
+    <span id="pbid-${name}$index" class="pb-${thiz.parent.type} pb-${thiz.type} pb-item" $modelUnsafe> $modelSafe </span>
+</div>

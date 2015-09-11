@@ -8,6 +8,7 @@
  */
 package net.hedtech.banner.sspb
 
+import groovy.json.StringEscapeUtils
 import net.hedtech.banner.css.Css
 
 import java.util.regex.Pattern
@@ -491,6 +492,11 @@ class PageComponent {
     }
     //this returns a html template string as a javascript string - escape strings
     String gridChildHTML( int depth=0) {
+        def templateResult = compileComponentTemplate(depth)
+        if ( templateResult.compiled) {
+            return StringEscapeUtils.escapeJavaScript(templateResult.code.toString())  //OK, supported by a template, return the result
+        }
+        // No supported by a template, go with the old method
         def ro= readonly || COMP_DISPLAY_TYPES.contains(type)
         def tagStart="<input"
         def tagEnd="/>"
@@ -769,7 +775,8 @@ class PageComponent {
                 //Todo: should we do something for safe/unsafe binding as in next item type?
                 result = "<span ${getIdAttr(idTxtParam)}  $ngClick $autoStyleStr>" + tran(getPropertiesBaseKey()+".value",compileDOMDisplay(value) ) + "</span>\n"
                 break;
-            case COMP_TYPE_DISPLAY:
+            case COMP_TYPE_DISPLAY: //migrated to use template engine
+                return "<span>*** ERROR This code should now be handled in template. Item=$name ***</span>"
                 def modelTxt_unsafe = ""
                 def modelTxt_safe = ""
 
@@ -1033,33 +1040,21 @@ class PageComponent {
          """.stripMargin()
     }
 
-    def bindModel = { bindings ->
-
-        bindings.label = label?tran("label"):""
-        bindings.title = title?tran("title"):""
-        // applies to display
-        bindings.modelUnsafe = asHtml? "ng-bind-html=\"$GRID_ITEM.$model | to_trusted\"": ""
-        bindings.modelSafe   = asHtml? "": "{{$GRID_ITEM.$model}}"
-
-    }
 
     def compileComponentTemplate(  int depth = 0) {
         // First see if a template exists for parent type and type
-        def templateName = ComponentTemplateEngine.supports("${parent?.type}.$type")?"${parent?.type}.$type":""
+        templateName = ComponentTemplateEngine.supports("${parent?.type}.$type")?"${parent?.type}.$type":""
         // Next see if a template exists for type only
         if (!templateName && ComponentTemplateEngine.supports(type) ) {
             templateName = type
         }
         def result = [compiled:false]
         if (templateName) {
-            def content = ""
             components.each {
                 content = it.compileComponent(content, depth +1)
             }
             def bindings = this.properties
-            bindings.templateName = templateName
-            bindings.content = content
-            bindModel(bindings)
+            bindings.thiz = this
             result = [compiled: true, code: ComponentTemplateEngine.render(bindings)]
         }
         return result
@@ -1170,6 +1165,7 @@ class PageComponent {
                 dataSetIDsIncluded<<component.ID   //remember  - used to replace variable names
             } else if (resourceUsage.resource.binding != BINDING_PAGE){
                 if ( COMP_ITEM_TYPES.contains(component.type)){
+                    //Example Resource Todo; Text Item model = Todo.description
                     dataSetIDsIncluded<<component.ID   //remember  - used to replace variable names
                 }
             }
