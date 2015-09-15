@@ -44,6 +44,9 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                     page.pageRoles.each { role ->
                         pageStripped.addToPageRoles(new PageRole(roleName: role.roleName, allow: role.allow))
                     }
+                    if (page.extendsPage) {
+                        pageStripped.extendsPage = new Page(constantName: page.extendsPage.constantName)
+                    }
                     def json = new JSON(pageStripped)
                     def jsonString = json.toString(true)
                     println message(code:"sspb.pageutil.export.page.done.message", args:[page.constantName])
@@ -145,8 +148,23 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             page.fileTimestamp=json2date(json.fileTimestamp)
             if (file)
                 page.fileTimestamp=new Date(file.lastModified())
+            if (json.has('extendsPage') && json.extendsPage) {//pointer to parent page
+                Page extendsPage =  pageService.get(json.extendsPage.constantName)
+                if (!extendsPage) {  // page does not yet exist but may be imported after. Create dummy page for now
+                    extendsPage = pageService.getNew(json.extendsPage.constantName)
+                    extendsPage.modelView="{}"  // define it with empty contents
+                    extendsPage = saveObject(extendsPage)
+                }
+                if (extendsPage) {
+                    page.extendsPage = extendsPage
+                }
+                else {
+                    println "Error, referenced page does not exist and cannot be created: " + json.extendsPage.constantName
+                    return 0
+                }
+            }
             associateRoles(page,json.pageRoles)
-            saveObject(page)
+            page = saveObject(page)
             if (file) {
                 if ( compilationResult.statusCode>0) {
                     log.info compilationResult

@@ -94,7 +94,7 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             css.fileTimestamp=json2date(json.fileTimestamp)
             if (file)
                 css.fileTimestamp = new Date(file.lastModified())
-            saveObject(css)
+            css = saveObject(css)
             if (file && !css.hasErrors()) {
                 file.renameTo(file.getCanonicalPath() + '.' + nowAsIsoInFileName() + ".imp")
                 result ++
