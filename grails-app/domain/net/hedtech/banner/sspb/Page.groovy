@@ -3,7 +3,7 @@ package net.hedtech.banner.sspb
 class Page {
 
     static hasMany = [pageRoles: PageRole, extensions: Page] //Optional child page(s) (sub classes)
-    static hasOne  = [extendsPage: Page]     //Optional parent page (super class), see constraints
+    Page extendsPage     //Optional parent page (super class), see constraints
 
     String constantName
     String modelView
