@@ -141,11 +141,13 @@ Copyright 2009-2015 Ellucian Company L.P. and its affiliates.
 --%>
     </head>
     <body>
-        <div id="splash"></div>
+    <div id="splash"></div>
         <div id="spinner" class="spinner spinner-img" style="display:none;">
 
         </div>
-
+            <div ${params.noXe?"":"xe-section=\"main-body\""}>
+                Main Body content
+            </div>
         <g:layoutBody />
 
         <r:layoutResources/>

@@ -2,3 +2,4 @@ display.html
 grid.display.html
 tab.html
 tabset.html
+component.html

@@ -54,4 +54,15 @@ class ComponentTemplateEngineTest extends Specification {
         html != null
     }
 
+    void "test render component"(){
+        given:
+        def component=[name: "name1", model: "comp.model", content:"Passed in from test", templateName: "component"]
+        def html = ComponentTemplateEngine.render(component)
+        expect:
+        html.indexOf("Passed in from test")>0
+        html.indexOf("name1")>0
+        html.indexOf("comp.model")>0
+
+    }
+
 }

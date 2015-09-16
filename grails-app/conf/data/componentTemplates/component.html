@@ -1,0 +1,11 @@
+<%JavaScript
+var myContent="bla bla";  // can create strings here for use in template
+var theName=name;         // can put logic here to map PageBuilder properties to UXD component properties
+print("Can print debugging code from here");
+%>
+<mycomponent name="${theName}" model="${model}">
+    content=${content}
+    myContent=${myContent}
+    ${1+2}
+    Hello World
+</mycomponent>
