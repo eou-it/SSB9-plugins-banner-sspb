@@ -70,7 +70,7 @@ class PageService {
 
         supplementPage( result )
         log.trace "PageService.show returning ${result}"
-        def showResult = [constantName : result.constantName, id: result.id, version: result.version, modelView: result.modelView]
+        def showResult = [constantName : result.constantName, id: result.id, extendsPage: result.extendsPage, version: result.version, modelView: result.modelView]
 
         showResult
     }
@@ -84,7 +84,7 @@ class PageService {
         def result
         Page.withTransaction {
             // compile first
-            result = compileAndSavePage(content.pageName, content.source)
+            result = compileAndSavePage(content.pageName, content.source, content.extendsPage)
         }
         log.trace "PageService.create returning $result"
         result
@@ -96,7 +96,7 @@ class PageService {
         create(content, params)
     }
 
-    def compileAndSavePage( pageName, pageSource) {
+    def compileAndSavePage( pageName, pageSource, extendsPage) {
         log.trace "in compileAndSavePage: pageName=$pageName"
         def overwrite=false
         def pageInstance  = Page.findByConstantName(pageName)
@@ -106,8 +106,9 @@ class PageService {
             overwrite = true;
         }
         if (pageSource)  {
-            if (!pageInstance)
-                pageInstance = new Page([constantName:pageName])
+            if (!pageInstance) {
+                pageInstance = new Page([constantName:pageName, extendsPage:extendsPage])
+            }
             pageInstance.modelView=pageSource
             ret = compilePage(pageInstance)
             if (ret.statusCode == 0) {
