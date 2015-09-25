@@ -1,11 +1,11 @@
 <%JavaScript
 var myContent="bla bla";  // can create strings here for use in template
 var theName=name;         // can put logic here to map PageBuilder properties to UXD component properties
-print("Can print debugging code from here");
+print("Can print debugging code from here - seen on grails console");
 %>
 <mycomponent name="${theName}" model="${model}">
     content=${content}
     myContent=${myContent}
-    ${1+2}
+    ${1+2} <- can interpolate JavaScript
     Hello World
 </mycomponent>

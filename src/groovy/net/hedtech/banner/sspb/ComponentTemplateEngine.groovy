@@ -2,68 +2,71 @@ package net.hedtech.banner.sspb
 import grails.util.Environment
 import groovy.json.StringEscapeUtils
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory
-
-import javax.script.Bindings
 import javax.script.ScriptContext
-import javax.script.ScriptEngine
-import javax.script.ScriptEngineManager
 import javax.script.SimpleScriptContext
 
-class ComponentTemplateEngine extends java.util.HashMap {
+class ComponentTemplateEngine {
 
+    static final def resourcePath ="data/componentTemplates"
     static final def jsStartTag = "<%JavaScript"
     static final def jsEndTag = "%>"
-    static def templates = loadTemplates()
-    static def timeLoaded = new Date()
-    static def timeout = 60 * 1000 //ms i.e. 1 minute
+    static final def timeout = 10 * 1000 //ms i.e. 10 s
+    static def templates
+    static def timeLoaded = null
     static def nashornEngine = null
+    static def gStringEngine = null
 
-
+    static def getFile(path) {
+        def res
+        if (Environment.current == Environment.DEVELOPMENT) { //try avoid cache
+            res = ComponentTemplateEngine.class.classLoader.getResource(path).openStream()
+        } else {
+            res = ComponentTemplateEngine.class.classLoader.getResourceAsStream(path)
+        }
+        res
+    }
 
     static def loadTemplates() {
-        def result = templates?templates:[:]
-        def classLoader = ComponentTemplateEngine.class.classLoader
-        def fileNames = classLoader.getResourceAsStream("data/componentTemplates/htmlTemplates.txt").text
-        def engine = new groovy.text.GStringTemplateEngine()
-        fileNames.eachLine { fileName ->
-            def templateName = fileName.substring(0, fileName.lastIndexOf(".html"))
-            def templateText = classLoader.getResourceAsStream("data/componentTemplates/$fileName").text.trim()
-            if (templateText.startsWith(jsStartTag)) {
-                if (!nashornEngine) {
-                    createNashornEngine()
+        // Reload the templates when not loaded or in development mode and loaded more than timeout ago
+        if (!templates || (Environment.current == Environment.DEVELOPMENT && (new Date().getTime() - timeLoaded?.getTime())> timeout )) {
+            templates = [:]
+            def fileNames = getFile("$resourcePath/htmlTemplates.txt").text
+            fileNames.eachLine { fileName ->
+                def templateName = fileName.substring(0, fileName.lastIndexOf(".html"))
+                def templateText = getFile("$resourcePath/$fileName").text.trim()
+                if (templateText.startsWith(jsStartTag)) {
+                    templates."$templateName" = getJavaScriptTemplate(templateText)
+                } else {
+                    templates."$templateName" = getGStringTemplate(templateText)
                 }
-                result."$templateName" = splitJSTemplate(templateText)
-                result."$templateName".engine = nashornEngine
-
-            } else {
-                result."$templateName" = [template: engine.createTemplate(templateText)]
             }
+            timeLoaded = new Date()
+            println ("*** Loaded Template at $timeLoaded ***")
         }
-        result
     }
 
-    static def createNashornEngine() {
-        NashornScriptEngineFactory factory = new NashornScriptEngineFactory()
-        nashornEngine = factory.getScriptEngine( "-scripting" )
-    }
-
-    static def splitJSTemplate (text) {
+    static def getJavaScriptTemplate(text) {
+        if (!nashornEngine) {
+            nashornEngine = new NashornScriptEngineFactory().getScriptEngine( "-scripting" )
+        }
         def jsEnd = text.indexOf(jsEndTag) //only support simple non nested script
-        [ javaScript: text[jsStartTag.length()+1..jsEnd-1], html: text.substring(jsEnd+jsEndTag.length()) ]
+        [ javaScript: text[jsStartTag.length()+1..jsEnd-1], html: text.substring(jsEnd+jsEndTag.length()), engine: nashornEngine]
     }
 
+    static def getGStringTemplate(text) {
+        if (!gStringEngine) {
+            gStringEngine = new groovy.text.GStringTemplateEngine()
+        }
+        [template: gStringEngine.createTemplate(text) ]
+    }
 
     static def supports(templateName) {
+        loadTemplates() // Make sure the templates are loaded when we need them
         templates[templateName] != null
     }
 
     static def render(component) {
-        // Reload the templates when not loaded or in development mode and loaded more than timeout ago
-        if (!templates || (Environment.current == Environment.DEVELOPMENT && (new Date().getTime() - timeLoaded?.getTime())> timeout )) {
-            templates = loadTemplates()
-            timeLoaded = new Date()
-            println ("Loaded Template at " +timeLoaded)
-        }
+        loadTemplates() // Make sure the templates are loaded when we need them
         if (component.templateName && templates[component.templateName] ) {
             if (templates[component.templateName].template) {
                 templates[component.templateName].template.make(component)
@@ -85,11 +88,15 @@ class ComponentTemplateEngine extends java.util.HashMap {
         def b = scriptContext.getBindings(ScriptContext.GLOBAL_SCOPE)
         // bind the component properties to the global scope of the script for simple reference
         component.each { k, v ->
-            b.put(k,v)
+            b.put(k,v!=null?v:"") //put empty string rather than null
         }
-        template.engine.eval(js)
+        try {
+            template.engine.eval(js)
+        } catch(e) {
+            println "Error Executing JavaScript:\n $js"
+            throw (e)
+        }
         //println b // see if we can grab the result from b or if we need to get things back from the context somehow
-
-        return b._renderResult
+        return "\n"+b._renderResult.trim()+"\n"
     }
 }

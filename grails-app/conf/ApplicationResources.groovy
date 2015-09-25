@@ -19,7 +19,12 @@ modules = {
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/ng-upload', file: "ng-upload.js"]
         // modal dialog
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular-ui', file: "ui-bootstrap-tpls-0.3.0.js"]
+        // page builder
         resource url:[plugin: 'banner-sspb', dir: 'js', file: "pbRunDirectives.js"]
+        // uxd components
+        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/uxd/js', file: "xe-ui-components.js"]
+        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/uxd/css', file: "xe-ui-components.min.css"]
+
 
         // TODO bootstrap interferes with navigation bar  - caused by breadcrumb class in bootstrap.css. also ss_ui uses a later version of bootstrap
         // TODO use common-control.css breadcrumb instead

@@ -52,10 +52,12 @@ class PageComponent {
     final static COMP_TYPE_RADIO = "radio"
     final static COMP_TYPE_HIDDEN = "hidden"
     //final static COMP_TYPE_FUNCTION = "function"
+    //Added UXD components
+    final static COMP_TYPE_XE_TEXT_BOX = "xeTextBox"
 
     // Types that can represent a single field - should add RADIO
     final static COMP_ITEM_TYPES = [COMP_TYPE_LITERAL,COMP_TYPE_DISPLAY,COMP_TYPE_TEXT,COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER,
-                                    COMP_TYPE_DATETIME,COMP_TYPE_EMAIL,COMP_TYPE_TEL,COMP_TYPE_LINK,COMP_TYPE_BOOLEAN]
+                                    COMP_TYPE_DATETIME,COMP_TYPE_EMAIL,COMP_TYPE_TEL,COMP_TYPE_LINK,COMP_TYPE_BOOLEAN, COMP_TYPE_XE_TEXT_BOX]
 
     // Single field non-input types
     final static COMP_DISPLAY_TYPES =  [COMP_TYPE_LITERAL,COMP_TYPE_DISPLAY,COMP_TYPE_LINK,COMP_TYPE_HIDDEN]
@@ -70,7 +72,7 @@ class PageComponent {
     final static COMP_VISUAL_TYPES = [COMP_TYPE_PAGE,COMP_TYPE_FORM, COMP_TYPE_BLOCK, COMP_TYPE_LITERAL,
             COMP_TYPE_DISPLAY,COMP_TYPE_TEXT,COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER,COMP_TYPE_BUTTON,
             COMP_TYPE_DATETIME,COMP_TYPE_EMAIL,COMP_TYPE_TEL,COMP_TYPE_LINK,COMP_TYPE_BOOLEAN,COMP_TYPE_SUBMIT,
-            COMP_TYPE_GRID,COMP_TYPE_HTABLE,COMP_TYPE_LIST,COMP_TYPE_SELECT,COMP_TYPE_DETAIL,COMP_TYPE_RADIO]
+            COMP_TYPE_GRID,COMP_TYPE_HTABLE,COMP_TYPE_LIST,COMP_TYPE_SELECT,COMP_TYPE_DETAIL,COMP_TYPE_RADIO, COMP_TYPE_XE_TEXT_BOX]
 
     final static BINDING_REST = "rest"
     //final static BINDING_SQL = "sql"
@@ -100,6 +102,7 @@ class PageComponent {
     final static DEFAULT_STYLESHEET = "pbDefault"
 
     String type        // -> Generic property for component type
+    String subType     // -> Use if component has multiple variants
     String name        // -> Generic property. Maybe use componentId?
     String title       // -> Page
     String scriptingLanguage = "JavaScript" // -> page property that specifies the scripting language to use in page model
@@ -199,6 +202,16 @@ class PageComponent {
     def resourceIDsIncluded = []   // record which resourceIDs are used in a page (only populate on root)
     def dataSetIDsIncluded  = []   // record which dataSets are used in a page (only populate on root)
     def resourceUsage = []        // resources and its usage (only populate on root)
+
+    // New for compiler
+    def meta = [
+            pageResources: [:],        // Resources defined in this page, only set on root
+            referencedBy: [],          // Components referencing this component (for type resource as of now)
+            modelResource: null,       // Resource Component for model
+            sourceModelResource: null, // Resource Component for sourceModel
+            dataSetIDsIncluded: []     // record which dataSets are used in a page (only populate on root)
+    ]
+
 
     def flowDefs = []       // global flow definitions, a list of map {flowName:"", sequence:["form1","form2"], condition, ""}
     def activeFlow = ""     // the initially activated flow
@@ -883,7 +896,7 @@ class PageComponent {
                 break;
             default :
                 // TODO log and ignore not implemented component
-                println "*** WARNING: No HTML generated for component: $type ${name?name:model} ***"
+                println "*** WARNING: Compile Item. No HTML generated for component: $type ${name?name:model} ***"
                 result = ""
         }
         if ([COMP_TYPE_BOOLEAN,COMP_TYPE_BUTTON, COMP_TYPE_SUBMIT].contains(type))
@@ -944,7 +957,7 @@ class PageComponent {
                 // Handle Items
                 result = compileItem(t,depth)
                 if (!result)
-                    println "*** WARNING: No HTML generated for component: $type ${name?name:model} ***"
+                    println "*** WARNING: ComponentStart. No HTML generated for component: $type ${name?name:model} ***"
         }
         return result
     }
@@ -1025,7 +1038,7 @@ class PageComponent {
         |<script>
         |var pageID = "$name"
         | // inject services and controller modules to be registered with the global ng-app
-        | var myCustomServices = ['ngResource','ngGrid','ui', 'pbrun.directives', 'ngSanitize'];
+        | var myCustomServices = ['ngResource','ngGrid','ui', 'pbrun.directives', 'ngSanitize', 'xe-ui-components'];
         |</script>
         |<!-- inject global functions -->
         | <script type="text/javascript">
@@ -1139,51 +1152,140 @@ class PageComponent {
         result
     }
 
-    // Refactoring, moved methods from static CompileService to page component
-
-    // find all component that uses a data component, search child components
-    private def static findUsageComponents(component, dataComponent) {
-        def compList = []
-        if (component.ID != dataComponent.ID) {
-            if (component.model==dataComponent.name || component.model?.startsWith("${dataComponent.name}.")
-                    || component.sourceModel==dataComponent.name || component.sourceModel?.startsWith("${dataComponent.name}.")) {
-                compList.push(component)
-                component.binding = dataComponent.binding
+    // New method for resource usage
+    def updateResourceBindings() {
+        if (ID != name) {
+            throw new Exception("***WARN*** Found a component with ID != name") //Todo: remove once we have consolidated name and ID
+        }
+        if (type == COMP_TYPE_PAGE) { //Make sure to have the resources first
+            components.each { pc ->
+                if (pc.type == COMP_TYPE_RESOURCE) {
+                    root.meta.pageResources[pc.name] = pc
+                }
             }
-        }
-        component.components?.each {
-            compList += findUsageComponents(it, dataComponent)
-        }
-        return compList
-    }
-
-    // determine which DataSets we are going to build so we can replace references appropriately
-    // logic to match buildCode
-    private def addDataSets(resourceUsage) {
-        resourceUsage.usedBy.each {component->
-            if (COMP_DATASET_TYPES.contains(component.type)) {
-                dataSetIDsIncluded<<component.ID   //remember  - used to replace variable names
-            } else if (resourceUsage.resource.binding != BINDING_PAGE){
-                if ( COMP_ITEM_TYPES.contains(component.type)){
-                    //Example Resource Todo; Text Item model = Todo.description
-                    dataSetIDsIncluded<<component.ID   //remember  - used to replace variable names
+        } else {
+            if (model || sourceModel) {
+                println "model: $model sourceModel: $sourceModel"
+                def ref = model?root.meta.pageResources[model.tokenize(".")[0]] : null
+                if (ref) {
+                    ref.meta.referencedBy << this
+                    meta.modelResource = ref
+                    if (COMP_DATASET_TYPES.contains(type) || (COMP_ITEM_TYPES.contains(type) && ref.binding != BINDING_PAGE)){
+                        root.meta.dataSetIDsIncluded += name
+                    }
+                }
+                ref = sourceModel ? root.meta.pageResources[sourceModel.tokenize(".")[0]] : null
+                if (ref) {
+                    ref.meta.referencedBy << this
+                    meta.sourceModelResource = ref
+                    if (COMP_DATASET_TYPES.contains(type) || (COMP_ITEM_TYPES.contains(type) && ref.binding != BINDING_PAGE)){
+                        root.meta.dataSetIDsIncluded += name
+                    }
                 }
             }
         }
-    }
-
-    // Initialize resourceUsage, dataSetIDsIncluded and resourceIDsIncluded
-    def initPreCompile (){
-        // find all data definition in this page
-        def modelComponents = this.findComponents([COMP_TYPE_RESOURCE])
-
-        modelComponents.each {
-            def ru =  [resource:it, usedBy: findUsageComponents(root, it)]
-            addDataSets(ru)// populates   dataSetIDsIncluded
-            resourceUsage += ru
-            resourceIDsIncluded += it.ID
+        //update the children
+        components.each{
+            it.updateResourceBindings()
         }
     }
+
+    // Moving some static members from compileService to here - code can be more compact
+    def getQueryParameters () {
+        def dataComponent = meta.sourceModelResource?:meta.modelResource
+        def buildParameters = {parameters -> // concatenate all map entries to a string
+            def res = ""
+            parameters?.each { key, value->
+                res +=  "$key : ${compileCtrlFunction(value)},"
+            }
+            if (res?.endsWith(","))   // remove trailing comma
+                res = res.substring(0, res.length() - 1)
+            res = "'{$res}'"
+        }
+
+        def queryParameters = "'{}'"
+        if (dataComponent.binding == BINDING_REST) {
+            if (parameters)
+                queryParameters = buildParameters(parameters)
+            if (sourceParameters)
+                queryParameters = buildParameters(sourceParameters)
+        }
+        return queryParameters
+    }
+
+    def getDataSetControlCode () {
+        def dataComponent = meta.sourceModelResource?:meta.modelResource
+        def result = ""
+        def dataSource
+        def queryParameters = "null"
+        //should only COMP_TYPE_DATA have loadInitially?
+        def autoPopulate = "true"
+        if ( (type == COMP_TYPE_DATA || COMP_DATASET_TYPES.contains(type) )
+             && !loadInitially) {
+            autoPopulate = "false"
+        }
+        // first handle data binding
+        if (dataComponent.binding == BINDING_REST && dataComponent.resource) {
+            dataSource = "resource: \$scope.${dataComponent.name}"
+            // transform parameters to angular $scope variable
+            queryParameters = getQueryParameters()
+        } else if (dataComponent.staticData){
+            def data
+            if ( COMP_DATASET_DISPLAY_TYPES.contains(type)  ){
+                sourceModel = name //Not clear why this is needed.
+                staticData = dataComponent.staticData // clone data to component
+                data = groovy.json.JsonOutput.toJson(tranSourceValue())  // translate labels
+            }
+            else {
+                data = groovy.json.JsonOutput.toJson(dataComponent.staticData)
+            }
+            dataSource =  "data: $data"
+            autoPopulate = "false"
+        } else {
+            // Changed. Allow empty data set
+            //throw new Exception("Error Compiling UI. Either a Rest Resource or Static Data is required for Resource ${dataComponent.name}")
+            dataSource =  "data: []"
+            autoPopulate = "false"
+        }
+
+        def dataSetName = "${name}DS"
+        def optionalParams=""
+        if  (COMP_ITEM_TYPES.contains(type)) //items don't support arrays, use the get
+            optionalParams+=",useGet: true"
+        if (type != COMP_TYPE_SELECT)
+             optionalParams+=",pageSize: $pageSize"
+        if (onUpdate)
+            optionalParams+="\n,onUpdate: function(item){\n${compileCtrlFunction(onUpdate)}}"
+        if (onLoad)
+            optionalParams+="\n,postQuery: function(data,response){\n${compileCtrlFunction(onLoad)}}"
+        if (onError)
+            optionalParams+="\n,onError: function(response){\n${compileCtrlFunction(onError)}}"
+
+
+        result = """
+              |    \$scope.$dataSetName = pbDataSet ( \$scope,
+              |    {
+              |        componentId: "$name",
+              |        $dataSource,
+              |        queryParams: $queryParameters,
+              |        autoPopulate: $autoPopulate,
+              |        selectValueKey: ${valueKey ? "\"$valueKey\"" : null},
+              |        selectInitialValue: ${value?"\"$value\"":"null"}
+              |        $optionalParams
+              |    });
+              |""".stripMargin()
+
+        def initNew = allowNew? initNewRecordJS(): ""
+        if (type == COMP_TYPE_GRID) {
+            result += gridJS() + initNew
+        }
+        if ( [COMP_TYPE_HTABLE,COMP_TYPE_DETAIL,COMP_TYPE_LIST].contains( type)) {
+            result += dataSetWatches() + initNew
+        }
+        return result
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////
 
     // Shorthand Expression compilation methods
     def compileCtrlFunction(expression) {
@@ -1228,10 +1330,11 @@ class PageComponent {
 
     // Context for parsing expressions
     // enum ExpressionTarget {CtrlFunction, DOMExpression, DOMDisplay}
+    // cannot be a static member as root it needed.
     def compileExpression(expression,
                           ExpressionTarget target=ExpressionTarget.CtrlFunction,
-                          ArrayList dataSets=root.dataSetIDsIncluded,
-                          ArrayList resources=root.resourceIDsIncluded ) {
+                          ArrayList dataSets=root.meta.dataSetIDsIncluded,
+                          ArrayList resources=root.meta.pageResources.keySet() ) {
 
         final def dataSetReplacements = [
                 [from:  ".\$populateSource"  , to:"DS.load"],
