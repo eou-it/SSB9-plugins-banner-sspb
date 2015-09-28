@@ -15,7 +15,7 @@
 
     <meta name="menuEndPoint" content="${request.contextPath}/ssb/menu"/>
     <meta name="menuBaseURL" content="${request.contextPath}/ssb"/>
-    <meta name="menuDefaultBreadcrumbId" content=""/>
+
     <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
         <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pbDeveloper-rtl.css')}">
     </g:if>
@@ -50,6 +50,7 @@
 
         $scope.pageName = "";
         $scope.pageCurName = $scope.pageName;
+        $scope.extendsPage = {};
         // top level page source container must be an array for tree view rendering consistency
         $scope.pageSource = [];
          // saved pageSource for dirty detection
@@ -70,7 +71,7 @@
         $scope.nextIndex = function () {
             $scope.index = $scope.index + 1;
             return $scope.index;
-        }
+        };
 
         // used to highlight the selected component in the component tree
         // TODO this does not work with IE 9
@@ -80,7 +81,7 @@
             return "border-style:ridge; border-width:2px; color:red";
         else
             return "";
-        }
+        };
 
 
         // load the model definition from deployed app
@@ -106,7 +107,7 @@
                 }
             }
             //console.log("attrRenderProps = " + $scope.attrRenderProps);
-         }
+         };
 
          $scope.getDropdown = function(attribute) {
              console.log('return dropdown for attribute');
@@ -138,7 +139,7 @@
                     attrs = attrs.concat(componentDef.requiredAttributes);
             });
             return attrs;
-        }
+        };
         // return all required attributes for a given component type
         $scope.findOptionalAttrs = function(type) {
             var attrs = [];
@@ -150,7 +151,7 @@
                     attrs = attrs.concat(componentDef.optionalAttributes);
             });
             return attrs;
-        }
+        };
 
         // return all attributes (required and optional) for a given component type
         // return a array of map of {name:"", required: isRequired}
@@ -167,7 +168,7 @@
             angular.forEach(optAttrs, function(attrName) {
                 $scope.dataHolder.allAttrs.push({name:attrName, required: false} );
             });
-        }
+        };
 
         $scope.findRequiredChildrenTypes = function(type) {
             var children = [];
@@ -177,7 +178,7 @@
                     children = children.concat(componentDef.requiredChildren);
             });
             return children;
-        }
+        };
 
         $scope.findOptionalChildrenTypes = function(type) {
             var children = [];
@@ -187,11 +188,11 @@
                     children = children.concat(componentDef.optionalChildren);
             });
             return children;
-        }
+        };
 
         $scope.findAllChildrenTypes = function(type) {
             return $scope.findRequiredChildrenTypes(type).concat($scope.findOptionalChildrenTypes(type));
-        }
+        };
 
 
 
@@ -199,7 +200,7 @@
 
         $scope.handlePageTreeChange = function() {
             $scope.pageSourceView = JSON.stringify($scope.pageSource[0], JSONFilter, 6);
-        }
+        };
 
         //
         $scope.resetSelected = function() {
@@ -207,7 +208,7 @@
             $scope.statusHolder.selectedIndex = 0;
             $scope.dataHolder.allAttrs = [];
             $scope.dataHolder.selectedContext = {};
-        }
+        };
 
         $scope.i18nGet = function(key,args) {
             var tr = [];
@@ -332,12 +333,12 @@
                     } );
             }
             return res;
-        }
+        };
 
         $scope.attributeIsTranslatable = function (attr) {
             var attributes = ${PageComponent.translatableAttributes.encodeAsJSON()};
             return (attributes.indexOf(attr) != -1); // seems not to work in IE8 - indexOf is added by one of the JS libraries
-        }
+        };
 
         // recursively check if 'component1' is a direct or indirect child of 'component'
         $scope.isChild = function(component, component1) {
@@ -354,7 +355,7 @@
             }
             //console.log("comp = " + component.type + ", found = " + found);
             return false;
-        }
+        };
 
         /*
         delete a component from the tree
@@ -437,7 +438,7 @@
             //console.log("addChild");
             $scope.validChildTypes = $scope.findAllChildrenTypes(parent.type);
             $scope.openTypeSelectionModal(parent, index);
-        }
+        };
 
 
         $scope.selectData = function(data, index, parent) {
@@ -489,7 +490,7 @@
 
         $scope.toggleShowChildren = function() {
             $scope.showChildren = !$scope.showChildren;
-        }
+        };
 
         // type selection modal dialog functions
         /*
@@ -526,7 +527,7 @@
 
           $scope.cancelTypeSelectionModal = function() {
             $scope.shouldBeOpen = false;
-          }
+          };
 
           $scope.typeSelectionModalOpts = {
             backdropFade: true,
@@ -600,7 +601,7 @@
          // determine if current loaded page has changed since it was load
          $scope.isPageModified = function () {
              return $scope.statusHolder.isPageModified;
-         }
+         };
 
          // handle page model changes
          $scope.$watch('pageOneSource', function() {
@@ -630,6 +631,7 @@
                      $scope.resetSelected();
                      //$scope.handlePageTreeChange();
                      $scope.pageCurName= $scope.pageName;
+                     $scope.extendsPage = data.extendsPage;
                      $scope.statusHolder.isPageModified = false;
                  } catch(ex) {
                      alert($scope.i18nGet("${message(code:'sspb.page.visualbuilder.parsing.error.message')}",[ex]));
@@ -656,6 +658,7 @@
 
             $scope.pageName= "${message( code:'sspb.page.visualbuilder.newpage.default', encodeAs: 'JavaScript')}";
             $scope.pageCurName= $scope.pageName;
+            $scope.extendsPage = {};
             $scope.statusHolder.noDirtyCheck = true;
             $scope.pageSource[0] = {"type": "page", "name": $scope.pageName};
             $scope.pageOneSource =  $scope.pageSource[0];
@@ -680,8 +683,8 @@
                  return;
              }
 
-             Page.save({pageName: $scope.pageCurName, source: $scope.pageSourceView},
-                 function (response) {
+              Page.save({pageName:$scope.pageCurName, source:$scope.pageSourceView, extendsPage:$scope.extendsPage}, 
+                  function(response) {
                      if (response.statusCode == 0) {
                          $scope.pageStatus.message = response.statusMessage;
                          if (response.pageValidationResult.warn) {
@@ -712,7 +715,7 @@
                  }
              );
 
-          }
+          };
 
           $scope.previewPageSource = function() {
               //check if page name is set
@@ -723,7 +726,7 @@
               }
               window.open(rootWebApp+'customPage/page/'+ $scope.pageCurName, '_blank');
 
-          }
+          };
 
 
           $scope.deletePageSource = function () {
@@ -740,6 +743,7 @@
                   // clear the page name field and page source
                   $scope.pageCurName = "";
                   $scope.pageName = "";
+                  $scope.extendsPage = {};
                   $scope.resetSelected();
                   $scope.statusHolder.noDirtyCheck = true;
                   $scope.pageSource[0] = {};
@@ -760,7 +764,7 @@
 
               });
 
-          }
+          };
 
          /* tab controls */
          // show tree view initially
@@ -821,6 +825,12 @@
 
     <label><g:message code="sspb.page.visualbuilder.name.label" /></label>
     <input type="text" name="constantName" ng-model="pageCurName" required ng-maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/">
+
+    <label><g:message code="sspb.page.visualbuilder.extends.label" /></label>
+    <select name="extendsPage"
+            ng-options="page as page.constantName for page in pageList track by page.id"
+                ng-model="extendsPage">
+    </select>
 
     <button ng-click='newPageSource()'><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
     <button ng-click='submitPageSource()' ng-disabled='sourceEditEnabled || !pagemodelform.$valid'><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
