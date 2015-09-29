@@ -1,3 +1,6 @@
-detail.display.html
+display.html
+grid.display.html
 tab.html
 tabset.html
+component.html
+xeTextBox.html

@@ -40,6 +40,12 @@
 
      // define angular controller
      function VisualPageComposerController( $scope, $http, $resource, $parse, $filter) {
+
+        var noteType = {
+            success: "success",
+            warning: "warning",
+            error:   "error"
+        }
         $scope.component_entry_style = ["componentEntry", "componentEntry_selected"];
 
         $scope.pageName = "";
@@ -83,6 +89,7 @@
          PageModelDef.get(null, function(data) {
             $scope.pageModelDef = data.definitions.componentTypeDefinition;
             $scope.sourceRenderDef = data.definitions.sourceRenderDefinitions;
+            $scope.dropdownsDef = data.definitions.dropdowns;
             $scope.setAttributeRenderProperties();
             //console.log($scope.sourceRenderDef);
           });
@@ -101,6 +108,12 @@
             }
             //console.log("attrRenderProps = " + $scope.attrRenderProps);
          };
+
+         $scope.getDropdown = function(attribute) {
+             console.log('return dropdown for attribute');
+             //return ['text','number','email','date'];
+             return $scope.dropdownsDef[attribute.name];
+         }
 
          /* return the default value for an attribute
           if the value is undefined and there is a default value then return the default value
@@ -183,6 +196,8 @@
 
 
 
+
+
         $scope.handlePageTreeChange = function() {
             $scope.pageSourceView = JSON.stringify($scope.pageSource[0], JSONFilter, 6);
         };
@@ -198,6 +213,7 @@
         $scope.i18nGet = function(key,args) {
             var tr = [];
             tr['attribute.type'             ]="${message(code:'sspb.model.attribute.type')}";
+            tr['attribute.subType'          ]="${message(code:'sspb.model.attribute.subtype')}";
             tr['attribute.name'             ]="${message(code:'sspb.model.attribute.name')}";
             tr['attribute.documentation'    ]="${message(code:'sspb.model.attribute.documentation')}";
             tr['attribute.title'            ]="${message(code:'sspb.model.attribute.title')}";
@@ -213,7 +229,7 @@
             tr['attribute.onUpdate'         ]="${message(code:'sspb.model.attribute.onUpdate')}";
             tr['attribute.onClick'          ]="${message(code:'sspb.model.attribute.onClick')}";
             tr['attribute.onLoad'           ]="${message(code:'sspb.model.attribute.onLoad')}";
-            tr['attribute.onError'           ]="${message(code:'sspb.model.attribute.onError')}";
+            tr['attribute.onError'          ]="${message(code:'sspb.model.attribute.onError')}";
             tr['attribute.labelKey'         ]="${message(code:'sspb.model.attribute.labelKey')}";
             tr['attribute.valueKey'         ]="${message(code:'sspb.model.attribute.valueKey')}";
             tr['attribute.sourceModel'      ]="${message(code:'sspb.model.attribute.sourceModel')}";
@@ -238,7 +254,7 @@
             tr['attribute.pageSize'         ]="${message(code:'sspb.model.attribute.pageSize')}";
             tr['attribute.imageUrl'         ]="${message(code:'sspb.model.attribute.imageUrl')}";
             tr['attribute.url'              ]="${message(code:'sspb.model.attribute.url')}";
-            tr['attribute.staticData'      ]="${message(code:'sspb.model.attribute.staticData')}";
+            tr['attribute.staticData'       ]="${message(code:'sspb.model.attribute.staticData')}";
             tr['attribute.default'          ]="${message(code:'sspb.model.attribute.default')}";
             tr['attribute.description'      ]="${message(code:'sspb.model.attribute.description')}";
             tr['attribute.importCSS'        ]="${message(code:'sspb.model.attribute.importCSS')}";
@@ -278,6 +294,11 @@
             tr['type.button'      ]="${message(code:'sspb.model.type.button'   )}";
             tr['type.hidden'      ]="${message(code:'sspb.model.type.hidden'   )}";
             tr['type.style'       ]="${message(code:'sspb.model.type.style'   )}";
+            tr['type.xeTextBox'   ]="${message(code:'sspb.model.type.xeTextBox'  )}";
+            tr['subType.text'     ]="${message(code:'sspb.model.subType.text'    )}";
+            tr['subType.number'   ]="${message(code:'sspb.model.subType.number'  )}";
+            tr['subType.email'    ]="${message(code:'sspb.model.subType.email'   )}";
+            tr['subType.tel'      ]="${message(code:'sspb.model.subType.tel'     )}";
 
 
             tr['sspb.page.visualbuilder.edit.map.title' ] = "${message(code:'sspb.page.visualbuilder.edit.map.title',encodeAs: 'JavaScript')}";
@@ -428,8 +449,9 @@
             $scope.dataHolder.selectedType = data.type;
             // set the components types that are valid for the selected component's parent
             // used when component type is changed
-            if (parent != undefined)
+            if (parent != undefined) {
                 $scope.dataHolder.selectedCompatibleTypes = $scope.findAllChildrenTypes(parent.type);
+            }
             else
                 $scope.dataHolder.selectedCompatibleTypes = ["page"];
             // update the current selected component's property list
@@ -645,41 +667,53 @@
             $scope.statusHolder.isPageModified = false;
           };
 
-          $scope.submitPageSource = function() {
-            //check if page name is set
-              if ($scope.pageCurName== undefined || $scope.pageCurName == '') {
-                  alert("${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
-                  return;
-              }
+          $scope.submitPageSource = function () {
+             var saveErrorId = "saveErrorId";
+             var note = {type: noteType.success, id: saveErrorId, flash: true};
 
-              Page.save({pageName:$scope.pageCurName, source:$scope.pageSourceView, extendsPage:$scope.extendsPage}, function(response) {
-                //console.log("save response = " + response.statusCode + ", " +response.statusMessage);
-                if (response.statusCode == 0) {
-                    $scope.pageStatus.message = response.statusMessage;
-                    if (response.pageValidationResult.warn)
-                        $scope.pageStatus.message+= response.pageValidationResult.warn
-                    $scope.statusHolder.isPageModified = false;
-                }
-                else {
-                    var msg="${message(code:'sspb.page.validation.error.message')}";
-                    if (response.pageValidationResult != undefined)
-                        $scope.pageStatus.message = $scope.i18nGet(msg,[response.statusMessage,response.pageValidationResult.errors]);
-                    else
-                        $scope.pageStatus.message = $scope.i18nGet(msg,[response.statusMessage, ""]);
-                }
-                alert($scope.pageStatus.message);
-                $scope.pageStatus.message = $filter('date')(new Date(), 'medium')+ ': '+$scope.pageStatus.message;
-                // refresh the page list in case new page is added
-                $scope.loadPageNames();
-            }, function(response) {
-                  var msg ="${message(code: 'sspb.page.visualcomposer.page.submit.failed.message', encodeAs: 'JavaScript')}";;
-                  if (response.data != undefined && response.data.errors!=undefined)
-                    msg =  $scope.i18nGet(msg, [response.data.errors[0].errorMessage]);
-                  else
-                      msg = $scope.i18nGet(msg, ['']);
+             //Remove error from previous compilation if exists
+             var saveError =  notifications.get(saveErrorId);
+             if (saveError) {
+                 notifications.remove(saveError);
+             }
 
-              alert(msg);
-          });
+             //check if page name is set
+             if ($scope.pageCurName == undefined || $scope.pageCurName == '') {
+                 alert("${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
+                 return;
+             }
+
+              Page.save({pageName:$scope.pageCurName, source:$scope.pageSourceView, extendsPage:$scope.extendsPage}, 
+                  function(response) {
+                     if (response.statusCode == 0) {
+                         $scope.pageStatus.message = response.statusMessage;
+                         if (response.pageValidationResult.warn) {
+                             $scope.pageStatus.message += response.pageValidationResult.warn;
+                             note.type = noteType.warning;
+                         }
+                         $scope.statusHolder.isPageModified = false;
+                     }
+                     else {
+                         var msg = "${message(code:'sspb.page.validation.error.message')}";
+                         var err = response.pageValidationResult && response.pageValidationResult.errors?response.pageValidationResult.errors:"";
+                         note.type  = noteType.error;
+                         $scope.pageStatus.message = $scope.i18nGet(msg, [response.statusMessage, err]);
+                     }
+                     note.message = $scope.pageStatus.message
+                     notifications.addNotification(new Notification(note));
+                     $scope.pageStatus.message = $filter('date')(new Date(), 'medium') + ': ' + $scope.pageStatus.message;
+                     // refresh the page list in case new page is added
+                     $scope.loadPageNames();
+                 },
+                 function (response) {
+                     var msg = "${message(code: 'sspb.page.visualcomposer.page.submit.failed.message', encodeAs: 'JavaScript')}";
+                     var err = response.data && response.data.errors ? response.data.errors[0].errorMessage : "";
+                     msg = $scope.i18nGet(msg, [err]);
+                     note.message = msg;
+                     note.type = noteType.success;
+                     notifications.addNotification(new Notification(note));
+                 }
+             );
 
           };
 
@@ -872,10 +906,14 @@
                                    pb-parent="dataHolder.selectedComponent" pb-attrname="attr.name"></pb-Arrayofmap>
                             <input ng-switch-when="boolean" style="text-align:start;" type="checkbox" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
-
+                            <!-- Added for xe-text-box so we can handle subtypes -->
+                            <select ng-switch-when="dropdown" ng-options="type as i18nGet('subType.'+type) for type in getDropdown(attr)"
+                                    ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                                    ng-model="dataHolder.selectedComponent[attr.name]" ng-change="handleAttrChange()"></select>
                             <!-- TODO default type is set in the model defintion - not mapped here  -->
                             <input ng-switch-default style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
+
                         </span>
                     </div>
                 </div>

@@ -1,0 +1,18 @@
+{
+   "search.label" : "Search",
+    "dataTable.columnFilter.label" : "Show/Hide Column",
+    "dataTable.loadingData.label" : "Loading...",
+    "dataTable.caption.label"  : "Table Caption",
+    "dataTable.sort.decending.label" : "Sort Decending",
+   "dataTable.sort.ascending.label": "Sort Ascending",
+    "pagination.aria.result.found.label" : "Pagination Results found",
+    "pagination.result.found.label" : "Results found",
+    "pagination.first.label" : "First",
+    "pagination.previous.label" : "Previous",
+    "pagination.last.label" : "Last",
+    "pagination.next.label" : "Next",
+    "pagination.of.label" : "of",
+    "pagination.page.label" : "Page",
+    "pagination.perPage.label" : "Per Page",
+    "dataTable.no.record.found" : "No records found"
+}

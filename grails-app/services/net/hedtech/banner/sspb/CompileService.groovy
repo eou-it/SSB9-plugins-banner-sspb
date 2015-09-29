@@ -42,14 +42,16 @@ class CompileService {
             def validateResult =  pageModelValidator.parseAndValidatePage(json) //
 
             // validate the unmarshalled page model
-            if (!validateResult.valid)
-                return  [valid:false, pageComponent:validateResult.page, error:validateResult.error, warn:validateResult.warn]
+            if (!validateResult.valid) {
+                return [valid: false, pageComponent: validateResult.page, error: validateResult.error, warn: validateResult.warn]
+            }
             warn=validateResult.warn
-
             page = new PageComponent(validateResult.page)
             page = normalizeComponent(page)
             // run second validation
             pageValidation = validateComponent(page)
+            //populate components to be used in name resolution
+            page.updateResourceBindings()
             valid = pageValidation.valid
             errors += pageValidation.errors
         } catch (Exception e) {
@@ -57,10 +59,6 @@ class CompileService {
             errors << PageModelErrors.getError(error: PageModelErrors.MODEL_UNKNOWN_ERR, args: [e.message])
             valid = false
         }
-        //populate components to be used in name resolution
-        page.initPreCompile()
-
-
         return [valid:valid, pageComponent:page, error:errors, warn:warn]
     }
 
@@ -71,7 +69,7 @@ class CompileService {
     */
     def static compileController(page) {
 
-        // each each model, depending on the type of binding, generate all JS functions or services
+        // each model, depending on the type of binding, generate all JS functions or services
         /*
         for all resource:
             - a model instance definition or array per grid
@@ -85,8 +83,8 @@ class CompileService {
         // JS code segment to add
         def codeList = []
 
-        page.resourceUsage.each {
-            codeList << buildCode(it)
+        page.meta.pageResources.each { name, resource ->
+            codeList << buildCode(resource)
         }
 
         // Add control specific scope variables, functions
@@ -173,124 +171,27 @@ class CompileService {
 //    methods and closures for major steps 1. to 4.    //
 /////////////////////////////////////////////////////////
 
-    private def static getQueryParameters (component,dataComponent) {
-        def buildParameters = {parameters -> // concatenate all map entries to a string
-            def res = ""
-            parameters?.each { key, value->
-                res +=  "$key : ${component.compileCtrlFunction(value)},"
-            }
-            if (res?.endsWith(","))   // remove trailing comma
-                res = res.substring(0, res.length() - 1)
-            res = "'{$res}'"
-        }
-
-        def queryParameters = "'{}'"
-        if (dataComponent.binding == PageComponent.BINDING_REST) {
-            if (component.parameters)
-                queryParameters = buildParameters(component.parameters)
-            if (component.sourceParameters)
-                queryParameters = buildParameters(component.sourceParameters)
-        }
-        return queryParameters
-    }
-
-    private def static getUIControlCode (component,dataComponent) {
-        def result = ""
-        def dataSource
-        def queryParameters = "null"
-        //should only COMP_TYPE_DATA have loadInitially?
-        def autoPopulate = "true"
-        if ( (component.type == PageComponent.COMP_TYPE_DATA || PageComponent.COMP_DATASET_TYPES.contains(component.type) )
-             && !component.loadInitially) {
-            autoPopulate = "false"
-        }
-        // first handle data binding
-        if (dataComponent.binding == PageComponent.BINDING_REST && dataComponent.resource) {
-            dataSource = "resource: \$scope.${dataComponent.name}"
-            // transform parameters to angular $scope variable
-            queryParameters = getQueryParameters(component, dataComponent)
-        } else if (dataComponent.staticData){
-            def data
-            if ( PageComponent.COMP_DATASET_DISPLAY_TYPES.contains(component.type)  ){
-                component.sourceModel = component.name //Not clear why this is needed.
-                component.staticData = dataComponent.staticData // clone data to component
-                data = groovy.json.JsonOutput.toJson(component.tranSourceValue())  // translate labels
-            }
-            else {
-                data = groovy.json.JsonOutput.toJson(dataComponent.staticData)
-            }
-            dataSource =  "data: $data"
-            autoPopulate = "false"
-        } else {
-            // Changed. Allow empty data set
-            //throw new Exception("Error Compiling UI. Either a Rest Resource or Static Data is required for Resource ${dataComponent.name}")
-            dataSource =  "data: []"
-            autoPopulate = "false"
-        }
-
-        def dataSetName = "${component.ID}DS"
-        def optionalParams=""
-        if  (PageComponent.COMP_ITEM_TYPES.contains(component.type)) //items don't support arrays, use the get
-            optionalParams+=",useGet: true"
-        if (component.type != PageComponent.COMP_TYPE_SELECT)
-             optionalParams+=",pageSize: $component.pageSize"
-        if (component.onUpdate)
-            optionalParams+="\n,onUpdate: function(item){\n${component.compileCtrlFunction(component.onUpdate)}}"
-        if (component.onLoad)
-            optionalParams+="\n,postQuery: function(data,response){\n${component.compileCtrlFunction(component.onLoad)}}"
-        if (component.onError)
-            optionalParams+="\n,onError: function(response){\n${component.compileCtrlFunction(component.onError)}}"
-
-
-        result = """
-              |    //\$scope.$component.ID=[];
-              |    \$scope.$dataSetName = pbDataSet ( \$scope,
-              |    {
-              |        componentId: "$component.ID",
-              |        $dataSource,
-              |        queryParams: $queryParameters,
-              |        autoPopulate: $autoPopulate,
-              |        selectValueKey: ${component.valueKey ? "\"$component.valueKey\"" : null},
-              |        selectInitialValue: ${component.value?"\"$component.value\"":"null"}
-              |        $optionalParams
-              |    });
-              |""".stripMargin()
-
-        def initNew = component.allowNew? component.initNewRecordJS(): ""
-        if (component.type == PageComponent.COMP_TYPE_GRID) {
-            result +=component.gridJS() + initNew
-        }
-        if ( [PageComponent.COMP_TYPE_HTABLE,PageComponent.COMP_TYPE_DETAIL,PageComponent.COMP_TYPE_LIST].contains( component.type)) {
-            result +=component.dataSetWatches() + initNew
-        }
-        return result
-    }
-
-
-
-
+    //Move code to PageComponent member function
     /* build JS function and models based on data definition
         input: pageComponent - data definirion
         return a string of the variables and JS function
      */
-    private def static buildCode(resourceUsage) {
+    private def static buildCode(resource) {
         def functions = []
-        def dataComponent = resourceUsage.resource
-        if (dataComponent.binding == PageComponent.BINDING_REST && dataComponent.resource) {
+        if (resource.binding == PageComponent.BINDING_REST && resource.resource) {
             def apiPath = CH.config.sspb.apiPath;
-            def url = "rootWebApp+'$apiPath/${dataComponent.resource}'"
-            functions << """\$scope.${dataComponent.name} = pbResource($url);"""
+            def url = "rootWebApp+'$apiPath/${resource.resource}'"
+            functions << """\$scope.${resource.name} = pbResource($url);"""
         }
 
         // generate all scope variables / arrays for each component that uses the model
         // generate variable declarations for each usage of this model
-        resourceUsage.usedBy.each {component->
+        resource.meta.referencedBy.each {component->
             if (PageComponent.COMP_DATASET_TYPES.contains(component.type)
-                || (PageComponent.COMP_ITEM_TYPES.contains(component.type) && dataComponent.binding != "page") ) {
+                || (PageComponent.COMP_ITEM_TYPES.contains(component.type) && resource.binding != "page") ) {
 
-                def uiControlCode =  getUIControlCode (component, dataComponent)
-                functions << uiControlCode
-            } else if (dataComponent.binding != "page") {
+                functions << component.getDataSetControlCode()
+            } else if (resource.binding != "page") {
                 throw new Exception("*** Unhandled case in code generator for ${component.type} $component.name}")
             }
         }
@@ -437,7 +338,7 @@ class CompileService {
              pageComponent.submit = pageComponent.compileDOMExpression(pageComponent.submit)
              //TODO should there be a ! in next line?
              //I think yes(HvT) - because the onUpdate is put in the DataSet it doesn't need ng-change
-         } else if (pageComponent.onUpdate && !pageComponent.root.dataSetIDsIncluded.contains(pageComponent.ID)) {
+         } else if (pageComponent.onUpdate && !pageComponent.root.meta.dataSetIDsIncluded.contains(pageComponent.ID)) {
              // handle input field update
              // generate a ng-change function
              def  expr = pageComponent.compileCtrlFunction(pageComponent.onUpdate)

@@ -1,7 +1,7 @@
 {
     "name":"ellucian Page Builder Model",
-    "date":"2013-04-01",
-    "version":"0.1",
+    "date":"2015-09-25",
+    "version":"0.2",
     "definitions": {
         "componentTypeDefinition": [
             {
@@ -15,42 +15,42 @@
                 "requiredAttributes":[],
                 "optionalAttributes":["title", "scriptingLanguage", "label", "style", "importCSS"],
                 "requiredChildren":[],
-                "optionalChildren":["flow", "form", "block", "grid", "htable", "detail", "select", "radio", "list",  "data", "resource", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button"]
+                "optionalChildren":["flow", "form", "block", "grid", "htable", "detail", "select", "radio", "list",  "data", "resource", "literal", "display", "xeTextBox", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button"]
             },
             {
                 "componentType":["block"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "style", "showInitially"],
                 "requiredChildren":[],
-                "optionalChildren":["block", "form", "grid", "htable", "detail", "select", "radio", "list", "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
+                "optionalChildren":["block", "form", "grid", "htable", "detail", "select", "radio", "list", "data", "literal", "display", "xeTextBox", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
             },
             {
                 "componentType":["form"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "style", "submit","submitLabel", "nextButtonLabel", "showInitially"],
                 "requiredChildren":[],
-                "optionalChildren":["grid", "htable", "detail", "select", "radio", "list",  "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
+                "optionalChildren":["grid", "htable", "detail", "select", "radio", "list",  "data", "literal", "display", "xeTextBox", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
             },
             {
                 "componentType":["grid"],
                 "requiredAttributes":["model"],
                 "optionalAttributes":["label", "style", "parameters", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize","onClick", "onLoad","onError", "loadInitially", "newRecordLabel","deleteRecordLabel","saveDataLabel","refreshDataLabel"],
                 "requiredChildren":[],
-                "optionalChildren":["select", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal","hidden" ]
+                "optionalChildren":["select", "data", "display", "xeTextBox", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal","hidden" ]
             },
             {
                 "componentType":["htable"],
                 "requiredAttributes":["model"],
                 "optionalAttributes":["label", "style", "parameters", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize","onClick", "onLoad","onError", "loadInitially", "newRecordLabel","deleteRecordLabel","saveDataLabel","refreshDataLabel"],
                 "requiredChildren":[],
-                "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal","hidden" ]
+                "optionalChildren":["select", "radio", "data", "display", "xeTextBox", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal","hidden" ]
             },
             {
                 "componentType":["detail"],
                 "requiredAttributes":["model"],
                 "optionalAttributes":["label", "style", "parameters", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize", "onLoad","onError", "loadInitially", "newRecordLabel","deleteRecordLabel","saveDataLabel","refreshDataLabel"],
                 "requiredChildren":[],
-                "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal","hidden"  ]
+                "optionalChildren":["select", "radio", "data", "display", "xeTextBox", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal","hidden"  ]
             },
             {
                 "componentType":["link"],
@@ -60,9 +60,16 @@
                 "optionalChildren":[]
             },
             {
-                "componentType":["text", "textArea", "datetime", "email", "tel"],
+                "componentType":[ "text", "textArea", "datetime", "email", "tel"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "labelStyle", "style","valueStyle", "value", "model", "parameters", "validation", "placeholder", "readonly", "required", "onUpdate", "onLoad", "onError", "loadInitially"],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            },
+            {
+                "componentType":[ "xeTextBox"],
+                "requiredAttributes":["subType"],
+                "optionalAttributes":["model","label","placeholder","style","parameters","validation","readonly","required","onUpdate","onLoad","onError","loadInitially"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
@@ -177,8 +184,12 @@
             {"AttributeType":["fractionDigits"], "renderProperty":{"inputType":"number", "defaultValue":2}},
             {"AttributeType":["staticData"], "renderProperty":{"inputType":"arrayOfMap"}},
             {"AttributeType":["defaultValue"], "renderProperty":{"inputType":"text"}},
-            {"AttributeType":["name"], "renderProperty":{"inputType":"nameText"}}
+            {"AttributeType":["name"], "renderProperty":{"inputType":"nameText"}},
+            {"AttributeType":["subType"], "renderProperty":{"inputType":"dropdown", "dropDownName": "subType", "defaultValue":"text"}}
         ],
+        "dropdowns" : {
+            "subType": ["text", "number", "email", "tel"]
+        },
         "documentation":"TODO - specify validation for scriptingLanguage, binding as select, default value, hint, etc. Remove duplicate AttributeType type"
     }
 

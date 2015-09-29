@@ -141,11 +141,10 @@ Copyright 2009-2015 Ellucian Company L.P. and its affiliates.
 --%>
     </head>
     <body>
-        <div id="splash"></div>
+    <div id="splash"></div>
         <div id="spinner" class="spinner spinner-img" style="display:none;">
 
         </div>
-
         <g:layoutBody />
 
         <r:layoutResources/>
