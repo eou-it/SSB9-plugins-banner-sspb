@@ -38,8 +38,7 @@ class Page {
         return (
             modelView.equals("{}") &&
             compiledView == null &&
-            compiledController == null &&
-            fileTimestamp == null
+            compiledController == null
         )
     }
 }
