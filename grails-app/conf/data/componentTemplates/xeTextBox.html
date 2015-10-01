@@ -19,9 +19,25 @@ optional += required?"xe-required=true ":"";
 optional += readonly?"xe-readonly ":" ";
 print("Optional attributes: " + optional);
 
-var onChange = onUpdate?"ngChange=\"${onUpdate}\" ":"";
+var onChange = "";
+//Note usage of $parent - this should literally be in the JS
+if (thiz.parent.isDataSetEditControl()) {
+  if (onUpdate)  {
+    onChange="$parent.${thiz.parent.name}_${name}_onUpdate(${GRID_ITEM});"
+  }
+  onChange="onChange=\"${onChange} $parent.${thiz.parent.name}DS.setModified(${GRID_ITEM});\"";
+  //ngClick is not supported in xeTextBox
+  //ngClick="ng-click=\"$parent.${parent.name}DS.setCurrentRecord(${GRID_ITEM});/"";
+} else {
+  if (onUpdate)  {
+    onChange="onChange=\"${name}_onUpdate();\""
+  }
+}
+
+print("onChange: ${onChange}");
+
 
 %>
-<xe-text-box xe-type="${subType}" xe-label="${label}" xe-value="${model}" xe-id="pbid-${name}${index}"
+<xe-text-box xe-type="${subType}" xe-label="${label}" ng-model="${model?model:name}" xe-id="pbid-${name}${index}"
   xe-placeholder="${placeholder}" ng-class="${name}_style" ${optional} ${onChange} >
 </xe-text-box>

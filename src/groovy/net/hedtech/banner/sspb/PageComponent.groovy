@@ -241,6 +241,10 @@ class PageComponent {
             false;
     }
 
+    boolean isDataSetEditControl() {
+        isDataSetEditControl(this)
+    }
+
     def getPropertiesBaseKey() {
         def nameList = []
         def pageComponent = this

@@ -21,7 +21,7 @@
         <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pbDeveloper.css')}">
     </g:else>
 
-    <script src="<g:resource plugin="banner-sspb" dir="js" file="pbDirectives.js" />"> </script>
+    <r:require modules="pageBuilderDev"/>
 
     <script type="text/javascript">
         var myCustomServices = ['ngResource', 'ui.bootstrap', 'pagebuilder.directives', 'ngUpload'];

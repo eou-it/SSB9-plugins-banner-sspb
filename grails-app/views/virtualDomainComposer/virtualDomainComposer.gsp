@@ -11,25 +11,6 @@
 
     <meta name="menuDefaultBreadcrumbId" content=""/>
 
-<%--
-<style>
-    div.customPage {
-        overflow-x: auto;
-        overflow-y: auto;
-        margin: 4px;
-        padding: 0;
-        width:99%;
-
-        position: absolute;
-        top: 110px;
-        bottom: 30px;
-        left:0;	/* rtl fix for ie */
-
-    }
-</style>
---%>
-
-
 <%
   if (pageInstance?.submitted) {
     out << "<script>"

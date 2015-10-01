@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.3.2 (12043) - http://www.bohemiancoding.com/sketch -->
+    <title>Rectangle 38 + Shape 2 Copy</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Desktop-HD" sketch:type="MSArtboardGroup" transform="translate(-312.000000, -6693.000000)">
+            <g id="Radio-Button-default-+-Radio-Button-selected-+-Check-box-Copy" sketch:type="MSLayerGroup" transform="translate(311.000000, 6631.000000)">
+                <g id="Radio-Button-selected" transform="translate(1.000000, 31.000000)" sketch:type="MSShapeGroup">
+                    <g id="Rectangle-38-+-Shape-2-Copy" transform="translate(0.000000, 31.000000)">
+                        <ellipse id="Oval-120" fill="#145F32" cx="10" cy="10" rx="10" ry="10"></ellipse>
+                        <circle id="Oval-123" fill="#FFFFFF" cx="9.52941176" cy="9.52941176" r="3.52941176"></circle>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

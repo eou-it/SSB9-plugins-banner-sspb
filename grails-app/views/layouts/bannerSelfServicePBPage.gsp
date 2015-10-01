@@ -63,29 +63,8 @@ Copyright 2009-2015 Ellucian Company L.P. and its affiliates.
 
         <r:layoutResources/>
 
-        <!-- TODO begin from Harry -->
-
-        <!--  below file fixes Error: $digest already in progress issue -->
-        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery-ui-1.8.24.custom.js" />"> </script>
-
-        <!-- above is a duplicate import of newer version than in ui-ss-->
-
         <g:set var="localeLanguage"    value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).language}" scope="page" />
         <g:set var="localeBrowserFull" value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).toString().replace('_','-')}" scope="page" />
-
-        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular.js" />"></script>
-        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular-resource.js"/>"></script>
-        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular" file="angular-sanitize.js"/>"></script>
-
-        <g:if test="${localeLanguage!='en'}">
-            <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery.ui.datepicker-${localeLanguage}.js" />"> </script>
-        </g:if>
-        <g:if test="${localeBrowserFull!='en-US'}">
-            <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery.ui.datepicker-${localeBrowserFull}.js" />"> </script>
-        </g:if>
-        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeLanguage}.js" />"> </script>
-        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeBrowserFull.toLowerCase()}.js" />"> </script>
-        <!-- end from Harry -->
 
         <script type="text/javascript">
             var rootWebApp = ${createLink(uri: '/')};  //use in controller restful interface
@@ -100,45 +79,8 @@ Copyright 2009-2015 Ellucian Company L.P. and its affiliates.
         <g:customStylesheetIncludes/>
         <!-- layout head contains angular module declaration and need to be placed before pbRunApp.js -->
         <g:layoutHead />
-        <script src="<g:resource plugin="banner-sspb" dir="js" file="pbRunApp.js" />"> </script>
-<%--
-        <style>
-            *.margin
-            {
-                margin-top: 10px;
-                margin-left:10px;
-                margin-right:10px;
-                overflow-y:scroll;
-                overflow-x:auto;
-            }
-            div.customPage {
-                text-align:start;
-                overflow-x: auto;
-                overflow-y: auto;
-                margin: 4px;
-                padding: 0;
-                width:99%;
 
-                position: absolute;
-                top: 110px;
-                bottom: 30px;
-                left:0;	/* rtl fix for ie */
-            }
 
-            input.ng-invalid, select.ng-invalid, textarea.ng-invalid {
-                background: #fff3f3;
-                border-color: #ffaaaa;
-                color: #cc0000;
-            }
-            input.ng-invalid:focus, select.ng-invalid:focus, textarea.ng-invalid:focus {
-                border: 1px solid #ffaaaa;
-                -moz-box-shadow: 0 0 0.5em #ffaaaa;
-                -webkit-box-shadow: 0 0 0.5em #ffaaaa;
-                box-shadow: 0 0 0.5em #ffaaaa;
-            }
-
-        </style>
---%>
     </head>
     <body>
     <div id="splash"></div>
@@ -150,6 +92,18 @@ Copyright 2009-2015 Ellucian Company L.P. and its affiliates.
         <r:layoutResources/>
 
         <g:customJavaScriptIncludes/>
+
+
+    <g:if test="${localeLanguage!='en'}">
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery.ui.datepicker-${localeLanguage}.js" />"> </script>
+    </g:if>
+    <g:if test="${localeBrowserFull!='en-US'}">
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery.ui.datepicker-${localeBrowserFull}.js" />"> </script>
+    </g:if>
+    <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeLanguage}.js" />"> </script>
+    <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeBrowserFull.toLowerCase()}.js" />"> </script>
+
+
 
     <script type="text/javascript">
         window.ngGrid.i18n[gridLocale] = {

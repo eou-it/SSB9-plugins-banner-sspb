@@ -407,6 +407,8 @@ class CompileService {
         }
 
         // here is too early to compile query parameter expression, move to getQueryParameters
+        // It looks like the binding setting has a flaw. When a model is given a value (say the name of another component)
+        // the binding will be set to Rest, even if there is no parent component connected to a rest resource.
 
         pageComponent.components?.eachWithIndex {it, index ->
             it.parent = pageComponent
