@@ -10,34 +10,37 @@ label = label && (thiz.parent.type != COMP_TYPE_HTABLE)? thiz.tran("label"):"";
 placeholder = placeholder ? thiz.tran("placeholder"):"";
 
 var optional = "";
-optional += validation.min?"min=\"${validation.min}\" ":"";
-optional += validation.max?"max=\"${validation.max}\" ":"";
+optional += validation.min?"xe-min=\"${validation.min}\" ":"";
+optional += validation.max?"xe-max=\"${validation.max}\" ":"";
 optional += validation.minlength?"xe-minlength=\"${validation.minlength}\" ":"";
 optional += validation.maxlength?"xe-maxlength=\"${validation.maxlength}\" ":"";
 optional += validation.pattern?"xe-pattern=\"${validation.pattern}\" ":"";
 optional += required?"xe-required=true ":"";
-optional += readonly?"xe-readonly ":" ";
+optional += readonly?"xe-readonly ":"";
+optional += onFocus?"xe-focus=\"${onFocus}\" ":"";
+optional += onBlur?"xe-blur=\"${onBlur}\" ":"";
+
 print("Optional attributes: " + optional);
 
-var onChange = "";
+var ngChange = "";
 //Note usage of $parent - this should literally be in the JS
 if (thiz.parent.isDataSetEditControl()) {
   if (onUpdate)  {
-    onChange="$parent.${thiz.parent.name}_${name}_onUpdate(${GRID_ITEM});"
+    ngChange="$parent.${thiz.parent.name}_${name}_onUpdate(${GRID_ITEM});"
   }
-  onChange="onChange=\"${onChange} $parent.${thiz.parent.name}DS.setModified(${GRID_ITEM});\"";
+  ngChange="ng-change=\"${onChange} $parent.${thiz.parent.name}DS.setModified(${GRID_ITEM});\"";
   //ngClick is not supported in xeTextBox
   //ngClick="ng-click=\"$parent.${parent.name}DS.setCurrentRecord(${GRID_ITEM});/"";
 } else {
   if (onUpdate)  {
-    onChange="onChange=\"${name}_onUpdate();\""
+    ngChange="ng-change=\"${name}_onUpdate();\""
   }
 }
 
-print("onChange: ${onChange}");
+print("ngChange: ${ngChange}");
 
 
 %>
 <xe-text-box xe-type="${subType}" xe-label="${label}" ng-model="${model?model:name}" xe-id="pbid-${name}${index}"
-  xe-placeholder="${placeholder}" ng-class="${name}_style" ${optional} ${onChange} >
+  xe-placeholder="${placeholder}" ng-class="${name}_style" ${optional} ${ngChange} >
 </xe-text-box>

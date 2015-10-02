@@ -369,8 +369,6 @@ class CompileService {
                  code += """
                        |    \$scope.${pageComponent.name}_onUpdate = function() {
                        |         $duplicateExpr
-                       |         // handle undefined value
-                       |         \$scope.${pageComponent.name} = nvl(\$scope.${pageComponent.name}, "");
                        |         $expr
                        |    };
                        |""".stripMargin()

@@ -69,7 +69,7 @@
             {
                 "componentType":[ "xeTextBox"],
                 "requiredAttributes":["subType"],
-                "optionalAttributes":["model","label","placeholder","style","parameters","validation","readonly","required","onUpdate","onLoad","onError","loadInitially"],
+                "optionalAttributes":["model","label","placeholder","style","parameters","validation","readonly","required","onUpdate","onFocus","onBlur","onLoad","onError","loadInitially"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
@@ -163,7 +163,7 @@
                 "booleanTrueValue", "booleanFalseValue", "imageUrl", "url", "labelStyle", "valueStyle","newRecordLabel","deleteRecordLabel","saveDataLabel",
                 "refreshDataLabel" ], "renderProperty":{"inputType":"text"}},
             {"AttributeType":["type"], "renderProperty":{"inputType":"select"}},
-            {"AttributeType":["submit", "value", "onUpdate", "onClick", "onLoad","onError", "sequence", "description", "documentation"], "renderProperty":{"inputType":"textarea"}},
+            {"AttributeType":["submit", "value", "onUpdate", "onBlur", "onFocus", "onClick", "onLoad","onError", "sequence", "description", "documentation"], "renderProperty":{"inputType":"textarea"}},
             {"AttributeType":["validation"],"renderProperty":{"inputType":"map"}},
             {"AttributeType":["resource"], "renderProperty":{"inputType":"combo", "selectSource":"virtualDomains.pbadmVirtualDomainLookup"}},
             {"AttributeType":["scriptingLanguage"], "renderProperty":{"inputType":"text", "defaultValue":"JavaScript"}},

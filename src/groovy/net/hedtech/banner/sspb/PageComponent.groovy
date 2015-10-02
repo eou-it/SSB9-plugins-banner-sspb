@@ -145,6 +145,8 @@ class PageComponent {
     Boolean required=false
     Boolean readonly=false
     String onClick               // a code block to execute when a button is clicked
+    String onFocus = ""          // executed when an input gets focus - see Angular ngFocus
+    String onBlur = ""           // executed when an input looses focus - see Angular ngBlur
 
     // Show properties
     Boolean showInitially = true
