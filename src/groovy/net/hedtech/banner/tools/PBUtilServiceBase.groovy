@@ -31,11 +31,14 @@ class PBUtilServiceBase {
     }
 
     def saveObject = { o ->
-        if (!o.merge(flush:true)) {
-            o.errors.each {
-                println it
-            }
+        def savedObject = null
+        try {
+            savedObject = o.merge(flush:true)
+        } catch (org.hibernate.HibernateException e ) {
+            println "Exception in saveObject: $e"
+            return null
         }
+        return savedObject
     }
 
     def json2date = { s ->
@@ -88,7 +91,7 @@ class PBUtilServiceBase {
         switch ( mode ) {
             case loadIfNew:
                 def maxt = safeMaxTime(object?.fileTimestamp?.getTime(),object?.lastUpdated?.getTime())
-                doLoad = (object == null) ||  (file.lastModified() > maxt  )
+                doLoad = (object == null) || (object.metaClass.respondsTo(object, "isEmptyInstance") && object.isEmptyInstance()) || (file.lastModified() > maxt  )
                 break
             case loadOverwriteExisting:
                 break

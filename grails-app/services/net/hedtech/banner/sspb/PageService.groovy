@@ -161,7 +161,12 @@ class PageService {
         pageSecurityService.delete([:],[constantName:params.id])
         Page.withTransaction {
             def page = Page.find{constantName==params.id}
-            page.delete(failOnError:true)
+            if (page.extensions?.size() > 0) {
+                throw new RuntimeException( "Deletion of page not allowed where dependent pages exist.")
+            }
+            else {
+                page.delete(failOnError:true)
+            }
         }
     }
 

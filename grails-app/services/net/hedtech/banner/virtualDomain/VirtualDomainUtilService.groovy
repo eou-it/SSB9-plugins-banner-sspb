@@ -112,7 +112,7 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
             vd.fileTimestamp=json2date(json.fileTimestamp)
             if (file)
                 vd.fileTimestamp = new Date(file.lastModified())
-            saveObject(vd)
+            vd = saveObject(vd)
             if (file && !vd.hasErrors()) {
                 file.renameTo(file.getCanonicalPath() + '.' + nowAsIsoInFileName() + ".imp")
             }

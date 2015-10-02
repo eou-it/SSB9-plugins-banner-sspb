@@ -3,7 +3,7 @@ package net.hedtech.banner.sspb
 class Page {
 
     static hasMany = [pageRoles: PageRole, extensions: Page] //Optional child page(s) (sub classes)
-    Page extendsPage    //Optional parent page (super class), see constraints
+    Page extendsPage     //Optional parent page (super class), see constraints
 
     String constantName
     String modelView
@@ -21,7 +21,7 @@ class Page {
         compiledController nullable: true  , maxSize: 1000000, widget: 'textarea'
         extendsPage        nullable: true
         //dateCreated     nullable:true
-        //lastUpdated     nullable:true
+        lastUpdated     nullable:true
         fileTimestamp   nullable:true
     }
 
@@ -33,12 +33,12 @@ class Page {
         //compiledView type: "clob"
         //compiledController type: "clob"
     }
+
     boolean isEmptyInstance() {
         return (
-                modelView.equals("{}") &&
-                        compiledView == null &&
-                        compiledController == null &&
-                        fileTimestamp == null
+            modelView.equals("{}") &&
+            compiledView == null &&
+            compiledController == null
         )
     }
 }
