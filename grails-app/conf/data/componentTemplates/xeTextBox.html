@@ -28,7 +28,7 @@ if (thiz.parent.isDataSetEditControl()) {
   if (onUpdate)  {
     ngChange="$parent.${thiz.parent.name}_${name}_onUpdate(${GRID_ITEM});"
   }
-  ngChange="ng-change=\"${onChange} $parent.${thiz.parent.name}DS.setModified(${GRID_ITEM});\"";
+  ngChange="ng-change=\"${onUpdate} $parent.${thiz.parent.name}DS.setModified(${GRID_ITEM});\"";
   //ngClick is not supported in xeTextBox
   //ngClick="ng-click=\"$parent.${parent.name}DS.setCurrentRecord(${GRID_ITEM});/"";
 } else {
