@@ -3,7 +3,7 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.core.io.ContextResource
 import org.apache.commons.lang.StringUtils
-import net.hedtech.banner.tools.i18n.PageMessageSource
+//import net.hedtech.banner.tools.i18n.PageMessageSource
 import net.hedtech.banner.tools.i18n.BannerMessageSource
 import grails.util.Environment
 import org.codehaus.groovy.grails.web.context.GrailsConfigUtils
@@ -102,17 +102,10 @@ Brief summary/description of the plugin.
 
         LOG.debug "Creating messageSource with basenames: $baseNames"
 
-        // create bean pageMessageSource
-        pageMessageSource (PageMessageSource) {
-        }
-
-
         messageSource(BannerMessageSource) {
             basenames = baseNames.toArray()
             fallbackToSystemLocale = false
-            //bundleLocation = externalbundleloc
             pluginManager = manager
-            pageMessageSource = ref (pageMessageSource)
             if (Environment.current.isReloadEnabled() || GrailsConfigUtils.isConfigTrue(application, GroovyPagesTemplateEngine.CONFIG_PROPERTY_GSP_ENABLE_RELOAD)) {
                 def cacheSecondsSetting = application?.flatConfig?.get('grails.i18n.cache.seconds')
                 if(cacheSecondsSetting != null) {

@@ -68,7 +68,7 @@ class PageService {
         result = Page.find{constantName==params.id}
         //result = Page.get(params.id)
 
-        supplementPage( result )
+        //supplementPage( result )
         log.trace "PageService.show returning ${result}"
         def showResult = [constantName : result.constantName, id: result.id, extendsPage: result.extendsPage, version: result.version, modelView: result.modelView]
 
@@ -80,7 +80,7 @@ class PageService {
     // TODO for now update(post) handles both update and creation to simplify client side logic
     def create(Map content, params) {
         log.trace "PageService.create invoked"
-        checkForExceptionRequest()
+        //checkForExceptionRequest()
         def result
         Page.withTransaction {
             // compile first
@@ -107,7 +107,7 @@ class PageService {
         }
         if (pageSource)  {
             if (!pageInstance) {
-                pageInstance = new Page([constantName:pageName, extendsPage:extendsPage])
+                pageInstance = new Page([constantName:pageName, extendsPage:extendsPage.size?extendsPage:null])
             }
             pageInstance.modelView=pageSource
             ret = compilePage(pageInstance)
@@ -170,52 +170,54 @@ class PageService {
         }
     }
 
+    // Is below code really needed?
 
-    public def checkOptimisticLock( domainObject, content ) {
+//    public def checkOptimisticLock( domainObject, content ) {
+//
+//        if (domainObject.hasProperty( 'version' )) {
+//            if (!content?.version) {
+//                domainObject.errors.reject( 'version', "net.hedtech.restfulapi.Page.missingVersion")
+//                throw new ValidationException( "Missing version field", domainObject.errors )
+//            }
+//            int ver = content.version instanceof String ? content.version.toInteger() : content.version
+//            if (ver != domainObject.version) {
+//                throw exceptionForOptimisticLock( domainObject, content )
+//            }
+//        }
+//    }
+//
+//
+//    private def exceptionForOptimisticLock( domainObject, content ) {
+//        new HibernateOptimisticLockingFailureException( new StaleObjectStateException( domainObject.class.getName(), domainObject.id ) )
+//    }
+//
+//
+//    /**
+//     * Checks the request for a flag asking for a specific exception to be thrown
+//     * so error handling can be tested.
+//     * This is a method to support testing of the plugin, and should not be taken
+//     * as an example of good service construction.
+//     **/
+//    private void checkForExceptionRequest() {
+//        def params = WebUtils.retrieveGrailsWebRequest().getParameterMap()
+//        if (params.forceGenericError == 'y') {
+//            throw new Exception( "generic failure" )
+//        }
+//        if (params.throwOptimisticLock == 'y') {
+//            throw new OptimisticLockingFailureException( "requested optimistic lock for testing" )
+//        }
+//        if (params.throwApplicationException == 'y') {
+//           //throw new DummyApplicationException( params.appStatusCode, params.appMsgCode, params.appErrorType )
+//        }
+//    }
+//
+//
+//    private void supplementPage( Page page ) {
+//        MessageDigest digest = MessageDigest.getInstance("SHA1")
+//        digest.update("constantName:${page.getConstantName()}".getBytes("UTF-8"))
+//        //digest.update("description${page.getDescription()}".getBytes("UTF-8"))
+//        def properties = [sha1:new BigInteger(1,digest.digest()).toString(16).padLeft(40,'0')]
+//        page.metaClass.getSupplementalRestProperties << {-> properties }
+//    }
 
-        if (domainObject.hasProperty( 'version' )) {
-            if (!content?.version) {
-                domainObject.errors.reject( 'version', "net.hedtech.restfulapi.Page.missingVersion")
-                throw new ValidationException( "Missing version field", domainObject.errors )
-            }
-            int ver = content.version instanceof String ? content.version.toInteger() : content.version
-            if (ver != domainObject.version) {
-                throw exceptionForOptimisticLock( domainObject, content )
-            }
-        }
-    }
-
-
-    private def exceptionForOptimisticLock( domainObject, content ) {
-        new HibernateOptimisticLockingFailureException( new StaleObjectStateException( domainObject.class.getName(), domainObject.id ) )
-    }
-
-
-    /**
-     * Checks the request for a flag asking for a specific exception to be thrown
-     * so error handling can be tested.
-     * This is a method to support testing of the plugin, and should not be taken
-     * as an example of good service construction.
-     **/
-    private void checkForExceptionRequest() {
-        def params = WebUtils.retrieveGrailsWebRequest().getParameterMap()
-        if (params.forceGenericError == 'y') {
-            throw new Exception( "generic failure" )
-        }
-        if (params.throwOptimisticLock == 'y') {
-            throw new OptimisticLockingFailureException( "requested optimistic lock for testing" )
-        }
-        if (params.throwApplicationException == 'y') {
-           //throw new DummyApplicationException( params.appStatusCode, params.appMsgCode, params.appErrorType )
-        }
-    }
-
-
-    private void supplementPage( Page page ) {
-        MessageDigest digest = MessageDigest.getInstance("SHA1")
-        digest.update("constantName:${page.getConstantName()}".getBytes("UTF-8"))
-        //digest.update("description${page.getDescription()}".getBytes("UTF-8"))
-        def properties = [sha1:new BigInteger(1,digest.digest()).toString(16).padLeft(40,'0')]
-        page.metaClass.getSupplementalRestProperties << {-> properties }
-    }
 }

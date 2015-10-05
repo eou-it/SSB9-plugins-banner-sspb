@@ -459,6 +459,9 @@ label {
   border: 1px solid #206E9F;
   box-shadow: inset 0px -4px 0px #032133; }
 
+.checkbox-container {
+  display: inline-block; }
+
 .checkbox-container input[type="checkbox"] {
   display: none; }
 
@@ -531,7 +534,8 @@ ul.dropdown-menu li:hover {
 
 .selected {
   font-family: "OpenSans-regular";
-  float: left; }
+  outline: 1px solid #B0DEEC;
+  background-color: #F3FCFF; }
 
 .placeholder {
   color: #869FB1;
@@ -580,7 +584,10 @@ td .labels {
   border: 1px solid #4F585F;
   background-color: #FFFFFF; }
 
-input[type="radio"] {
+.radio-container {
+  display: inline-block; }
+
+.radio-container input[type="radio"] {
   display: none; }
 
 input[type="radio"] + label {

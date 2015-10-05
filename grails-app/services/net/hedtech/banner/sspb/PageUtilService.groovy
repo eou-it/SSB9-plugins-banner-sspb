@@ -206,8 +206,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             // if a new file we need to add it to the base names
             ApplicationContext applicationContext = (ApplicationContext) ServletContextHolder.getServletContext()
                     .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT);
-            PageMessageSource pageMessageSource = applicationContext.getBean("pageMessageSource")
-            pageMessageSource.addPageResource(baseName)
+            applicationContext.getBean("messageSource")?.pageMessageSource?.addPageResource(baseName)
         }
         temp.putAll(properties)
         new org.springframework.util.DefaultPropertiesPersister().store( temp, new OutputStreamWriter( new FileOutputStream(bundle),"UTF-8" ), "")
@@ -218,9 +217,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                                                 .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT);
         def messageSource = applicationContext.getBean("messageSource")
         messageSource.clearCache()
-
-        def pageMessageSource = applicationContext.getBean("pageMessageSource")
-        pageMessageSource.clearCache()
+        messageSource.pageMessageSource?.clearCache()
     }
 
 }

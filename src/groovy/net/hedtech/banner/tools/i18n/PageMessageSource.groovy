@@ -83,12 +83,15 @@ class PageMessageSource extends ReloadableResourceBundleMessageSource {
             if (!pageResources.contains(globalPropertiesName))
                 pageResources.add(globalPropertiesName)
 
+            this.setResourceLoader() // make sure that the super  class uses the resource loader above
             setBasenames( (String []) pageResources)
+
         } catch (ex) {
             logger.error "Exception while initializing page resources in PageMessageSource:\n${ex.getMessage()}"
             throw ex
         }
     }
+
     public void addPageResource(String baseName)  {
         try {
             if (baseName && !pageResources.contains(baseName)) {

@@ -7,8 +7,7 @@ angular.module("templates/label.html", []).run(["$templateCache", function($temp
 
 angular.module("templates/badge.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/badge.html",
-    "<span tabindex=\"0\" class=\"xe-badge {{::type}}-badge\" aria-label=\"{{::value}}\">{{value}}</span>\n" +
-    "");
+    "<span tabindex=\"0\" class=\"xe-badge {{::xeType}}-badge\" aria-label=\"{{::xeLabel}}\">{{xeLabel}}</span>");
 }]);
 
 angular.module("templates/button.html", []).run(["$templateCache", function($templateCache) {
@@ -18,23 +17,26 @@ angular.module("templates/button.html", []).run(["$templateCache", function($tem
 
 angular.module("templates/checkbox.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/checkbox.html",
-    "<div class=\"checkbox-container\">\n" +
-    "    <input ng-model=\"value\" class=\"checkbox\" ng-class= \"{cbdisabled:disabled}\" ng-click=\"onClick()\" type=\"checkbox\" id=\"{{id}}\" ng-disabled=\"disabled\"/></input>\n" +
-    "    <label role=\"checkbox\" for=\"{{id}}\" {{ disabled==true ? '': tabindex=\"0\" }} aria-checked=\"{{value}}\">{{label}}</label>\n" +
+    "<div class=\"checkbox-container\" tabindex=\"{{!xeDisabled ? 0 : ''}}\"> \n" +
+    "    <input ng-model=\"ngModel\" class=\"checkbox\" ng-class= \"{cbdisabled:xeDisabled}\" ng-click=\"xeOnClick({data:ngModel})\" type=\"checkbox\" id=\"{{xeId}}\" ng-disabled=\"xeDisabled\"/></input>\n" +
+    "    <xe-label xe-value=\"{{xeLabel}}\" role=\"checkbox\" xe-for=\"{{xeId}}\" aria-checked=\"{{ngModel}}\">\n" +
     "</div>");
 }]);
 
 angular.module("templates/dropdown.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/dropdown.html",
-    "<div class=\"btn-group\">\n" +
-    "  	<button type=\"button\" ng-disabled= {{disabled}} ng-class= \"{disabledDD:disabled}\" data-toggle=\"dropdown\" class=\"btn btn-default dropdown dropdown-toggle\">\n" +
-    "  		<span class=\"placeholder\" ng-show=\"!selectedValue\">{{default}}</span>\n" +
-    "  		<span class=\"selected\">{{ selectedValue }}</span>\n" +
+    "<div class=\"btn-group\" role=\"listbox\">\n" +
+    "  	<button type=\"button\" ng-disabled= {{disabled}} ng-class= \"{disabledDD:disabled}\" data-toggle=\"dropdown\" class=\"btn btn-default dropdown dropdown-toggle\" >\n" +
+    "  		<span class=\"placeholder\" ng-show=\"!ngModel\">{{::xeLabel}}</span>\n" +
+    "  		<span class=\"placeholder\">{{ dropDownLabel }}</span>\n" +
     "  		<span class=\"glyphicon glyphicon-chevron-down\"></span></button>\n" +
-    "  		<ul class=\"dropdown-menu\" role=\"menu\" aria-labelledby=\"dropdownMenu1\">\n" +
-    "  			<li ng-repeat=\"val in value\" ng-click=\"updateModel(val)\">{{val}}</li>\n" +
+    "\n" +
+    "  		<ul class=\"dropdown-menu\" role=\"listbox\" aria-expanded=\"false\" role=\"listbox\">\n" +
+    "            <li ng-hide=\"!ngModel\" ng-click=\"updateModel(xeLabel)\">{{::xeLabel}}</li>\n" +
+    "  		    <li  ng-if=\"!isObject\" role=\"option\" ng-repeat=\"option in xeOptions track by $index\" ng-click=\"updateModel(option)\" ng-class=\"{'selected':option===ngModel}\">{{::option}}</li>\n" +
+    "            <li ng-if=\"isObject\" ng-repeat=\"option in xeOptions track by $index\" ng-click=\"updateModel(option)\">{{::option.label}}</li>\n" +
     "  		</ul>\n" +
-    " </div> ");
+    " </div>");
 }]);
 
 angular.module("templates/schedule.html", []).run(["$templateCache", function($templateCache) {
@@ -57,10 +59,10 @@ angular.module("templates/column-filter.html", []).run(["$templateCache", functi
     "    </button>\n" +
     "    <ul class=\"column-setting-menu\" ng-hide=\"hideColumnSettingMenu\">\n" +
     "        <li>\n" +
-    "			<xe-checkbox label=\"'Select All'\" value=\"selectAll\" on-click=\"onSelectAll({data:selectAll})\" id=\"'0'\">      </xe-checkbox> \n" +
+    "			<xe-checkbox xe-label=\"Select All\" ng-model=\"selectAll\" xe-on-click=\"onSelectAll({data:selectAll})\" id=\"'0'\">      </xe-checkbox>\n" +
     "        </li>\n" +
     "        <li ng-repeat=\"heading in header\" ng-class=\"{'disable-container':heading.options.disable}\">\n" +
-    "            <xe-checkbox label=\"heading.title\" value=\"heading.options.visible\" on-click=\"hideUnhideColumn(heading)\" id=\"$index+1\" disabled=\"heading.options.disable\"></xe-checkbox> \n" +
+    "            <xe-checkbox xe-label=\"{{heading.title}}\" ng-model=\"heading.options.visible\" xe-on-click=\"hideUnhideColumn(heading)\" xe-id=\"{{$index+1}}\" xe-disabled=\"heading.options.disable\"></xe-checkbox>\n" +
     "        </li>\n" +
     "    </ul>\n" +
     "</div>");
@@ -196,8 +198,10 @@ angular.module("templates/schedule.html", []).run(["$templateCache", function($t
 
 angular.module("templates/radio-button.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/radio-button.html",
-    "<input ng-value=\"value\" ng-model=\"model\" ng-disabled=\"{{disabled}}\" ng-class=\"{disabledRadio:disabled}\" ng-click=\"onClick\" type=\"radio\" id=\"{{id}}\" name=\"name\" title=\"radioButton\"/>\n" +
-    "<label for=\"{{id}}\" tabindex=\"0\">{{label}}</label></section>");
+    "<div class=\"radio-container\" tabindex=\"{{!xeDisabled ? 0 : ''}}\">\n" +
+    "    <input ng-value=\"ngValue\" ng-model=\"ngModel\" ng-disabled=\"xeDisabled\" ng-class=\"{disabledRadio:xeDisabled}\" ng-click=\"xeOnClick\" type=\"radio\" id=\"{{xeId}}\" name=\"{{xeName}}\"/>\n" +
+    "    <xe-label xe-value=\"{{xeLabel}}\" xe-for=\"{{xeId}}\" aria-checked=\"{{ngModel===ngValue}}\"  role=\"radio\"  >\n" +
+    "</div>");
 }]);
 
 angular.module("templates/simple-textbox.html", []).run(["$templateCache", function($templateCache) {
@@ -208,7 +212,7 @@ angular.module("templates/simple-textbox.html", []).run(["$templateCache", funct
 
 angular.module("templates/statusLabel.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/statusLabel.html",
-    "<span class=\"labels {{labelType}}\" aria-label=\"{{::value}}\" tabindex=\"0\">{{::value}}</span>");
+    "<span class=\"labels {{xeType}}\" aria-label=\"{{::xeLabel}}\" tabindex=\"0\">{{::xeLabel}}</span>");
 }]);
 
 angular.module("templates/switch.html", []).run(["$templateCache", function($templateCache) {

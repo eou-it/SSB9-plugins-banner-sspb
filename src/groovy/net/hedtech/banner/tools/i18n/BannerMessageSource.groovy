@@ -13,13 +13,20 @@ import java.util.concurrent.ConcurrentHashMap
 // from ssh://git@devgit1/banner/plugins/banner_tools.git
 class BannerMessageSource extends PluginAwareResourceBundleMessageSource {
 
-    //String bundleLocation
     private PathMatchingResourcePatternResolver extensibleResourceResolver;
     private ResourceLoader extensibleResourceLoader;
     private Map cachedExtensibleProperties = new ConcurrentHashMap();
     private int externalBundleCacheMillis = -1;
 
     PageMessageSource pageMessageSource
+
+    public BannerMessageSource() {
+        super()
+        if (pageMessageSource == null) {
+            pageMessageSource = new PageMessageSource()
+            //pageMessageSource.clearCache()
+        }
+    }
 
     @Override
     protected String resolveCodeWithoutArguments(String code, Locale locale) {
