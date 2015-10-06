@@ -1,0 +1,29 @@
+{
+   "constantName": "extPage2",
+   "extendsPage": {
+      "constantName": "testBasePage2",
+      "extendsPage": null,
+      "modelView": null,
+      "compiledView": null,
+      "compiledController": null,
+      "version": null,
+      "lastUpdated": null,
+      "extensions": null,
+      "dateCreated": null,
+      "id": null,
+      "fileTimestamp": null,
+      "pageRoles": null,
+      "class": "net.hedtech.banner.sspb.Page"
+   },
+   "modelView": "{\n      \"type\": \"page\",\n      \"name\": \"extPage2\",\n      \"title\": \"Test Extension Page 2\",\n      \"scriptingLanguage\": \"JavaScript\",\n      \"components\": [\n            {\n                  \"name\": \"xeTextBox\",\n                  \"type\": \"xeTextBox\",\n                  \"subType\": \"text\",\n                  \"label\": \"xe Text\",\n                  \"placeholder\": \"Enter some text\",\n                  \"parameters\": {},\n                  \"validation\": {},\n                  \"readonly\": false,\n                  \"required\": false,\n                  \"loadInitially\": true\n            }\n      ]\n}",
+   "compiledView": null,
+   "compiledController": null,
+   "version": null,
+   "lastUpdated": null,
+   "extensions": null,
+   "dateCreated": null,
+   "id": null,
+   "fileTimestamp": null,
+   "pageRoles": null,
+   "class": "net.hedtech.banner.sspb.Page"
+}

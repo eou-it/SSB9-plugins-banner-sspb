@@ -109,6 +109,9 @@ class PageService {
             if (!pageInstance) {
                 pageInstance = new Page([constantName:pageName, extendsPage:extendsPage.size?extendsPage:null])
             }
+            else {
+                pageInstance.extendsPage = extendsPage ? Page.findByConstantName(extendsPage.constantName) : null
+            }
             pageInstance.modelView=pageSource
             ret = compilePage(pageInstance)
             if (ret.statusCode == 0) {
