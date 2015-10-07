@@ -12,23 +12,26 @@ class PageIntegrationSpec extends IntegrationSpec {
 
     void "Integration test create page and extension"() {
         given:
-        Page base = new Page(constantName: "stu.base", modelView: "{\n" +
-                "      \"type\": \"page\",\n" +
-                "      \"name\": \"StudentBase\",\n" +
-                "      \"title\": \"Student Base\",\n" +
-                "      \"scriptingLanguage\": \"JavaScript\",\n" +
-                "      \"components\": null\n" +
-                "}")
+        Page base = new Page(constantName: "stu.base", modelView:
+                '''{
+                    "type": "page",
+                    "name": "StudentBase",
+                    "title": "Student Base",
+                    "scriptingLanguage": "JavaScript",
+                    "components": null
+                   }''')
         Page ext1 = new Page(constantName: "stu.ext.1.1", modelView: "{}")
         base.addToExtensions(ext1)
-        Page ext2 = new Page(constantName: "stu.ext.1.2", modelView: "{\n" +
-                "      \"type\": \"page\",\n" +
-                "      \"name\": \"StudentExtz12\",\n" +
-                "      \"title\": \"Student Base\",\n" +
-                "      \"scriptingLanguage\": \"JavaScript\",\n" +
-                "      \"components\": null\n" +
-                "}")
+        Page ext2 = new Page(constantName: "stu.ext.1.2", modelView:
+                '''{
+                    "type": "page",
+                    "name": "StudentExtz12",
+                    "title": "Student Base Extended 2",
+                    "scriptingLanguage": "JavaScript",
+                    "components": null
+                   }''')
         ext1.addToExtensions(ext2)
+
 
         when: "base page created"
         then: "able to create page that is not an extension"
@@ -59,22 +62,24 @@ class PageIntegrationSpec extends IntegrationSpec {
 
     void "Integration test multiple extensions"() {
         given:
-        Page base = new Page(constantName: "stu.base", modelView: "{\n" +
-                "      \"type\": \"page\",\n" +
-                "      \"name\": \"StudentBase\",\n" +
-                "      \"title\": \"Student Base\",\n" +
-                "      \"scriptingLanguage\": \"JavaScript\",\n" +
-                "      \"components\": null\n" +
-                "}")
+        Page base = new Page(constantName: "stu.base", modelView:
+                '''{
+                    "type": "page",
+                    "name": "StudentBase",
+                    "title": "Student Base",
+                    "scriptingLanguage": "JavaScript",
+                    "components": null
+                   }''')
         Page ext1 = new Page(constantName: "stu.ext.1.1", modelView: "{}")
         base.addToExtensions(ext1)
-        Page ext2 = new Page(constantName: "stu.ext.1.2", modelView: "{\n" +
-                "      \"type\": \"page\",\n" +
-                "      \"name\": \"StudentExtz12\",\n" +
-                "      \"title\": \"Student Base\",\n" +
-                "      \"scriptingLanguage\": \"JavaScript\",\n" +
-                "      \"components\": null\n" +
-                "}")
+        Page ext2 = new Page(constantName: "stu.ext.1.2", modelView:
+                '''{
+                    "type": "page",
+                    "name": "StudentExtz12",
+                    "title": "Student Base Extended 2",
+                    "scriptingLanguage": "JavaScript",
+                    "components": null
+                   }''')
         base.addToExtensions(ext2)
 
         when: "Save with multiple extensions"
@@ -88,13 +93,14 @@ class PageIntegrationSpec extends IntegrationSpec {
 
     void "Integration test update page"() {
         given:
-        Page base = new Page(constantName: "stu.base", modelView: "{\n" +
-                "      \"type\": \"page\",\n" +
-                "      \"name\": \"StudentBase\",\n" +
-                "      \"title\": \"Student Base\",\n" +
-                "      \"scriptingLanguage\": \"JavaScript\",\n" +
-                "      \"components\": null\n" +
-                "}")
+        Page base = new Page(constantName: "stu.base", modelView:
+                '''{
+                    "type": "page",
+                    "name": "StudentBase",
+                    "title": "Student Base",
+                    "scriptingLanguage": "JavaScript",
+                    "components": null
+                   }''')
 
         when:
         base.save(flush:true,failOnError: true)
@@ -103,13 +109,13 @@ class PageIntegrationSpec extends IntegrationSpec {
         base.constantName == Page.findByConstantName("stu.base").constantName
 
         when:
-        base.modelView =  "{\n" +
-                "      \"type\": \"page\",\n" +
-                "      \"name\": \"StudentBaseUpdate\",\n" +
-                "      \"title\": \"Student Base Updated\",\n" +
-                "      \"scriptingLanguage\": \"JavaScript\",\n" +
-                "      \"components\": null\n" +
-                "}"
+        base.modelView =  '''{
+                    "type": "page",
+                    "name": "StudentBaseUpdate",
+                    "title": "Student Base Updated",
+                    "scriptingLanguage": "JavaScript",
+                    "components": null
+                   }'''
         base.save(flush:true,failOnError: true)
 
         then: "update successful"
@@ -120,13 +126,14 @@ class PageIntegrationSpec extends IntegrationSpec {
 
     void "Integration test update extended page"() {
         given:
-        Page base = new Page(constantName: "stu.base", modelView: "{\n" +
-                "      \"type\": \"page\",\n" +
-                "      \"name\": \"StudentBase\",\n" +
-                "      \"title\": \"Student Base\",\n" +
-                "      \"scriptingLanguage\": \"JavaScript\",\n" +
-                "      \"components\": null\n" +
-                "}")
+        Page base = new Page(constantName: "stu.base", modelView:
+                '''{
+                    "type": "page",
+                    "name": "StudentBase",
+                    "title": "Student Base",
+                    "scriptingLanguage": "JavaScript",
+                    "components": null
+                   }''')
         Page ext1 = new Page(constantName: "stu.ext.1.1", modelView: "{}",extendsPage: base)
 
         when:
@@ -140,13 +147,14 @@ class PageIntegrationSpec extends IntegrationSpec {
         println "Original page extended: " + Page.findByConstantName("stu.ext.1.1").extendsPage.constantName
 
         when:
-        Page baseNew = new Page(constantName: "stu.base.new", modelView: "{\n" +
-                "      \"type\": \"page\",\n" +
-                "      \"name\": \"StudentBaseNew\",\n" +
-                "      \"title\": \"New Student Base\",\n" +
-                "      \"scriptingLanguage\": \"JavaScript\",\n" +
-                "      \"components\": null\n" +
-                "}")
+        Page baseNew = new Page(constantName: "stu.base.new", modelView:
+                '''{
+                    "type": "page",
+                    "name": "StudentBaseNew",
+                    "title": "New Student Base",
+                    "scriptingLanguage": "JavaScript",
+                    "components": null
+                   }''')
         baseNew.save(flush:true,failOnError: true)
         ext1.extendsPage = baseNew
         ext1.save(flush:true,failOnError: true)
@@ -161,60 +169,76 @@ class PageIntegrationSpec extends IntegrationSpec {
 
     void "Integration test failed delete page and extension"() {
         given:
-        Page base = new Page(constantName: "stu.base", modelView: "{\n" +
-                "      \"type\": \"page\",\n" +
-                "      \"name\": \"StudentBase\",\n" +
-                "      \"title\": \"Student Base\",\n" +
-                "      \"scriptingLanguage\": \"JavaScript\",\n" +
-                "      \"components\": null\n" +
-                "}")
+        Page base = new Page(constantName: "stu.base", modelView:
+                '''{
+                    "type": "page",
+                    "name": "StudentBase",
+                    "title": "Student Base",
+                    "scriptingLanguage": "JavaScript",
+                    "components": null
+                   }''')
         Page ext1 = new Page(constantName: "stu.ext.1.1", modelView: "{}")
         base.addToExtensions(ext1)
-        Page ext2 = new Page(constantName: "stu.ext.1.2", modelView: "{\n" +
-                "      \"type\": \"page\",\n" +
-                "      \"name\": \"StudentExtz12\",\n" +
-                "      \"title\": \"Student Base\",\n" +
-                "      \"scriptingLanguage\": \"JavaScript\",\n" +
-                "      \"components\": null\n" +
-                "}")
+        Page ext2 = new Page(constantName: "stu.ext.1.2", modelView:
+                '''{
+                    "type": "page",
+                    "name": "StudentExtz12",
+                    "title": "Student Base Extended 2",
+                    "scriptingLanguage": "JavaScript",
+                    "components": null
+                   }''')
         ext1.addToExtensions(ext2)
         base.save(flush:true,failOnError: true)
 
         when: "Try to delete base while extension 1 exists"
         base.delete()
-        base.save(flush: true, failOnError: true)
+        boolean correctErrorRaised = false
+        try {
+            base.save(flush: true)
+        } catch (org.springframework.dao.DataIntegrityViolationException dve){
+            correctErrorRaised = true
+        }
 
         then: "error deleting parent"
-        thrown(org.springframework.dao.DataIntegrityViolationException)
+        correctErrorRaised
+        println "Correct error raised on parent deletion"
 
         when: "Try to delete ext 1 while extensions 2 and 3 exist"
         ext1.delete()
-        ext1.save(flush: true, failOnError: true)
+        correctErrorRaised = false
+        try {
+            ext1.save(flush: true, failOnError: true)
+        } catch (org.springframework.dao.DataIntegrityViolationException dve){
+            correctErrorRaised = true
+        }
 
         then: "error deleting parent"
-        thrown(org.springframework.dao.DataIntegrityViolationException)
+        correctErrorRaised
+        println "Correct error raised on multi extension parent deletion"
 
     }
 
 
     void "Integration test successful delete page and extension"() {
         given:
-        Page base = new Page(constantName: "stu.base", modelView: "{\n" +
-                "      \"type\": \"page\",\n" +
-                "      \"name\": \"StudentBase\",\n" +
-                "      \"title\": \"Student Base\",\n" +
-                "      \"scriptingLanguage\": \"JavaScript\",\n" +
-                "      \"components\": null\n" +
-                "}")
+        Page base = new Page(constantName: "stu.base", modelView:
+                '''{
+                    "type": "page",
+                    "name": "StudentBase",
+                    "title": "Student Base",
+                    "scriptingLanguage": "JavaScript",
+                    "components": null
+                   }''')
         Page ext1 = new Page(constantName: "stu.ext.1.1", modelView: "{}")
         base.addToExtensions(ext1)
-        Page ext2 = new Page(constantName: "stu.ext.1.2", modelView: "{\n" +
-                "      \"type\": \"page\",\n" +
-                "      \"name\": \"StudentExtz12\",\n" +
-                "      \"title\": \"Student Base\",\n" +
-                "      \"scriptingLanguage\": \"JavaScript\",\n" +
-                "      \"components\": null\n" +
-                "}")
+        Page ext2 = new Page(constantName: "stu.ext.1.2", modelView:
+                '''{
+                    "type": "page",
+                    "name": "StudentExtz12",
+                    "title": "Student Base Extended 2",
+                    "scriptingLanguage": "JavaScript",
+                    "components": null
+                   }''')
         ext1.addToExtensions(ext2)
         base.save(flush:true,failOnError: true)
 
@@ -253,13 +277,13 @@ class PageIntegrationSpec extends IntegrationSpec {
         println "Empty instance page created"
 
         when: "Save non-empty page"
-        base.modelView =   "{\n" +
-                "      \"type\": \"page\",\n" +
-                "      \"name\": \"StudentBase\",\n" +
-                "      \"title\": \"Student Base\",\n" +
-                "      \"scriptingLanguage\": \"JavaScript\",\n" +
-                "      \"components\": null\n" +
-                "}"
+        base.modelView =   '''{
+                    "type": "page",
+                    "name": "StudentBase",
+                    "title": "Student Base",
+                    "scriptingLanguage": "JavaScript",
+                    "components": null
+                   }'''
         base.save(flush:true,failOnError: true)
 
         then:
