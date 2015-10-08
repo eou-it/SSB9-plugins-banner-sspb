@@ -25,8 +25,8 @@ angular.module("templates/checkbox.html", []).run(["$templateCache", function($t
 
 angular.module("templates/dropdown.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/dropdown.html",
-    "<div class=\"btn-group\" role=\"listbox\">\n" +
-    "  	<button type=\"button\" ng-disabled= {{disabled}} ng-class= \"{disabledDD:disabled}\" data-toggle=\"dropdown\" class=\"btn btn-default dropdown dropdown-toggle\" >\n" +
+    "<div class=\"btn-group\">\n" +
+    "  	<button type=\"button\" ng-disabled= {{disabled}} ng-class= \"{disabledDD:disabled}\" data-toggle=\"dropdown\" class=\"btn btn-default dropdown dropdown-toggle\" role=\"listbox\" aria-expanded=\"false\" aria-haspopup=\"true\">\n" +
     "  		<span class=\"placeholder\" ng-show=\"!ngModel\">{{::xeLabel}}</span>\n" +
     "  		<span class=\"placeholder\">{{ dropDownLabel }}</span>\n" +
     "  		<span class=\"glyphicon glyphicon-chevron-down\"></span></button>\n" +
@@ -224,19 +224,24 @@ angular.module("templates/switch.html", []).run(["$templateCache", function($tem
 
 angular.module("templates/text-area.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/text-area.html",
-    "<div>\n" +
-    "	<!-- <label class=\"label\" for=\"comments-field\">{{commentsLabel}}</label> -->\n" +
-    "\n" +
-    "	\n" +
-    "	<textarea ng-model=\"comments\" class=\"comments-field\" id=\"{{id}}\" placeholder= {{placeholder}} required>	\n" +
-    "	</textarea>\n" +
-    "	\n" +
+    "<div class=\"textarea-container\">\n" +
+    "    <xe-label xe-value=\"{{xeLabel}}\" xe-for=\"{{xeId}}\" xe-required=\"{{xeRequired}}\"></xe-label>\n" +
+    "    <div class=\"xe-labeltext-margin\"></div>\n" +
+    "    <textarea  \n" +
+    "          ng-model=\"ngModel\"\n" +
+    "          class=\"comments-field\" \n" +
+    "          id=\"{{xeId}}\" \n" +
+    "          placeholder= \"{{xePlaceholder}}\"\n" +
+    "          ng-required=\"xeRequired\" \n" +
+    "          aria-multiline=”true”\n" +
+    "          ng-readonly = \"xeReadonly\">	\n" +
+    "    </textarea>\n" +
     "</div>");
 }]);
 
 angular.module("templates/text-box.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/text-box.html",
-    "<div>\n" +
+    "<div class=\"textbox-container\">\n" +
     "    <xe-label xe-value=\"{{xeLabel}}\" xe-for=\"{{xeId}}\" xe-required=\"{{xeRequired}}\"></xe-label>\n" +
     "    <div class=\"xe-labeltext-margin\"></div>\n" +
     "	<input \n" +
@@ -245,13 +250,13 @@ angular.module("templates/text-box.html", []).run(["$templateCache", function($t
     "           ng-form= \"ngForm\"\n" +
     "           class=\"{{xeType}}-field\" \n" +
     "           id=\"{{xeId}}\" \n" +
-    "           type= {{xeType}} \n" +
+    "           type= \"text\"\n" +
     "           name= \"{{xeName}}\" \n" +
     "           placeholder= {{xePlaceholder}} \n" +
     "           ng-pattern=\"xePattern\" \n" +
     "           ng-required=\"xeRequired\"\n" +
-    "           ng-maxlength = \"{{xeMaxlength}}\"\n" +
-    "           ng-minlength = \"{{xeMinlength}}\"\n" +
+    "           ng-maxlength = \"xeMaxlength\"\n" +
+    "           ng-minlength = \"xeMinlength\"\n" +
     "           ng-readonly = \"xeReadonly\"\n" +
     "           >\n" +
     "	</input>\n" +
