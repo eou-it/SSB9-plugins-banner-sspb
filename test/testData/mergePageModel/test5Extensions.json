@@ -1,0 +1,35 @@
+{
+  "extensions": [
+    { "name": "subcomponent2",
+      "parent": "componentWithSubcomponents",
+      "nextSibling": null,
+      "attr1": "attribute 1",
+      "parameters": {
+        "param1": "parameter 1"
+      },
+      "validation": {
+        "val1": "validation 1"
+      },
+      "components": [
+        { "name": "subSubcomponent1",
+          "attr1": "attribute 1",
+          "parameters": {
+            "param1": "parameter 1"
+          },
+          "validation": {
+            "val1": "validation 1"
+          }
+        },
+        { "name": "subSubcomponent2",
+          "attr1": "attribute 1",
+          "parameters": {
+            "param1": "parameter 1"
+          },
+          "validation": {
+            "val1": "validation 1"
+          }
+        }
+      ]
+    }
+  ]
+}

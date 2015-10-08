@@ -1,0 +1,6 @@
+{
+  "extensions": [
+    { "name": "componentD", "nextSibling": "componentE", "parent": "testPage" },
+    { "name": "componentE", "nextSibling": "componentA", "parent": "testPage" }
+  ]
+}

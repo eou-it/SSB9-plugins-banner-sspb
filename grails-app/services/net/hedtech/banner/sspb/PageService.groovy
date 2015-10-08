@@ -223,4 +223,190 @@ class PageService {
 //        page.metaClass.getSupplementalRestProperties << {-> properties }
 //    }
 
+
+    /**
+     * ********************************************************************************************
+     * Functionality to generate a merged page model from a base page model and a set of extensions
+     * ********************************************************************************************
+     */
+
+    /**
+     * Loads test data from a file representing a base page and a file representing a
+     * set of extensions
+     *
+     * @param testPageFile : test file containing page model in JSON format
+     * @param testExtensionsFile : tes extension file in JSON format
+     * @return map of file contents
+     */
+    private Map loadTestData(testPageFile,
+                             testExtensionsFile) {
+        Map testData = [:]
+        testData.pageModelJSON = new File(testPageFile).text
+        testData.pageExtensionsJSON = new File(testExtensionsFile).text
+
+        return testData
+    }
+
+    /**
+     * Creates a map of all components. This allows easy access to component by name as opposed
+     * to constantly traversing the component hierarchy.
+     * This map is constantly updated as extensions are being applied
+     *
+     * @param pageComponent : next component to be added to map - initially set to page component
+     * @param pageComponents : map of all page components. key = component name
+     */
+    void buildComponentMap( pageComponent, pageComponents ) {
+        pageComponents[pageComponent.name] = pageComponent
+        pageComponent?.components.each {
+            buildComponentMap(it,pageComponents)
+        }
+    }
+
+    /**
+     * Excludes a component from the final merged model (via pageComponents map)
+     *
+     * @param component : the component to be excluded
+     * @param pageComponents : map of all page components
+     * @param componentExtensions : component specific extensions
+     */
+    void excludeComponent(component, pageComponents, componentExtensions) {
+
+        // locate parent component
+        Map parentComponent = pageComponents[componentExtensions.parent]
+
+        log.trace "Excluding $component.name from $parentComponent.name"
+
+        // exclude component from merged model and update component map
+        parentComponent.components -= component
+        pageComponents.remove(component.name)
+    }
+
+    /**
+     * Removes, modifies and adds attributes based on extensions
+     * @param component : the component to be extended OR
+     *                    parameter or validation map to be extended
+     * @param extendedAttributes : attribute extensions
+     */
+    void extendAttributes(component, extendedAttributes) {
+
+        // only log when invoked for component map - not parameter or validations maps
+        if (component?.name) {
+            log.trace "Extending attributes for $component.name"
+        }
+
+        extendedAttributes.each{
+            if (it.exclude) {
+                component?.remove(it.name)
+                return;
+            }
+
+            switch(it.name) {
+                case ["parameters", "validation"]:
+                    extendAttributes(component[it.name], it.attributes)
+                    break;
+                default:
+                    component[it.name] = it.value
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Adds a new component to merged page model (via pageComponents map)
+     *
+     * @param pageComponents : map of all page components
+     * @param newComponent : component to be added to new merged page model
+     */
+    void addComponent(pageComponents, newComponent) {
+
+        log.trace "Adding $newComponent.name to $newComponent.parent"
+
+        if (!pageComponents[newComponent.parent].components) {
+            pageComponents[newComponent.parent].components = []
+        }
+        List parentComponents = pageComponents[newComponent.parent].components
+
+        // find next sibling
+        def nextSiblingIndex = parentComponents.indexOf(parentComponents.find {it.name == newComponent.nextSibling})
+
+        // Remove redundant attributes from newComponent - parent and next sibling
+        newComponent.remove("parent")
+        newComponent.remove("nextSibling")
+        if (nextSiblingIndex == -1) {
+            // not in list ie null so add to end of list
+            parentComponents.add(newComponent)
+        } else {
+            parentComponents.add(nextSiblingIndex, newComponent)
+        }
+        pageComponents[newComponent.name] = newComponent
+    }
+
+    /**
+     * Reorders a component with respect to it's siblings
+     *
+     * @param component : component to be moved
+     * @param pageComponents : map of all page components
+     * @param componentExtensions : component specific extensions
+     */
+    void reorderComponent(component, pageComponents, componentExtensions) {
+
+        // first exclude component from merged pge model
+        excludeComponent(component, pageComponents, componentExtensions)
+
+        // temporarily add positioning attributes
+        component.parent = componentExtensions.parent
+        component.nextSibling = componentExtensions.nextSibling
+
+        // add component back into merged page model
+        addComponent(pageComponents, component)
+    }
+
+    /**
+     * Applies a set of extensions to a base page model and retruns a new extended page model
+     *
+     * @param pageModelJSON : text of base page in JSON format
+     * @param pageExtensionsJSON : text of extensions in JSON format
+     * @return : new merged page model
+     */
+    Map extendPageModel(pageModelJSON, pageExtensionsJSON) {
+
+        def slurper = new groovy.json.JsonSlurper()
+        Map pageComponents = [:]
+
+        // deserialize page model and extensions JSON text
+        Map extendedPageModel = slurper.parseText(pageModelJSON)
+        List pageExtensions = slurper.parseText(pageExtensionsJSON).extensions
+
+        // create map of individual components to ensure efficient traversal of page
+        buildComponentMap(extendedPageModel, pageComponents)
+
+        log.trace "Extending page $extendedPageModel.name"
+
+        // process extensions
+        pageExtensions?.each{
+            // locate component
+            Map component = pageComponents[it.name]
+            if (it.exclude) {
+                excludeComponent(component, pageComponents, it)
+            } else {
+                extendAttributes(component, it.attributes)
+            }
+        }
+
+        // add and reorder
+        pageExtensions?.reverseEach{
+
+            // do not reprocess those components already excluded
+            if (!it.exclude) {
+                // locate component
+                Map component = pageComponents[it.name]
+                if (!component) {
+                    addComponent(pageComponents, it)
+                } else if (it.containsKey("nextSibling")) {
+                    reorderComponent(component, pageComponents, it)
+                }
+            }
+        }
+        return extendedPageModel
+    }
 }

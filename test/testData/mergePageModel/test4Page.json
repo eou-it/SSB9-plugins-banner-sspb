@@ -1,0 +1,7 @@
+{
+  "name": "testPage",
+  "type": "page",
+  "components": [
+    { "name": "componentWithoutSubcomponents" }
+  ]
+}

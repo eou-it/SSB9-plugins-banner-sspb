@@ -1,0 +1,11 @@
+{
+  "name": "testPage",
+  "type": "page",
+  "components": [
+    { "name": "componentWithSubcomponents",
+      "components": [
+        { "name": "subcomponent1"}
+      ]
+    }
+  ]
+}

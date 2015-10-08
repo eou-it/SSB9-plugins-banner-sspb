@@ -1,0 +1,25 @@
+{
+  "extensions": [
+    { "name": "componentWithAttributes", "parent": "testPage",
+      "attributes": [
+        { "name": "attr1", "exclude": true },
+        { "name": "attr2", "value": "extended attribute 2" },
+        { "name": "attr3", "value": "new attribute 3" },
+        { "name": "parameters",
+          "attributes": [
+            { "name": "param1", "exclude": true },
+            { "name": "param2", "value": "extended parameter 2" },
+            { "name": "param3", "value": "new parameter 3"}
+          ]
+        },
+        { "name": "validation",
+          "attributes": [
+            { "name": "val1", "exclude": true },
+            { "name": "val2", "value": "extended validation 2" },
+            { "name": "val3", "value": "new validation 3"}
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "extensions": [
+    { "name": "componentA", "nextSibling": "componentB", "parent": "testPage" },
+    { "name": "componentB", "nextSibling": "componentC", "parent": "testPage" },
+    { "name": "componentF", "nextSibling": "componentG", "parent": "componentB" },
+    { "name": "componentG", "nextSibling": "componentH", "parent": "componentB" },
+    { "name": "componentH", "nextSibling": null, "parent": "componentB" },
+    { "name": "componentC", "nextSibling": null, "parent": "testPage" }
+  ]
+}
