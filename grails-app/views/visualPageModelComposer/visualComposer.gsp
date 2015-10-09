@@ -45,7 +45,21 @@
             success: "success",
             warning: "warning",
             error:   "error"
-        }
+        };
+        $scope.alertNote = function(note) {
+            note.type = note.type||noteType.success;
+            note.flash = note.flash||true;
+            notifications.addNotification(new Notification(note));
+        };
+
+         $scope.alertError = function(msg, stay) {
+             var note = {type: noteType.error, message: msg};
+             if (!stay){
+                 note.flash = true;
+             }
+             notifications.addNotification(new Notification(note));
+         };
+
         $scope.component_entry_style = ["componentEntry", "componentEntry_selected"];
 
         $scope.pageName = "";
@@ -193,10 +207,6 @@
         $scope.findAllChildrenTypes = function(type) {
             return $scope.findRequiredChildrenTypes(type).concat($scope.findOptionalChildrenTypes(type));
         };
-
-
-
-
 
         $scope.handlePageTreeChange = function() {
             $scope.pageSourceView = JSON.stringify($scope.pageSource[0], JSONFilter, 6);
@@ -402,9 +412,9 @@
         // paste a component as a new child of 'data'
         $scope.pasteComponent = function(data) {
             // check if the copied component is allowed for the parent component
-            if ($scope.findAllChildrenTypes(data.type).indexOf($scope.dataHolder.copy.type) == -1)
-                alert($scope.i18nGet('sspb.page.visualbuilder.invalidCopyType.error.message' , [$scope.dataHolder.copy.type, data.type]));
-            else {
+            if ($scope.findAllChildrenTypes(data.type).indexOf($scope.dataHolder.copy.type) == -1) {
+                $scope.alertError( $scope.i18nGet('sspb.page.visualbuilder.invalidCopyType.error.message', [$scope.dataHolder.copy.type, data.type]));
+            } else {
                 if (data.components==undefined)
                     data.components=[];
                 // make a new (deep) copy of the copied component so each pasted instance is unique
@@ -634,16 +644,16 @@
                      $scope.extendsPage = data.extendsPage;
                      $scope.statusHolder.isPageModified = false;
                  } catch(ex) {
-                     alert($scope.i18nGet("${message(code:'sspb.page.visualbuilder.parsing.error.message')}",[ex]));
+                     $scope.alertError( $scope.i18nGet("${message(code:'sspb.page.visualbuilder.parsing.error.message')}",[ex]));
                  }
              }, function(response) {
-                 var msg  = "${message(code: 'sspb.page.visualcomposer.page.load.failed.message', encodeAs: 'JavaScript')}";
-                 if (response.data != undefined && response.data.errors!=undefined)
-                    msg = $scope.i18nGet(msg, [response.data.errors[0].errorMessage]);
-                 else
-                    msg = $scope.i18nGet(msg, ['']);
-
-                 alert(msg);
+                 var note={type: noteType.error, message: "${message(code: 'sspb.page.visualcomposer.page.load.failed.message', encodeAs: 'JavaScript')}"};
+                 if (response.data != undefined && response.data.errors!=undefined) {
+                     note.message = $scope.i18nGet(note.message, [response.data.errors[0].errorMessage]);
+                 } else {
+                     note.message = $scope.i18nGet(note.message, ['']);
+                 }
+                 $scope.alertNote( note);
              });
          };
 
@@ -679,7 +689,7 @@
 
              //check if page name is set
              if ($scope.pageCurName == undefined || $scope.pageCurName == '') {
-                 alert("${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
+                 $scope.alertError("${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
                  return;
              }
 
@@ -700,7 +710,7 @@
                          $scope.pageStatus.message = $scope.i18nGet(msg, [response.statusMessage, err]);
                      }
                      note.message = $scope.pageStatus.message
-                     notifications.addNotification(new Notification(note));
+                     $scope.alertNote(note);
                      $scope.pageStatus.message = $filter('date')(new Date(), 'medium') + ': ' + $scope.pageStatus.message;
                      // refresh the page list in case new page is added
                      $scope.loadPageNames();
@@ -711,7 +721,7 @@
                      msg = $scope.i18nGet(msg, [err]);
                      note.message = msg;
                      note.type = noteType.success;
-                     notifications.addNotification(new Notification(note));
+                     $scope.alertNote(note);
                  }
              );
 
@@ -720,8 +730,7 @@
           $scope.previewPageSource = function() {
               //check if page name is set
               if ($scope.pageCurName== undefined || $scope.pageCurName == '') {
-                  alert("${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
-
+                  $scope.alertError( "${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
                   return;
               }
               window.open(rootWebApp+'customPage/page/'+ $scope.pageCurName, '_blank');
@@ -732,14 +741,14 @@
           $scope.deletePageSource = function () {
               //check if page name is set
               if ($scope.pageCurName== undefined || $scope.pageCurName == '') {
-                  alert("${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
-
+                  $scope.alertError("${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
                   return;
               }
 
               Page.remove({constantName:$scope.pageCurName }, function() {
                   // on success
-                  alert("${message(code:'sspb.page.visualbuilder.deletion.success.message')}");
+                  $scope.alertNote({message: "${message(code:'sspb.page.visualbuilder.deletion.success.message')}"});
+
                   // clear the page name field and page source
                   $scope.pageCurName = "";
                   $scope.pageName = "";
@@ -751,17 +760,14 @@
                   $scope.statusHolder.isPageModified = false;
                   // refresh the page list after a page is deleted
                   $scope.loadPageNames();
-
               }, function(response) {
-                  var msg="${message(code:'sspb.page.visualbuilder.deletion.error.message')}";
-
-                  if (response.data != undefined && response.data.errors != undefined)
-                      msg = $scope.i18nGet(msg,[response.data.errors[0].errorMessage]);
-                  else
-                      msg = $scope.i18nGet(msg, ['']);
-
-                  alert(msg);
-
+                  var note={type: noteType.error, message: "${message(code:'sspb.page.visualbuilder.deletion.error.message')}",flash:true};
+                  if (response.data != undefined && response.data.errors != undefined) {
+                      note.message = $scope.i18nGet(note.message, [response.data.errors[0].errorMessage]);
+                  } else {
+                      note.message = $scope.i18nGet(note.message, ['']);
+                  }
+                  $scope.alertNote(note);
               });
 
           };
@@ -782,24 +788,19 @@
          };
 
          $scope.applySourceEdit = function() {
-             // prompt user
-             //var msg = "${message(code:'sspb.page.visualbuilder.applychange.prompt.message')}";
-             //if (confirm(msg)) {
-                 // parse the source
-                 try {
-                     var newPage = JSON.parse($scope.pageSourceView);
-                     $scope.pageOneSource = newPage;
-                     $scope.pageSource[0] = $scope.pageOneSource;
-                     $scope.sourceEditEnabled = false;
-                 } catch(ex) {
-                     alert($scope.i18nGet("${message(code:'sspb.page.visualbuilder.parsing.error.message')}",[ex]));
-                 }
-
-             //}
+            // parse the source
+            try {
+                var newPage = JSON.parse($scope.pageSourceView);
+                $scope.pageOneSource = newPage;
+                $scope.pageSource[0] = $scope.pageOneSource;
+                $scope.sourceEditEnabled = false;
+            } catch(ex) {
+                $scope.alertError( $scope.i18nGet("${message(code:'sspb.page.visualbuilder.parsing.error.message')}",[ex]));
+            }
          };
 
          $scope.discardSourceEdit = function() {
-             //$scope.handlePageTreeChange();
+             $scope.handlePageTreeChange(); // This stringifies the tree and thus undo's the text modification if any
              $scope.sourceEditEnabled = false;
          }
 
