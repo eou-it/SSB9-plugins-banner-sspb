@@ -319,19 +319,23 @@ class PageService {
      */
     void addComponent(pageComponents, newComponent) {
 
-        log.trace "Adding $newComponent.name to $newComponent.parent"
+        String parent = newComponent.newParent ?: newComponent.parent
 
-        if (!pageComponents[newComponent.parent].components) {
-            pageComponents[newComponent.parent].components = []
+        log.trace "Adding $newComponent.name to $parent"
+
+        if (!pageComponents[parent].components) {
+            pageComponents[parent].components = []
         }
-        List parentComponents = pageComponents[newComponent.parent].components
+        List parentComponents = pageComponents[parent].components
 
         // find next sibling
         def nextSiblingIndex = parentComponents.indexOf(parentComponents.find {it.name == newComponent.nextSibling})
 
-        // Remove redundant attributes from newComponent - parent and next sibling
+        // Remove redundant attributes from newComponent - parent, newParent and next sibling
         newComponent.remove("parent")
         newComponent.remove("nextSibling")
+        newComponent.remove("newParent")
+
         if (nextSiblingIndex == -1) {
             // not in list ie null so add to end of list
             parentComponents.add(newComponent)
@@ -350,12 +354,13 @@ class PageService {
      */
     void reorderComponent(component, pageComponents, componentExtensions) {
 
-        // first exclude component from merged pge model
+        // first exclude component from merged page model
         excludeComponent(component, pageComponents, componentExtensions)
 
         // temporarily add positioning attributes
         component.parent = componentExtensions.parent
         component.nextSibling = componentExtensions.nextSibling
+        component.newParent = componentExtensions.newParent
 
         // add component back into merged page model
         addComponent(pageComponents, component)
@@ -395,7 +400,6 @@ class PageService {
 
         // add and reorder
         pageExtensions?.reverseEach{
-
             // do not reprocess those components already excluded
             if (!it.exclude) {
                 // locate component
@@ -405,6 +409,47 @@ class PageService {
                 } else if (it.containsKey("nextSibling")) {
                     reorderComponent(component, pageComponents, it)
                 }
+            }
+        }
+        return extendedPageModel
+    }
+
+    /**
+     * Given the extensions for an extended page, this routine iterates up the extensions to find the base page
+     * and then applies all the extensions in turn to produce the final extended page model
+     *
+     * @param pageName: extended page name
+     * @return : extended page constructed from base page and all extensions
+     */
+    Map constructExtendedPage(pageName) {
+
+        Page page
+        boolean basePageFound = false
+        List extensions = []
+        Map extendedPageModel
+        def jsonOutput = new groovy.json.JsonOutput()
+
+        log.trace "Constructing page: $pageName"
+        while (!basePageFound) {
+            page = Page.findByConstantName(pageName)
+            if (!page) {
+                log.trace "Unable to retrieve page: $pageName"
+                return null
+            }
+            if (page.extendsPage) {
+                extensions << page.modelView
+                pageName = page.extendsPage.constantName
+            } else {
+                basePageFound = true
+            }
+        }
+
+        // apply all extensions in turn to base page
+        if (basePageFound) {
+            String pageModel = page.modelView
+            extensions.reverseEach {
+                extendedPageModel = extendPageModel(pageModel,it)
+                pageModel = jsonOutput.toJson(extendedPageModel)
             }
         }
         return extendedPageModel

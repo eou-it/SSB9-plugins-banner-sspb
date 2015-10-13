@@ -105,6 +105,7 @@ class MergePageModelSpec extends Specification{
 
         // extraneous attributes not present
         assertFalse extendedPageModel.components[0].components[0].containsKey("parent")
+        assertFalse extendedPageModel.components[0].components[0].containsKey("newParent")
         assertFalse extendedPageModel.components[0].components[0].containsKey("nextSibling")
 
         // subcomponents of subcomponent added
@@ -145,6 +146,7 @@ class MergePageModelSpec extends Specification{
 
         // extraneous attributes not present
         assertFalse extendedPageModel.components[0].components[1].containsKey("parent")
+        assertFalse extendedPageModel.components[0].components[1].containsKey("newParent")
         assertFalse extendedPageModel.components[0].components[1].containsKey("nextSibling")
 
         // subcomponents of subcomponent added
@@ -178,6 +180,7 @@ class MergePageModelSpec extends Specification{
 
         // extraneous attributes not present
         assertFalse extendedPageModel.components[1].components[0].containsKey("parent")
+        assertFalse extendedPageModel.components[1].components[0].containsKey("newParent")
         assertFalse extendedPageModel.components[1].components[0].containsKey("nextSibling")
     }
 
@@ -201,6 +204,23 @@ class MergePageModelSpec extends Specification{
         assertEquals extendedPageModel.components[2].name, "componentA"
         assertEquals extendedPageModel.components[3].name, "componentB"
         assertEquals extendedPageModel.components[4].name, "componentC"
+
+        // extraneous attributes not present
+        assertFalse extendedPageModel.components[0].containsKey("parent")
+        assertFalse extendedPageModel.components[0].containsKey("newParent")
+        assertFalse extendedPageModel.components[0].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[1].containsKey("parent")
+        assertFalse extendedPageModel.components[1].containsKey("newParent")
+        assertFalse extendedPageModel.components[1].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[2].containsKey("parent")
+        assertFalse extendedPageModel.components[2].containsKey("newParent")
+        assertFalse extendedPageModel.components[2].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[3].containsKey("parent")
+        assertFalse extendedPageModel.components[3].containsKey("newParent")
+        assertFalse extendedPageModel.components[3].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[4].containsKey("parent")
+        assertFalse extendedPageModel.components[4].containsKey("newParent")
+        assertFalse extendedPageModel.components[4].containsKey("nextSibling")
     }
 
     @Unroll
@@ -223,6 +243,23 @@ class MergePageModelSpec extends Specification{
         assertEquals extendedPageModel.components[2].name, "componentA"
         assertEquals extendedPageModel.components[3].name, "componentB"
         assertEquals extendedPageModel.components[4].name, "componentC"
+
+        // extraneous attributes not present
+        assertFalse extendedPageModel.components[0].containsKey("parent")
+        assertFalse extendedPageModel.components[0].containsKey("newParent")
+        assertFalse extendedPageModel.components[0].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[1].containsKey("parent")
+        assertFalse extendedPageModel.components[1].containsKey("newParent")
+        assertFalse extendedPageModel.components[1].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[2].containsKey("parent")
+        assertFalse extendedPageModel.components[2].containsKey("newParent")
+        assertFalse extendedPageModel.components[2].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[3].containsKey("parent")
+        assertFalse extendedPageModel.components[3].containsKey("newParent")
+        assertFalse extendedPageModel.components[3].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[4].containsKey("parent")
+        assertFalse extendedPageModel.components[4].containsKey("newParent")
+        assertFalse extendedPageModel.components[4].containsKey("nextSibling")
     }
 
     @Unroll
@@ -245,6 +282,23 @@ class MergePageModelSpec extends Specification{
         assertEquals extendedPageModel.components[2].name, "componentC"
         assertEquals extendedPageModel.components[3].name, "componentB"
         assertEquals extendedPageModel.components[4].name, "componentA"
+
+        // extraneous attributes not present
+        assertFalse extendedPageModel.components[0].containsKey("parent")
+        assertFalse extendedPageModel.components[0].containsKey("newParent")
+        assertFalse extendedPageModel.components[0].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[1].containsKey("parent")
+        assertFalse extendedPageModel.components[1].containsKey("newParent")
+        assertFalse extendedPageModel.components[1].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[2].containsKey("parent")
+        assertFalse extendedPageModel.components[2].containsKey("newParent")
+        assertFalse extendedPageModel.components[2].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[3].containsKey("parent")
+        assertFalse extendedPageModel.components[3].containsKey("newParent")
+        assertFalse extendedPageModel.components[3].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[4].containsKey("parent")
+        assertFalse extendedPageModel.components[4].containsKey("newParent")
+        assertFalse extendedPageModel.components[4].containsKey("nextSibling")
     }
 
     @Unroll
@@ -268,6 +322,23 @@ class MergePageModelSpec extends Specification{
         assertEquals extendedPageModel.components[3].name, "componentB"
         assertEquals extendedPageModel.components[4].name, "componentC"
 
+        // extraneous attributes not present
+        assertFalse extendedPageModel.components[0].containsKey("parent")
+        assertFalse extendedPageModel.components[0].containsKey("newParent")
+        assertFalse extendedPageModel.components[0].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[1].containsKey("parent")
+        assertFalse extendedPageModel.components[1].containsKey("newParent")
+        assertFalse extendedPageModel.components[1].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[2].containsKey("parent")
+        assertFalse extendedPageModel.components[2].containsKey("newParent")
+        assertFalse extendedPageModel.components[2].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[3].containsKey("parent")
+        assertFalse extendedPageModel.components[3].containsKey("newParent")
+        assertFalse extendedPageModel.components[3].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[4].containsKey("parent")
+        assertFalse extendedPageModel.components[4].containsKey("newParent")
+        assertFalse extendedPageModel.components[4].containsKey("nextSibling")
+
         // number of subcomponents preserved
         assertEquals extendedPageModel.components[3].components.size(), 5
 
@@ -277,5 +348,304 @@ class MergePageModelSpec extends Specification{
         assertEquals extendedPageModel.components[3].components[2].name, "componentF"
         assertEquals extendedPageModel.components[3].components[3].name, "componentG"
         assertEquals extendedPageModel.components[3].components[4].name, "componentH"
+
+        // extraneous attributes not present
+        assertFalse extendedPageModel.components[3].components[0].containsKey("parent")
+        assertFalse extendedPageModel.components[3].components[0].containsKey("newParent")
+        assertFalse extendedPageModel.components[3].components[0].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[3].components[1].containsKey("parent")
+        assertFalse extendedPageModel.components[3].components[1].containsKey("newParent")
+        assertFalse extendedPageModel.components[3].components[1].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[3].components[2].containsKey("parent")
+        assertFalse extendedPageModel.components[3].components[2].containsKey("newParent")
+        assertFalse extendedPageModel.components[3].components[2].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[3].components[3].containsKey("parent")
+        assertFalse extendedPageModel.components[3].components[3].containsKey("newParent")
+        assertFalse extendedPageModel.components[3].components[3].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[3].components[4].containsKey("parent")
+        assertFalse extendedPageModel.components[3].components[4].containsKey("newParent")
+        assertFalse extendedPageModel.components[3].components[4].containsKey("nextSibling")
+    }
+
+    @Unroll
+    def "Test reorder top level components while adding new component"() {
+
+        when:
+        Map testData = service.loadTestData("test/testData/mergePageModel/test11Page.json",
+                                            "test/testData/mergePageModel/test11Extensions.json")
+        Map extendedPageModel = service.extendPageModel(testData.pageModelJSON, testData.pageExtensionsJSON)
+
+        then:
+        assertEquals extendedPageModel.name, "testPage"
+
+        // number of components increased by 1
+        assertEquals extendedPageModel.components.size(), 6
+
+        // components reordered
+        assertEquals extendedPageModel.components[0].name, "componentD"
+        assertEquals extendedPageModel.components[1].name, "componentE"
+        assertEquals extendedPageModel.components[2].name, "componentF"
+        assertEquals extendedPageModel.components[3].name, "componentA"
+        assertEquals extendedPageModel.components[4].name, "componentB"
+        assertEquals extendedPageModel.components[5].name, "componentC"
+
+        // extraneous attributes not present
+        assertFalse extendedPageModel.components[0].containsKey("parent")
+        assertFalse extendedPageModel.components[0].containsKey("newParent")
+        assertFalse extendedPageModel.components[0].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[1].containsKey("parent")
+        assertFalse extendedPageModel.components[1].containsKey("newParent")
+        assertFalse extendedPageModel.components[1].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[2].containsKey("parent")
+        assertFalse extendedPageModel.components[2].containsKey("newParent")
+        assertFalse extendedPageModel.components[2].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[3].containsKey("parent")
+        assertFalse extendedPageModel.components[3].containsKey("newParent")
+        assertFalse extendedPageModel.components[3].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[4].containsKey("parent")
+        assertFalse extendedPageModel.components[4].containsKey("newParent")
+        assertFalse extendedPageModel.components[4].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[5].containsKey("parent")
+        assertFalse extendedPageModel.components[5].containsKey("newParent")
+        assertFalse extendedPageModel.components[5].containsKey("nextSibling")
+    }
+
+    @Unroll
+    def "Test reorder top level components and subcomponents while adding new component"() {
+
+        when:
+        Map testData = service.loadTestData("test/testData/mergePageModel/test12Page.json",
+                                            "test/testData/mergePageModel/test12Extensions.json")
+        Map extendedPageModel = service.extendPageModel(testData.pageModelJSON, testData.pageExtensionsJSON)
+
+        then:
+        assertEquals extendedPageModel.name, "testPage"
+
+        // number of top level components increased by 1
+        assertEquals extendedPageModel.components.size(), 6
+
+        // components reordered
+        assertEquals extendedPageModel.components[0].name, "componentD"
+        assertEquals extendedPageModel.components[1].name, "componentE"
+        assertEquals extendedPageModel.components[2].name, "componentK"
+        assertEquals extendedPageModel.components[3].name, "componentA"
+        assertEquals extendedPageModel.components[4].name, "componentB"
+        assertEquals extendedPageModel.components[5].name, "componentC"
+
+        // extraneous attributes not present
+        assertFalse extendedPageModel.components[0].containsKey("parent")
+        assertFalse extendedPageModel.components[0].containsKey("newParent")
+        assertFalse extendedPageModel.components[0].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[1].containsKey("parent")
+        assertFalse extendedPageModel.components[1].containsKey("newParent")
+        assertFalse extendedPageModel.components[1].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[2].containsKey("parent")
+        assertFalse extendedPageModel.components[2].containsKey("newParent")
+        assertFalse extendedPageModel.components[2].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[3].containsKey("parent")
+        assertFalse extendedPageModel.components[3].containsKey("newParent")
+        assertFalse extendedPageModel.components[3].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[4].containsKey("parent")
+        assertFalse extendedPageModel.components[4].containsKey("newParent")
+        assertFalse extendedPageModel.components[4].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[5].containsKey("parent")
+        assertFalse extendedPageModel.components[5].containsKey("newParent")
+        assertFalse extendedPageModel.components[5].containsKey("nextSibling")
+
+        // number of subcomponents increased by 1
+        assertEquals extendedPageModel.components[4].components.size(), 6
+
+        // subcomponents reordered
+        assertEquals extendedPageModel.components[4].components[0].name, "componentI"
+        assertEquals extendedPageModel.components[4].components[1].name, "componentJ"
+        assertEquals extendedPageModel.components[4].components[2].name, "componentL"
+        assertEquals extendedPageModel.components[4].components[3].name, "componentF"
+        assertEquals extendedPageModel.components[4].components[4].name, "componentG"
+        assertEquals extendedPageModel.components[4].components[5].name, "componentH"
+
+        // extraneous attributes not present
+        assertFalse extendedPageModel.components[4].components[0].containsKey("parent")
+        assertFalse extendedPageModel.components[4].components[0].containsKey("newParent")
+        assertFalse extendedPageModel.components[4].components[0].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[4].components[1].containsKey("parent")
+        assertFalse extendedPageModel.components[4].components[1].containsKey("newParent")
+        assertFalse extendedPageModel.components[4].components[1].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[4].components[2].containsKey("parent")
+        assertFalse extendedPageModel.components[4].components[2].containsKey("newParent")
+        assertFalse extendedPageModel.components[4].components[2].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[4].components[3].containsKey("parent")
+        assertFalse extendedPageModel.components[4].components[3].containsKey("newParent")
+        assertFalse extendedPageModel.components[4].components[3].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[4].components[4].containsKey("parent")
+        assertFalse extendedPageModel.components[4].components[4].containsKey("newParent")
+        assertFalse extendedPageModel.components[4].components[4].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[4].components[5].containsKey("parent")
+        assertFalse extendedPageModel.components[4].components[5].containsKey("newParent")
+        assertFalse extendedPageModel.components[4].components[5].containsKey("nextSibling")
+    }
+
+    @Unroll
+    def "Test reverse order of components while adding new components to start and end"() {
+
+        when:
+        Map testData = service.loadTestData("test/testData/mergePageModel/test13Page.json",
+                                            "test/testData/mergePageModel/test13Extensions.json")
+        Map extendedPageModel = service.extendPageModel(testData.pageModelJSON, testData.pageExtensionsJSON)
+
+        then:
+        assertEquals extendedPageModel.name, "testPage"
+
+        // number of components increased by 2
+        assertEquals extendedPageModel.components.size(), 7
+
+        // components reordered
+        assertEquals extendedPageModel.components[0].name, "componentF"
+        assertEquals extendedPageModel.components[1].name, "componentE"
+        assertEquals extendedPageModel.components[2].name, "componentD"
+        assertEquals extendedPageModel.components[3].name, "componentC"
+        assertEquals extendedPageModel.components[4].name, "componentB"
+        assertEquals extendedPageModel.components[5].name, "componentA"
+        assertEquals extendedPageModel.components[6].name, "componentG"
+
+        // extraneous attributes not present
+        assertFalse extendedPageModel.components[0].containsKey("parent")
+        assertFalse extendedPageModel.components[0].containsKey("newParent")
+        assertFalse extendedPageModel.components[0].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[1].containsKey("parent")
+        assertFalse extendedPageModel.components[1].containsKey("newParent")
+        assertFalse extendedPageModel.components[1].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[2].containsKey("parent")
+        assertFalse extendedPageModel.components[2].containsKey("newParent")
+        assertFalse extendedPageModel.components[2].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[3].containsKey("parent")
+        assertFalse extendedPageModel.components[3].containsKey("newParent")
+        assertFalse extendedPageModel.components[3].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[4].containsKey("parent")
+        assertFalse extendedPageModel.components[4].containsKey("newParent")
+        assertFalse extendedPageModel.components[4].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[5].containsKey("parent")
+        assertFalse extendedPageModel.components[5].containsKey("newParent")
+        assertFalse extendedPageModel.components[5].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[6].containsKey("parent")
+        assertFalse extendedPageModel.components[6].containsKey("newParent")
+        assertFalse extendedPageModel.components[6].containsKey("nextSibling")
+    }
+
+    @Unroll
+    def "Test reorder top level components while excluding a component"() {
+
+        when:
+        Map testData = service.loadTestData("test/testData/mergePageModel/test14Page.json",
+                                            "test/testData/mergePageModel/test14Extensions.json")
+        Map extendedPageModel = service.extendPageModel(testData.pageModelJSON, testData.pageExtensionsJSON)
+
+        then:
+        assertEquals extendedPageModel.name, "testPage"
+
+        // number of components decreased by 1
+        assertEquals extendedPageModel.components.size(), 5
+
+        // components reordered
+        assertEquals extendedPageModel.components[0].name, "componentD"
+        assertEquals extendedPageModel.components[1].name, "componentE"
+        assertEquals extendedPageModel.components[2].name, "componentA"
+        assertEquals extendedPageModel.components[3].name, "componentB"
+        assertEquals extendedPageModel.components[4].name, "componentC"
+
+        // extraneous attributes not present
+        assertFalse extendedPageModel.components[0].containsKey("parent")
+        assertFalse extendedPageModel.components[0].containsKey("newParent")
+        assertFalse extendedPageModel.components[0].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[1].containsKey("parent")
+        assertFalse extendedPageModel.components[1].containsKey("newParent")
+        assertFalse extendedPageModel.components[1].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[2].containsKey("parent")
+        assertFalse extendedPageModel.components[2].containsKey("newParent")
+        assertFalse extendedPageModel.components[2].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[3].containsKey("parent")
+        assertFalse extendedPageModel.components[3].containsKey("newParent")
+        assertFalse extendedPageModel.components[3].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[4].containsKey("parent")
+        assertFalse extendedPageModel.components[4].containsKey("newParent")
+        assertFalse extendedPageModel.components[4].containsKey("nextSibling")
+    }
+
+    @Unroll
+    def "Test add multiple components and subcomponents"() {
+
+        when:
+        Map testData = service.loadTestData("test/testData/mergePageModel/test15Page.json",
+                                            "test/testData/mergePageModel/test15Extensions.json")
+        Map extendedPageModel = service.extendPageModel(testData.pageModelJSON, testData.pageExtensionsJSON)
+
+        then:
+        assertEquals extendedPageModel.name, "testPage"
+
+        // number of components increased by 4
+        assertEquals extendedPageModel.components.size(), 7
+
+        // new components added correctly
+        assertEquals extendedPageModel.components[0].name, "componentG"
+        assertEquals extendedPageModel.components[1].name, "componentH"
+        assertEquals extendedPageModel.components[2].name, "componentA"
+        assertEquals extendedPageModel.components[3].name, "componentB"
+        assertEquals extendedPageModel.components[4].name, "componentC"
+        assertEquals extendedPageModel.components[5].name, "componentM"
+        assertEquals extendedPageModel.components[6].name, "componentN"
+
+        // extraneous attributes not present
+        assertFalse extendedPageModel.components[0].containsKey("parent")
+        assertFalse extendedPageModel.components[0].containsKey("newParent")
+        assertFalse extendedPageModel.components[0].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[1].containsKey("parent")
+        assertFalse extendedPageModel.components[1].containsKey("newParent")
+        assertFalse extendedPageModel.components[1].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[2].containsKey("parent")
+        assertFalse extendedPageModel.components[2].containsKey("newParent")
+        assertFalse extendedPageModel.components[2].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[3].containsKey("parent")
+        assertFalse extendedPageModel.components[3].containsKey("newParent")
+        assertFalse extendedPageModel.components[3].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[4].containsKey("parent")
+        assertFalse extendedPageModel.components[4].containsKey("newParent")
+        assertFalse extendedPageModel.components[4].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[5].containsKey("parent")
+        assertFalse extendedPageModel.components[5].containsKey("newParent")
+        assertFalse extendedPageModel.components[5].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[6].containsKey("parent")
+        assertFalse extendedPageModel.components[6].containsKey("newParent")
+        assertFalse extendedPageModel.components[6].containsKey("nextSibling")
+
+        // new subcomponents added correctly
+        assertEquals extendedPageModel.components[3].components[0].name, "componentI"
+        assertEquals extendedPageModel.components[3].components[1].name, "componentJ"
+        assertEquals extendedPageModel.components[3].components[2].name, "componentD"
+        assertEquals extendedPageModel.components[3].components[3].name, "componentE"
+        assertEquals extendedPageModel.components[3].components[4].name, "componentF"
+        assertEquals extendedPageModel.components[3].components[5].name, "componentK"
+        assertEquals extendedPageModel.components[3].components[6].name, "componentL"
+
+        // extraneous attributes not present
+        assertFalse extendedPageModel.components[3].components[0].containsKey("parent")
+        assertFalse extendedPageModel.components[3].components[0].containsKey("newParent")
+        assertFalse extendedPageModel.components[3].components[0].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[3].components[1].containsKey("parent")
+        assertFalse extendedPageModel.components[3].components[1].containsKey("newParent")
+        assertFalse extendedPageModel.components[3].components[1].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[3].components[2].containsKey("parent")
+        assertFalse extendedPageModel.components[3].components[2].containsKey("newParent")
+        assertFalse extendedPageModel.components[3].components[2].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[3].components[3].containsKey("parent")
+        assertFalse extendedPageModel.components[3].components[3].containsKey("newParent")
+        assertFalse extendedPageModel.components[3].components[3].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[3].components[4].containsKey("parent")
+        assertFalse extendedPageModel.components[3].components[4].containsKey("newParent")
+        assertFalse extendedPageModel.components[3].components[4].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[3].components[5].containsKey("parent")
+        assertFalse extendedPageModel.components[3].components[5].containsKey("newParent")
+        assertFalse extendedPageModel.components[3].components[5].containsKey("nextSibling")
+        assertFalse extendedPageModel.components[3].components[6].containsKey("parent")
+        assertFalse extendedPageModel.components[3].components[6].containsKey("newParent")
+        assertFalse extendedPageModel.components[3].components[6].containsKey("nextSibling")
     }
 }

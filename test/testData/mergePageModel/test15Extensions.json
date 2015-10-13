@@ -1,0 +1,13 @@
+{
+  "extensions": [
+    { "name": "componentG", "nextSibling": "componentH", "parent": "testPage" },
+    { "name": "componentH", "nextSibling": "componentA", "parent": "testPage" },
+    { "name": "componentI", "nextSibling": "componentJ", "parent": "componentB" },
+    { "name": "componentJ", "nextSibling": "componentD", "parent": "componentB" },
+    { "name": "componentK", "nextSibling": "componentL", "parent": "componentB" },
+    { "name": "componentL", "nextSibling": null, "parent": "componentB" },
+    { "name": "componentM", "nextSibling": "componentN", "parent": "testPage" },
+    { "name": "componentN", "nextSibling": null, "parent": "testPage" }
+
+  ]
+}
