@@ -1,0 +1,9 @@
+{
+  "name": "testPage",
+  "type": "page",
+  "components": [
+    { "name": "componentA",
+      "attr1": "attribute 1"
+    }
+  ]
+}

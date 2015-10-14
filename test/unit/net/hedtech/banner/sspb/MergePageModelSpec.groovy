@@ -25,7 +25,8 @@ class MergePageModelSpec extends Specification{
 
         then:
         assertEquals extendedPageModel.name, "testPage"
-        assertEquals extendedPageModel.components.size(), 0  // top level component deleted
+        //assertEquals extendedPageModel.components.size(), 0  // top level component deleted
+        assertNull extendedPageModel.components
     }
 
     @Unroll
@@ -44,7 +45,8 @@ class MergePageModelSpec extends Specification{
         assertEquals extendedPageModel.components[0].name, "componentWithSubcomponents"
 
         // subcomponent excluded
-        assertEquals extendedPageModel.components[0].components.size(), 0
+        //assertEquals extendedPageModel.components[0].components.size(), 0
+        assertNull extendedPageModel.components[0].components
     }
 
     @Unroll
@@ -172,7 +174,8 @@ class MergePageModelSpec extends Specification{
         assertEquals extendedPageModel.name, "testPage"
 
         // subcomponent excluded from old parent
-        assertEquals extendedPageModel.components[0].components.size(), 0
+        //assertEquals extendedPageModel.components[0].components.size(), 0
+        assertNull extendedPageModel.components[0].components
 
         // subcomponent added to new parent
         assertEquals extendedPageModel.components[1].components.size(), 1
@@ -647,5 +650,38 @@ class MergePageModelSpec extends Specification{
         assertFalse extendedPageModel.components[3].components[6].containsKey("parent")
         assertFalse extendedPageModel.components[3].components[6].containsKey("newParent")
         assertFalse extendedPageModel.components[3].components[6].containsKey("nextSibling")
+    }
+
+    @Unroll
+    def "Test component is excluded from page and new one with same name is added"() {
+
+        when:
+        Map testData = service.loadTestData("test/testData/mergePageModel/test16Page.json",
+                                            "test/testData/mergePageModel/test16Extensions.json")
+        Map extendedPageModel = service.extendPageModel(testData.pageModelJSON, testData.pageExtensionsJSON)
+
+        then:
+        assertEquals extendedPageModel.name, "testPage"
+        assertEquals extendedPageModel.components.size(), 1
+
+        // new componet added
+        assertEquals extendedPageModel.components[0].name, "componentA"
+        assertEquals extendedPageModel.components[0].attr1, "new attribute 1"
+    }
+
+    @Unroll
+    def "Test component and subcomponent is excluded from page and new one with subcomponent name is added"() {
+
+        when:
+        Map testData = service.loadTestData("test/testData/mergePageModel/test17Page.json",
+                                            "test/testData/mergePageModel/test17Extensions.json")
+        Map extendedPageModel = service.extendPageModel(testData.pageModelJSON, testData.pageExtensionsJSON)
+
+        then:
+        assertEquals extendedPageModel.name, "testPage"
+        assertEquals extendedPageModel.components.size(), 1
+
+        // new componet added
+        assertEquals extendedPageModel.components[0].name, "subSubcomponent"
     }
 }

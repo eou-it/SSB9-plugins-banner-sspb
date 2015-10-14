@@ -1,5 +1,5 @@
 {
   "extensions": [
-    { "name": "componentG", "parent": "componentA", "nextSibling": "componentF" }
+    { "name": "componentG", "nextSibling": "componentF" }
   ]
 }

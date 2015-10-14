@@ -6,7 +6,7 @@
         { "name": "attr2", "value": "attribute 2 added by extension 1" }
       ]
     },
-    { "name": "componentD", "parent": "basePage", "exclude": true },
+    { "name": "componentD", "exclude": true },
     { "name": "componentA", "parent": "basePage", "nextSibling": null,
       "components": [
         { "name": "componentF" },

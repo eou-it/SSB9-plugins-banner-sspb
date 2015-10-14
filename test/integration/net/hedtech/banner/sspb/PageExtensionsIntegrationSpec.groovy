@@ -6,15 +6,13 @@ import grails.test.spock.IntegrationSpec
 @TestFor(PageService)
 class PageExtensionsIntegrationSpec extends IntegrationSpec {
 
-    def slurper = new groovy.json.JsonSlurper()
-
     def setup() {
     }
 
     def cleanup() {
     }
 
-    void "test1"() {
+    void "Test multiple extensions are correctly applied in turn to a base page"() {
         when:
         // create and save base page
         String basePageModelView = new File("test/testData/extendedPageModel/test1BasePageModel.json").text

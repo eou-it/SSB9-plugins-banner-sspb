@@ -258,31 +258,46 @@ class PageService {
     void buildComponentMap( pageComponent, pageComponents ) {
         pageComponents[pageComponent.name] = pageComponent
         pageComponent?.components.each {
+            it.parentComponent = pageComponent
             buildComponentMap(it,pageComponents)
         }
     }
 
     /**
-     * Excludes a component from the final merged model (via pageComponents map)
+     * Excludes a component and all it's subcomponents from component map
      *
-     * @param component : the component to be excluded
-     * @param pageComponents : map of all page components
-     * @param componentExtensions : component specific extensions
+     * @param pageComponents : map of all page components. key = component name
+     * @param component : component to be excluded
      */
-    void excludeComponent(component, pageComponents, componentExtensions) {
-
-        // locate parent component
-        Map parentComponent = pageComponents[componentExtensions.parent]
-
-        log.trace "Excluding $component.name from $parentComponent.name"
-
-        // exclude component from merged model and update component map
-        parentComponent.components -= component
+    void excludeFromComponentMap(pageComponents, component) {
+        component.components.each {
+            excludeFromComponentMap(pageComponents,it)
+        }
         pageComponents.remove(component.name)
     }
 
     /**
+     * Excludes all components with an extension of exclude: true from page model
+     *
+     * @param pageComponents : map of all page components. key = component name
+     * @param pageExtensions : all extensions
+     */
+    void excludeComponents(pageComponents, pageExtensions) {
+        pageExtensions?.each {
+            if (it.exclude) {
+                Map component = pageComponents[it.name]
+                Map parent = component.parentComponent
+
+                // exclude component from parent components and component map
+                parent.components -= component
+                excludeFromComponentMap(pageComponents, component)
+            }
+        }
+    }
+
+    /**
      * Removes, modifies and adds attributes based on extensions
+     *
      * @param component : the component to be extended OR
      *                    parameter or validation map to be extended
      * @param extendedAttributes : attribute extensions
@@ -299,7 +314,6 @@ class PageService {
                 component?.remove(it.name)
                 return;
             }
-
             switch(it.name) {
                 case ["parameters", "validation"]:
                     extendAttributes(component[it.name], it.attributes)
@@ -312,62 +326,126 @@ class PageService {
     }
 
     /**
-     * Adds a new component to merged page model (via pageComponents map)
+     * Adds, excludes and modifies all component attributes
      *
-     * @param pageComponents : map of all page components
-     * @param newComponent : component to be added to new merged page model
+     * @param pageComponents : map of all page components. key = component name
+     * @param pageExtensions : all extensions
      */
-    void addComponent(pageComponents, newComponent) {
-
-        String parent = newComponent.newParent ?: newComponent.parent
-
-        log.trace "Adding $newComponent.name to $parent"
-
-        if (!pageComponents[parent].components) {
-            pageComponents[parent].components = []
+    void extendComponentAttributes(pageComponents, pageExtensions) {
+        pageExtensions?.each {
+            if (!it.exclude) {
+                Map component = pageComponents[it.name]
+                if (component) {
+                    extendAttributes(component,it.attributes)
+                }
+            }
         }
-        List parentComponents = pageComponents[parent].components
+    }
+
+    /**
+     * Adds a new component to extended page model
+     * Design notes:
+     * - The subcomponents of a newly added component are represented in the new component extension
+     *   with the appropriate hierarchical structure. As such, they will be unmodified after this
+     *   initial addition to the page and so don't need to be present in the pageComponents map
+     *
+     * - Component reordering is implemented by simply changing it's parent (if necessary) and
+     *   changing position based on nextSibling. As such, subcomponents of this component are not
+     *   removed and then readded to pageComponents map
+     *
+     * @param pageComponents : map of all page components. key = component name
+     * @param component : new component to be added
+     */
+    void addComponent(pageComponents,component) {
+
+        Map parentComponent = pageComponents[component.parent]
+        component.parentComponent = parentComponent
+
+        if (!parentComponent.components) {
+            parentComponent.components = []
+        }
+        List parentComponents = parentComponent.components
 
         // find next sibling
-        def nextSiblingIndex = parentComponents.indexOf(parentComponents.find {it.name == newComponent.nextSibling})
+        def nextSiblingIndex = parentComponents.indexOf(parentComponents.find {it.name == component.nextSibling})
 
-        // Remove redundant attributes from newComponent - parent, newParent and next sibling
-        newComponent.remove("parent")
-        newComponent.remove("nextSibling")
-        newComponent.remove("newParent")
+        // Remove redundant attributes from newComponent - parent and next sibling
+        component.remove("parent")
+        component.remove("nextSibling")
 
         if (nextSiblingIndex == -1) {
             // not in list ie null so add to end of list
-            parentComponents.add(newComponent)
+            parentComponents.add(component)
         } else {
-            parentComponents.add(nextSiblingIndex, newComponent)
+            parentComponents.add(nextSiblingIndex, component)
         }
-        pageComponents[newComponent.name] = newComponent
+
+        // update component map.
+        pageComponents[component.name] = component
     }
 
     /**
-     * Reorders a component with respect to it's siblings
+     * Move a component to a new parent (if specified) and position according to nextSibling
      *
-     * @param component : component to be moved
-     * @param pageComponents : map of all page components
-     * @param componentExtensions : component specific extensions
+     * @param component : component to be reordered
+     * @param pageComponents : map of all page components. key = component name
+     * @param extension : ordering information
      */
-    void reorderComponent(component, pageComponents, componentExtensions) {
+    void reorderComponent(component,pageComponents,extension) {
 
-        // first exclude component from merged page model
-        excludeComponent(component, pageComponents, componentExtensions)
+        Map oldParent = component.parentComponent
+        Map newParent = pageComponents[extension.parent] ?: oldParent
 
-        // temporarily add positioning attributes
-        component.parent = componentExtensions.parent
-        component.nextSibling = componentExtensions.nextSibling
-        component.newParent = componentExtensions.newParent
+        // exclude component from old parent components
+        oldParent.components -= component
 
-        // add component back into merged page model
-        addComponent(pageComponents, component)
+        // add component to new parent components
+        component.parent = newParent.name
+        component.nextSibling = extension.nextSibling
+        addComponent(pageComponents,component)
     }
 
     /**
-     * Applies a set of extensions to a base page model and retruns a new extended page model
+     * Adds new components and reorders existing components
+     * Design note:
+     * - It is assumed that the extensions are generated in a depth first manner based
+     *   on the visual model of the extended page. Processing these extensions in
+     *   reverse order ensures the final component order is correct
+     *
+     * @param pageComponents : map of all page components. key = component name
+     * @param pageExtensions : all extensions
+     */
+    void addAndReorderComponents(pageComponents, pageExtensions) {
+        pageExtensions?.reverseEach {
+            if (!it.exclude) {
+                Map component = pageComponents[it.name]
+                if (!component) {
+                    addComponent(pageComponents,it)
+                } else if (it.containsKey("nextSibling")) {
+                    reorderComponent(component,pageComponents,it)
+                }
+            }
+        }
+    }
+
+    /**
+     * Removes temporary parentComponent attribute
+     * Ensures empty component lists are removed
+     *
+     * @param pageComponents : map of all page components. key = component name
+     */
+    void cleanup(pageComponents) {
+        pageComponents.each {
+            it.value.remove("parentComponent")
+            if (it.value.components?.size() == 0) {
+                it.value.remove("components")
+            }
+        }
+    }
+
+
+    /**
+     * Applies a set of extensions to a base page model and returns a new extended page model
      *
      * @param pageModelJSON : text of base page in JSON format
      * @param pageExtensionsJSON : text of extensions in JSON format
@@ -387,30 +465,13 @@ class PageService {
 
         log.trace "Extending page $extendedPageModel.name"
 
-        // process extensions
-        pageExtensions?.each{
-            // locate component
-            Map component = pageComponents[it.name]
-            if (it.exclude) {
-                excludeComponent(component, pageComponents, it)
-            } else {
-                extendAttributes(component, it.attributes)
-            }
-        }
+        // apply all extensions
+        excludeComponents(pageComponents, pageExtensions)
+        extendComponentAttributes(pageComponents, pageExtensions)
+        addAndReorderComponents(pageComponents, pageExtensions)
 
-        // add and reorder
-        pageExtensions?.reverseEach{
-            // do not reprocess those components already excluded
-            if (!it.exclude) {
-                // locate component
-                Map component = pageComponents[it.name]
-                if (!component) {
-                    addComponent(pageComponents, it)
-                } else if (it.containsKey("nextSibling")) {
-                    reorderComponent(component, pageComponents, it)
-                }
-            }
-        }
+        cleanup(pageComponents)
+
         return extendedPageModel
     }
 

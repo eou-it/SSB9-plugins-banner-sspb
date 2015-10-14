@@ -1,0 +1,10 @@
+{
+  "extensions": [
+    { "name": "componentA", "exclude": true },
+    { "name": "componentA",
+      "parent": "testPage",
+      "nextSibling": null,
+      "attr1": "new attribute 1"
+    }
+  ]
+}

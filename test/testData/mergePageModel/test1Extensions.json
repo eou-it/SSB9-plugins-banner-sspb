@@ -1,5 +1,5 @@
 {
   "extensions": [
-    { "name": "componentWithSubcomponents", "parent": "testPage", "exclude": true }
+    { "name": "componentWithSubcomponents", "exclude": true }
   ]
 }
