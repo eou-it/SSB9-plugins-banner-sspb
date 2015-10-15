@@ -320,7 +320,8 @@ class CompileService {
 
     def static buildControlVar(pageComponent, depth = 0) {
         def code = ""
-         if ( [PageComponent.COMP_TYPE_BUTTON,PageComponent.COMP_TYPE_LIST, PageComponent.COMP_TYPE_GRID, PageComponent.COMP_TYPE_HTABLE, PageComponent.COMP_TYPE_LINK].contains( pageComponent.type ) ) {
+         if ( [PageComponent.COMP_TYPE_BUTTON,PageComponent.COMP_TYPE_LIST, PageComponent.COMP_TYPE_GRID, PageComponent.COMP_TYPE_HTABLE, PageComponent.COMP_TYPE_LINK,
+                PageComponent.COMP_TYPE_XE_BUTTON].contains( pageComponent.type ) ) {
             // generate a control function for each button/list/link/grid 'click' property
             if (pageComponent.onClick) {
                 // handle variable and constant in expression
@@ -373,6 +374,8 @@ class CompileService {
                        |    };
                        |""".stripMargin()
              }
+         } else if (pageComponent.type == PageComponent.COMP_TYPE_XE_DROPDOWN){
+             code += """ \$scope.${pageComponent.name}_xeDropdownList = ${pageComponent.model};"""
          }
         pageComponent.components.each { child ->
             code+= buildControlVar(child, depth+1)
