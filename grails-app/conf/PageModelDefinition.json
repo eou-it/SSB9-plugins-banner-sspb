@@ -179,7 +179,7 @@
             {"AttributeType":["replaceView"], "renderProperty":{"inputType":"boolean", "defaultValue":true}},
             {"AttributeType":["loadInitially"], "renderProperty":{"inputType":"boolean", "defaultValue":true}},
             {"AttributeType":["activated"], "renderProperty":{"inputType":"boolean", "defaultValue":false}},
-            {"AttributeType":["parameters", "sourceParameters"], "renderProperty":{"inputType":"map"}},
+            {"AttributeType":["parameters", "sourceParameters"], "renderProperty":{"inputType":"map", "defaultValue":{}}},
             {"AttributeType":["pageSize"], "renderProperty":{"inputType":"number", "defaultValue":5}},
             {"AttributeType":["fractionDigits"], "renderProperty":{"inputType":"number", "defaultValue":2}},
             {"AttributeType":["staticData"], "renderProperty":{"inputType":"arrayOfMap"}},

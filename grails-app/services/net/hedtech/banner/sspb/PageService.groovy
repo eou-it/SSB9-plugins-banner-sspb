@@ -1,11 +1,6 @@
 package net.hedtech.banner.sspb
 
-import org.codehaus.groovy.grails.web.util.WebUtils
-import grails.validation.ValidationException
-import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException
-import org.hibernate.StaleObjectStateException
-import org.springframework.dao.OptimisticLockingFailureException
-import java.security.MessageDigest
+import grails.converters.JSON
 
 class PageService {
     def compileService
@@ -96,6 +91,14 @@ class PageService {
         create(content, params)
     }
 
+    def validateExtensions(Page page ) {
+        if (page.extendsPage) {
+            def diff = page.diffModelView(page.mergedModelView) as JSON
+            def test = extendPageModel(page.extendsPage.modelView, diff.toString())
+            println "Test merging of extensions for generated diffs\n ${test as JSON}"
+        }
+    }
+
     def compileAndSavePage( pageName, pageSource, extendsPage) {
         log.trace "in compileAndSavePage: pageName=$pageName"
         def overwrite=false
@@ -114,12 +117,12 @@ class PageService {
             }
             pageInstance.modelView=pageSource
             ret = compilePage(pageInstance)
+            pageInstance.mergedModelView = pageSource
+            validateExtensions(pageInstance)
             if (ret.statusCode == 0) {
-                Page.withTransaction {
-                    if (!ret.page.save()) {
-                        ret.page.errors.allErrors.each { ret.statusMessage += it +"\n" }
-                        ret.statusCode = 3
-                    }
+                if (!ret.page.save()) {
+                    ret.page.errors.allErrors.each { ret.statusMessage += it +"\n" }
+                    ret.statusCode = 3
                 }
             }
         } else
@@ -173,57 +176,6 @@ class PageService {
         }
     }
 
-    // Is below code really needed?
-
-//    public def checkOptimisticLock( domainObject, content ) {
-//
-//        if (domainObject.hasProperty( 'version' )) {
-//            if (!content?.version) {
-//                domainObject.errors.reject( 'version', "net.hedtech.restfulapi.Page.missingVersion")
-//                throw new ValidationException( "Missing version field", domainObject.errors )
-//            }
-//            int ver = content.version instanceof String ? content.version.toInteger() : content.version
-//            if (ver != domainObject.version) {
-//                throw exceptionForOptimisticLock( domainObject, content )
-//            }
-//        }
-//    }
-//
-//
-//    private def exceptionForOptimisticLock( domainObject, content ) {
-//        new HibernateOptimisticLockingFailureException( new StaleObjectStateException( domainObject.class.getName(), domainObject.id ) )
-//    }
-//
-//
-//    /**
-//     * Checks the request for a flag asking for a specific exception to be thrown
-//     * so error handling can be tested.
-//     * This is a method to support testing of the plugin, and should not be taken
-//     * as an example of good service construction.
-//     **/
-//    private void checkForExceptionRequest() {
-//        def params = WebUtils.retrieveGrailsWebRequest().getParameterMap()
-//        if (params.forceGenericError == 'y') {
-//            throw new Exception( "generic failure" )
-//        }
-//        if (params.throwOptimisticLock == 'y') {
-//            throw new OptimisticLockingFailureException( "requested optimistic lock for testing" )
-//        }
-//        if (params.throwApplicationException == 'y') {
-//           //throw new DummyApplicationException( params.appStatusCode, params.appMsgCode, params.appErrorType )
-//        }
-//    }
-//
-//
-//    private void supplementPage( Page page ) {
-//        MessageDigest digest = MessageDigest.getInstance("SHA1")
-//        digest.update("constantName:${page.getConstantName()}".getBytes("UTF-8"))
-//        //digest.update("description${page.getDescription()}".getBytes("UTF-8"))
-//        def properties = [sha1:new BigInteger(1,digest.digest()).toString(16).padLeft(40,'0')]
-//        page.metaClass.getSupplementalRestProperties << {-> properties }
-//    }
-
-
     /**
      * ********************************************************************************************
      * Functionality to generate a merged page model from a base page model and a set of extensions
@@ -274,6 +226,9 @@ class PageService {
         // locate parent component
         Map parentComponent = pageComponents[componentExtensions.parent]
 
+        if (!parentComponent) {
+            println "Item with no parent"
+        }
         log.trace "Excluding $component.name from $parentComponent.name"
 
         // exclude component from merged model and update component map
@@ -409,4 +364,7 @@ class PageService {
         }
         return extendedPageModel
     }
+
+
+
 }
