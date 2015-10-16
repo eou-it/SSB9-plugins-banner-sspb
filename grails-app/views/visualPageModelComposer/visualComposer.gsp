@@ -304,12 +304,15 @@
             tr['type.button'      ]="${message(code:'sspb.model.type.button'   )}";
             tr['type.hidden'      ]="${message(code:'sspb.model.type.hidden'   )}";
             tr['type.style'       ]="${message(code:'sspb.model.type.style'   )}";
-            tr['type.xeTextBox'   ]="${message(code:'sspb.model.type.xeTextBox'  )}";
+            tr['type.xeTextBox'   ]="${message(code:'sspb.model.type.xeTextBox'  )}"
+            tr['type.xeButton'  ]="${message(code:'sspb.model.type.xeButton' )}";
+            tr['type.xeDropdown'  ]="${message(code:'sspb.model.type.xeDropdown' )}";
             tr['subType.text'     ]="${message(code:'sspb.model.subType.text'    )}";
             tr['subType.number'   ]="${message(code:'sspb.model.subType.number'  )}";
             tr['subType.email'    ]="${message(code:'sspb.model.subType.email'   )}";
             tr['subType.tel'      ]="${message(code:'sspb.model.subType.tel'     )}";
-
+            tr['subType.primaryButton'  ]="${message(code:'sspb.model.subType.primaryButton')}";
+            tr['subType.secondaryButton'  ]="${message(code:'sspb.model.subType.secondaryButton')}";
 
             tr['sspb.page.visualbuilder.edit.map.title' ] = "${message(code:'sspb.page.visualbuilder.edit.map.title',encodeAs: 'JavaScript')}";
             tr['sspb.page.visualbuilder.edit.textarea.title' ] = "${message(code:'sspb.page.visualbuilder.edit.textarea.title',encodeAs: 'JavaScript')}";
@@ -693,7 +696,7 @@
                  return;
              }
 
-              Page.save({pageName:$scope.pageCurName, source:$scope.pageSourceView, extendsPage:$scope.extendsPage}, 
+              Page.save({pageName:$scope.pageCurName, source:$scope.pageSourceView, extendsPage:$scope.extendsPage},
                   function(response) {
                      if (response.statusCode == 0) {
                          $scope.pageStatus.message = response.statusMessage;

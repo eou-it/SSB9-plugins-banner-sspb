@@ -1,6 +1,6 @@
 {
   "extensions": [
-    { "name": "componentWithAttributes", "parent": "testPage",
+    { "name": "componentWithAttributes",
       "attributes": [
         { "name": "attr1", "exclude": true },
         { "name": "attr2", "value": "extended attribute 2" },

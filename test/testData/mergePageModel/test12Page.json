@@ -1,0 +1,19 @@
+{
+  "name": "testPage",
+  "type": "page",
+  "components": [
+    { "name": "componentA" },
+    { "name": "componentB",
+      "components": [
+        { "name": "componentF" },
+        { "name": "componentG" },
+        { "name": "componentH" },
+        { "name": "componentI" },
+        { "name": "componentJ" }
+      ]
+    },
+    { "name": "componentC" },
+    { "name": "componentD" },
+    { "name": "componentE" }
+  ]
+}

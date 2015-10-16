@@ -4,3 +4,5 @@ tab.html
 tabset.html
 component.html
 xeTextBox.html
+xeButton.html
+xeDropdown.html
