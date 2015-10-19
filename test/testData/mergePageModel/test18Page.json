@@ -1,0 +1,26 @@
+{
+  "name": "testPage",
+  "type": "page",
+  "components": [
+    { "name": "componentA" },
+    { "name": "componentB",
+      "components": [
+        { "name": "componentJ" },
+        { "name": "componentK" },
+        { "name": "componentL",
+          "components": [
+            { "name": "componentS" },
+            { "name": "componentT" },
+            { "name": "componentU" },
+            { "name": "componentV" }
+          ]
+        },
+        { "name": "componentM" },
+        { "name": "componentN" }
+      ]
+    },
+    { "name": "componentC" },
+    { "name": "componentD" },
+    { "name": "componentE" }
+  ]
+}

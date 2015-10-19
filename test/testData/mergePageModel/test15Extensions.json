@@ -7,7 +7,8 @@
     { "name": "componentK", "nextSibling": "componentL", "parent": "componentB" },
     { "name": "componentL", "nextSibling": null, "parent": "componentB" },
     { "name": "componentM", "nextSibling": "componentN", "parent": "testPage" },
-    { "name": "componentN", "nextSibling": null, "parent": "testPage" }
-
+    { "name": "componentN", "nextSibling": null, "parent": "testPage" },
+    { "name": "componentC", "nextSibling": "componentM"},
+    { "name": "componentF", "nextSibling": "componentK"}
   ]
 }

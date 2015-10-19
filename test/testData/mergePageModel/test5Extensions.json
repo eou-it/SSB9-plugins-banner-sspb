@@ -30,6 +30,7 @@
           }
         }
       ]
-    }
+    },
+    { "name": "subcomponent1", "nextSibling": "subcomponent2"}
   ]
 }

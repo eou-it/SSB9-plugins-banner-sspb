@@ -1,6 +1,6 @@
 {
   "extensions": [
-    { "name": "componentD", "nextSibling": "componentE" },
-    { "name": "componentE", "nextSibling": "componentA" }
+    { "name": "componentE", "nextSibling": "componentA" },
+    { "name": "componentC", "nextSibling": null }
   ]
 }
