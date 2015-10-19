@@ -93,9 +93,16 @@ class PageService {
 
     def validateExtensions(Page page ) {
         if (page.extendsPage) {
-            def diff = page.diffModelView(page.mergedModelView) as JSON
-            def test = extendPageModel(page.extendsPage.modelView, diff.toString())
-            println "Test merging of extensions for generated diffs\n ${test as JSON}"
+
+            ///
+            def mergedModelMap = new groovy.json.JsonSlurper().parseText(page.mergedModelView)
+            def diff = page.diffModelView(mergedModelMap) as JSON
+            def extendedPage = extendPageModel(page.extendsPage.modelView, diff.toString())
+
+            def decomposedBasePage = page.decomposeExtendsPage()
+            def equal = mergedModelMap.equals(extendedPage)
+
+            println "pageExtended + delta == Submitted? $equal "
         }
     }
 

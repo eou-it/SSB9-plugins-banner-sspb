@@ -64,6 +64,8 @@ class Page {
 
     //Routines to determine diffs between extended page and base page
 
+    def static final metaAncestors = 'metaAncestors'
+    def static final metaIdx = 'metaIdx'
     /**
      * Member method to determine the difference  between the full page model and this.extendsPage
      *
@@ -106,7 +108,7 @@ class Page {
                 result[name] = [:]
             }
             result[name][prop] = v.ext
-            if (prop == "ancestors" ) {
+            if (prop == metaAncestors ) {
                 if ( !ancestors[v.ext] ) {
                     ancestors[v.ext]=[]
                 }
@@ -117,7 +119,7 @@ class Page {
         println "Converted diff after step 1:\n${result as JSON}"
         //add the names of components without ancestors in ancestors[0]
         result.each {
-            if (!it.value.ancestors) { // Add the nodes with unknown ancestors in the 0 element
+            if (!it.value[metaAncestors]) { // Add the nodes with unknown ancestors in the 0 element
                 if ( !ancestors[0]) {
                     ancestors[0]=[]
                 }
@@ -151,16 +153,16 @@ class Page {
         finalResult
     }
 
-     static private Map propertyMap(String mergedModelString) {
-        JSONObject mergedModelJSON = JSON.parse(mergedModelString)
-        propertyMap(mergedModelJSON)
+    static private Map propertyMap(String mergedModelString) {
+        //JSONObject mergedModelJSON = JSON.parse(mergedModelString)
+        propertyMap(new groovy.json.JsonSlurper().parseText(mergedModelString))
     }
 
     static def componentName(component, parent, siblingIndex) {
         return component? component.name ? component.name : "${parent?.name}_child_${siblingIndex}":null
     }
 
-    static private Map propertyMap(JSONObject comp, int siblingIndex=0, JSONObject parent=null, JSONObject next = null, int ancestors=0) {
+    static private Map propertyMap(Map comp, int siblingIndex=0, Map parent=null, Map next = null, int ancestors=0) {
         def props = [:]
         comp.name=componentName(comp, parent, siblingIndex)
         println "Processing $comp.name"
@@ -169,9 +171,10 @@ class Page {
                 props[comp.name + ':' + key] = val
             }
         }
-        props[ comp.name + ':ancestors'] = ancestors  //use to add children to parent components - the more ancestors the earlier
+        props[ comp.name + ':'+metaAncestors] = ancestors  //use to add children to parent components - the more ancestors the earlier
         props[ comp.name + ':parent'] = parent?.name
         props[ comp.name + ':nextSibling'] = componentName(next,parent,siblingIndex+1)
+        props[ comp.name + ':'+metaIdx] = siblingIndex
         def nSiblings = comp.components?comp.components.size()-1:0
         if (nSiblings>=0) {
             comp.components?.eachWithIndex { entry, i ->
@@ -181,5 +184,80 @@ class Page {
         }
         props
     }
+
+
+    // HvT merging
+
+
+    Map extendPageModel(Map extension ) {
+
+    }
+
+
+    Map decomposeExtendsPage() {
+        Map model = new groovy.json.JsonSlurper().parseText(extendsPage.modelView)
+        def x =  decomposeComponents(model)
+        println x
+        def y = composeComponents(x) // see if it works out
+        println y
+    }
+
+    static Map decomposeComponents(Map comp, int siblingIndex=0, Map parent=null, Map next = null,Map result =[:]) {
+        if (comp.type == 'page') {
+            result = [root: comp.name, components:[:]]
+        }
+        Map clone = comp.clone()
+        clone.meta=[:]
+        if (next) {
+            clone.meta.nextSibling=componentName(next,parent,siblingIndex+1)
+        }
+
+        if (comp.components) {
+            clone.remove('components')
+            def nSiblings = comp.components ? comp.components.size() - 1 : 0
+            if (nSiblings >= 0) {
+                clone.meta.firstChild = componentName(comp.components[0],parent,0)
+                comp.components?.eachWithIndex { entry, i ->
+                    def nextSibling = i < nSiblings ? comp.components[i + 1] : null
+                    result = decomposeComponents(entry, i, comp, nextSibling,result)
+                }
+            }
+        }
+        result.components[componentName(comp,parent,siblingIndex)]=clone
+        result
+    }
+
+    //compose the model from a flat decomposed model
+    static Map composeComponents(Map flatModel, boolean cleanMeta = true) {
+        Map root = flatModel.components[flatModel.root]
+        if (root.meta.firstChild) {
+            def child = flatModel.components[root.meta.firstChild]
+            root.components = getSiblings(flatModel,child)
+        }
+        if (cleanMeta) {
+            root.remove('meta')
+        }
+        root
+    }
+
+    //Get a list of siblings given the first sibling
+    static List getSiblings(Map flatModel, Map first, boolean cleanMeta = true) {
+        def result = [] << first //.remove('meta')
+        def next = first
+        for (; next.meta.nextSibling != null; ) {
+            next = flatModel.components[next.meta.nextSibling]
+            if (next.meta.firstChild) {
+                next.components = getSiblings(flatModel,flatModel.components[next.meta.firstChild] )
+            }
+            result <<next
+        }
+        if (cleanMeta) {
+            result.each {
+                it.remove('meta')
+            }
+        }
+        result
+    }
+
 
 }
