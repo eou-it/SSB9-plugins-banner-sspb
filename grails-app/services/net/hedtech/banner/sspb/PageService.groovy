@@ -107,7 +107,7 @@ class PageService {
         }
         if (pageSource)  {
             if (!pageInstance) {
-                pageInstance = new Page([constantName:pageName, extendsPage:extendsPage.size?extendsPage:null])
+                pageInstance = new Page([constantName:pageName, extendsPage:extendsPage?.size()?extendsPage:null])
             }
             else {
                 pageInstance.extendsPage = extendsPage ? Page.findByConstantName(extendsPage.constantName) : null
