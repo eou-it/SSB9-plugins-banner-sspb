@@ -6,3 +6,5 @@ component.html
 xeTextBox.html
 xeButton.html
 xeDropdown.html
+xeTextArea.html
+xeCheckbox.html

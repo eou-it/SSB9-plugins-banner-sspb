@@ -375,7 +375,7 @@ class CompileService {
                        |""".stripMargin()
              }
          } else if (pageComponent.type == PageComponent.COMP_TYPE_XE_DROPDOWN){
-             code += """ \$scope.${pageComponent.name}_xeDropdownList = ${pageComponent.model};"""
+             code += """ \$scope.${pageComponent.name}_xeDropdownList = ${pageComponent.sourceModel};"""
          }
         pageComponent.components.each { child ->
             code+= buildControlVar(child, depth+1)
