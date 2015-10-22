@@ -1,7 +1,5 @@
 package net.hedtech.banner.sspb
 
-import grails.converters.JSON
-
 class PageService {
     def compileService
     def groovyPagesTemplateEngine
@@ -59,14 +57,10 @@ class PageService {
 
     def show(Map params) {
         log.trace "PageService.show invoked"
-        def result
-        result = Page.find{constantName==params.id}
-        //result = Page.get(params.id)
-
-        //supplementPage( result )
-        log.trace "PageService.show returning ${result}"
-        def showResult = [constantName : result.constantName, id: result.id, extendsPage: result.extendsPage, version: result.version, modelView: result.modelView]
-
+        def page= Page.find{constantName==params.id}
+        log.trace "PageService.show returning ${page}"
+        String model = page.getMergedModelText()
+        def showResult = [constantName : page.constantName, id: page.id, extendsPage: page.extendsPage, version: page.version, modelView: model]
         showResult
     }
 
@@ -75,7 +69,6 @@ class PageService {
     // TODO for now update(post) handles both update and creation to simplify client side logic
     def create(Map content, params) {
         log.trace "PageService.create invoked"
-        //checkForExceptionRequest()
         def result
         Page.withTransaction {
             // compile first
@@ -91,21 +84,6 @@ class PageService {
         create(content, params)
     }
 
-    def validateExtensions(Page page ) {
-        if (page.extendsPage) {
-
-            ///
-            def mergedModelMap = new groovy.json.JsonSlurper().parseText(page.mergedModelView)
-            def diff = page.diffModelView(mergedModelMap) as JSON
-            def extendedPage = extendPageModel(page.extendsPage.modelView, diff.toString())
-
-            def decomposedBasePage = page.decomposeExtendsPage()
-            def equal = mergedModelMap.equals(extendedPage)
-
-            println "pageExtended + delta == Submitted? $equal "
-        }
-    }
-
     def compileAndSavePage( pageName, pageSource, extendsPage) {
         log.trace "in compileAndSavePage: pageName=$pageName"
         def overwrite=false
@@ -116,16 +94,18 @@ class PageService {
             overwrite = true;
         }
         if (pageSource)  {
+            extendsPage = extendsPage.equals(null)?null:extendsPage
             if (!pageInstance) {
-                pageInstance = new Page([constantName:pageName, extendsPage:extendsPage.size?extendsPage:null])
+                pageInstance = new Page([constantName:pageName, extendsPage:extendsPage])
             }
             else {
                 pageInstance.extendsPage = extendsPage ? Page.findByConstantName(extendsPage.constantName) : null
             }
             pageInstance.modelView=pageSource
             ret = compilePage(pageInstance)
-            pageInstance.mergedModelView = pageSource
-            validateExtensions(pageInstance)
+            if (pageInstance.extendsPage) {
+                pageInstance.modelView = pageInstance.diffModelViewText(pageSource)// save the diff if an extension
+            }
             if (ret.statusCode == 0) {
                 if (!ret.page.save()) {
                     ret.page.errors.allErrors.each { ret.statusMessage += it +"\n" }
@@ -151,7 +131,7 @@ class PageService {
                 log.trace "JavaScript is compiled\n"
                 def compiledView = compileService.compile2page(validateResult.pageComponent)
                 log.trace "Page is compiled\n"
-                page.modelView=pageSource
+                //page.modelView=pageSource
                 page.compiledView = compiledView
                 page.compiledController=compiledJSCode
                 compileService.updateProperties(validateResult.pageComponent)

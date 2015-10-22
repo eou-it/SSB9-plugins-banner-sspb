@@ -1,7 +1,6 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
-import org.codehaus.groovy.grails.web.json.JSONObject
 
 class Page {
 
@@ -10,7 +9,8 @@ class Page {
 
     String constantName
     String modelView
-    String mergedModelView
+    //String mergedModel
+    //String diffModelView
     String compiledView
     String compiledController
 
@@ -39,7 +39,7 @@ class Page {
         //compiledController type: "clob"
     }
 
-    static transients = ['diffModelView', 'mergedModelView']
+    static transients = ['mergedModelText', 'getMergedModelMap']
 
     boolean isEmptyInstance() {
         return (
@@ -49,32 +49,58 @@ class Page {
         )
     }
 
-    void setModelView(String m, Boolean diff = false) {
-        if (extendsPage && diff) {
-            def json = diffModelView(m) as JSON
-            modelView = json.toString()
+
+    //Methods for merging models and getting deltas
+
+    //Use a single static method to convert model to map
+    private static Map modelToMap(String model) {
+        def slurper = new groovy.json.JsonSlurper()
+        return slurper.parseText(model)
+    }
+
+    private static String modelToString(Map model) {
+        return (model as JSON).toString(true)
+    }
+
+    String getMergedModelText(){
+        extendsPage?modelToString(getMergedModelMap()):modelView
+    }
+
+    Map getMergedModelMap() {
+        def result
+        if (extendsPage) {
+            //Should never return null
+            if (!modelView || modelView.equals("null") || modelView.equals("{}")) {
+                result = extendsPage.getMergedModelMap()
+            } else {
+                def base = decomposeModel(extendsPage.getMergedModelMap())
+                def diff = modelToMap(modelView)
+                if (diff.containsKey('deltas')) {
+                    result = applyDiffs(base, diff.deltas)
+                    println "Merged page models"
+                } else {
+                    result = modelToMap(modelView)
+                }
+            }
         } else {
-            modelView=m
+            result = modelToMap(modelView)
         }
+        result
     }
 
-    String getModelView() {
-        modelView
+    String diffModelViewText(model) {
+        return modelToString(diffModelView(model))
     }
 
-    //Routines to determine diffs between extended page and base page
+    private Map diffModelView(model) {
+        def base = extendsPage.getMergedModelMap()
+        diffModelView(model, base)
+    }
 
-    def static final metaAncestors = 'metaAncestors'
-    def static final metaIdx = 'metaIdx'
-    /**
-     * Member method to determine the difference  between the full page model and this.extendsPage
-     *
-     * @param mergedModelView: the page model as seen by the user and compiler
-     * @return : the diffModelView to be persisted as modelView and used as an extension
-     */
-    Map diffModelView(mergedModelView){
+    // Static method to determine the difference  between the full page model and this.extendsPage
+    private static Map diffModelView(mergedModelView, base){
         def start = new Date()
-        def baseProps = propertyMap(this.extendsPage.modelView)
+        def baseProps = propertyMap(base)
         def extProps = propertyMap(mergedModelView)
         def diff = [:]
         // iterate over all keys in base and ext props
@@ -88,18 +114,17 @@ class Page {
                 }
             } else {
                 // Record the property that exists
-                diff[k] = hasBase? [base: baseProps[k]]: [ext:extProps[k]]
+                diff[k] = hasBase? [base: baseProps[k]]: [ext: extProps[k]]
             }
         }
+        diff = convertDiff(diff)
         println "Determined diff in ${new Date().getTime()-start.getTime()} ms. diff= $diff"
-        convertDiff(diff)
+        diff
     }
 
-    static private Map convertDiff(propsDiff) {
+    private static Map convertDiff(propsDiff) {
         def result = [:]
-        def ancestors = [:] //map with number of ancestors and associated components
-        def maxAncestors = 0
-        //convert the diff properties to a map, add the component name in the matching ancestors element
+        //convert the diff properties to a map
         propsDiff.each{ k,v ->
             def nameProp =  k.split(':')
             def name=nameProp[0]
@@ -107,99 +132,93 @@ class Page {
             if (!result[name]) {
                 result[name] = [:]
             }
-            result[name][prop] = v.ext
-            if (prop == metaAncestors ) {
-                if ( !ancestors[v.ext] ) {
-                    ancestors[v.ext]=[]
-                }
-                ancestors[v.ext]<<name
-                maxAncestors = Math.max(maxAncestors,v.ext)
-            }
+            result[name][prop] = v //v.ext
         }
-        println "Converted diff after step 1:\n${result as JSON}"
-        //add the names of components without ancestors in ancestors[0]
-        result.each {
-            if (!it.value[metaAncestors]) { // Add the nodes with unknown ancestors in the 0 element
-                if ( !ancestors[0]) {
-                    ancestors[0]=[]
-                }
-                ancestors[0] << it.key
-            }
-        }
-        //now move the items having a parent to the compents array of the parent
-        (maxAncestors..0).each{ n ->
-            ancestors[n].each{ name ->
-                def comp = result[name]
-                if ( comp['parent'] && result[comp['parent']]) {
-                    def parent = result[comp.parent]
-                    if (!parent.components) {
-                        parent.components = []
-                    }
-                    parent.components << comp
-                    result.remove(name)
-                }
-            }
-        }
-        println "Converted diff after step 2:\n${result as JSON}"
-        //Now put the result into the final extensions format
-        def finalResult = [extensions:[]]
-        result.each { k, v ->
-            if (!v.name) {
-                v.name=k
-            }
-            finalResult.extensions << v
-        }
-        println "Converted diff after step 3:\n${finalResult as JSON}"
-        finalResult
+        //println "Difference :\n${result as JSON}"
+        [deltas: result]
     }
 
-    static private Map propertyMap(String mergedModelString) {
+    private static Map propertyMap(String mergedModelString) {
         //JSONObject mergedModelJSON = JSON.parse(mergedModelString)
         propertyMap(new groovy.json.JsonSlurper().parseText(mergedModelString))
     }
 
-    static def componentName(component, parent, siblingIndex) {
+    private static def componentName(component, parent, siblingIndex) {
         return component? component.name ? component.name : "${parent?.name}_child_${siblingIndex}":null
     }
 
-    static private Map propertyMap(Map comp, int siblingIndex=0, Map parent=null, Map next = null, int ancestors=0) {
+    private static Map propertyMap(Map comp, int siblingIndex=0, Map parent=null, Map next = null) {
         def props = [:]
-        comp.name=componentName(comp, parent, siblingIndex)
-        println "Processing $comp.name"
-        comp.each{ key, val ->
-            if (key!='components') {
-                props[comp.name + ':' + key] = val
-            }
-        }
-        props[ comp.name + ':'+metaAncestors] = ancestors  //use to add children to parent components - the more ancestors the earlier
-        props[ comp.name + ':parent'] = parent?.name
-        props[ comp.name + ':nextSibling'] = componentName(next,parent,siblingIndex+1)
-        props[ comp.name + ':'+metaIdx] = siblingIndex
-        def nSiblings = comp.components?comp.components.size()-1:0
-        if (nSiblings>=0) {
-            comp.components?.eachWithIndex { entry, i ->
-                def nextSibling = i < nSiblings ? comp.components[i + 1] : null
-                props << propertyMap(entry, i, comp, nextSibling, ancestors+1 )
+        def decomposed = decomposeComponents(comp).components
+        decomposed.each {
+            it.value.each { key, val ->
+                if (key!='components') {
+                    props[it.key + ':' + key] = val
+                }
             }
         }
         props
     }
 
 
-    // HvT merging
+    private static Map applyDiffs(Map decomposedBasePage, Map diffs ) {
+        def model = decomposedBasePage
+        diffs.each { name, diff ->
+            //println "Processing $name"
+            def comp = model.components[name]
+            if (comp) { // Component exists, change props to match the extension
+                //println "found existing component"
+                diff.each { prop, val ->
+                    if (val.base.equals(comp[prop])) {
+                        // baseline not changed
+                        if (val.ext) {
+                            comp[prop] = val.ext
+                        }
+                    } else {
+                        if (prop=='meta') {
+                            println "Component $name: detected meta change in baseline ${val.base} to ${comp[prop]} "
+                            println "Change to be applied: ${val.ext}"
+                            //comp[prop] = val.ext
+                            // fix chain if both baseline components are before the inserted component
+                            // is it possible to do this in a generic way?
+                            def nextComp = model.components[comp[prop].nextSibling]
+                            if (nextComp) {
+                                nextComp[prop] = val.ext
+                            }
+                        } else {
+                            // Use properties
+                            if (val.ext) {
+                                comp[prop] = val.ext
+                            }
+                            //println "Component $name: detected change in baseline property $prop from ${val.base} to ${comp[prop]}"
+                        }
+                    }
+                }
+            } else {
 
-
-    Map extendPageModel(Map extension ) {
-
+                diff.each { prop, val ->
+                    if (val.ext) {
+                        if (!comp) {
+                            comp=[:] //we have an extension property so create the component
+                        }
+                        comp[prop] = val.ext
+                    }
+                    if (prop=='meta') {
+                        comp[prop].newComponent=true
+                    }
+                }
+                if (comp) { //add the component to the result
+                    model.components[name]=comp
+                    println "New component ${comp.name} added "
+                }
+            }
+        }
+        composeComponents(model)
     }
 
 
-    Map decomposeExtendsPage() {
-        Map model = new groovy.json.JsonSlurper().parseText(extendsPage.modelView)
-        def x =  decomposeComponents(model)
-        println x
-        def y = composeComponents(x) // see if it works out
-        println y
+    Map decomposeModel(model) {
+        decomposeComponents(model)
     }
 
     static Map decomposeComponents(Map comp, int siblingIndex=0, Map parent=null, Map next = null,Map result =[:]) {
@@ -210,6 +229,9 @@ class Page {
         clone.meta=[:]
         if (next) {
             clone.meta.nextSibling=componentName(next,parent,siblingIndex+1)
+        }
+        if (parent) {
+            clone.meta.parent=parent.name
         }
 
         if (comp.components) {
@@ -227,12 +249,12 @@ class Page {
         result
     }
 
-    //compose the model from a flat decomposed model
-    static Map composeComponents(Map flatModel, boolean cleanMeta = true) {
-        Map root = flatModel.components[flatModel.root]
+    //compose the model from a decomposed model
+    static Map composeComponents(Map decomposedModel, boolean cleanMeta = true) {
+        Map root = decomposedModel.components[decomposedModel.root]
         if (root.meta.firstChild) {
-            def child = flatModel.components[root.meta.firstChild]
-            root.components = getSiblings(flatModel,child)
+            def child = decomposedModel.components[root.meta.firstChild]
+            root.components = getSiblings(decomposedModel,child, root)
         }
         if (cleanMeta) {
             root.remove('meta')
@@ -241,23 +263,33 @@ class Page {
     }
 
     //Get a list of siblings given the first sibling
-    static List getSiblings(Map flatModel, Map first, boolean cleanMeta = true) {
-        def result = [] << first //.remove('meta')
+    static List getSiblings(Map flatModel, Map first, parent, boolean cleanMeta = true) {
+        def result = parent.components?parent.component:[]  //.remove('meta')
         def next = first
-        for (; next.meta.nextSibling != null; ) {
-            next = flatModel.components[next.meta.nextSibling]
-            if (next.meta.firstChild) {
-                next.components = getSiblings(flatModel,flatModel.components[next.meta.firstChild] )
+        println "getSiblings for ${parent.name}"
+        for (; next != null; ) {
+            //if (result.contains(next)) {
+            if (next.meta.added) {
+                println "Prevented adding existing child ${next.name} of ${parent.name}. Sequence is broken. \n    TODO: check all items with parent ${parent.name} are included"
+                next = null //
+            } else {
+                println "Added ${next.name} to ${parent.name}"
+                next.meta.added = true
+                if (next.meta.firstChild) {
+                    next.components = getSiblings(flatModel,flatModel.components[next.meta.firstChild],next )
+                }
+                result << next
+                next = next.meta.nextSibling ? flatModel.components[next.meta.nextSibling] : null
+                if (next) {
+                    println "Next: ${next.name}"
+                }
             }
-            result <<next
         }
-        if (cleanMeta) {
+        if (false && cleanMeta) {
             result.each {
                 it.remove('meta')
             }
         }
         result
     }
-
-
 }
