@@ -1,7 +1,8 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
-
+import groovy.util.logging.Log4j
+@Log4j
 class Page {
 
     static hasMany = [pageRoles: PageRole, extensions: Page] //Optional child page(s) (sub classes)
@@ -81,7 +82,7 @@ class Page {
                 def diff = modelToMap(modelView)
                 if (diff.containsKey('deltas')) {
                     result = applyDiffs(base, diff.deltas)
-                    println "Merged page models"
+                    log.info "Merged page models"
                 } else {
                     result = modelToMap(modelView)
                 }
@@ -124,7 +125,7 @@ class Page {
             }
         }
         diff = convertDiff(diff)
-        println "Determined diff in ${new Date().getTime()-start.getTime()} ms. diff= $diff"
+        log.info "Determined diff in ${new Date().getTime()-start.getTime()} ms. diff= $diff"
         diff
     }
 
@@ -184,7 +185,7 @@ class Page {
                         if (prop=='meta') {
                             def type=diff.meta.base.nextSibling.equals(comp.meta.nextSibling)?"newParent":"reOrder"
                             model.conflicts<<[type:type, diff:diff, comp:comp]
-                            println "Component $name: detected meta change in baseline ${val.base} to ${comp[prop]}. Change to be applied: ${val.ext}"
+                            log.warn "Component $name: detected meta change in baseline ${val.base} to ${comp[prop]}. Change to be applied: ${val.ext}"
                         }
                     }
                 }
@@ -206,7 +207,7 @@ class Page {
                     if (comp) { //add the component to the result
                         model.components[name] = comp
                         model.added[name] = comp
-                        println "New component ${comp.name} added "
+                        log.info "New component ${comp.name} added "
                     }
                 } else {
                     model.conflicts<<[type:"removedBaseline", diff:diff, comp:[name:name]]
@@ -244,7 +245,7 @@ class Page {
                 }
             }
         }
-        result.components[componentName(comp,parent,siblingIndex)]=clone
+        result.components[componentName(comp, parent, siblingIndex)] = clone
         result
     }
 
@@ -271,12 +272,12 @@ class Page {
                 if (extNextComp) {
                     conflict.comp.meta.nextSibling = extNextName
                     extNextComp.meta.nextSibling = nextName
-                    println "Resolved baseline reorder conflict by inserting new component $extNextName after component ${conflict.comp.name}"
+                    log.warn "Resolved baseline reorder conflict by inserting new component $extNextName after component ${conflict.comp.name}"
                 } else {
-                    println "Unresolved conflict. No new component found matching the nextSibling of component ${conflict.comp.name}"
+                    log.warn "Unresolved conflict. No new component found matching the nextSibling of component ${conflict.comp.name}"
                 }
             } else if (conflict.type=="removedBaseline") {
-                println "Resolve removed baseline component conflict"
+                log.warn "Resolve removed baseline component conflict"
                 def resolvedStatusMessage = "Unresolved"
                 def removedNextName = conflict.diff.meta.ext.nextSibling
                 def addedNoReference = model.added[removedNextName]
@@ -295,7 +296,7 @@ class Page {
                         }
                     }
                 }
-                println resolvedStatusMessage
+                log.warn resolvedStatusMessage
             }
         }
         model
@@ -305,14 +306,14 @@ class Page {
     private static List getSiblings(Map flatModel, Map first, parent, boolean cleanMeta = true) {
         def result = parent.components?parent.component:[]  //.remove('meta')
         def next = first
-        println "getSiblings for ${parent.name}"
+        log.info "getSiblings for ${parent.name}"
         for (; next != null; ) {
             //if (result.contains(next)) {
             if (next.meta.added) {
-                println "Prevented adding existing child ${next.name} of ${parent.name}. Sequence is broken. \n    TODO: check all items with parent ${parent.name} are included"
+                log.warn "Prevented adding existing child ${next.name} of ${parent.name}. Sequence is broken. \n    TODO: check all items with parent ${parent.name} are included"
                 next = null //
             } else {
-                println "Added ${next.name} to ${parent.name}"
+                log.trace "Added ${next.name} to ${parent.name}"
                 next.meta.added = true
                 if (next.meta.firstChild) {
                     next.components = getSiblings(flatModel,flatModel.components[next.meta.firstChild],next )
@@ -320,7 +321,7 @@ class Page {
                 result << next
                 next = next.meta.nextSibling ? flatModel.components[next.meta.nextSibling] : null
                 if (next) {
-                    println "Next: ${next.name}"
+                    log.trace "Next: ${next.name}"
                 }
             }
         }

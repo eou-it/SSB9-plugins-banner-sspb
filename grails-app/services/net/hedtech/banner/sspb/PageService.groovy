@@ -94,7 +94,12 @@ class PageService {
             overwrite = true;
         }
         if (pageSource)  {
-            extendsPage = extendsPage.equals(null)?null:extendsPage
+
+            if (! extendsPage instanceof Page) {
+                // Maps and Json Objects don't compare directly with nulls
+                extendsPage = extendsPage.equals(null)||extendsPage?.size()==0?null:extendsPage
+            }
+
             if (!pageInstance) {
                 pageInstance = new Page([constantName:pageName, extendsPage:extendsPage])
             }

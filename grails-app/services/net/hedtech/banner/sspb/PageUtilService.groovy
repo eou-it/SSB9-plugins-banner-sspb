@@ -187,7 +187,8 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         def pages = Page.findAllByConstantNameLike(pat)
         def errors =[]
         pages.each { page ->
-            def result=pageService.compileAndSavePage( page.constantName, page.modelView, page.extendsPage)
+            def model=page.extendsPage?page.mergedModelText:page.modelView
+            def result = pageService.compileAndSavePage(page.constantName, model, page.extendsPage)
             if (result.statusCode>0)
                 errors << result
             log.info result

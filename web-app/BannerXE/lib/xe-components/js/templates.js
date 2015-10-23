@@ -1,4 +1,4 @@
-angular.module('xe-ui-components-tpls', ['templates/label.html', 'templates/badge.html', 'templates/button.html', 'templates/checkbox.html', 'templates/dropdown.html', 'templates/schedule.html', 'templates/column-filter.html', 'templates/dataTable.html', 'templates/pagination.html', 'templates/search.html', 'templates/schedule.html', 'templates/radio-button.html', 'templates/simple-textbox.html', 'templates/statusLabel.html', 'templates/switch.html', 'templates/text-area.html', 'templates/text-box.html']);
+angular.module('xe-ui-components-tpls', ['templates/label.html', 'templates/badge.html', 'templates/button.html', 'templates/checkbox.html', 'templates/dropdown.html', 'templates/schedule.html', 'templates/column-filter.html', 'templates/dataTable.html', 'templates/pagination.html', 'templates/search.html', 'templates/pillbox.html', 'templates/radio-button.html', 'templates/simple-textbox.html', 'templates/statusLabel.html', 'templates/switch.html', 'templates/text-area.html', 'templates/text-box.html']);
 
 angular.module("templates/label.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/label.html",
@@ -185,8 +185,8 @@ angular.module("templates/search.html", []).run(["$templateCache", function($tem
     "</div>");
 }]);
 
-angular.module("templates/schedule.html", []).run(["$templateCache", function($templateCache) {
-  $templateCache.put("templates/schedule.html",
+angular.module("templates/pillbox.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/pillbox.html",
     "<div class=\"schedule-container\">\n" +
     "    <ul>\n" +
     "    <li class=\"schedule-{{::weekDay !='false'}}\" ng-repeat=\"weekDay in scheduleData track by $index\"> \n" +

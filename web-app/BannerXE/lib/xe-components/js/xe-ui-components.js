@@ -2,11 +2,11 @@
  * component-library
  * 
 
- * Version: 0.0.1 - 2015-10-08
+ * Version: 0.0.1 - 2015-10-23
  * License: ISC
  */
 angular.module("xe-ui-components", ['label','badge','button','checkbox','xe-ui-components','utils','dropdown','scheduleModule','columnFilter','dataTableModule','pagination','search','radiobutton','simpleTextbox','statusLabel','switch','textarea','textbox','xe-ui-components-tpls']);
-angular.module('xe-ui-components-tpls', ['templates/label.html', 'templates/badge.html', 'templates/button.html', 'templates/checkbox.html', 'templates/dropdown.html', 'templates/schedule.html', 'templates/column-filter.html', 'templates/dataTable.html', 'templates/pagination.html', 'templates/search.html', 'templates/schedule.html', 'templates/radio-button.html', 'templates/simple-textbox.html', 'templates/statusLabel.html', 'templates/switch.html', 'templates/text-area.html', 'templates/text-box.html']);
+angular.module('xe-ui-components-tpls', ['templates/label.html', 'templates/badge.html', 'templates/button.html', 'templates/checkbox.html', 'templates/dropdown.html', 'templates/schedule.html', 'templates/column-filter.html', 'templates/dataTable.html', 'templates/pagination.html', 'templates/search.html', 'templates/pillbox.html', 'templates/radio-button.html', 'templates/simple-textbox.html', 'templates/statusLabel.html', 'templates/switch.html', 'templates/text-area.html', 'templates/text-box.html']);
 
 angular.module("templates/label.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/label.html",
@@ -193,8 +193,8 @@ angular.module("templates/search.html", []).run(["$templateCache", function($tem
     "</div>");
 }]);
 
-angular.module("templates/schedule.html", []).run(["$templateCache", function($templateCache) {
-  $templateCache.put("templates/schedule.html",
+angular.module("templates/pillbox.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/pillbox.html",
     "<div class=\"schedule-container\">\n" +
     "    <ul>\n" +
     "    <li class=\"schedule-{{::weekDay !='false'}}\" ng-repeat=\"weekDay in scheduleData track by $index\"> \n" +
@@ -363,243 +363,237 @@ config([function(){
         }
     );
 }]);
-angular.module('utils', ['ngResource'])
-.directive('numbersOnly', function() { // TODO: Move this to common utility file
-	return {
-		require: 'ngModel',
-		link: function(scope, element, attrs, modelCtrl) {
-			modelCtrl.$parsers.push(function (inputValue) {
-				// It is necessary for when using ng-required on your input. 
-				// In such cases, when a letter is typed first, this parser will be called
-				// again, and the 2nd time, the value will be undefined
-				if (inputValue == undefined) {
-					return '';
-				}
-
-				var transformedInput = inputValue.replace(/[^0-9]/g, ''); 
-
-				if (transformedInput != inputValue) {
-					modelCtrl.$setViewValue(transformedInput);
-					modelCtrl.$render();
-				}
-
-		   		return transformedInput;         
-			});
-		}
-	};
-})
-.directive("browserDetect", function() { // TODO: Move this to common utility file
-	return {
-		link: function(scope, element, attrs) {
-			var browser = angular || {};
-		    var ua = navigator.userAgent;
-
-		    browser.ISFF = ua.indexOf('Firefox') != -1;
-		    browser.ISOPERA = ua.indexOf('Opera') != -1;
-		    browser.ISCHROME = ua.indexOf('Chrome') != -1;
-		    browser.ISSAFARI = ua.indexOf('Safari') != -1 && !browser.ISCHROME;
-		    browser.ISWEBKIT = ua.indexOf('WebKit') != -1;
-
-		    browser.ISIE = ua.indexOf('Trident') > 0 || navigator.userAgent.indexOf('MSIE') > 0;
-		    browser.ISIE9 = ua.indexOf('MSIE 9') > 0;
-		    browser.ISIE10 = ua.indexOf('MSIE 10') > 0;
-
-		    browser.ISIE11UP = ua.indexOf('MSIE') == -1 && ua.indexOf('Trident') > 0;
-		    browser.ISIE10UP = browser.ISIE10 || browser.ISIE11UP;
-		    browser.ISIE9UP = browser.ISIE9 || browser.ISIE10UP;
-		    
-		    if (browser.ISIE9) {
-		    	element.addClass("ie ie9");
-		   	} else if (browser.ISCHROME) {
-		   		element.addClass("modern chrome");
-		    } else {
-		    	element.addClass("modern");
-		    }
-		}
-	}
-})
-.directive('continuousScroll', function() {        
-    return {
-        restrict: "A",
-        scope: {
-        	continuousScroll: "&"
-        },
-        link: function(scope, element, attrs) {
-            var visibleHeight = element.height();
-            var threshold = 0;
-
-            element.bind("scroll", function() {
-                var scrollableHeight = element.prop('scrollHeight');                
-                var hiddenContentHeight = scrollableHeight - visibleHeight;
-
-                if(threshold === 0) {
-                	threshold += scrollableHeight + 10;
+(function () {
+    'use strict';
+    angular.module('utils', ['ngResource'])
+        .directive('numbersOnly', function () { // TODO: Move this to common utility file
+            return {
+                require: 'ngModel',
+                link: function (scope, element, attrs, modelCtrl) {
+                    modelCtrl.$parsers.push(function (inputValue) {
+                        // It is necessary for when using ng-required on your input. 
+                        // In such cases, when a letter is typed first, this parser will be called
+                        // again, and the 2nd time, the value will be undefined
+                        if (inputValue === undefined) {
+                            return '';
+                        }
+                        var transformedInput = inputValue.replace(/[^0-9]/g, '');
+                        if (transformedInput !== inputValue) {
+                            modelCtrl.$setViewValue(transformedInput);
+                            modelCtrl.$render();
+                        }
+                        return transformedInput;
+                    });
                 }
-            	
-                if (hiddenContentHeight - element.scrollTop() <= threshold) {                	
-                    // Scroll is almost at the bottom. Loading more rows
-                    scope.continuousScroll();
-                }
-            });
-        }
-    };
-})
-.directive("xeKeypress", function() {
-	// TODO: Move this to global scope
-	var Keys = {
-		LEFT: 37, // Left arrow
-		UP: 38, // Up arrow
-		RIGHT: 39, // Right arrow
-		DOWN: 40, // Down arrow
-		RETURN: 13, // Return Key
-		ENTER: 13, // Return Key
-		ESC: 27, // Esc key
-		TAB: 9, // Tab key
-		SPACE: 32, // Space key
-		keyCodeMatch: function(keyPress, codes) {
-			var keys = codes.split(",");
+            };
+        })
+        .directive("browserDetect", function () { // TODO: Move this to common utility file
+            return {
+                link: function (scope, element) {
+                    var browser = angular || {},
+                        ua = navigator.userAgent;
+                    browser.ISFF = ua.indexOf('Firefox') !== -1;
+                    browser.ISOPERA = ua.indexOf('Opera') !== -1;
+                    browser.ISCHROME = ua.indexOf('Chrome') !== -1;
+                    browser.ISSAFARI = ua.indexOf('Safari') !== -1 && !browser.ISCHROME;
+                    browser.ISWEBKIT = ua.indexOf('WebKit') !== -1;
 
-			for(var i = 0; i < keys.length; i++) {
-				if (keyPress == this[keys[i]]) {
-					return true;
-				}
-			}
+                    browser.ISIE = ua.indexOf('Trident') > 0 || navigator.userAgent.indexOf('MSIE') > 0;
+                    browser.ISIE9 = ua.indexOf('MSIE 9') > 0;
+                    browser.ISIE10 = ua.indexOf('MSIE 10') > 0;
 
-			return false;
-		}
-	}
+                    browser.ISIE11UP = ua.indexOf('MSIE') === -1 && ua.indexOf('Trident') > 0;
+                    browser.ISIE10UP = browser.ISIE10 || browser.ISIE11UP;
+                    browser.ISIE9UP = browser.ISIE9 || browser.ISIE10UP;
 
-	return {
-		restrict: 'A',
-		link: function(scope, element, attrs) {
-			element.bind("keypress", function(event) {
-				var keyCode = event.which || event.keyCode;				
-
-				if (Keys.keyCodeMatch(keyCode, attrs.codes)) {
-					scope.$apply(function() {						
-						scope.$eval(attrs.xeKeypress, {$event: event});
-					});					
-				}
-			});
-		}
-	};
-})
-
-/* Factory Methods */
-.factory("accessibility", ["$window", function($window) {
-	return $window.accessibilityMixin;
-}])
-.factory("translationService",['$resource', 'RESOURCE_PATH','LOCALE_API', "$q", function($resource, RESOURCE_PATH, LOCALE_API, $q){
-	  return {
-	  		getTranslation : function () {
-            //call language api after implementation of logic
-            var language = "en-us";
-            var labels = null;
-            var deferred = $q.defer();
-	        var path = RESOURCE_PATH+'/i18n/messages-' + language + '.json';
-	        var ssid = 'i18n/messages' + language;
-//	        if (sessionStorage) {
-//	            if (sessionStorage.getItem(ssid)) {
-//	                labels = JSON.parse(sessionStorage.getItem(ssid));
-//	            } else {
-//	                $resource(path).get(function(data) {
-//	                    labels = data;
-//	                    sessionStorage.setItem(ssid, JSON.stringify(labels));
-//	                });
-//	            };
-//	        } else {
-	            $resource(path).get(function (data) {
-	                deferred.resolve(data);
-	            });
-	       // }
-            return deferred.promise;    
-        }
-      };
-}])
-.filter('xei18n',['LABELS', function(LABELS) {
-    return function(key,labels){ 
-        return labels ? labels["data"][key] : "";
-    }
-}])
-//TODO : this directive need to be removed once we finalizaed the lacalization approach
-.directive('xeTranslate', function() { 
-	return {
-		controller: ["$scope","LABELS", function($scope,LABELS) {
-            $scope.$watch("LABELS", function(){
-                $scope.labels = LABELS;
-            });
-		}]
-	};
-});;
-
-//
-//
-//	// TODO: Check if this can be moved to NG service.
-//	var fetch = function(pageNumber, offset, url) {
-//		var deferred = $q.defer()
-//			,range = reassignRange(pageNumber, offset)
-//			,url = url + range.start + "/" + range.end;
-//
-//		$http.get(url)
-//			.success(function(data) {
-//				deferred.resolve(data);
-//			})
-//			.error(function(data) {
-//				deferred.reject(data);
-//			});			
-//
-//		return deferred.promise;
-//	};
-//
-//	var reassignRange = function(pageNumber, offset) {
-//		var pageEnd = offset * pageNumber;
-//		return {
-//			end: pageEnd,
-//			start: pageEnd - offset
-//		}
-//	};
-
-angular.module('dropdown', []).directive('xeDropdown', function() {
-	return {
-		restrict: 'E',
-		scope: {
-			xeOptions: '=',
-			xeLabel: '=',
-			disabled:'=',
-            ngModel : '='  // Store selected item.
-		},
-		require: "ngModel",
-		controller : ['$scope',function($scope){
-            $scope.isObject = angular.isObject($scope.xeOptions[0]);
-            $scope.dropDownLabel = "";
-            
-			$scope.updateModel = function(value)
-			{	
-                if( $scope.xeLabel !== value ){
-                    if(angular.isObject(value)){
-				        $scope.ngModel = value;
-                        $scope.dropDownLabel = value.label
-                    }
-                    else {
-                        $scope.ngModel = value;
-                        $scope.dropDownLabel = value
+                    if (browser.ISIE9) {
+                        element.addClass("ie ie9");
+                    } else if (browser.ISCHROME) {
+                        element.addClass("modern chrome");
+                    } else {
+                        element.addClass("modern");
                     }
                 }
-                else{
-                    $scope.ngModel = null;
-                    $scope.dropDownLabel = null;
+            };
+        })
+        .directive('continuousScroll', function () {
+            return {
+                restrict : "A",
+                scope : {
+                    continuousScroll : "&"
+                },
+                link : function (scope, element) {
+                    var visibleHeight = element.height(),
+                        threshold = 0;
+
+                    element.bind("scroll", function () {
+                        var scrollableHeight = element.prop('scrollHeight'),
+                            hiddenContentHeight = scrollableHeight - visibleHeight;
+
+                        if (threshold === 0) {
+                            threshold += scrollableHeight + 10;
+                        }
+
+                        if (hiddenContentHeight - element.scrollTop() <= threshold) {
+                            // Scroll is almost at the bottom. Loading more rows
+                            scope.continuousScroll();
+                        }
+                    });
                 }
-			}
-        }],
-		link: function(scope, element, attrs, ctrl){
-            if(angular.isDefined(scope.ngModel)){
-               scope.updateModel(scope.ngModel); 
-            }
-		},
-		replace:true,
-		templateUrl: 'templates/dropdown.html'
-	}
-})
+            };
+        })
+        .directive("xeKeypress", function () {
+        // TODO: Move this to global scope
+            var Keys = {
+                LEFT: 37, // Left arrow
+                UP: 38, // Up arrow
+                RIGHT: 39, // Right arrow
+                DOWN: 40, // Down arrow
+                RETURN: 13, // Return Key
+                ENTER: 13, // Return Key
+                ESC: 27, // Esc key
+                TAB: 9, // Tab key
+                SPACE: 32, // Space key
+                keyCodeMatch: function (keyPress, codes) {
+                    var keys = codes.split(","),
+                        index;
+
+                    for (index = 0; index < keys.length; index = index + 1) {
+                        if (keyPress === this[keys[index]]) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            };
+
+            return {
+                restrict : 'A',
+                link : function (scope, element, attrs) {
+                    element.bind("keypress", function (event) {
+                        var keyCode = event.which || event.keyCode;
+
+                        if (Keys.keyCodeMatch(keyCode, attrs.codes)) {
+                            scope.$apply(function () {
+                                scope.$eval(attrs.xeKeypress, {$event: event});
+                            });
+                        }
+                    });
+                }
+            };
+        })
+
+    /* Factory Methods */
+        .factory("accessibility", ["$window", function ($window) {
+            return $window.accessibilityMixin;
+        }])
+        .factory("translationService", ['$resource', 'RESOURCE_PATH', "$q", function ($resource, RESOURCE_PATH, $q) {
+            return {
+                getTranslation : function () {
+                    //call language api after implementation of logic
+                    var language = "en-us",
+                        //labels = null,
+                        deferred = $q.defer(),
+                        path = RESOURCE_PATH + '/i18n/messages-' + language + '.json';
+                        //ssid = 'i18n/messages' + language;
+//if (sessionStorage) {
+//if (sessionStorage.getItem(ssid)) {
+//labels = JSON.parse(sessionStorage.getItem(ssid));
+//} else {
+//$resource(path).get(function(data) {
+//labels = data;
+//sessionStorage.setItem(ssid, JSON.stringify(labels));
+//});
+//};
+//} else {
+                    $resource(path).get(function (data) {
+                        deferred.resolve(data);
+                    });
+                    // }
+                    return deferred.promise;
+                }
+            };
+        }])
+        .filter('xei18n', [ function () {
+            return function (key, labels) {
+                return labels ? labels['data'][key] : "";
+            };
+        }])
+    //TODO : this directive need to be removed once we finalizaed the lacalization approach
+        .directive('xeTranslate', function () {
+            return {
+                controller: ["$scope", "LABELS", function ($scope, LABELS) {
+                    $scope.$watch("LABELS", function () {
+                        $scope.labels = LABELS;
+                    });
+                }]
+            };
+        });
+
+//// TODO: Check if this can be moved to NG service.
+//var fetch = function(pageNumber, offset, url) {
+//var deferred = $q.defer()
+//,range = reassignRange(pageNumber, offset)
+//,url = url + range.start + "/" + range.end;
+//
+//$http.get(url)
+//.success(function(data) {
+//deferred.resolve(data);
+//})
+//.error(function(data) {
+//deferred.reject(data);
+//});
+//
+//return deferred.promise;
+//};
+//
+//var reassignRange = function(pageNumber, offset) {
+//var pageEnd = offset * pageNumber;
+//return {
+//end: pageEnd,
+//start: pageEnd - offset
+//}
+}());
+(function () {
+    'use strict';
+    angular.module('dropdown', []).directive('xeDropdown', function () {
+        return {
+            restrict : 'E',
+            scope : {
+                xeOptions : '=',
+                xeLabel : '=',
+                disabled : '=',
+                ngModel : '='  // Store selected item.
+            },
+            require : "ngModel",
+            controller : ['$scope', function ($scope) {
+                $scope.isObject = angular.isObject($scope.xeOptions[0]);
+                $scope.dropDownLabel = "";
+                $scope.updateModel = function (value) {
+                    if ($scope.xeLabel !== value) {
+                        if (angular.isObject(value)) {
+                            $scope.ngModel = value;
+                            $scope.dropDownLabel = value.label;
+                        } else {
+                            $scope.ngModel = value;
+                            $scope.dropDownLabel = value;
+                        }
+                    } else {
+                        $scope.ngModel = null;
+                        $scope.dropDownLabel = null;
+                    }
+                };
+            }],
+            link: function (scope) {
+                if (angular.isDefined(scope.ngModel)) {
+                    scope.updateModel(scope.ngModel);
+                }
+            },
+            replace : true,
+            templateUrl : 'templates/dropdown.html'
+        };
+    });
+}());
 /**
 	compoent Name : Schedule.
 	compoent Id  : xe-scehdule
@@ -627,7 +621,7 @@ angular.module('dropdown', []).directive('xeDropdown', function() {
 				Place ot provide external HTML template to populate data.
 			*/
 			templateUrl: function(element, attr){
-				return '../schedule/templates/schedule.html';
+				return 'schedule/templates/schedule.html';
 			},
 
 			/*
@@ -1489,69 +1483,62 @@ angular.module('search', []).directive ('xeSearch', function() {
         }
 	}
 });
-/**
-	compoent Name : Schedule.
-	compoent Id  : xe-scehdule
-	Description : Provided description about schedule details.
-*/
-
-	angular.module('scheduleModule', [])
-	.directive('xeSchedule', function() {
-		return {
-			restrict :'E',
-			replace:true,
-			controller :[ '$scope','$filter','$attrs','$transclude', function ($scope,$filter,$attrs,$transclude){
-				$scope.week = ['S','M','T','W','TH','F','S'];
-			}],
-
-			/*
-				Following variables are part of local scope to directive. 
-			*/
-			scope: {
-				startingDayOfTheWeek	: '@',
-				scheduleData			: '='
-			},
-
-			/*
-				Place ot provide external HTML template to populate data.
-			*/
-			templateUrl: function(element, attr){
-				return '../schedule/templates/schedule.html';
-			},
-
-			/*
-				This block to provide DOM manipulation methods if any. 
-			*/
-			link:function(scope, elem, attrs, controllerInstance,$transclude) {
-			}
-		};
-	});
-angular.module('radiobutton', []).directive('xeRadioButton', function(){
-	return {
-		scope: { 
-			xeLabel : '@',
-			ngValue : '=',
-			ngModel :'=',
-			xeOnClick : '&',
-			xeName : '@',
-			xeDisabled: '=',
-			xeId: '@'
-		},
-		restrict: 'E',
-        replace : true,
-        require: 'ngModel',
-		templateUrl: 'templates/radio-button.html',
-        link: function(scope, element, attrs, controller, transcludeFn) {
-           element.on('keydown', function(event) {
-                 if(event.keyCode === 32 || event.keyCode === 13){
-                    event.preventDefault();
-                    scope.ngModel = scope.ngValue;
-                    scope.$apply();
-                 }
-           }); 
-        }
-	}
-})
+(function () {
+    'use strict';
+    angular.module('scheduleModule', [])
+        .directive('xeSchedule', function () {
+            return {
+                restrict : 'E',
+                replace : true,
+                controller : [ '$scope', '$filter', '$attrs', '$transclude', function ($scope) {
+                    $scope.week = ['S', 'M', 'T', 'W', 'TH', 'F', 'S'];
+                }],
+                /*
+                Following variables are part of local scope to directive. 
+                */
+                scope : {
+                    startingDayOfTheWeek : '@',
+                    scheduleData : '='
+                },
+                
+                /*
+                Place ot provide external HTML template to populate data.
+                */
+                template : 'schedule/templates/pillbox.html'
+            };
+            
+        });
+}());
+(function () {
+    'use strict';
+    angular.module('radiobutton', []).directive('xeRadioButton', ['$window', function ($window) {
+        return {
+            scope : {
+                xeLabel : '@',
+                ngValue : '=',
+                ngModel : '=',
+                xeOnClick : '&',
+                xeName : '@',
+                xeDisabled : '=',
+                xeId : '@'
+            },
+            restrict : 'E',
+            replace : true,
+            require : 'ngModel',
+            templateUrl : 'templates/radio-button.html',
+            link : function (scope, element) {
+                console.log($window);
+                element.on('keydown', function (event) {
+                    if (event.keyCode === 32 || event.keyCode === 13) {
+                        event.preventDefault();
+                        scope.ngModel = scope.ngValue;
+                        scope.$apply();
+                    }
+                });
+            }
+        };
+    }]);
+}());
 angular.module('simpleTextbox', []).directive ('xeSimpleTextBox', function() {
 	return {
 		restrict:'E',
@@ -1573,91 +1560,86 @@ angular.module('simpleTextbox', []).directive ('xeSimpleTextBox', function() {
 	}
 
 });
-angular.module('statusLabel', []).directive('xeStatusLabel', function() {
-	return {
-		restrict: 'E',
-		scope: {
-			xeLabel: '@',
-			xeType : '@'
-		},
-		replace:true,
-		templateUrl:'templates/statusLabel.html',
-        link :function(scope, elem, attrs, controllerInstance,$transclude){	
-        }
-	}
-});
-
-angular.module('switch', []).directive('xeSwitch', function() {
-	return {
-		scope: {
-			disabled:'=',
-			label: '=',
-			value: '=',
-			id: '='
-		},
-
-		templateUrl: 'templates/switch.html'
-	}
-})
-angular.module('textarea', []).directive ('xeTextArea', function() {
-
-	return {
-		restrict: 'E',
-		scope:{
-			ngModel:'=',
-			xeOnChange:'&',
-			xePlaceholder: '@',
-			xeLabel: '=',
-			xeId: '=',
-            xeRequired : '=',
-            xeReadonly : '='
-		},
-		replace: true,
-		templateUrl:'templates/text-area.html'
-	}
-});
-
-
-angular.module('textbox', ['ngMessages']).directive('xeTextBox', function () {
-  return {
-    restrict : 'E',
-    scope : {
-      xePlaceholder: '@',
-      xeId: '@',
-      xeRequired: '=',
-      xeType: '@',
-      xeReadonly: '=',
-      xeValidate: '=',
-      xePattern: '@',
-      xeErrorMessages: '=',
-      xeLabel:'@',
-      xeName : '@',
-      xeMaxlength : '@',  // ToDo: Need to work on validation
-      xeMinlength : '@', // ToDo: Need to work on validation
-      xeFormName :'@',
-      ngModel : '=',
-      ngForm : '='
-    },
-    replace: true,
-    require : ['ngModel','?ngForm'],
-    templateUrl:'templates/text-box.html',
-    controller : ['$scope',function($scope){
-      
-    }],
-    compile :function( elem, attrs){	
-        var formStr = "ngForm." + attrs.xeName;
-        elem.find("div.error-messages").attr("ng-messages", formStr + "." + "$error");
-        elem.find("div.error-messages").attr("ng-if", formStr  +"."+attrs.xeName+ "."+ "$touched")
+(function () {
+    'use strict';
+    angular.module('statusLabel', []).directive('xeStatusLabel', function () {
         return {
-            pre: function preLink(scope, element, attrs, controller, transcludeFn) {
+            restrict : 'E',
+            scope : {
+                xeLabel : '@',
+                xeType : '@'
             },
-            post: function postLink(scope, element, attributes, controller, transcludeFn) {
+            replace : true,
+            templateUrl : 'templates/statusLabel.html'
+        };
+    });
+}());
+(function () {
+    'use strict';
+    angular.module('switch', []).directive('xeSwitch', function () {
+        return {
+            scope : {
+                disabled : '=',
+                label : '=',
+                value : '=',
+                id : '='
+            },
+            templateUrl: 'templates/switch.html'
+        };
+    });
+}());
+(function () {
+    'use strict';
+    angular.module('textarea', []).directive('xeTextArea', function () {
+        return {
+            restrict: 'E',
+            scope : {
+                ngModel : '=',
+                xeOnChange : '&',
+                xePlaceholder : '@',
+                xeLabel : '=',
+                xeId : '=',
+                xeRequired : '=',
+                xeReadonly : '='
+            },
+            replace : true,
+            templateUrl : 'templates/text-area.html'
+        };
+    });
+}());
+(function () {
+    'use strict';
+    angular.module('textbox', ['ngMessages']).directive('xeTextBox', function () {
+        return {
+            restrict : 'E',
+            scope : {
+                xePlaceholder : '@',
+                xeId : '@',
+                xeRequired : '=',
+                xeType : '@',
+                xeReadonly : '=',
+                xeValidate : '=',
+                xePattern : '@',
+                xeErrorMessages : '=',
+                xeLabel : '@',
+                xeName : '@',
+                xeMaxlength : '@',
+                xeMinlength : '@',
+                xeFormName : '@',
+                ngModel : '=',
+                ngForm : '='
+            },
+            replace: true,
+            require : ['ngModel', '?ngForm'],
+            templateUrl : 'templates/text-box.html',
+            compile : function (elem, attrs) {
+                var formStr = "ngForm." + attrs.xeName;
+                elem.find("div.error-messages").attr("ng-messages", formStr + "." + "$error");
+                elem.find("div.error-messages").attr("ng-if", formStr  + "." + attrs.xeName + "." + "$touched");
             }
-        }
-        
-    }
-  };
-});
+        };
+    });
+}());
 // ------------------------------------------------------------------------------------------
 /*
 	This is the mixin created to work with components keyboard navigation and accessibility.
