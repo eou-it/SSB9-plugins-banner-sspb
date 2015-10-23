@@ -1,10 +1,10 @@
 package net.hedtech.banner.sspb
 
-import grails.test.mixin.TestFor
 import grails.test.spock.IntegrationSpec
 
-@TestFor(PageService)
 class PageExtensionsIntegrationSpec extends IntegrationSpec {
+
+    def pageService
 
     def setup() {
     }
@@ -34,7 +34,7 @@ class PageExtensionsIntegrationSpec extends IntegrationSpec {
         Page extension3 = new Page( constantName: "extension3", modelView: extension3ModelView, extendsPage: extension2)
         extension3.save(flush:true,failOnError: true)
 
-        Map extendedPage = service.constructExtendedPage("extension3")
+        Map extendedPage = pageService.constructExtendedPage("extension3")
 
 
         then:

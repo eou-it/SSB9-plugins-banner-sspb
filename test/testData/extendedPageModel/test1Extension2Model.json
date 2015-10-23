@@ -7,8 +7,10 @@
       ]
     },
     { "name": "componentH", "nextSibling": "componentF" },
+    { "name": "componentG", "nextSibling": null },
     { "name": "componentE", "exclude": true },
     { "name": "componentB", "parent": "basePage", "nextSibling": "componentC" },
-    { "name": "componentC", "parent": "basePage", "nextSibling": null }
+    { "name": "componentC", "parent": "basePage", "nextSibling": null },
+    { "name": "componentA", "parent": "basePage", "nextSibling": "componentB" }
   ]
 }

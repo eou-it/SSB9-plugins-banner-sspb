@@ -195,10 +195,31 @@ class PageService {
      * @param pageComponents : map of all page components. key = component name
      */
     void buildComponentMap( pageComponent, pageComponents ) {
+        log.trace "Building component map"
         pageComponents[pageComponent.name] = pageComponent
-        pageComponent?.components.each {
-            it.parentComponent = pageComponent
-            buildComponentMap(it,pageComponents)
+
+        pageComponent?.components.each { subComp ->
+            subComp.parentComponent = pageComponent
+            buildComponentMap(subComp,pageComponents)
+        }
+    }
+
+    /**
+     * Removes temporary attributes
+     * Ensures empty component lists are removed
+     *
+     * @param pageComponents : map of all page components. key = component name
+     */
+    void cleanup(pageComponents) {
+        log.trace "cleanup"
+        pageComponents.each {
+            it.value.remove("parentComponent")
+            it.value.remove("parent")
+            it.value.remove("nextSibling")
+            it.value.remove("subCompReorderExtensions")
+            if (it.value.components?.size() == 0) {
+                it.value.remove("components")
+            }
         }
     }
 
@@ -222,6 +243,7 @@ class PageService {
      * @param pageExtensions : all extensions
      */
     void excludeComponents(pageComponents, pageExtensions) {
+        log.trace "Excluding components"
         pageExtensions?.each {
             if (it.exclude) {
                 Map component = pageComponents[it.name]
@@ -284,6 +306,7 @@ class PageService {
     /**
      * Adds a new component to extended page model
      * Design notes:
+     * - component added to end of list. Reordering takes place later
      * - The subcomponents of a newly added component are represented in the new component extension
      *   with the appropriate hierarchical structure. As such, they will be unmodified after this
      *   initial addition to the page and so don't need to be present in the pageComponents map
@@ -305,42 +328,31 @@ class PageService {
         }
         List parentComponents = parentComponent.components
 
-        // find next sibling
-        def nextSiblingIndex = parentComponents.indexOf(parentComponents.find {it.name == component.nextSibling})
-
-        // Remove redundant attributes from newComponent - parent and next sibling
-        component.remove("parent")
-        component.remove("nextSibling")
-
-        if (nextSiblingIndex == -1) {
-            // not in list ie null so add to end of list
+        // add component and update component map.
             parentComponents.add(component)
-        } else {
-            parentComponents.add(nextSiblingIndex, component)
-        }
-
-        // update component map.
         pageComponents[component.name] = component
     }
 
     /**
-     * Move a component to a new parent (if specified) and position according to nextSibling
+     * Moves a component from 1 parent to another
+     * This takes place if component exists and extension specifies a parent
      *
-     * @param component : component to be reordered
+     * @param component : component to be moved
      * @param pageComponents : map of all page components. key = component name
-     * @param extension : ordering information
+     * @param extension ; extension detailing the move
      */
-    void reorderComponent(component,pageComponents,extension) {
+    void switchParents(component,pageComponents,extension) {
 
         Map oldParent = component.parentComponent
-        Map newParent = pageComponents[extension.parent] ?: oldParent
+        Map newParent = pageComponents[extension.parent]
+
+        log.trace "Switching parents"
 
         // exclude component from old parent components
         oldParent.components -= component
 
         // add component to new parent components
         component.parent = newParent.name
-        component.nextSibling = extension.nextSibling
         addComponent(pageComponents, component)
     }
 
@@ -354,34 +366,88 @@ class PageService {
      * @param pageComponents : map of all page components. key = component name
      * @param pageExtensions : all extensions
      */
-    void addAndReorderComponents(pageComponents, pageExtensions) {
+    void addComponents(pageComponents, pageExtensions) {
+        log.trace "Adding components"
+
         pageExtensions?.reverseEach {
             if (!it.exclude) {
                 Map component = pageComponents[it.name]
                 if (!component) {
                     addComponent(pageComponents,it)
-                } else if (it.containsKey("nextSibling")) {
-                    reorderComponent(component,pageComponents,it)
+                }  else if (it.containsKey("parent")) {
+                        switchParents(component,pageComponents,it)
                 }
             }
         }
     }
 
     /**
-     * Removes temporary parentComponent attribute
-     * Ensures empty component lists are removed
+     * Creates an ordered list of subcomponents
+     * Find nextSibling information initially from extensions. If not found then
+     * infer nextSibling from original subcomponent ordering ie unchanged
+     *
+     * @param parent : the parent of the subcomponents to be sorted
+     * @param pageComponents : map of all page components. key = component name
+     * @return an ordered list of subcomponents
+     */
+    List reorderSubcomponents(parent,pageComponents) {
+        Short maxIterations=parent.components.size()
+        Short iteration=0
+        boolean sortComplete=false
+        List orderedComponents=[]
+        String nextSibling=null
+        String compWithNextSibling=null
+        Integer nextSiblingIndex
+
+        while (!sortComplete) {
+            compWithNextSibling = parent.subCompReorderExtensions.find { it.value == nextSibling }?.key
+            if (compWithNextSibling) {
+                // find component with next sibling in extensions
+                orderedComponents.add(0,pageComponents[compWithNextSibling])
+                nextSibling = compWithNextSibling
+            } else {
+                //find component with next sibling in original comps
+                nextSiblingIndex = parent.components.indexOf(parent.components.find {it.name == nextSibling})
+                orderedComponents.add(0,parent.components[nextSiblingIndex-1])
+                nextSibling = parent.components[nextSiblingIndex-1].name
+            }
+            iteration++
+            if (iteration == maxIterations) {
+                sortComplete = true
+            }
+        }
+        return orderedComponents
+    }
+
+    /**
+     * Groups extensions together for subcomponents of component - subCompReorderExtensions
+     * Initiates a sort of subcomponents for which there are reordering extensions
      *
      * @param pageComponents : map of all page components. key = component name
+     * @param pageExtensions : all extensions
      */
-    void cleanup(pageComponents) {
+    void reorderComponents(pageComponents,pageExtensions) {
+        Map parentComponent
+
+        log.trace "Reordering components"
+
+        pageExtensions.each {
+            if (it.containsKey("nextSibling")) {
+                parentComponent = pageComponents[it.name].parentComponent
+                if (!parentComponent.subCompReorderExtensions) {
+                    parentComponent.subCompReorderExtensions = [:]
+                }
+                parentComponent.subCompReorderExtensions[it.name] = it.nextSibling
+            }
+        }
+
         pageComponents.each {
-            it.value.remove("parentComponent")
-            if (it.value.components?.size() == 0) {
-                it.value.remove("components")
+            def comp = it.value
+            if (comp.subCompReorderExtensions) {
+                comp.components = reorderSubcomponents(comp,pageComponents)
             }
         }
     }
-
 
     /**
      * Applies a set of extensions to a base page model and returns a new extended page model
@@ -402,12 +468,15 @@ class PageService {
         // create map of individual components to ensure efficient traversal of page
         buildComponentMap(extendedPageModel, pageComponents)
 
+       // reorderComponents(pageComponents,pageExtensions)
+
         log.trace "Extending page $extendedPageModel.name"
 
         // apply all extensions
         excludeComponents(pageComponents, pageExtensions)
         extendComponentAttributes(pageComponents, pageExtensions)
-        addAndReorderComponents(pageComponents, pageExtensions)
+        addComponents(pageComponents, pageExtensions)
+        reorderComponents(pageComponents,pageExtensions)
 
         cleanup(pageComponents)
 

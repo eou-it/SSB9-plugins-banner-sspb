@@ -15,42 +15,42 @@
                 "requiredAttributes":[],
                 "optionalAttributes":["title", "scriptingLanguage", "label", "style", "importCSS"],
                 "requiredChildren":[],
-                "optionalChildren":["flow", "form", "block", "grid", "htable", "detail", "select", "xeDropdown", "radio", "list",  "data", "resource", "literal", "display", "xeTextBox", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "xeButton", "button"]
+                "optionalChildren":["flow", "form", "block", "grid", "htable", "detail", "select", "xeDropdown", "radio", "list",  "data", "resource", "literal", "display", "xeTextBox", "text", "xeTextArea", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "xeCheckbox", "xeButton", "button"]
             },
             {
                 "componentType":["block"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "style", "showInitially"],
                 "requiredChildren":[],
-                "optionalChildren":["block", "form", "grid", "htable", "detail", "select","xeDropdown", "radio", "list", "data", "literal", "display", "xeTextBox", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "xeButton", "button" ]
+                "optionalChildren":["block", "form", "grid", "htable", "detail", "select","xeDropdown", "radio", "list", "data", "literal", "display", "xeTextBox", "text", "xeTextArea", "textArea", "number", "datetime", "email", "tel", "link", "xeCheckbox", "boolean", "xeButton", "button" ]
             },
             {
                 "componentType":["form"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "style", "submit","submitLabel", "nextButtonLabel", "showInitially"],
                 "requiredChildren":[],
-                "optionalChildren":["grid", "htable", "detail", "select", "xeDropdown", "radio", "list",  "data", "literal", "display", "xeTextBox", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "xeButton", "button" ]
+                "optionalChildren":["grid", "htable", "detail", "select", "xeDropdown", "radio", "list",  "data", "literal", "display", "xeTextBox", "text", "xeTextArea", "textArea", "number", "datetime", "email", "tel", "link", "xeCheckbox", "boolean", "xeButton", "button" ]
             },
             {
                 "componentType":["grid"],
                 "requiredAttributes":["model"],
                 "optionalAttributes":["label", "style", "parameters", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize","onClick", "onLoad","onError", "loadInitially", "newRecordLabel","deleteRecordLabel","saveDataLabel","refreshDataLabel"],
                 "requiredChildren":[],
-                "optionalChildren":["select", "data", "display", "xeTextBox", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal","hidden" ]
+                "optionalChildren":["xeDropdown", "select", "data", "display", "xeTextBox", "text", "xeTextArea", "textArea", "number", "datetime", "email", "tel", "link", "xeCheckbox",  "xeCheckbox", "boolean", "literal","hidden" ]
             },
             {
                 "componentType":["htable"],
                 "requiredAttributes":["model"],
                 "optionalAttributes":["label", "style", "parameters", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize","onClick", "onLoad","onError", "loadInitially", "newRecordLabel","deleteRecordLabel","saveDataLabel","refreshDataLabel"],
                 "requiredChildren":[],
-                "optionalChildren":["select", "radio", "data", "display", "xeTextBox", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal","hidden" ]
+                "optionalChildren":["xeDropdown", "select", "radio", "data", "display", "xeTextBox", "text", "textArea", "xeTextArea", "number", "datetime", "email", "tel", "link", "boolean","literal","hidden" ]
             },
             {
                 "componentType":["detail"],
                 "requiredAttributes":["model"],
                 "optionalAttributes":["label", "style", "parameters", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize", "onLoad","onError", "loadInitially", "newRecordLabel","deleteRecordLabel","saveDataLabel","refreshDataLabel"],
                 "requiredChildren":[],
-                "optionalChildren":["select", "radio", "data", "display", "xeTextBox", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal","hidden"  ]
+                "optionalChildren":["xeDropdown", "select", "radio", "data", "display", "xeTextBox", "text", "xeTextArea", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal","hidden"  ]
             },
             {
                 "componentType":["link"],
@@ -67,9 +67,16 @@
                 "optionalChildren":[]
             },
             {
-                "componentType":[ "xeTextBox"],
+                "componentType":["xeTextBox"],
                 "requiredAttributes":["subType"],
                 "optionalAttributes":["model","label","placeholder","style","parameters","validation","readonly","required","onUpdate","onFocus","onBlur","onLoad","onError","loadInitially"],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            },
+            {
+                "componentType":["xeTextArea"],
+                "requiredAttributes":[],
+                "optionalAttributes":["model","label","placeholder","style","readonly","required","onUpdate"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
@@ -88,9 +95,9 @@
                 "optionalChildren":[]
             },
             {
-                "componentType":[ "xeDropdown"],
-                "requiredAttributes":[],
-                "optionalAttributes":["model","placeholder","parameters","validation","readonly","onUpdate","onLoad","onError"],
+                "componentType":["xeDropdown"],
+                "requiredAttributes":["sourceModel"],
+                "optionalAttributes":["model","placeholder","readonly","onUpdate","style"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
@@ -112,6 +119,13 @@
                 "componentType":["boolean"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "style","labelStyle","valueStyle", "value", "booleanTrueValue", "booleanFalseValue", "readonly", "onUpdate", "model", "onLoad", "onError", "loadInitially"],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            },
+            {
+                "componentType":["xeCheckbox"],
+                "requiredAttributes":[],
+                "optionalAttributes":["label", "model", "value", "readonly", "onUpdate","style"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },

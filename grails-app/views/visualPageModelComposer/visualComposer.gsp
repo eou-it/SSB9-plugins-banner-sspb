@@ -304,9 +304,11 @@
             tr['type.button'      ]="${message(code:'sspb.model.type.button'   )}";
             tr['type.hidden'      ]="${message(code:'sspb.model.type.hidden'   )}";
             tr['type.style'       ]="${message(code:'sspb.model.type.style'   )}";
-            tr['type.xeTextBox'   ]="${message(code:'sspb.model.type.xeTextBox'  )}"
+            tr['type.xeTextBox'   ]="${message(code:'sspb.model.type.xeTextBox'  )}";
+            tr['type.xeTextArea'  ]="${message(code:'sspb.model.type.xeTextArea'  )}";
             tr['type.xeButton'  ]="${message(code:'sspb.model.type.xeButton' )}";
             tr['type.xeDropdown'  ]="${message(code:'sspb.model.type.xeDropdown' )}";
+            tr['type.xeCheckbox'  ]="${message(code:'sspb.model.type.xeCheckbox' )}";
             tr['subType.text'     ]="${message(code:'sspb.model.subType.text'    )}";
             tr['subType.number'   ]="${message(code:'sspb.model.subType.number'  )}";
             tr['subType.email'    ]="${message(code:'sspb.model.subType.email'   )}";

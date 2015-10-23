@@ -681,7 +681,54 @@ class MergePageModelSpec extends Specification{
         assertEquals extendedPageModel.name, "testPage"
         assertEquals extendedPageModel.components.size(), 1
 
-        // new componet added
+        // new component added
         assertEquals extendedPageModel.components[0].name, "subSubcomponent"
+    }
+
+    @Unroll
+    def "Test reordering while adding components and subcomponents"() {
+
+        when:
+        Map testData = service.loadTestData("test/testData/mergePageModel/test18Page.json",
+                                            "test/testData/mergePageModel/test18Extensions.json")
+        Map extendedPageModel = service.extendPageModel(testData.pageModelJSON, testData.pageExtensionsJSON)
+
+        then:
+        assertEquals extendedPageModel.name, "testPage"
+        assertEquals extendedPageModel.components.size(), 9
+
+        // top level components added and reordered
+        assertEquals extendedPageModel.components[0].name, "componentF"
+        assertEquals extendedPageModel.components[1].name, "componentG"
+        assertEquals extendedPageModel.components[2].name, "componentE"
+        assertEquals extendedPageModel.components[3].name, "componentD"
+        assertEquals extendedPageModel.components[4].name, "componentC"
+        assertEquals extendedPageModel.components[5].name, "componentB"
+        assertEquals extendedPageModel.components[6].name, "componentA"
+        assertEquals extendedPageModel.components[7].name, "componentH"
+        assertEquals extendedPageModel.components[8].name, "componentI"
+
+        // sub components added and reordered
+        assertEquals extendedPageModel.components[5].components.size(), 9
+        assertEquals extendedPageModel.components[5].components[0].name, "componentO"
+        assertEquals extendedPageModel.components[5].components[1].name, "componentP"
+        assertEquals extendedPageModel.components[5].components[2].name, "componentN"
+        assertEquals extendedPageModel.components[5].components[3].name, "componentM"
+        assertEquals extendedPageModel.components[5].components[4].name, "componentL"
+        assertEquals extendedPageModel.components[5].components[5].name, "componentK"
+        assertEquals extendedPageModel.components[5].components[6].name, "componentJ"
+        assertEquals extendedPageModel.components[5].components[7].name, "componentQ"
+        assertEquals extendedPageModel.components[5].components[8].name, "componentR"
+
+        //sub sub components added and reordered
+        assertEquals extendedPageModel.components[5].components[4].components.size(), 8
+        assertEquals extendedPageModel.components[5].components[4].components[0].name, "componentW"
+        assertEquals extendedPageModel.components[5].components[4].components[1].name, "componentX"
+        assertEquals extendedPageModel.components[5].components[4].components[2].name, "componentV"
+        assertEquals extendedPageModel.components[5].components[4].components[3].name, "componentU"
+        assertEquals extendedPageModel.components[5].components[4].components[4].name, "componentT"
+        assertEquals extendedPageModel.components[5].components[4].components[5].name, "componentS"
+        assertEquals extendedPageModel.components[5].components[4].components[6].name, "componentY"
+        assertEquals extendedPageModel.components[5].components[4].components[7].name, "componentZ"
     }
 }
