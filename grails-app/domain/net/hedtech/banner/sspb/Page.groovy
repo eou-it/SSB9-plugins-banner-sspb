@@ -52,20 +52,24 @@ class Page {
 
     //Methods for merging models and getting deltas
 
-    //Use a single static method to convert model to map
+    //Use a common static method to convert json model to map
     private static Map modelToMap(String model) {
+        //JSON.parse(model)
         def slurper = new groovy.json.JsonSlurper()
         return slurper.parseText(model)
     }
 
+    //Use a common static method to convert map to json string
     private static String modelToString(Map model) {
         return (model as JSON).toString(true)
     }
 
+    //Member method to get the merged modelView as a JSON text
     String getMergedModelText(){
         extendsPage?modelToString(getMergedModelMap()):modelView
     }
 
+    //Member method to get the merged modelView as a Map
     Map getMergedModelMap() {
         def result
         if (extendsPage) {
@@ -88,10 +92,12 @@ class Page {
         result
     }
 
+    //Member method to retrieve the delta for a given full page model text in JSON text format
     String diffModelViewText(model) {
         return modelToString(diffModelView(model))
     }
 
+    //Member method to retrieve the delta for a given full page model text in JSON text format
     private Map diffModelView(model) {
         def base = extendsPage.getMergedModelMap()
         diffModelView(model, base)
@@ -122,6 +128,7 @@ class Page {
         diff
     }
 
+    //Helper method to convert the properties into the common delta format
     private static Map convertDiff(propsDiff) {
         def result = [:]
         //convert the diff properties to a map
@@ -138,13 +145,12 @@ class Page {
         [deltas: result]
     }
 
-    private static Map propertyMap(String mergedModelString) {
-        //JSONObject mergedModelJSON = JSON.parse(mergedModelString)
-        propertyMap(new groovy.json.JsonSlurper().parseText(mergedModelString))
-    }
-
     private static def componentName(component, parent, siblingIndex) {
         return component? component.name ? component.name : "${parent?.name}_child_${siblingIndex}":null
+    }
+
+    private static Map propertyMap(String mergedModelString) {
+        propertyMap(modelToMap(mergedModelString))
     }
 
     private static Map propertyMap(Map comp, int siblingIndex=0, Map parent=null, Map next = null) {
@@ -160,56 +166,50 @@ class Page {
         props
     }
 
-
     private static Map applyDiffs(Map decomposedBasePage, Map diffs ) {
         def model = decomposedBasePage
+        model.added=[:]
+        model.conflicts=[]
         diffs.each { name, diff ->
             //println "Processing $name"
             def comp = model.components[name]
             if (comp) { // Component exists, change props to match the extension
-                //println "found existing component"
                 diff.each { prop, val ->
-                    if (val.base.equals(comp[prop])) {
-                        // baseline not changed
+                    if (val.base.equals(comp[prop]) || prop!='meta') {
+                        // accept change as is. Todo: handle parameters and validation in a better way
                         if (val.ext) {
                             comp[prop] = val.ext
                         }
                     } else {
                         if (prop=='meta') {
-                            println "Component $name: detected meta change in baseline ${val.base} to ${comp[prop]} "
-                            println "Change to be applied: ${val.ext}"
-                            //comp[prop] = val.ext
-                            // fix chain if both baseline components are before the inserted component
-                            // is it possible to do this in a generic way?
-                            def nextComp = model.components[comp[prop].nextSibling]
-                            if (nextComp) {
-                                nextComp[prop] = val.ext
-                            }
-                        } else {
-                            // Use properties
-                            if (val.ext) {
-                                comp[prop] = val.ext
-                            }
-                            //println "Component $name: detected change in baseline property $prop from ${val.base} to ${comp[prop]}"
+                            def type=diff.meta.base.nextSibling.equals(comp.meta.nextSibling)?"newParent":"reOrder"
+                            model.conflicts<<[type:type, diff:diff, comp:comp]
+                            println "Component $name: detected meta change in baseline ${val.base} to ${comp[prop]}. Change to be applied: ${val.ext}"
                         }
                     }
                 }
             } else {
-
-                diff.each { prop, val ->
-                    if (val.ext) {
-                        if (!comp) {
-                            comp=[:] //we have an extension property so create the component
+                //if we are here, a new component is added by the extension or a baseline component is removed
+                //a new component must at least have a type attribute
+                if (diff.type) {
+                    diff.each { prop, val ->
+                        if (val.ext) {
+                            if (!comp) {
+                                comp = [:] //we have an extension property so create the component
+                            }
+                            comp[prop] = val.ext
                         }
-                        comp[prop] = val.ext
+                        if (prop == 'meta') {
+                            comp[prop].newComponent = true
+                        }
                     }
-                    if (prop=='meta') {
-                        comp[prop].newComponent=true
+                    if (comp) { //add the component to the result
+                        model.components[name] = comp
+                        model.added[name] = comp
+                        println "New component ${comp.name} added "
                     }
-                }
-                if (comp) { //add the component to the result
-                    model.components[name]=comp
-                    println "New component ${comp.name} added "
+                } else {
+                    model.conflicts<<[type:"removedBaseline", diff:diff, comp:[name:name]]
                 }
             }
         }
@@ -217,11 +217,11 @@ class Page {
     }
 
 
-    Map decomposeModel(model) {
+    private Map decomposeModel(model) {
         decomposeComponents(model)
     }
 
-    static Map decomposeComponents(Map comp, int siblingIndex=0, Map parent=null, Map next = null,Map result =[:]) {
+    private static Map decomposeComponents(Map comp, int siblingIndex=0, Map parent=null, Map next = null,Map result =[:]) {
         if (comp.type == 'page') {
             result = [root: comp.name, components:[:]]
         }
@@ -233,7 +233,6 @@ class Page {
         if (parent) {
             clone.meta.parent=parent.name
         }
-
         if (comp.components) {
             clone.remove('components')
             def nSiblings = comp.components ? comp.components.size() - 1 : 0
@@ -250,7 +249,8 @@ class Page {
     }
 
     //compose the model from a decomposed model
-    static Map composeComponents(Map decomposedModel, boolean cleanMeta = true) {
+    private static Map composeComponents(Map decomposedModel, boolean cleanMeta = true) {
+        decomposedModel = resolveConflicts(decomposedModel)
         Map root = decomposedModel.components[decomposedModel.root]
         if (root.meta.firstChild) {
             def child = decomposedModel.components[root.meta.firstChild]
@@ -262,8 +262,47 @@ class Page {
         root
     }
 
+    private static def resolveConflicts(model){
+        model.conflicts.each{ conflict ->
+            if (conflict.type=="reOrder") {
+                def nextName = conflict.comp.meta.nextSibling
+                def extNextName = conflict.diff.meta.ext?.nextSibling
+                def extNextComp = model.added[extNextName]
+                if (extNextComp) {
+                    conflict.comp.meta.nextSibling = extNextName
+                    extNextComp.meta.nextSibling = nextName
+                    println "Resolved baseline reorder conflict by inserting new component $extNextName after component ${conflict.comp.name}"
+                } else {
+                    println "Unresolved conflict. No new component found matching the nextSibling of component ${conflict.comp.name}"
+                }
+            } else if (conflict.type=="removedBaseline") {
+                println "Resolve removed baseline component conflict"
+                def resolvedStatusMessage = "Unresolved"
+                def removedNextName = conflict.diff.meta.ext.nextSibling
+                def addedNoReference = model.added[removedNextName]
+
+                if (addedNoReference) {
+                    def addedNext = model.components[addedNoReference.meta.nextSibling]
+                    if (addedNext) {
+                        def addedNextReference = model.components.find {
+                            it.value.meta?.nextSibling == addedNext.name
+                        }
+                        if (addedNextReference){
+                            addedNextReference.value.meta.nextSibling = addedNoReference.name
+                            resolvedStatusMessage = "Resolved baseline remove component conflict by inserting new component ${removedNextName} before component ${addedNext.name}"
+                        } else {
+                            resolvedStatusMessage = "Unable to find component referencing $addedNext.name - need to add somewhere else"
+                        }
+                    }
+                }
+                println resolvedStatusMessage
+            }
+        }
+        model
+    }
+
     //Get a list of siblings given the first sibling
-    static List getSiblings(Map flatModel, Map first, parent, boolean cleanMeta = true) {
+    private static List getSiblings(Map flatModel, Map first, parent, boolean cleanMeta = true) {
         def result = parent.components?parent.component:[]  //.remove('meta')
         def next = first
         println "getSiblings for ${parent.name}"
@@ -285,7 +324,7 @@ class Page {
                 }
             }
         }
-        if (false && cleanMeta) {
+        if ( cleanMeta ) {
             result.each {
                 it.remove('meta')
             }

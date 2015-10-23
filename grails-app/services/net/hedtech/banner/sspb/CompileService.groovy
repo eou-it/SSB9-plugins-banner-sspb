@@ -27,7 +27,7 @@ class CompileService {
         or error messages with component tree
     */
     def static preparePage(String json) {
-        def slurper = new groovy.json.JsonSlurper()
+        //def slurper = new groovy.json.JsonSlurper()
         def page
         def errors=[]
         def warn=[]
@@ -58,6 +58,7 @@ class CompileService {
             println "Parsing page model exception: " + e
             errors << PageModelErrors.getError(error: PageModelErrors.MODEL_UNKNOWN_ERR, args: [e.message])
             valid = false
+            org.codehaus.groovy.runtime.StackTraceUtils.printSanitizedStackTrace(e)
         }
         return [valid:valid, pageComponent:page, error:errors, warn:warn]
     }
