@@ -1,20 +1,13 @@
 <%--
-  Created by IntelliJ IDEA.
-  User: jzhong
-  Date: 5/17/13
-  Time: 4:15 PM
-  To change this template use File | Settings | File Templates.
+Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page import="net.hedtech.banner.sspb.PageComponent" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-  <title>Banner Page Builder Visual Composer</title>
+    <title>Banner Page Builder Visual Composer</title>
 
     <meta name="layout" content="bannerSelfServicePBPage"/>
-
-    <meta name="menuEndPoint" content="${request.contextPath}/ssb/menu"/>
-    <meta name="menuBaseURL" content="${request.contextPath}/ssb"/>
 
     <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
         <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pbDeveloper-rtl.css')}">
@@ -22,7 +15,6 @@
     <g:else>
         <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pbDeveloper.css')}">
     </g:else>
-
 
     <r:require modules="pageBuilderDev"/>
 
