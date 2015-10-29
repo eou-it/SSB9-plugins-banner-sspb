@@ -1,0 +1,25 @@
+{
+   "constantName": "pbadm.homepage",
+   "extendsPage": null,
+   "modelView": "{\n      \"type\": \"page\",\n      \"name\": \"homepage\",\n      \"scriptingLanguage\": \"JavaScript\",\n      \"title\": \"Page Builder Home\",\n      \"components\": [\n            {\n                  \"name\": \"pbAdminPages\",\n                  \"type\": \"resource\",\n                  \"staticData\": [],\n                  \"resource\": \"virtualDomains.pbadmAdminPages\"\n            },\n            {\n                  \"name\": \"pbPages\",\n                  \"type\": \"resource\",\n                  \"staticData\": [],\n                  \"resource\": \"virtualDomains.pbadmNonAdmPages\"\n            },\n            {\n                  \"name\": \"pageBlock\",\n                  \"type\": \"block\",\n                  \"showInitially\": true,\n                  \"components\": [\n                        {\n                              \"name\": \"adminPageForm\",\n                              \"type\": \"form\",\n                              \"label\": \"Page Builder Administration\",\n                              \"nextButtonLabel\": \"Next\",\n                              \"showInitially\": false,\n                              \"components\": [\n                                    {\n                                          \"name\": \"adminPageList\",\n                                          \"type\": \"list\",\n                                          \"model\": \"pbAdminPages\",\n                                          \"allowReload\": false,\n                                          \"parameters\": {},\n                                          \"required\": false,\n                                          \"pageSize\": 0,\n                                          \"loadInitially\": true,\n                                          \"value\": \"CONSTANT_NAME\",\n                                          \"onClick\": \"window.location.assign(currentSelection.PAGE_LINK);\",\n                                          \"onLoad\": \"$adminPageForm.$visible = true;\"\n                                    }\n                              ]\n                        },\n                        {\n                              \"name\": \"pageForm\",\n                              \"type\": \"form\",\n                              \"nextButtonLabel\": \"Next\",\n                              \"showInitially\": true,\n                              \"components\": [\n                                    {\n                                          \"name\": \"pageList\",\n                                          \"type\": \"list\",\n                                          \"model\": \"pbPages\",\n                                          \"allowReload\": false,\n                                          \"parameters\": {},\n                                          \"required\": false,\n                                          \"pageSize\": 0,\n                                          \"loadInitially\": true,\n                                          \"value\": \"CONSTANT_NAME\",\n                                          \"onClick\": \"window.location.assign('/banner-sspb-test-app/customPage/page/' + currentSelection.CONSTANT_NAME);\"\n                                    }\n                              ],\n                              \"label\": \"Runtime Pages\"\n                        }\n                  ]\n            }\n      ]\n}",
+   "compiledView": null,
+   "compiledController": null,
+   "version": null,
+   "lastUpdated": null,
+   "extensions": null,
+   "dateCreated": null,
+   "id": null,
+   "fileTimestamp": null,
+   "pageRoles": [{
+      "allow": true,
+      "roleName": "GUEST",
+      "id": null,
+      "page": {
+         "_ref": "../..",
+         "class": "net.hedtech.banner.sspb.Page"
+      },
+      "class": "net.hedtech.banner.sspb.PageRole",
+      "version": null
+   }],
+   "class": "net.hedtech.banner.sspb.Page"
+}
