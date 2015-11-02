@@ -1,37 +1,33 @@
+<%--
+Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+--%>
 <%@ page import="net.hedtech.banner.virtualDomain.VirtualDomain" %>
 <!DOCTYPE html>
 <html>
 <head>
-<title><g:message code="sspb.page.virtualdomain.pagetitle" /></title>
+    <title><g:message code="sspb.page.virtualdomain.pagetitle" /></title>
 
     <meta name="layout" content="bannerSelfServicePBPage"/>
 
-    <meta name="menuEndPoint" content="${request.contextPath}/ssb/menu"/>
-    <meta name="menuBaseURL" content="${request.contextPath}/ssb"/>
-
-    <meta name="menuDefaultBreadcrumbId" content=""/>
-
-<%
-  if (pageInstance?.submitted) {
-    out << "<script>"
-    if (pageInstance?.saveSuccess) {
-        out << """alert('${message(code:"sspb.page.virtualdomain.save.ok.message", args:[pageInstance.id,pageInstance.version])}');"""
-    } else {
-        out << """alert('${message(code:"sspb.page.virtualdomain.save.fail.message", args:[pageInstance?.error?.replaceAll('[\r\n]','')])}');"""
-    }
-    out << "</script>"
-    }
-
-%>
-<%
-  if (pageInstance?.loadSubmitted) {
-    out << "<script>"
-    if (!pageInstance?.loadSuccess)
-        out << """alert('${message(code:"sspb.page.virtualdomain.load.fail.message", args:[pageInstance?.error?.replaceAll('[\r\n]','')])}');"""
-    out << "</script>"
-    }
-
-%>
+    <%
+      if (pageInstance?.submitted) {
+        out << "<script>"
+        if (pageInstance?.saveSuccess) {
+            out << """alert('${message(code:"sspb.page.virtualdomain.save.ok.message", args:[pageInstance.id,pageInstance.version])}');"""
+        } else {
+            out << """alert('${message(code:"sspb.page.virtualdomain.save.fail.message", args:[pageInstance?.error?.replaceAll('[\r\n]','')])}');"""
+        }
+        out << "</script>"
+        }
+    %>
+    <%
+      if (pageInstance?.loadSubmitted) {
+        out << "<script>"
+        if (!pageInstance?.loadSuccess)
+            out << """alert('${message(code:"sspb.page.virtualdomain.load.fail.message", args:[pageInstance?.error?.replaceAll('[\r\n]','')])}');"""
+        out << "</script>"
+        }
+    %>
 <!-- g:set var="pageSource" value="test test" scope="page" /-->
 </head>
 

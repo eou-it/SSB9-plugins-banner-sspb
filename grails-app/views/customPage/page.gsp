@@ -1,3 +1,6 @@
+<%--
+Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+--%>
 <!DOCTYPE html>
 <html lang="${message(code:'default.language.locale')}" ng-app="BannerOnAngular" dir="${message(code:'default.language.direction')}">
 <head>

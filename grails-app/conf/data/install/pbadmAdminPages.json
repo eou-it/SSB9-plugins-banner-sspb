@@ -1,0 +1,28 @@
+{
+   "codePut": null,
+   "virtualDomainRoles": [{
+      "allowDelete": false,
+      "allowPost": false,
+      "allowPut": false,
+      "roleName": "WTAILORADMIN",
+      "id": null,
+      "allowGet": true,
+      "virtualDomain": {
+         "_ref": "../..",
+         "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+      },
+      "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
+      "version": null
+   }],
+   "codeGet": "select 'Virtual Domain Composer' constant_name, '/banner-sspb-test-app/virtualDomainComposer/loadVirtualDomain' page_link, 1 linkOrder\r\nfrom dual\r\nUNION\r\nselect 'Virtual PageComposer' constant_name, '/banner-sspb-test-app/visualPageModelComposer/loadComposerPage' page_link, 2 linkOrder\r\nfrom dual\r\nUNION\r\nselect 'CSS Stylesheet Manager' constant_name, '/banner-sspb-test-app/cssManager/loadCssManagerPage' page_link, 3 linkOrder\r\nfrom dual\r\nUNION\r\nselect 'Page Roles' constant_name, '/banner-sspb-test-app/customPage/page/pbadm.PageRoles' page_link, 4 linkOrder\r\nfrom dual\r\nUNION\r\nselect 'Virtual Domain Roles' constant_name, '/banner-sspb-test-app/customPage/page/pbadm.VirtualDomainRoles' page_link, 5 linkOrder\r\nfrom dual\r\nUNION\r\nselect 'Export Pages' constant_name, '/banner-sspb-test-app/customPage/page/pbadm.ExportPages' page_link, 6 linkOrder\r\nfrom dual\r\nUNION\r\nselect 'Export Virtual Domains' constant_name, '/banner-sspb-test-app/customPage/page/pbadm.ExportVirtualDomains' page_link, 7 linkOrder\r\nfrom dual\r\nUNION\r\nselect 'Export CSS Stylesheet' constant_name, '/banner-sspb-test-app/customPage/page/pbadm.ExportCss' page_link, 8 linkOrder\r\nfrom dual\r\norder by 3",
+   "codePost": null,
+   "serviceName": "pbadmAdminPages",
+   "version": null,
+   "codeDelete": null,
+   "lastUpdated": null,
+   "dateCreated": null,
+   "id": null,
+   "fileTimestamp": null,
+   "typeOfCode": "S",
+   "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+}

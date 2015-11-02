@@ -244,7 +244,7 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
         }
 
         this.numberOfPages = function () {
-            return Math.max(1,Math.ceil(this.totalCount/this.pagingOptions.pageSize));
+            return this.pageSize === 0? 1 : Math.max(1,Math.ceil(this.totalCount/this.pagingOptions.pageSize));
         }
 
         this.init = function() {

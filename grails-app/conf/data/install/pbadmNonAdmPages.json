@@ -1,0 +1,44 @@
+{
+   "codePut": null,
+   "virtualDomainRoles": [
+      {
+         "allowDelete": false,
+         "allowPost": false,
+         "allowPut": false,
+         "roleName": "WTAILORADMIN",
+         "id": null,
+         "allowGet": true,
+         "virtualDomain": {
+            "_ref": "../..",
+            "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+         },
+         "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
+         "version": null
+      },
+      {
+         "allowDelete": false,
+         "allowPost": false,
+         "allowPut": false,
+         "roleName": "GUEST",
+         "id": null,
+         "allowGet": true,
+         "virtualDomain": {
+            "_ref": "../..",
+            "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+         },
+         "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
+         "version": null
+      }
+   ],
+   "codeGet": "select id pid, constant_name from page\r\nwhere constant_name not like 'pbadm%'\r\norder by 2",
+   "codePost": null,
+   "serviceName": "pbadmNonAdmPages",
+   "version": null,
+   "codeDelete": null,
+   "lastUpdated": null,
+   "dateCreated": null,
+   "id": null,
+   "fileTimestamp": null,
+   "typeOfCode": "S",
+   "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+}

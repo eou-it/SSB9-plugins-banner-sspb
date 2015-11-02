@@ -1,7 +1,8 @@
-<%@ page import="net.hedtech.banner.sspb.PBUser;" contentType="text/html;charset=UTF-8" %>
 <%--
-Copyright 2009-2015 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 --%>
+<%@ page import="net.hedtech.banner.sspb.PBUser;" contentType="text/html;charset=UTF-8" %>
+
 <!DOCTYPE html>
 <html ng-app="BannerOnAngular" lang="${message(code: 'default.language.locale')}" dir="${message(code:'default.language.direction')}">
     <head>
@@ -26,6 +27,8 @@ Copyright 2009-2015 Ellucian Company L.P. and its affiliates.
         <meta name="keepAliveURL" content="${createLink(controller:'keepAlive')}"/>
         <meta name="ssbMepDesc" content="${!mep ? '' : mep}"/>
         <meta name="fullName" content="${g.fullName()}"/>
+        <meta name="menuEndPoint" content="${request.contextPath}/ssb/menu"/>
+        <meta name="menuBaseURL" content="${request.contextPath}/ssb"/>
 
         <meta name="headerAttributes" content=""/>
         <script type="text/javascript">

@@ -1,11 +1,6 @@
 <%--
-  Created by IntelliJ IDEA.
-  User: jzhong
-  Date: 7/24/13
-  Time: 10:14 AM
-  To change this template use File | Settings | File Templates.
+Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 --%>
-
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
