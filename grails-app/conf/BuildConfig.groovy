@@ -28,6 +28,7 @@ grails.project.dependency.resolution = {
 
     dependencies {
         test "org.grails:grails-datastore-test-support:1.0.2-grails-2.4"
+        compile 'com.googlecode.java-diff-utils:diffutils:1.3.0'
     }
 
     plugins {
@@ -37,6 +38,7 @@ grails.project.dependency.resolution = {
         //runtime ":hibernate4:4.3.8.1"
         runtime ":database-migration:1.4.0"
         compile ':restful-api:1.0.0'
+
         //build  ":tomcat:8.0.22"
         //compile  ":tomcat:8.0.22" //this avoids prompt for do you want to upgrade/downgrade
     }

@@ -95,7 +95,7 @@ class PageService {
         }
         if (pageSource)  {
 
-            if (! extendsPage instanceof Page) {
+            if (!(extendsPage instanceof Page)) {
                 // Maps and Json Objects don't compare directly with nulls
                 extendsPage = extendsPage.equals(null)||extendsPage?.size()==0?null:extendsPage
             }
