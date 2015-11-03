@@ -1,6 +1,13 @@
 class PBUrlMappings {
 
     static mappings = {
+
+        "/" {
+            controller = "customPage"
+            action = "page"
+            id = "pbadm.homepage"
+        }
+
         "/$controller/$action?/$id?"{
             constraints {
                 // apply constraints here
