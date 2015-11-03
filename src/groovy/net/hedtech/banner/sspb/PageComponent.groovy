@@ -1022,7 +1022,7 @@ class PageComponent {
         // TODO : generate and register all services for REST resources
         // TODO: move static functions, CSS to decorator
         // TODO: generate unique page ID
-        def importPath = "../../cssRender"
+        def importPath = "\${ request.contextPath}/cssRender"
         def cssImp = ""
         // start css list with our default style sheet
         def tempList = DEFAULT_STYLESHEET
