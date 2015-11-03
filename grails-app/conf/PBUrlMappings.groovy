@@ -36,7 +36,6 @@ class PBUrlMappings {
             parseRequest = false
         }
 
-        "/"(view:"/index")
         "500"(view:'/error')
 
     }
