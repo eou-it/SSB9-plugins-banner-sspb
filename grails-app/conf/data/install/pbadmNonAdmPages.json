@@ -5,7 +5,7 @@
          "allowDelete": false,
          "allowPost": false,
          "allowPut": false,
-         "roleName": "WTAILORADMIN",
+         "roleName": "GUEST",
          "id": null,
          "allowGet": true,
          "virtualDomain": {
@@ -19,7 +19,21 @@
          "allowDelete": false,
          "allowPost": false,
          "allowPut": false,
-         "roleName": "GUEST",
+         "roleName": "WEBUSER",
+         "id": null,
+         "allowGet": true,
+         "virtualDomain": {
+            "_ref": "../..",
+            "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+         },
+         "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
+         "version": null
+      },
+      {
+         "allowDelete": false,
+         "allowPost": false,
+         "allowPut": false,
+         "roleName": "WTAILORADMIN",
          "id": null,
          "allowGet": true,
          "virtualDomain": {
