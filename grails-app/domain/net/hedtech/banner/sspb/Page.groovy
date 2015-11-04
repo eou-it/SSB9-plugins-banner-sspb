@@ -1,7 +1,11 @@
+/*******************************************************************************
+ * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ ******************************************************************************/
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
 import groovy.util.logging.Log4j
+import difflib.*
 @Log4j
 class Page {
 
@@ -40,7 +44,7 @@ class Page {
         //compiledController type: "clob"
     }
 
-    static transients = ['mergedModelText', 'getMergedModelMap']
+    static transients = ['mergedModelText', 'mergedModelMap']
 
     boolean isEmptyInstance() {
         return (
@@ -116,8 +120,8 @@ class Page {
             def hasExt = extProps.containsKey(k)
             if (hasBase && hasExt) {
                 //Both base and ext have the property, record if different
-                if (baseProps[k] != extProps[k] ) {
-                    diff[k] = [base: baseProps[k], ext:extProps[k]]
+                if ( !baseProps[k].equals( extProps[k]) ) {
+                    diff[k] = diffAttribute(k, [base: baseProps[k], ext:extProps[k]])
                 }
             } else {
                 // Record the property that exists
@@ -129,7 +133,73 @@ class Page {
         diff
     }
 
-    //Helper method to convert the properties into the common delta format
+    //Static method for determining the difference for an attribute
+    private static diffAttribute(name, diff ){
+        if ( diff.base instanceof Map ) {
+            diff = diffMapAttribute(name, diff)
+        } else if (diff.base instanceof String) {
+            diff = diffStringAttribute(name, diff)
+        }
+        diff
+    }
+    //Static method for Map type attributes such as parameters and validation
+    private static diffMapAttribute(name, Map diff) {
+        def nameProp =  name.split(':')
+        if (nameProp[1] != 'meta') {
+            [diff.base, diff.ext]*.keySet().flatten().unique().each { k ->
+                def hasBase = diff.base.containsKey(k)
+                def hasExt = diff.ext.containsKey(k)
+                if (hasBase && hasExt && diff.base[k].equals(diff.ext[k])) {
+                    //Remove equals
+                    diff.base.remove(k)
+                    diff.ext.remove(k)
+                }
+            }
+        }
+        diff
+    }
+
+    //Static method for String type attribute
+    private static diffStringAttribute(name, diff) {
+        List<String> base = diff.base.split('\n')
+        List<String> ext = diff.ext.split('\n')
+        if (base.size()>1) {
+            def contextSize = base.size() == 2?1:2
+            def patch = DiffUtils.diff(base,ext)
+            def unifiedDiff = DiffUtils.generateUnifiedDiff("original", "revised", base, patch, contextSize)
+            diff.patch=unifiedDiff.join('\n')
+        }
+        diff
+    }
+
+    //Merge attributes from diff into base
+    private static mergeAttribute(name, base, diff) {
+        def result = base
+        if ( name != 'meta' && base instanceof Map) {
+            [diff.base,diff.ext]*.keySet().flatten().unique().each { k ->
+                def hasBase = diff.base.containsKey(k)
+                def hasExt = diff.ext.containsKey(k)
+                if ( hasExt ) {
+                    // Changed or Added attribute
+                    result[k] = diff.ext[k]
+                } else if (hasBase && !hasExt ) {
+                    // Removed attribute
+                    result.remove(k)
+                }
+            }
+        } else if (diff.patch) {
+            List<String> original = base.split('\n')
+            List<String> patchLines = diff.patch.split('\n')
+            Patch patch = DiffUtils.parseUnifiedDiff(patchLines)
+            def patched = DiffUtils.patch(original,patch)
+            result = patched.join('\n')
+        } else {
+            result = diff.ext
+        }
+        result
+    }
+
+    //Static helper method to convert the properties into the common delta format
     private static Map convertDiff(propsDiff) {
         def result = [:]
         //convert the diff properties to a map
@@ -146,14 +216,17 @@ class Page {
         [deltas: result]
     }
 
+    //Static helper method to determine name for components without name
     private static def componentName(component, parent, siblingIndex) {
         return component? component.name ? component.name : "${parent?.name}_child_${siblingIndex}":null
     }
 
+    //Static helper method to convert a page model JSON string to a propertyMap (intermediate format used in diff determination)
     private static Map propertyMap(String mergedModelString) {
         propertyMap(modelToMap(mergedModelString))
     }
 
+    //Static helper method to convert a page model Map to a propertyMap (intermediate format used in diff determination)
     private static Map propertyMap(Map comp, int siblingIndex=0, Map parent=null, Map next = null) {
         def props = [:]
         def decomposed = decomposeComponents(comp).components
@@ -167,6 +240,7 @@ class Page {
         props
     }
 
+
     private static Map applyDiffs(Map decomposedBasePage, Map diffs ) {
         def model = decomposedBasePage
         model.added=[:]
@@ -177,9 +251,13 @@ class Page {
             if (comp) { // Component exists, change props to match the extension
                 diff.each { prop, val ->
                     if (val.base.equals(comp[prop]) || prop!='meta') {
-                        // accept change as is. Todo: handle parameters and validation in a better way
+                        // accept change as is.
                         if (val.ext) {
-                            comp[prop] = val.ext
+                            try {
+                                comp[prop] = mergeAttribute(prop, comp[prop], val)
+                            } catch(e) {
+                                model.conflicts<<[type:"mergeAttribute", message: e.message, comp:comp, property:prop]
+                            }
                         }
                     } else {
                         if (prop=='meta') {
@@ -279,8 +357,8 @@ class Page {
             } else if (conflict.type=="removedBaseline") {
                 log.warn "Resolve removed baseline component conflict"
                 def resolvedStatusMessage = "Unresolved"
-                def removedNextName = conflict.diff.meta.ext.nextSibling
-                def addedNoReference = model.added[removedNextName]
+                def removedNextName = conflict.diff.meta?.ext?.nextSibling
+                def addedNoReference = removedNextName?model.added[removedNextName]:null
 
                 if (addedNoReference) {
                     def addedNext = model.components[addedNoReference.meta.nextSibling]
@@ -295,8 +373,11 @@ class Page {
                             resolvedStatusMessage = "Unable to find component referencing $addedNext.name - need to add somewhere else"
                         }
                     }
+                } else {
+                    resolvedStatusMessage = "Extension cannot be applied as component ${conflict.comp.name} appears to be removed from parent page"
                 }
                 log.warn resolvedStatusMessage
+                conflict.statusMessage = resolvedStatusMessage
             }
         }
         model
@@ -306,7 +387,7 @@ class Page {
     private static List getSiblings(Map flatModel, Map first, parent, boolean cleanMeta = true) {
         def result = parent.components?parent.component:[]  //.remove('meta')
         def next = first
-        log.info "getSiblings for ${parent.name}"
+        log.info "Executing getSiblings for ${parent.name}"
         for (; next != null; ) {
             //if (result.contains(next)) {
             if (next.meta.added) {

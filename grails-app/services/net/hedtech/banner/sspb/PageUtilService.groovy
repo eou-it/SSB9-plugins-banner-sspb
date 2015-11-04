@@ -1,16 +1,18 @@
+/*******************************************************************************
+ * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ ******************************************************************************/
+
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
-import net.hedtech.banner.tools.i18n.PageMessageSource
 import org.codehaus.groovy.grails.web.context.ServletContextHolder
 import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
-
 import org.springframework.context.ApplicationContext
 import net.hedtech.banner.tools.i18n.SortedProperties
 
 
 class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
-    def pageService // = new PageService() // Spring Injection failed in integration test
+    def pageService
     def static bundleLocation = getBundleLocation()
 
     def static getBundleLocation() {
@@ -34,7 +36,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
 
         Page.findAllByConstantNameLike(pageName).each { page ->
             if (skipDuplicates && page.constantName.endsWith(".bak"))
-                println message(code:"sspb.pageutil.export.skipDuplicate.message", args:[page.constantName])
+                log.info message(code:"sspb.pageutil.export.skipDuplicate.message", args:[page.constantName])
             else {
                 def file = new File("$path/${page.constantName}.json")
                 JSON.use("deep") {
@@ -49,7 +51,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                     }
                     def json = new JSON(pageStripped)
                     def jsonString = json.toString(true)
-                    println message(code:"sspb.pageutil.export.page.done.message", args:[page.constantName])
+                    log.info message(code:"sspb.pageutil.export.page.done.message", args:[page.constantName])
                     file.text = jsonString
                 }
             }
@@ -104,7 +106,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                         role.validate()
                         page.addToPageRoles(role)
                     } catch(e) {
-                        println "Exception adding role: ${e.message}"
+                        log.error "Exception adding role: ${e.message}"
                     }
                 }
             }
@@ -129,7 +131,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         else if (stream && name )
             jsonString = loadStreamMode(stream, mode, page)
         else {
-            println "Error, either file or stream and name is required, both cannot be null"
+            log.error "Error, either file or stream and name is required, both cannot be null"
             return 0
         }
         if (jsonString) {
@@ -159,7 +161,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                     page.extendsPage = extendsPage
                 }
                 else {
-                    println "Error, referenced page does not exist and cannot be created: " + json.extendsPage.constantName
+                    log.error "Error, referenced page does not exist and cannot be created: " + json.extendsPage.constantName
                     return 0
                 }
             }

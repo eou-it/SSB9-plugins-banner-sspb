@@ -1,10 +1,12 @@
+/*******************************************************************************
+ * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ ******************************************************************************/
 grails.servlet.version = "2.5"
 grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 grails.plugin.location.'banner-core'="../banner_core.git"
 grails.plugin.location.'i18n_core'="../i18n_core.git"
-//grails.plugin.location.'grails-constraints' = "../grails_constraints.git"
 
 grails.project.dependency.resolver="maven"
 grails.project.dependency.resolution = {

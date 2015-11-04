@@ -1,18 +1,16 @@
+/*******************************************************************************
+ * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ ******************************************************************************/
+
 package net.hedtech.banner.sspb
 
 import net.hedtech.banner.tools.i18n.PageMessageSource
-
-//import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
+import org.apache.commons.logging.LogFactory
 import grails.util.Holders as CH
 
 class CompileService {
 
-    /* use message function (added by plugin to each service class)
-    def static localizer = { mapToLocalize ->
-        new ValidationTagLib().message( mapToLocalize )
-    }
-    */
-
+    def static log = LogFactory.getLog(this)
     def static pageBuilderModel = (new groovy.json.JsonSlurper())
             .parseText(CompileService.class.classLoader.getResourceAsStream( 'PageModelDefinition.json' ).text)
     // TODO configure Hibernate
@@ -55,7 +53,7 @@ class CompileService {
             valid = pageValidation.valid
             errors += pageValidation.errors
         } catch (Exception e) {
-            println "Parsing page model exception: " + e
+            log.error "Parsing page model exception: " + e
             errors << PageModelErrors.getError(error: PageModelErrors.MODEL_UNKNOWN_ERR, args: [e.message])
             valid = false
             org.codehaus.groovy.runtime.StackTraceUtils.printSanitizedStackTrace(e)
