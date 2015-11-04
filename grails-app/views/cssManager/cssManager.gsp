@@ -7,7 +7,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
     <meta name="layout" content="bannerSelfServicePBPage"/>
 
-  <title>CSS Stylesheet Manager</title>
+  <title><g:message code="sspb.css.cssManager.pagetitle" /></title>
 
     <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
         <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pbDeveloper-rtl.css')}">
@@ -34,6 +34,20 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                 var tr = [];
                 tr['sspb.css.cssManager.upload.label'             ]="${message(code:'sspb.css.cssManager.upload.label')}";
                 tr['pb.template.upload.ok.label'             ]="${message(code:'pb.template.upload.ok.label')}";
+                tr['sspb.css.cssManager.description.label']             = "${message(code:'sspb.css.cssManager.description.label')}";
+                tr['sspb.css.cssManager.cssSource.label']               = "${message(code:'sspb.css.cssManager.cssSource.label')}";
+                tr['sspb.css.cssManager.upload.file.label']             =   "${message(code:'sspb.css.cssManager.upload.file.label')}";
+                tr['sspb.css.cssManager.upload.server.response.label']  =   "${message(code:'sspb.css.cssManager.upload.server.response.label')}";
+                tr['pb.template.upload.ok.label']                       =   "${message(code:'pb.template.upload.ok.label')}";
+                tr['sspb.css.cssManager.saved.message']                 =   "${message(code:'sspb.css.cssManager.saved.message',encodeAs: 'JavaScript')}";
+                tr['sspb.css.cssManager.updated.message']               =   "${message(code:'sspb.css.cssManager.updated.message',encodeAs: 'JavaScript')}";
+                tr['sspb.css.cssManager.stylesheet.submit.failed.message']  =   "${message(code:'sspb.css.cssManager.stylesheet.submit.failed.message',encodeAs: 'JavaScript')}";
+                tr['sspb.css.cssManager.parsing.error.message']  =   "${message(code:'sspb.css.cssManager.parsing.error.message',encodeAs: 'JavaScript')}";
+                tr['sspb.css.cssManager.Stylesheet.load.failed.message']  =   "${message(code:'sspb.css.cssManager.Stylesheet.load.failed.message',encodeAs: 'JavaScript')}";
+                tr['sspb.css.cssManager.validation.error.message']  =   "${message(code:'sspb.css.cssManager.validation.error.message',encodeAs: 'JavaScript')}";
+                tr['sspb.css.cssManager.deletion.success.message']  =   "${message(code:'sspb.css.cssManager.deletion.success.message',encodeAs: 'JavaScript')}";
+                tr['sspb.css.cssManager.deletion.error.message']  =   "${message(code:'sspb.css.cssManager.deletion.error.message',encodeAs: 'JavaScript')}";
+
 
                 var res=tr[key];
                 if ( !res )  {
@@ -89,7 +103,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             $scope.getCssSource = function() {
                 //TODO prompt for unsaved data
                 if ($scope.cssSource != undefined)   {
-                    var r=confirm("${message(code: 'sspb.page.visualbuilder.loadpage.unsaved.changes.message', encodeAs: 'JavaScript')}");
+                    var r=confirm("${message(code: 'sspb.css.cssManager.loadStylesheet.unsaved.changes.message', encodeAs: 'JavaScript')}");
                     if (!r)
                         return;
                 }
@@ -99,10 +113,10 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                         $scope.cssSource = data.css;
                         $scope.description = data.description;
                     } catch(ex) {
-                        alert($scope.i18nGet("${message(code:'sspb.page.visualbuilder.parsing.error.message')}",[ex]));
+                        alert($scope.i18nGet("${message(code:'sspb.css.cssManager.parsing.error.message')}",[ex]));
                     }
                 }, function(response) {
-                    var msg  = "${message(code: 'sspb.page.visualcomposer.page.load.failed.message', encodeAs: 'JavaScript')}";
+                    var msg  = "${message(code: 'sspb.css.cssManager.Stylesheet.load.failed.message', encodeAs: 'JavaScript')}";
                     if (response.data != undefined && response.data.errors!=undefined)
                         msg = $scope.i18nGet(msg, [response.data.errors[0].errorMessage]);
                     else
@@ -115,7 +129,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             /* page operations */
             $scope.newCssSource = function() {
                 if ($scope.cssSource != undefined) {
-                    var r=confirm("${message(code: 'sspb.page.visualbuilder.newpage.unsaved.changes.message', encodeAs: 'JavaScript')}");
+                    var r=confirm("${message(code: 'sspb.css.cssManager.newStylesheet.unsaved.changes.message', encodeAs: 'JavaScript')}");
                     if (!r)
                         return;
                 }
@@ -129,16 +143,16 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             $scope.submitCssSource = function() {
                 //check if page name is set
                 if ($scope.cssName== undefined || $scope.cssName == '') {
-                    alert("${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
+                    alert("${message(code:'sspb.css.cssManager.cssName.prompt.message')}");
                     return;
                 }
 
                 Css.save({cssName:$scope.cssName, source:$scope.cssSource, description:$scope.description }, function(response) {
                     //console.log("save response = " + response.statusCode + ", " +response.statusMessage);
                     if (response.statusCode == 0)
-                        $scope.cssStatus.message = response.statusMessage;
+                        $scope.cssStatus.message = $scope.i18nGet(response.statusMessage);
                     else {
-                        var msg="${message(code:'sspb.page.validation.error.message')}";
+                        var msg="${message(code:'sspb.css.cssManager.validation.error.message')}";
                         if (response.cssValidationResult != undefined)
                             $scope.cssStatus.message = $scope.i18nGet(msg,[response.statusMessage,response.cssValidationResult.errors]);
                         else
@@ -150,7 +164,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                     // refresh the page list in case new page is added
                     $scope.loadCssNames();
                 }, function(response) {
-                    var msg ="${message(code: 'sspb.page.visualcomposer.page.submit.failed.message', encodeAs: 'JavaScript')}";;
+                    var msg ="${message(code: 'sspb.css.cssManager.stylesheet.submit.failed.message', encodeAs: 'JavaScript')}";;
                     if (response.data != undefined && response.data.errors!=undefined)
                         msg =  $scope.i18nGet(msg, [response.data.errors[0].errorMessage]);
                     else
@@ -164,14 +178,14 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             $scope.deleteCssSource = function () {
                 //check if page name is set
                 if ($scope.cssName== undefined || $scope.cssName == '') {
-                    alert("${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
+                    alert("${message(code:'sspb.css.cssManager.cssName.prompt.message')}");
 
                     return;
                 }
 
                 Css.delete({constantName:$scope.cssName }, function() {
                     // on success
-                    alert("${message(code:'sspb.page.visualbuilder.deletion.success.message')}");
+                    alert("${message(code:'sspb.css.cssManager.deletion.success.message')}");
                     // clear the page name field and page source
                     $scope.cssName = "";
                     $scope.description = "";
@@ -179,7 +193,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                     $scope.loadCssNames();
 
                 }, function(response) {
-                    var msg="${message(code:'sspb.page.visualbuilder.deletion.error.message')}";
+                    var msg="${message(code:'sspb.css.cssManager.deletion.error.message')}";
 
                     if (response.data != undefined && response.data.errors != undefined)
                         msg = $scope.i18nGet(msg,[response.data.errors[0].errorMessage]);
@@ -215,16 +229,16 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         </div>
         <div class="form-horizontal">
             <div class="control-group">
-                <label class="control-label"  for='cssName'>Select a name for publishing:</label>
+                <label class="control-label"  for='cssName'><g:message code="sspb.css.cssManager.cssName.label" /></label>
                 <input name="cssName" id='cssName' ng-model='cssName'/>
             </div>
             <div class="control-group">
-                <label class="control-label"  for='desc'>Enter a description:</label>
+                <label class="control-label"  for='desc'><g:message code="sspb.css.cssManager.description.label" /></label>
                 <input name="description" id='desc' ng-model='description'/>
             </div>
 
             <div class="control-group">
-                <label class="control-label" for='source'>Stylesheet Source</label>
+                <label class="control-label" for='source'><g:message code="sspb.css.cssManager.cssSource.label" /></label>
                 <textarea ng-model='cssSource' id='source'></textarea>
             </div>
         </div>

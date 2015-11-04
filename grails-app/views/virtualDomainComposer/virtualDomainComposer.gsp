@@ -94,7 +94,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
     ${message(code:"sspb.page.virtualdomain.query.result.parameters.label")}
     <input type="text" id="vdTestParameters" name="vdTestParameters" value="${pageInstance.vdTestParameters?pageInstance.vdTestParameters:""}" />
     <input type="hidden"  name="vdServiceName" value="${pageInstance?.vdServiceName}" />
-    <input type="button" value="Test" id="getDataButton"/>
+    <input type="button" value="${message(code:"sspb.page.virtualdomain.query.result.test.label")}" id="getDataButton"/>
     <br/>
     <textarea id="testarea1" rows="5" readonly style="width:98%"></textarea>
     """

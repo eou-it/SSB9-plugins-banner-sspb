@@ -65,8 +65,7 @@ class CustomPageController {
         if (html)
             render renderGsp(html, "Page$pageId")
         else if (!allow) {
-            //TODO i18n )
-             render(status: 401, text: "Deny access for $user.loginName")
+            render(status: 401, message(code: "sspb.renderer.page.deny.access",  args:user.loginName))
         }
         else
             invalidPage(message(code:"sspb.renderer.page.does.not.exist"))

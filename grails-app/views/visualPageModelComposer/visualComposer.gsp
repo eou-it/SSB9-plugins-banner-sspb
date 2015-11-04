@@ -5,7 +5,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title>Banner Page Builder Visual Composer</title>
+    <title><g:message code="sspb.page.visualbuilder.pagetitle" /></title>
 
     <meta name="layout" content="bannerSelfServicePBPage"/>
 
@@ -326,6 +326,8 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             tr['pb.template.combo.loadsource.label'     ] = "${message(code:'pb.template.combo.loadsource.label',encodeAs: 'JavaScript')}";
             tr['pb.template.combo.edit.label'           ] = "${message(code:'pb.template.combo.edit.label',encodeAs: 'JavaScript')}";
             tr['pb.template.combo.select.label'         ] = "${message(code:'pb.template.combo.select.label',encodeAs: 'JavaScript')}";
+            tr['sspb.page.visualcomposer.compiledsaved.ok.message'         ] = "${message(code:'sspb.page.visualcomposer.compiledsaved.ok.message',encodeAs: 'JavaScript')}";
+            tr['sspb.page.visualcomposer.compiledupdated.ok.message'         ] = "${message(code:'sspb.page.visualcomposer.compiledupdated.ok.message',encodeAs: 'JavaScript')}";
 
 
             var res=tr[key];
@@ -693,7 +695,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
               Page.save({pageName:$scope.pageCurName, source:$scope.pageSourceView, extendsPage:$scope.extendsPage},
                   function(response) {
                      if (response.statusCode == 0) {
-                         $scope.pageStatus.message = response.statusMessage;
+                         $scope.pageStatus.message = $scope.i18nGet(response.statusMessage);
                          if (response.pageValidationResult.warn) {
                              $scope.pageStatus.message += response.pageValidationResult.warn;
                              note.type = noteType.warning;
