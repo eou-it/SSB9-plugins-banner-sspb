@@ -2,6 +2,7 @@
  * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 package net.hedtech.banner.sspb
+
 import grails.test.mixin.TestFor
 import grails.test.mixin.TestMixin
 import grails.test.mixin.web.ControllerUnitTestMixin
@@ -11,10 +12,15 @@ import spock.lang.*
 @TestMixin(ControllerUnitTestMixin)
 @TestFor(Page)
 class PageSpec extends Specification {
+
     String baseModelView
+
     String extensionMergedModelView
+
     Map extensionMergedModelMap
+
     Page base
+
     Page extension
 
 
@@ -30,8 +36,9 @@ class PageSpec extends Specification {
                 mergedModelMap.components[0].label == "Text 1 label modified" &&
                 mergedModelMap.components[0].validation.size() == 2 &&
                 mergedModelMap.components[2].name == "I" &&
-                diff.deltas.size()==3 && diff.deltas['A'] && diff.deltas['I']  &&   diff.deltas['B']
+                diff.deltas.size() == 3 && diff.deltas['A'] && diff.deltas['I'] && diff.deltas['B']
     }
+
 
     @Unroll
     def "Test Baseline upgrade swap B and C components in base"() {
@@ -42,7 +49,7 @@ class PageSpec extends Specification {
         baseModel.components[1] = baseModel.components[2]
         baseModel.components[2] = temp
         //Update the page model
-        base.modelView=Page.modelToString(baseModel)
+        base.modelView = Page.modelToString(baseModel)
         def mergedModelMap = extension.getMergedModelMap()
 
         expect:
@@ -54,6 +61,7 @@ class PageSpec extends Specification {
                 mergedModelMap.components[3].name == "I"
     }
 
+
     @Unroll
     def "Test Baseline upgrade remove previous sibling component B in base"() {
         given:
@@ -61,7 +69,7 @@ class PageSpec extends Specification {
         def baseModel = Page.modelToMap(base.modelView)
         baseModel.components = baseModel.components.minus(baseModel.components[1])
 
-        base.modelView=Page.modelToString(baseModel)
+        base.modelView = Page.modelToString(baseModel)
         def mergedModelMap = extension.getMergedModelMap()
 
         expect:
@@ -72,21 +80,23 @@ class PageSpec extends Specification {
 
     }
 
+
     @Unroll
     def "Test Baseline upgrade add maxlength to validation for component A"() {
         given:
         def baseModel = Page.modelToMap(base.modelView)
         baseModel.components[0].validation.maxlength = 3
 
-        base.modelView=Page.modelToString(baseModel)
+        base.modelView = Page.modelToString(baseModel)
         def mergedModelMap = extension.getMergedModelMap()
 
         expect:
         // validate maxlength
-        mergedModelMap.components[0].validation.size()==3 &&
+        mergedModelMap.components[0].validation.size() == 3 &&
                 mergedModelMap.components[0].validation.maxlength == 3
 
     }
+
 
     @Unroll
     def "Test Baseline upgrade remove max from validation for component A"() {
@@ -94,35 +104,37 @@ class PageSpec extends Specification {
         def baseModel = Page.modelToMap(base.modelView)
         baseModel.components[0].validation.remove('max')
 
-        base.modelView=Page.modelToString(baseModel)
+        base.modelView = Page.modelToString(baseModel)
         def mergedModelMap = extension.getMergedModelMap()
 
         expect:
         // validate validation
-        mergedModelMap.components[0].validation.size()==1 &&
+        mergedModelMap.components[0].validation.size() == 1 &&
                 mergedModelMap.components[0].validation.min == 10
 
     }
+
 
     @Unroll
     def "Test Baseline upgrade supported code change in component A"() {
         given:
         def baseModel = Page.modelToMap(base.modelView)
-        baseModel.components[0].onUpdate = "${baseModel.components[0].onUpdate}\nconsole.log('added last line');"
-        base.modelView=Page.modelToString(baseModel)
+        baseModel.components[0].onUpdate = "${ baseModel.components[0].onUpdate }\nconsole.log('added last line');"
+        base.modelView = Page.modelToString(baseModel)
         def mergedModelMap = extension.getMergedModelMap()
         expect:
         // validate code has the baseline change and the extension change
-       mergedModelMap.components[0].onUpdate.contains("added last line") &&
-               mergedModelMap.components[0].onUpdate.contains("hallo")
+        mergedModelMap.components[0].onUpdate.contains("added last line") &&
+                mergedModelMap.components[0].onUpdate.contains("hallo")
     }
+
 
     @Unroll
     def "Test Baseline upgrade not supported code change in component A"() {
         given:
         def baseModel = Page.modelToMap(base.modelView)
-        baseModel.components[0].onUpdate = "console.log('added first line');\n${baseModel.components[0].onUpdate}\nconsole.log('added last line');"
-        base.modelView=Page.modelToString(baseModel)
+        baseModel.components[0].onUpdate = "console.log('added first line');\n${ baseModel.components[0].onUpdate }\nconsole.log('added last line');"
+        base.modelView = Page.modelToString(baseModel)
         def mergedModelMap = extension.getMergedModelMap()
         expect:
         // validate code has the baseline changes and not the extension change
@@ -138,13 +150,15 @@ class PageSpec extends Specification {
         extensionMergedModelMap = Page.modelToMap(extensionMergedModelView)
     }
 
-    def setupPages(){
+
+    def setupPages() {
         base = new Page(constantName: "xeTest", modelView: baseModelView, extendsPage: null)
-        extension = new Page([constantName: "xeTest.e1", extendsPage:base])
+        extension = new Page([constantName: "xeTest.e1", extendsPage: base])
         extension.modelView = extension.diffModelViewText(extensionMergedModelView)
     }
 
-    def setupModels(){
+
+    def setupModels() {
         baseModelView = """
                 {
                       "type": "page",

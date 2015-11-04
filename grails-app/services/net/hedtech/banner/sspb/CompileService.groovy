@@ -11,8 +11,9 @@ import grails.util.Holders as CH
 class CompileService {
 
     def static log = LogFactory.getLog(this)
+
     def static pageBuilderModel = (new groovy.json.JsonSlurper())
-            .parseText(CompileService.class.classLoader.getResourceAsStream( 'PageModelDefinition.json' ).text)
+            .parseText(CompileService.class.classLoader.getResourceAsStream('PageModelDefinition.json').text)
     // TODO configure Hibernate
     def transactional = false
 
@@ -27,8 +28,8 @@ class CompileService {
     def static preparePage(String json) {
         //def slurper = new groovy.json.JsonSlurper()
         def page
-        def errors=[]
-        def warn=[]
+        def errors = []
+        def warn = []
         def valid = true
         def pageValidation = [:]
 
@@ -37,13 +38,13 @@ class CompileService {
             def pageModelValidator = new PageModelValidator()
             pageModelValidator.setPageBuilderModel(pageBuilderModel)
             // validate the raw Page JSON data
-            def validateResult =  pageModelValidator.parseAndValidatePage(json) //
+            def validateResult = pageModelValidator.parseAndValidatePage(json) //
 
             // validate the unmarshalled page model
             if (!validateResult.valid) {
                 return [valid: false, pageComponent: validateResult.page, error: validateResult.error, warn: validateResult.warn]
             }
-            warn=validateResult.warn
+            warn = validateResult.warn
             page = new PageComponent(validateResult.page)
             page = normalizeComponent(page)
             // run second validation
@@ -58,7 +59,7 @@ class CompileService {
             valid = false
             org.codehaus.groovy.runtime.StackTraceUtils.printSanitizedStackTrace(e)
         }
-        return [valid:valid, pageComponent:page, error:errors, warn:warn]
+        return [valid: valid, pageComponent: page, error: errors, warn: warn]
     }
 
 //major step 2.
@@ -100,7 +101,7 @@ class CompileService {
         // TODO Add each function to result
         def result = codeList.join("\n")
         // inject common code into controller
-        def common = CompileService.class.classLoader.getResourceAsStream( 'data/sspbCommon.js' ).text
+        def common = CompileService.class.classLoader.getResourceAsStream('data/sspbCommon.js').text
 
         //  Removed Dependencies: $http,$resource,$cacheFactory,$parse (now in pbDataSet )
         result = """
@@ -119,52 +120,53 @@ class CompileService {
     // iterate through all components and add a style attributes (name.style_attr)
     def static initializeStyle(pageComponent) {
         def ret = ""
-        if (PageComponent.COMP_VISUAL_TYPES.contains(pageComponent.type))
-        {
+        if (PageComponent.COMP_VISUAL_TYPES.contains(pageComponent.type)) {
             // set the initial value if specified in the page definition
-            def style = pageComponent.style?"'${pageComponent.style}'":"''"
+            def style = pageComponent.style ? "'${ pageComponent.style }'" : "''"
             // add a scope variable to for dynamic CSS manipulation
-            ret += """  \$scope.${pageComponent.name}_${PageComponent.STYLE_ATTR}=$style;\n"""
+            ret += """  \$scope.${ pageComponent.name }_${ PageComponent.STYLE_ATTR }=$style;\n"""
         }
         pageComponent.components.each { child ->
-            ret+= initializeStyle(child)
+            ret += initializeStyle(child)
         }
         return ret
 
     }
+
+
 //major step 3. (done in pageComponent)
     // compile the page
     // accept a normalized page level pageComponent
     // output
     def static compile2page(pageComponent) {
-        def pageTxt=pageComponent.compileComponent("")
+        def pageTxt = pageComponent.compileComponent("")
         return pageTxt
     }
 
     //this needs to be executed to update properties as part of compilation
     def static updateProperties(pageComponent) {
         def pageUtilService = new PageUtilService()
-        pageUtilService.updateProperties(pageComponent.rootProperties,propertiesFileName(pageComponent.name))
-        pageUtilService.updateProperties(pageComponent.globalProperties,PageMessageSource.globalPropertiesName)
+        pageUtilService.updateProperties(pageComponent.rootProperties, propertiesFileName(pageComponent.name))
+        pageUtilService.updateProperties(pageComponent.globalProperties, PageMessageSource.globalPropertiesName)
         pageUtilService.reloadBundles()
     }
 
+
     def static propertiesFileName(String pageName) {
-        pageName.tr('_ ','-.')
+        pageName.tr('_ ', '-.')
     }
 
 
-// public function used in rendering.
     /*
+    public function used in rendering.
     Inject the JavaScript controller to the HTML page
     Return the combined page
      */
     def static assembleFinalPage(page, code) {
         def ind = page.indexOf(PageComponent.CONTROLLER_PLACEHOLDER)
         if (ind != -1)
-            return page.substring(0, ind-1) + code + page.substring(ind + PageComponent.CONTROLLER_PLACEHOLDER.length())
+            return page.substring(0, ind - 1) + code + page.substring(ind + PageComponent.CONTROLLER_PLACEHOLDER.length())
     }
-
 
 /////////////////////////////////////////////////////////
 //    methods and closures for major steps 1. to 4.    //
@@ -179,19 +181,19 @@ class CompileService {
         def functions = []
         if (resource.binding == PageComponent.BINDING_REST && resource.resource) {
             def apiPath = CH.config.sspb.apiPath;
-            def url = "rootWebApp+'$apiPath/${resource.resource}'"
-            functions << """\$scope.${resource.name} = pbResource($url);"""
+            def url = "rootWebApp+'$apiPath/${ resource.resource }'"
+            functions << """\$scope.${ resource.name } = pbResource($url);"""
         }
 
         // generate all scope variables / arrays for each component that uses the model
         // generate variable declarations for each usage of this model
-        resource.meta.referencedBy.each {component->
+        resource.meta.referencedBy.each { component ->
             if (PageComponent.COMP_DATASET_TYPES.contains(component.type)
-                || (PageComponent.COMP_ITEM_TYPES.contains(component.type) && resource.binding != "page") ) {
+                    || (PageComponent.COMP_ITEM_TYPES.contains(component.type) && resource.binding != "page")) {
 
                 functions << component.getDataSetControlCode()
             } else if (resource.binding != "page") {
-                throw new Exception("*** Unhandled case in code generator for ${component.type} $component.name}")
+                throw new Exception("*** Unhandled case in code generator for ${ component.type } $component.name}")
             }
         }
         return functions.join("\n")
@@ -207,11 +209,11 @@ class CompileService {
         // first build flow structure in page
         if (pageComponent.type == PageComponent.COMP_TYPE_FLOW) {
             // add flow definition to global flow definition in page
-            pageComponent.root.flowDefs << ["name":pageComponent.name, "sequence":pageComponent.sequence.replaceAll("\\s","").tokenize(','),
-                    "activated": pageComponent.activated]
+            pageComponent.root.flowDefs << ["name"     : pageComponent.name, "sequence": pageComponent.sequence.replaceAll("\\s", "").tokenize(','),
+                                            "activated": pageComponent.activated]
             if (pageComponent.activated)
                 pageComponent.root.activeFlow = pageComponent.name
-            }
+        }
 
         if (pageComponent.type == PageComponent.COMP_TYPE_FORM) {
             // add an variable of _name_visible to the scope and set the initial value
@@ -220,7 +222,7 @@ class CompileService {
             pageComponent.root.formSet << pageComponent.name
 
             //def showInActiveFlow
-           code += """\n    \$scope.${pageComponent.name}_visible = $pageComponent.showInitially;"""
+            code += """\n    \$scope.${ pageComponent.name }_visible = $pageComponent.showInitially;"""
         }
 
         if (pageComponent.type == PageComponent.COMP_TYPE_BLOCK) {
@@ -228,26 +230,26 @@ class CompileService {
             // determine if a form needs to be shown initially if there is an active flow defined
             // build a form array
 
-           code += """\n    \$scope.${pageComponent.name}_visible = $pageComponent.showInitially;"""
+            code += """\n    \$scope.${ pageComponent.name }_visible = $pageComponent.showInitially;"""
         }
 
         // loop through all forms and flow controls first before adding code
-         pageComponent.components.each { child ->
-            code+= buildFlowControl(child, depth+1)
+        pageComponent.components.each { child ->
+            code += buildFlowControl(child, depth + 1)
         }
 
         // now all page flows and forms have been accounted for, generate the data and functions
         if (pageComponent.type == PageComponent.COMP_TYPE_PAGE && pageComponent.flowDefs) {
             // initialize global structures and data
             code += """
-                |    $flowArray = ${groovy.json.JsonOutput.toJson(pageComponent.flowDefs)};
-                |    $activeFlowVar = ${pageComponent.activeFlow?"\"$pageComponent.activeFlow\"":"null"};
-                |    $formSetVar = ${groovy.json.JsonOutput.toJson(pageComponent.formSet)};
+                |    $flowArray = ${ groovy.json.JsonOutput.toJson(pageComponent.flowDefs) };
+                |    $activeFlowVar = ${ pageComponent.activeFlow ? "\"$pageComponent.activeFlow\"" : "null" };
+                |    $formSetVar = ${ groovy.json.JsonOutput.toJson(pageComponent.formSet) };
                 |
                 |    // find the flow definition by flow name
                 |    \$scope._findFlow = function(flowName) {
                 |        var ind;
-                |        for (ind = 0; ind < ${flowArray}.length; ind++) {
+                |        for (ind = 0; ind < ${ flowArray }.length; ind++) {
                 |            if ($flowArray[ind].name == flowName)
                 |                return $flowArray[ind];
                 |        }
@@ -319,70 +321,68 @@ class CompileService {
 
     def static buildControlVar(pageComponent, depth = 0) {
         def code = ""
-         if ( [PageComponent.COMP_TYPE_BUTTON,PageComponent.COMP_TYPE_LIST, PageComponent.COMP_TYPE_GRID, PageComponent.COMP_TYPE_HTABLE, PageComponent.COMP_TYPE_LINK,
-                PageComponent.COMP_TYPE_XE_BUTTON].contains( pageComponent.type ) ) {
+        if ([PageComponent.COMP_TYPE_BUTTON, PageComponent.COMP_TYPE_LIST, PageComponent.COMP_TYPE_GRID, PageComponent.COMP_TYPE_HTABLE, PageComponent.COMP_TYPE_LINK,
+             PageComponent.COMP_TYPE_XE_BUTTON].contains(pageComponent.type)) {
             // generate a control function for each button/list/link/grid 'click' property
             if (pageComponent.onClick) {
                 // handle variable and constant in expression
                 def expr = pageComponent.compileCtrlFunction(pageComponent.onClick)
                 // if we are dealing with clicking on an item from a list or table then pass the current selection to the control function
                 def arg = "";
-                if (pageComponent.type==PageComponent.COMP_TYPE_LIST || pageComponent.type==PageComponent.COMP_TYPE_GRID ||pageComponent.type==PageComponent.COMP_TYPE_HTABLE)
+                if (pageComponent.type == PageComponent.COMP_TYPE_LIST || pageComponent.type == PageComponent.COMP_TYPE_GRID || pageComponent.type == PageComponent.COMP_TYPE_HTABLE)
                     arg = PageComponent.CURRENT_ITEM
 
-                code += """    \$scope.${pageComponent.name}_onClick = function($arg) { $expr}; \n"""
+                code += """    \$scope.${ pageComponent.name }_onClick = function($arg) { $expr}; \n"""
             }
-         } else if (pageComponent.submit) {
-             // parse submit action
-             // do not need $scope. prefix or {{ }}
-             pageComponent.submit = pageComponent.compileDOMExpression(pageComponent.submit)
-             //TODO should there be a ! in next line?
-             //I think yes(HvT) - because the onUpdate is put in the DataSet it doesn't need ng-change
-         } else if (pageComponent.onUpdate && !pageComponent.root.meta.dataSetIDsIncluded.contains(pageComponent.ID)) {
-             // handle input field update
-             // generate a ng-change function
-             def  expr = pageComponent.compileCtrlFunction(pageComponent.onUpdate)
-             def duplicateExpr =""
-             if ((pageComponent.type == PageComponent.COMP_TYPE_SELECT || pageComponent.type == PageComponent.COMP_TYPE_RADIO)&&
-                     (pageComponent.parent.type == PageComponent.COMP_TYPE_DETAIL
-                      || pageComponent.parent.type == PageComponent.COMP_TYPE_GRID
-                      || pageComponent.parent.type == PageComponent.COMP_TYPE_HTABLE) ) {
-                 // if a select is used in a grid or detail control its model is bound to parent model, we need to copy
-                 // the model to $<selectName> in order for it to be referenced by other controls
-                 println "****WARNING**** using duplicate - is this still needed?"
-                 duplicateExpr =
-                     "//duplicate\n"+
-                     "\$scope.$pageComponent.name = \$scope._${pageComponent.parent.model.toLowerCase()}s_${pageComponent.parent.name}[0].$pageComponent.model;"
+        } else if (pageComponent.submit) {
+            // parse submit action
+            // do not need $scope. prefix or {{ }}
+            pageComponent.submit = pageComponent.compileDOMExpression(pageComponent.submit)
+            //TODO should there be a ! in next line?
+            //I think yes(HvT) - because the onUpdate is put in the DataSet it doesn't need ng-change
+        } else if (pageComponent.onUpdate && !pageComponent.root.meta.dataSetIDsIncluded.contains(pageComponent.ID)) {
+            // handle input field update
+            // generate a ng-change function
+            def expr = pageComponent.compileCtrlFunction(pageComponent.onUpdate)
+            def duplicateExpr = ""
+            if ((pageComponent.type == PageComponent.COMP_TYPE_SELECT || pageComponent.type == PageComponent.COMP_TYPE_RADIO) &&
+                    (pageComponent.parent.type == PageComponent.COMP_TYPE_DETAIL
+                            || pageComponent.parent.type == PageComponent.COMP_TYPE_GRID
+                            || pageComponent.parent.type == PageComponent.COMP_TYPE_HTABLE)) {
+                // if a select is used in a grid or detail control its model is bound to parent model, we need to copy
+                // the model to $<selectName> in order for it to be referenced by other controls
+                println "****WARNING**** using duplicate - is this still needed?"
+                duplicateExpr =
+                        "//duplicate\n" +
+                                "\$scope.$pageComponent.name = \$scope._${ pageComponent.parent.model.toLowerCase() }s_${ pageComponent.parent.name }[0].$pageComponent.model;"
 
-             }
+            }
 
-             // add onUpdate for grid/detail items
-             if ( [pageComponent.COMP_TYPE_GRID,pageComponent.COMP_TYPE_HTABLE,pageComponent.COMP_TYPE_DETAIL].contains( pageComponent.parent.type ) )  {
-                 def parentID = pageComponent.parent.ID
-                 code += """
-                       |    \$scope.${parentID}_${pageComponent.name}_onUpdate = function(${PageComponent.CURRENT_ITEM}) {
+            // add onUpdate for grid/detail items
+            if ([pageComponent.COMP_TYPE_GRID, pageComponent.COMP_TYPE_HTABLE, pageComponent.COMP_TYPE_DETAIL].contains(pageComponent.parent.type)) {
+                def parentID = pageComponent.parent.ID
+                code += """
+                       |    \$scope.${ parentID }_${ pageComponent.name }_onUpdate = function(${ PageComponent.CURRENT_ITEM }) {
                        |         $expr
                        |    };
                        |""".stripMargin()
-             } else {
-                 //next code is used for non-DataSet items with an onUpdate, i.e. an input field to set a filter
-                 code += """
-                       |    \$scope.${pageComponent.name}_onUpdate = function() {
+            } else {
+                //next code is used for non-DataSet items with an onUpdate, i.e. an input field to set a filter
+                code += """
+                       |    \$scope.${ pageComponent.name }_onUpdate = function() {
                        |         $duplicateExpr
                        |         $expr
                        |    };
                        |""".stripMargin()
-             }
-         } else if (pageComponent.type == PageComponent.COMP_TYPE_XE_DROPDOWN){
-             code += """ \$scope.${pageComponent.name}_xeDropdownList = ${pageComponent.model};"""
-         }
+            }
+        } else if (pageComponent.type == PageComponent.COMP_TYPE_XE_DROPDOWN) {
+            code += """ \$scope.${ pageComponent.name }_xeDropdownList = ${ pageComponent.model };"""
+        }
         pageComponent.components.each { child ->
-            code+= buildControlVar(child, depth+1)
+            code += buildControlVar(child, depth + 1)
         }
         return code
     }
-
-
 
 
     /* TODO normalize model name etc for code generation
@@ -403,27 +403,27 @@ class CompileService {
                 pageComponent.root = pageComponent
                 break
             case PageComponent.COMP_TYPE_RESOURCE:
-                pageComponent.binding = pageComponent.resource? PageComponent.BINDING_REST : PageComponent.BINDING_PAGE
+                pageComponent.binding = pageComponent.resource ? PageComponent.BINDING_REST : PageComponent.BINDING_PAGE
         }
 
         // here is too early to compile query parameter expression, move to getQueryParameters
         // It looks like the binding setting has a flaw. When a model is given a value (say the name of another component)
         // the binding will be set to Rest, even if there is no parent component connected to a rest resource.
 
-        pageComponent.components?.eachWithIndex {it, index ->
+        pageComponent.components?.eachWithIndex { it, index ->
             it.parent = pageComponent
             it.root = pageComponent.root
-            it.modelOrigin=it.model
+            it.modelOrigin = it.model
             // if a child component does not have a name, assign a name of format parent_child{componentIndex}
             if (!it.name)
-                it.name = "${pageComponent.name}_child$index"
+                it.name = "${ pageComponent.name }_child$index"
 
             if (!it.model) {
                 // generate a model of name_value if it is missing
                 // for use in controller functions to be referenced by other components
                 // Fix: generates DataSet for Literal - also should use model for display types
-                if (inputTypes.contains(it.type) || PageComponent.COMP_DISPLAY_TYPES.contains(it.type) ) {
-                    it.model = "${it.name}"
+                if (inputTypes.contains(it.type) || PageComponent.COMP_DISPLAY_TYPES.contains(it.type)) {
+                    it.model = "${ it.name }"
                     it.binding = PageComponent.BINDING_PAGE
                 } else {
                     // for non-input types inherit parent model?
@@ -436,12 +436,13 @@ class CompileService {
         // set root class of the model
         pageComponent.modelRoot = pageComponent.model
         def model = pageComponent.model
-        if (model && model.indexOf(".")!=-1) {
-           pageComponent.modelRoot = model.substring(0, model.indexOf("."))
+        if (model && model.indexOf(".") != -1) {
+            pageComponent.modelRoot = model.substring(0, model.indexOf("."))
             pageComponent.modelComponent = model.substring(model.indexOf(".") + 1, model.length())
         }
         return pageComponent
     }
+
 
     /*  parse, normalize and validate page model
         check all required field for each component recursively
@@ -449,7 +450,6 @@ class CompileService {
         return validation and a normalized page component
         or error messages with component tree
     */
-
     // validate a component and all its children
     def static validateComponent(pageComponent, nameSet = []) {
         def valid = true
@@ -458,7 +458,7 @@ class CompileService {
         // check if name already exists on the page
         if (nameSet.contains(pageComponent.name)) {
             valid = false
-            def error = PageModelErrors.getError(error:PageModelErrors.MODEL_NAME_CONFLICT_ERR, path: getComponentNamePath(pageComponent), args: [getComponentNamePath(pageComponent),pageComponent.name,pageComponent.type] )
+            def error = PageModelErrors.getError(error: PageModelErrors.MODEL_NAME_CONFLICT_ERR, path: getComponentNamePath(pageComponent), args: [getComponentNamePath(pageComponent), pageComponent.name, pageComponent.type])
             errors << error
         } else
             nameSet << pageComponent.name
@@ -469,7 +469,7 @@ class CompileService {
         def componentList = []
         pageComponent.components.each {
             // 'it' is a map, convert to PageComponent
-            def child=new PageComponent(it)
+            def child = new PageComponent(it)
             componentList.push(child)
             def ret = validateComponent(child, nameSet)
             valid = valid && ret.valid
@@ -479,8 +479,9 @@ class CompileService {
         // attached the converted components list
         pageComponent.components = componentList
 
-        return [valid:valid, errors:errors, nameSet:nameSet]
+        return [valid: valid, errors: errors, nameSet: nameSet]
     }
+
 
     /* return a string representing the concatenated names of the given component starting from the top level page
          names are separated by "."
@@ -492,10 +493,11 @@ class CompileService {
             pageComponent = pageComponent.parent
         }
         nameList = nameList.reverse()
-        nameList[0] = "/${nameList[0]}"
+        nameList[0] = "/${ nameList[0] }"
 
         return nameList.join("/")
     }
+
 
     /* find all component that matches the criteria (map), starting from pageComponent
 
@@ -517,11 +519,12 @@ class CompileService {
         return ret
     }
 
+
     def static removeQuotes(txt) {
         if (txt.startsWith('\"'))
-			txt = txt.substring(1, txt.length()-1)
-		if (txt.endsWith('\"'))
-			txt = txt.substring(0, txt.length()-2)
+            txt = txt.substring(1, txt.length() - 1)
+        if (txt.endsWith('\"'))
+            txt = txt.substring(0, txt.length() - 2)
 
         return txt
     }
