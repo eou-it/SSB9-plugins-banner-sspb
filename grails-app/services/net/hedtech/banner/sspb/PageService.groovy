@@ -1,3 +1,7 @@
+/*******************************************************************************
+ Copyright 2015 Ellucian Company L.P. and its affiliates.
+ ******************************************************************************/
+
 package net.hedtech.banner.sspb
 
 class PageService {
@@ -118,7 +122,7 @@ class PageService {
                 }
             }
         } else
-            ret = [statusCode: 1, statusMessage:"Page source is empty. Page is not compiled."]  //TODO: I18N
+            ret = [statusCode: 1, statusMessage: message(code:"sspb.page.visualcomposer.no.source.message")]  //TODO: I18N
 
         ret << [overwrite:overwrite]
         groovyPagesTemplateEngine.clearPageCache() //Make sure that new page gets used
@@ -140,16 +144,16 @@ class PageService {
                 page.compiledView = compiledView
                 page.compiledController=compiledJSCode
                 compileService.updateProperties(validateResult.pageComponent)
-                result = [statusCode:0, statusMessage:"${overwrite?'sspb.page.visualcomposer.compiledupdated.ok.message':'sspb.page.visualcomposer.compiledsaved.ok.message'}"]
+                result = [statusCode:0, statusMessage:"${overwrite ? message(code:'sspb.page.visualcomposer.compiledupdated.ok.message'): message(code:'sspb.page.visualcomposer.compiledsaved.ok.message')}"]
             } catch (e)   {
-                result = [statusCode: 2, statusMessage: message(code: "sspb.page.visualcomposer.validation.error.message")]
+                result = [statusCode: 2, statusMessage: message(code:"sspb.page.visualcomposer.validation.error.message")]
             }
             result << [page: page] // pass the page in the result
         } else {
-            result = [statusCode: 2, statusMessage: message(code: "sspb.page.visualcomposer.validation.error.message")]
+            result = [statusCode: 2, statusMessage: message(code:"sspb.page.visualcomposer.validation.error.message")]
         }
         result << [pageValidationResult:[errors: validateResult.error.join('<br>'),
-                                         warn:  validateResult.warn ? message(code: "sspb.page.visualComposer.warnings", args[validateResult.warn.join('<br>')]): ""]]
+                                         warn:  validateResult.warn ? message(code:"sspb.page.visualComposer.warnings", args[validateResult.warn.join('<br>')]): ""]]
         return result
     }
 

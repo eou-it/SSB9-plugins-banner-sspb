@@ -1,3 +1,7 @@
+/*******************************************************************************
+ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ *******************************************************************************/
+
 'use strict';
 
 /* Directives */
@@ -255,7 +259,7 @@ pagebuilderModule.directive('pbUpload', function() {
         restrict:'E',
         //transclude: true,
         scope:{label:'@', status:'=', pbChange:'&'},
-        templateUrl: templatesLocation + '/pbUpload.html',
+        templateUrl: templatesLocation + '/pbUpload.gsp',
         controller: ['$scope', '$element', '$attrs', '$transclude',
             function($scope, $element, $attrs, $transclude) {
 

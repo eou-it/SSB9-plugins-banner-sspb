@@ -326,8 +326,6 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             tr['pb.template.combo.loadsource.label'     ] = "${message(code:'pb.template.combo.loadsource.label',encodeAs: 'JavaScript')}";
             tr['pb.template.combo.edit.label'           ] = "${message(code:'pb.template.combo.edit.label',encodeAs: 'JavaScript')}";
             tr['pb.template.combo.select.label'         ] = "${message(code:'pb.template.combo.select.label',encodeAs: 'JavaScript')}";
-            tr['sspb.page.visualcomposer.compiledsaved.ok.message'         ] = "${message(code:'sspb.page.visualcomposer.compiledsaved.ok.message',encodeAs: 'JavaScript')}";
-            tr['sspb.page.visualcomposer.compiledupdated.ok.message'         ] = "${message(code:'sspb.page.visualcomposer.compiledupdated.ok.message',encodeAs: 'JavaScript')}";
 
 
             var res=tr[key];
@@ -857,8 +855,8 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                     </div>
                     <div class="tabs-below">
                         <div class='tab-content' ng-show='!showTree'>
-                            <textArea name="modelView" ng-model="pageSourceView"
-                                        cols="60" rows="30" style="width:90%; height:auto;" required="true" ng-readonly="!sourceEditEnabled" > </textArea>
+                            <g:textArea name="modelView" ng-model="pageSourceView"
+                                        cols="60" rows="30" style="width:90%; height:auto;" required="true" ng-readonly="!sourceEditEnabled" />
                         </div>
 
                         <div class='tab-content' ng-show="showTree">
@@ -968,8 +966,8 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
     </div>
 
 
-    <textArea name="statusMessage" readonly="true" ng-model="pageStatus.message"
-              style="width:99.7%; height: 10%;"></textArea>
+    <textarea name="statusMessage" ng-model="pageStatus.message"
+              style="width:99.7%; height: 10%;"></textarea>
 
 </div>
 
