@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
- ******************************************************************************/
+ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ *******************************************************************************/
 
 package net.hedtech.banner.sspb
 
@@ -126,6 +126,8 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         def page = pageService.get(pageName)
         def result=0
         def jsonString
+        def overwrite = true
+
         if (file)
             jsonString = loadFileMode (file, mode, page)
         else if (stream && name )
@@ -135,8 +137,11 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             return 0
         }
         if (jsonString) {
-            if ( !page )
+            if ( !page ) {
                 page=pageService.getNew(pageName)
+                overwrite = false
+            }
+
             def json
             JSON.use("deep") {
                 json = JSON.parse(jsonString)
@@ -145,7 +150,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 page.properties[ 'modelView' /*, 'fileTimestamp'*/] = json
             else // file is a representation of the page modelView
                 page.modelView=jsonString
-            def compilationResult =  pageService.compilePage(page)
+            def compilationResult =  pageService.compilePage(page, overwrite)
             page=compilationResult.page
             page.fileTimestamp=json2date(json.fileTimestamp)
             if (file)

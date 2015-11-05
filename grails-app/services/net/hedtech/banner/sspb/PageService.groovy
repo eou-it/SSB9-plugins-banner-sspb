@@ -1,6 +1,7 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ Copyright 2015 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
+
 package net.hedtech.banner.sspb
 
 class PageService {
@@ -110,7 +111,7 @@ class PageService {
                 pageInstance.extendsPage = extendsPage ? Page.findByConstantName(extendsPage.constantName) : null
             }
             pageInstance.modelView=pageSource
-            ret = compilePage(pageInstance)
+            ret = compilePage(pageInstance, overwrite)
             if (pageInstance.extendsPage) {
                 pageInstance.modelView = pageInstance.diffModelViewText(pageSource)// save the diff if an extension
             }
@@ -121,14 +122,14 @@ class PageService {
                 }
             }
         } else
-            ret = [statusCode: 1, statusMessage:"Page source is empty. Page is not compiled."]  //TODO: I18N
+            ret = [statusCode: 1, statusMessage: message(code:"sspb.page.visualcomposer.no.source.message")]  //TODO: I18N
 
         ret << [overwrite:overwrite]
         groovyPagesTemplateEngine.clearPageCache() //Make sure that new page gets used
         return ret
     }
 
-    def compilePage(Page page) {
+    def compilePage(Page page, def overwrite) {
         log.trace "in compilePage: pageName=$page.constantName"
         def result
         def pageSource = page.modelView
@@ -143,17 +144,16 @@ class PageService {
                 page.compiledView = compiledView
                 page.compiledController=compiledJSCode
                 compileService.updateProperties(validateResult.pageComponent)
-                result = [statusCode:0, statusMessage:"Page has been compiled and ${overwrite?'updated':'saved'} successfully."]
-                //TODO: I18N - should not use logic to construct message using updated  or saved
+                result = [statusCode:0, statusMessage:"${overwrite ? message(code:'sspb.page.visualcomposer.compiledupdated.ok.message'): message(code:'sspb.page.visualcomposer.compiledsaved.ok.message')}"]
             } catch (e)   {
-                result = [statusCode: 2, statusMessage:e.getMessage()+"\n"]
+                result = [statusCode: 2, statusMessage: message(code:"sspb.page.visualcomposer.validation.error.message")]
             }
             result << [page: page] // pass the page in the result
         } else {
-            result = [statusCode: 2, statusMessage:"Page validation error. Page is not saved."] //TODO: I18N
+            result = [statusCode: 2, statusMessage: message(code:"sspb.page.visualcomposer.validation.error.message")]
         }
-        result << [pageValidationResult:[errors: validateResult.error.join('\n'),
-                                          warn: validateResult.warn?"\nWarnings:\n"+validateResult.warn.join('\n'):""] ]
+        result << [pageValidationResult:[errors: validateResult.error.join('<br>'),
+                                         warn:  validateResult.warn ? message(code:"sspb.page.visualComposer.warnings", args[validateResult.warn.join('<br>')]): ""]]
         return result
     }
 
@@ -163,7 +163,7 @@ class PageService {
         Page.withTransaction {
             def page = Page.find{constantName==params.id}
             if (page.extensions?.size() > 0) {
-                throw new RuntimeException( "Deletion of page not allowed where dependent pages exist.")
+                throw new RuntimeException( message(code:"sspb.page.visualComposer.deletion.failed.message"))
             }
             else {
                 page.delete(failOnError:true)

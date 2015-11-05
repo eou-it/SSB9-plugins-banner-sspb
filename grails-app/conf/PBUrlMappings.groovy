@@ -1,6 +1,13 @@
 class PBUrlMappings {
 
     static mappings = {
+
+        "/" {
+            controller = "customPage"
+            action = "page"
+            id = "pbadm.homepage"
+        }
+
         "/$controller/$action?/$id?"{
             constraints {
                 // apply constraints here
@@ -36,7 +43,6 @@ class PBUrlMappings {
             parseRequest = false
         }
 
-        "/"(view:"/index")
         "500"(view:'/error')
 
     }

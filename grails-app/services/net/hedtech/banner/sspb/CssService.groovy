@@ -1,3 +1,7 @@
+/*******************************************************************************
+ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ *******************************************************************************/
+
 package net.hedtech.banner.sspb
 
 import grails.validation.ValidationException
@@ -118,13 +122,13 @@ class CssService {
                 cssInstance.description = description
 
                 cssInstance.save()
-                ret = [statusCode:0, statusMessage:"Css has been validated and ${overwrite?'updated':'saved'} successfully."]
+                ret = [statusCode:0, statusMessage:"${overwrite?message(code:'sspb.CSS.cssManager.updated.message'):message(code:'sspb.CSS.cssManager.saved.message')}"]
             } else {
-                ret = [statusCode: 2, statusMessage:"CSS validation error. Stylesheet is not saved."]
+                ret = [statusCode: 2, statusMessage:message(code:"sspb.CSS.cssManager.stylesheet.validation.error.message")]
                 ret << [cssValidationResult:[errors: validateResult.error.join('\n')] ]
             }
         } else
-            ret = [statusCode: 1, statusMessage:"CSS source is empty. Stylesheet is not compiled."]
+            ret = [statusCode: 1, statusMessage: message(code:"sspb.CSS.cssManager.cssSource.empty.message")]
 
         ret << [overwrite:overwrite]
 

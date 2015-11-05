@@ -5,7 +5,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
 <head>
-    <title>Banner Page Builder Visual Composer</title>
+    <title><g:message code="sspb.page.visualbuilder.pagetitle" /></title>
 
     <meta name="layout" content="bannerSelfServicePBPage"/>
 
@@ -693,7 +693,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
               Page.save({pageName:$scope.pageCurName, source:$scope.pageSourceView, extendsPage:$scope.extendsPage},
                   function(response) {
                      if (response.statusCode == 0) {
-                         $scope.pageStatus.message = response.statusMessage;
+                         $scope.pageStatus.message = $scope.i18nGet(response.statusMessage);
                          if (response.pageValidationResult.warn) {
                              $scope.pageStatus.message += response.pageValidationResult.warn;
                              note.type = noteType.warning;
@@ -855,8 +855,8 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                     </div>
                     <div class="tabs-below">
                         <div class='tab-content' ng-show='!showTree'>
-                            <textArea name="modelView" ng-model="pageSourceView"
-                                        cols="60" rows="30" style="width:90%; height:auto;" required="true" ng-readonly="!sourceEditEnabled" > </textArea>
+                            <g:textArea name="modelView" ng-model="pageSourceView"
+                                        cols="60" rows="30" style="width:90%; height:auto;" required="true" ng-readonly="!sourceEditEnabled" />
                         </div>
 
                         <div class='tab-content' ng-show="showTree">
@@ -966,8 +966,8 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
     </div>
 
 
-    <textArea name="statusMessage" readonly="true" ng-model="pageStatus.message"
-              style="width:99.7%; height: 10%;"></textArea>
+    <textarea name="statusMessage" ng-model="pageStatus.message"
+              style="width:99.7%; height: 10%;"></textarea>
 
 </div>
 
