@@ -146,13 +146,13 @@ formControllerMap = [
 ]
 
 grails.plugin.springsecurity.useRequestMapDomainClass = false
-grails.plugin.springsecurity.providerNames = ['casBannerAuthenticationProvider', 'selfServiceBannerAuthenticationProvider', 'bannerAuthenticationProvider']
+//grails.plugin.springsecurity.providerNames = ['casBannerAuthenticationProvider', 'selfServiceBannerAuthenticationProvider', 'bannerAuthenticationProvider']
 //grails.plugin.springsecurity.rejectIfNoRule = true
 
-grails.plugin.springsecurity.filterChain.chainMap = [
-        '/api/**': 'authenticationProcessingFilter,basicAuthenticationFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,basicExceptionTranslationFilter,filterInvocationInterceptor',
-        '/**': 'securityContextPersistenceFilter,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,exceptionTranslationFilter,filterInvocationInterceptor'
-]
+//grails.plugin.springsecurity.filterChain.chainMap = [
+//        '/api/**': 'authenticationProcessingFilter,basicAuthenticationFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,basicExceptionTranslationFilter,filterInvocationInterceptor',
+//        '/**': 'securityContextPersistenceFilter,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,exceptionTranslationFilter,filterInvocationInterceptor'
+//]
 
 grails.plugin.springsecurity.securityConfigType = SecurityConfigType.InterceptUrlMap
 //TODO: evaluate if it makes sense to use grails.plugin.springsecurity.securityConfigType = "Requestmap"
