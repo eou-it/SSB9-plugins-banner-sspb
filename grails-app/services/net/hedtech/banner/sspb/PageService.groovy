@@ -122,7 +122,7 @@ class PageService {
                 }
             }
         } else
-            ret = [statusCode: 1, statusMessage: message(code:"sspb.page.visualcomposer.no.source.message")]  //TODO: I18N
+            ret = [statusCode: 1, statusMessage: message(code:"sspb.page.visualcomposer.no.source.message")]
 
         ret << [overwrite:overwrite]
         groovyPagesTemplateEngine.clearPageCache() //Make sure that new page gets used

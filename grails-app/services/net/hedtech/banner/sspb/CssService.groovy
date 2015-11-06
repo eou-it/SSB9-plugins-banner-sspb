@@ -122,13 +122,13 @@ class CssService {
                 cssInstance.description = description
 
                 cssInstance.save()
-                ret = [statusCode:0, statusMessage:"${overwrite?message(code:'sspb.CSS.cssManager.updated.message'):message(code:'sspb.CSS.cssManager.saved.message')}"]
+                ret = [statusCode:0, statusMessage:"${overwrite?message(code:'sspb.css.cssManager.updated.message'):message(code:'sspb.css.cssManager.saved.message')}"]
             } else {
-                ret = [statusCode: 2, statusMessage:message(code:"sspb.CSS.cssManager.stylesheet.validation.error.message")]
+                ret = [statusCode: 2, statusMessage:message(code:"sspb.css.cssManager.stylesheet.validation.error.message")]
                 ret << [cssValidationResult:[errors: validateResult.error.join('\n')] ]
             }
         } else
-            ret = [statusCode: 1, statusMessage: message(code:"sspb.CSS.cssManager.cssSource.empty.message")]
+            ret = [statusCode: 1, statusMessage: message(code:"sspb.css.cssManager.cssSource.empty.message")]
 
         ret << [overwrite:overwrite]
 
