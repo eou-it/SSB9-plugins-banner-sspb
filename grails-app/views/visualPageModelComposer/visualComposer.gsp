@@ -41,11 +41,13 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         $scope.alertNote = function(note) {
             note.type = note.type||noteType.success;
             note.flash = note.flash||true;
+            note.message = note.replace(/\n/g, "<br />");
             notifications.addNotification(new Notification(note));
         };
 
          $scope.alertError = function(msg, stay) {
              var note = {type: noteType.error, message: msg};
+             note.message = note.replace(/\n/g, "<br />");
              if (!stay){
                  note.flash = true;
              }
