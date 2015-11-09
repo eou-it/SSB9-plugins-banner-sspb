@@ -126,7 +126,6 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         def page = pageService.get(pageName)
         def result=0
         def jsonString
-        def overwrite = true
 
         if (file)
             jsonString = loadFileMode (file, mode, page)
@@ -139,7 +138,6 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         if (jsonString) {
             if ( !page ) {
                 page=pageService.getNew(pageName)
-                overwrite = false
             }
 
             def json
@@ -150,7 +148,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 page.properties[ 'modelView' /*, 'fileTimestamp'*/] = json
             else // file is a representation of the page modelView
                 page.modelView=jsonString
-            def compilationResult =  pageService.compilePage(page, overwrite)
+            def compilationResult =  pageService.compilePage(page)
             page=compilationResult.page
             page.fileTimestamp=json2date(json.fileTimestamp)
             if (file)

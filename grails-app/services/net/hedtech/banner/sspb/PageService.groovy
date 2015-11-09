@@ -90,13 +90,8 @@ class PageService {
 
     def compileAndSavePage( pageName, pageSource, extendsPage) {
         log.trace "in compileAndSavePage: pageName=$pageName"
-        def overwrite=false
         def pageInstance  = Page.findByConstantName(pageName)
         def ret
-        // check name duplicate
-        if (pageInstance) {
-            overwrite = true;
-        }
         if (pageSource)  {
 
             if (!(extendsPage instanceof Page)) {
@@ -111,7 +106,7 @@ class PageService {
                 pageInstance.extendsPage = extendsPage ? Page.findByConstantName(extendsPage.constantName) : null
             }
             pageInstance.modelView=pageSource
-            ret = compilePage(pageInstance, overwrite)
+            ret = compilePage(pageInstance)
             if (pageInstance.extendsPage) {
                 pageInstance.modelView = pageInstance.diffModelViewText(pageSource)// save the diff if an extension
             }
@@ -124,12 +119,11 @@ class PageService {
         } else
             ret = [statusCode: 1, statusMessage: message(code:"sspb.page.visualcomposer.no.source.message")]
 
-        ret << [overwrite:overwrite]
         groovyPagesTemplateEngine.clearPageCache() //Make sure that new page gets used
         return ret
     }
 
-    def compilePage(Page page, def overwrite) {
+    def compilePage(Page page) {
         log.trace "in compilePage: pageName=$page.constantName"
         def result
         def pageSource = page.modelView
@@ -144,7 +138,7 @@ class PageService {
                 page.compiledView = compiledView
                 page.compiledController=compiledJSCode
                 compileService.updateProperties(validateResult.pageComponent)
-                result = [statusCode:0, statusMessage:"${overwrite ? message(code:'sspb.page.visualcomposer.compiledupdated.ok.message'): message(code:'sspb.page.visualcomposer.compiledsaved.ok.message')}"]
+                result = [statusCode:0, statusMessage:"${message(code:'sspb.page.visualcomposer.compiledsaved.ok.message')}"]
             } catch (e)   {
                 result = [statusCode: 2, statusMessage: message(code:"sspb.page.visualcomposer.validation.error.message")]
             }
@@ -152,8 +146,8 @@ class PageService {
         } else {
             result = [statusCode: 2, statusMessage: message(code:"sspb.page.visualcomposer.validation.error.message")]
         }
-        result << [pageValidationResult:[errors: validateResult.error.join('<br>'),
-                                         warn:  validateResult.warn ? message(code:"sspb.page.visualComposer.warnings", args[validateResult.warn.join('<br>')]): ""]]
+        result << [pageValidationResult:[errors: validateResult.error.join('\n'),
+                                         warn:  validateResult.warn ? message(code:"sspb.page.visualComposer.warnings", args[validateResult.warn.join('\n')]): ""]]
         return result
     }
 

@@ -142,7 +142,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                     if (response.statusCode == 0)
                         $scope.cssStatus.message = $scope.i18nGet(response.statusMessage);
                     else {
-                        var msg="${message(code:'sspb.css.cssManager.validation.error.message')}";
+                        var msg="${message(code:'sspb.css.cssManager.validation.error.message', encodeAs: 'JavaScript')}";
                         if (response.cssValidationResult != undefined)
                             $scope.cssStatus.message = $scope.i18nGet(msg, [$scope.i18nGet(response.statusMessage), response.cssValidationResult.errors]);
                         else
