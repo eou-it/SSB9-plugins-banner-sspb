@@ -133,7 +133,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             $scope.submitCssSource = function() {
                 //check if page name is set
                 if ($scope.cssName== undefined || $scope.cssName == '') {
-                    alert("${message(code:'sspb.css.cssManager.cssName.prompt.message')}");
+                    alert("${message(code:'sspb.css.cssManager.cssName.prompt.message', encodeAs: 'JavaScript')}");
                     return;
                 }
 
