@@ -208,6 +208,9 @@ class PageComponent {
     PageComponent parent    // record parent component for special code generation in grid, etc.
     PageComponent root      // the root (page) component
 
+    Map mergeInfo  //readOnly property to provide merge information to user
+    List spareComponents   // used in merging - will contain unreferenced components
+
     // for compiler
     def resourceIDsIncluded = []   // record which resourceIDs are used in a page (only populate on root)
     def dataSetIDsIncluded  = []   // record which dataSets are used in a page (only populate on root)

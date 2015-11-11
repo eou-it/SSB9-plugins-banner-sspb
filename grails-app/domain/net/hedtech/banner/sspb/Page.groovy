@@ -33,8 +33,8 @@ class Page {
         compiledController nullable: true  , maxSize: 1000000, widget: 'textarea'
         extendsPage        nullable: true
         //dateCreated     nullable:true
-        lastUpdated     nullable:true
-        fileTimestamp   nullable:true
+        lastUpdated     nullable: true
+        fileTimestamp   nullable: true
     }
 
     static mapping = {
@@ -84,10 +84,9 @@ class Page {
             if (!modelView || modelView.equals("null") || modelView.equals("{}")) {
                 result = extendsPage.getMergedModelMap()
             } else {
-                def base = decomposeComponents(extendsPage.getMergedModelMap())
                 def diff = modelToMap(modelView)
                 if (diff.containsKey('deltas')) {
-                    result = applyDiffs(base, diff.deltas)
+                    result = applyDiffs(diff.deltas)
                     log.info "Merged page models"
                 } else {
                     result = modelToMap(modelView)
@@ -233,7 +232,7 @@ class Page {
         def decomposed = decomposeComponents(comp).components
         decomposed.each {
             it.value.each { key, val ->
-                if (key != 'components') {
+                if (key != 'components' && key != 'mergeInfo' ) {
                     props[it.key + ':' + key] = val
                 }
             }
@@ -241,9 +240,9 @@ class Page {
         props
     }
 
-    //Static method to apply the differences to a decomposed page
-    private static Map applyDiffs(Map decomposedBasePage, Map diffs) {
-        def model = decomposedBasePage
+    //Member method to apply the differences to a decomposed page
+    private Map applyDiffs(Map diffs) {
+        def model = decomposeComponents(extendsPage.getMergedModelMap())
         model.added = [:]
         model.conflicts = []
         diffs.each { name, diff ->
@@ -256,6 +255,12 @@ class Page {
                         if (val.ext) {
                             try {
                                 comp[prop] = mergeAttribute(prop, comp[prop], val)
+                                if (prop == 'meta') {
+                                    def parent=model.components[comp.meta.parent]
+                                    parent?.mergeInfo << [modifiedBy: constantName]
+                                } else {
+                                    comp.mergeInfo  << [modifiedBy: constantName]
+                                }
                             } catch (e) {
                                 model.conflicts << [type: "mergeAttribute", message: e.message, comp: comp, property: prop]
                             }
@@ -263,6 +268,7 @@ class Page {
                     } else {
                         if (prop == 'meta') {
                             def type = diff.meta.base.nextSibling.equals(comp.meta.nextSibling) ? "newParent" : "reOrder"
+                            comp.mergeInfo  << [modifiedBy: constantName]
                             model.conflicts << [type: type, diff: diff, comp: comp]
                             log.warn "Component $name: detected meta change in baseline ${ val.base } to ${ comp[prop] }. Change to be applied: ${ val.ext }"
                         }
@@ -279,11 +285,9 @@ class Page {
                             }
                             comp[prop] = val.ext
                         }
-                        if (prop == 'meta') {
-                            comp[prop].newComponent = true
-                        }
                     }
                     if (comp) { //add the component to the result
+                        comp.mergeInfo = [addedBy: constantName, noReference: true]
                         model.components[name] = comp
                         model.added[name] = comp
                         log.info "New component ${ comp.name } added "
@@ -308,6 +312,7 @@ class Page {
         }
         if (parent) {
             clone.meta.parent = parent.name
+            clone.mergeInfo=[noReference: true, idx: siblingIndex] // assume components are unreferenced until used in compose
         }
         if (comp.components) {
             clone.remove('components')
@@ -324,40 +329,97 @@ class Page {
         result
     }
 
+    //Remove temporary mergeInfo flags
+    private static def cleanComponent(component) {
+        if (component.mergeInfo)  {
+            if ( !(component.mergeInfo?.noReference) ) {
+                component.mergeInfo.remove('noReference')
+            }
+            component.mergeInfo.remove('idx')
+            if (component.mergeInfo.size()==0){
+                component.remove('mergeInfo')
+            }
+        }
+        component.remove('meta')
+        component
+    }
+
     //Static helper method to compose the page model from a decomposed model
-    private static Map composeComponents(Map decomposedModel, boolean cleanMeta = true) {
+    private static Map composeComponents(Map decomposedModel) {
         decomposedModel = resolveConflicts(decomposedModel)
         Map root = decomposedModel.components[decomposedModel.root]
         if (root.meta.firstChild) {
             def child = decomposedModel.components[root.meta.firstChild]
             root.components = getSiblings(decomposedModel, child, root)
         }
-        if (cleanMeta) {
-            root.remove('meta')
+        //Iterate over components to see if we have any components with noReference.
+        def unReferenced =[]
+        decomposedModel.components.each { name, component ->
+            if (component.mergeInfo?.noReference) {
+                unReferenced  << component
+            } else {
+                component=cleanComponent(component)
+            }
+        }
+        def finalUnreferenced = unReferenced
+        //Iterate over the unReferenced and add into parent components in whatever order we find them.
+        //The order may not be optimal so we leave the mergeInfo in place; to be used to flag the field for checking by user
+        //The base sibling index is present in mergeInfo.idx, so could asure that order is being followed, but it seem to preserve this order already as is.
+        //Also, if a parent is found where to add the component, the component is removed from finalUnreferenced
+        unReferenced .each { component ->
+            def parent = decomposedModel.components[component.meta.parent]
+            if (parent && parent.components) {
+                component = cleanComponent(component)
+                component.mergeInfo.validate=true
+                parent.components << component
+                finalUnreferenced=finalUnreferenced.minus(component)
+            }
+        }
+        //If any components remain in the finalUnreferenced List, they are added as 'spare component'
+        //They can be made visible in the VPC
+        if (finalUnreferenced.size()>0) {
+            root.spareComponents = finalUnreferenced
         }
         root
     }
 
     //Static helper method to resolve conflicts after baseline upgrades
+    //The method for resolving baseline reorder conflicts is not correct.
+    // Consider just doing the extensions without any attempt to resolve and add rely on adding the orphans in a next step
     private static def resolveConflicts(model) {
         model.conflicts.each { conflict ->
             if (conflict.type == "reOrder") {
-                def nextName = conflict.comp.meta.nextSibling
-                def extNextName = conflict.diff.meta.ext?.nextSibling
-                def extNextComp = model.added[extNextName]
-                if (extNextComp) {
-                    conflict.comp.meta.nextSibling = extNextName
-                    extNextComp.meta.nextSibling = nextName
+                def nextName = conflict.comp.meta.nextSibling         //the current next name for the component
+                def extNextName = conflict.diff.meta.ext?.nextSibling //the next name according to the extension
+                def extNextComp = model.added[extNextName]            //see if next is an added component
+                if (nextName == extNextName ) {
+                    log.warn "Skip changing next component for ${ conflict.comp.name } - names already match"
+                } else if (extNextComp ) {
+                    //Schematically we replace B -> N with B -> E -> N; so we move the exten
+                    conflict.comp.meta.nextSibling = extNextName //Accept the new nextSibling from the extension  for this conflict
+                    extNextComp.meta.nextSibling = nextName      //Set the nextSibling of the nextSibling to the existing next sibling of the conflict
                     log.warn "Resolved baseline reorder conflict by inserting new component $extNextName after component ${ conflict.comp.name }"
                 } else {
-                    log.warn "Unresolved conflict. No new component found matching the nextSibling of component ${ conflict.comp.name }"
+                    extNextComp = model.components[extNextName]
+                    if (extNextComp) {
+                        conflict.comp.meta.nextSibling = extNextName
+                        //change next sibling of the base.
+                        def base = model.components[conflict.diff.meta.base.nextSibling]
+                        if (base) {
+                            base.meta.nextSibling = extNextComp.meta.nextSibling
+                        }
+                        //change the extended next comp
+                        extNextComp.meta.nextSibling = nextName
+                        log.warn "Resolved baseline reorder conflict by placing existing component $extNextName after component ${ conflict.comp.name }"
+                    } else {
+                        log.warn "Unresolved conflict. No component found matching the nextSibling of component ${ conflict.comp.name }"
+                    }
                 }
             } else if (conflict.type == "removedBaseline") {
                 log.warn "Resolve removed baseline component conflict"
                 def resolvedStatusMessage = "Unresolved"
                 def removedNextName = conflict.diff.meta?.ext?.nextSibling
                 def addedNoReference = removedNextName ? model.added[removedNextName] : null
-
                 if (addedNoReference) {
                     def addedNext = model.components[addedNoReference.meta.nextSibling]
                     if (addedNext) {
@@ -387,7 +449,6 @@ class Page {
         def next = first
         log.info "Executing getSiblings for ${ parent.name }"
         for (; next != null;) {
-            //if (result.contains(next)) {
             if (next.meta.added) {
                 log.warn "Prevented adding existing child ${ next.name } of ${ parent.name }. Sequence is broken. \n    TODO: check all items with parent ${ parent.name } are included"
                 next = null //
@@ -397,6 +458,7 @@ class Page {
                 if (next.meta.firstChild) {
                     next.components = getSiblings(flatModel, flatModel.components[next.meta.firstChild], next)
                 }
+                next?.mergeInfo?.noReference=false
                 result << next
                 next = next.meta.nextSibling ? flatModel.components[next.meta.nextSibling] : null
                 if (next) {

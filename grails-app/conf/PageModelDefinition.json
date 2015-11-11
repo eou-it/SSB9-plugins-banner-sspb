@@ -6,8 +6,8 @@
         "componentTypeDefinition": [
             {
                 "componentType":["all"],
-                "requiredAttributes":["type"],
-                "optionalAttributes":["name", "documentation"],
+                "requiredAttributes":["type","name"],
+                "optionalAttributes":["documentation", "mergeInfo"],
                 "documentation":"attributes required or optional for all component types"
             },
             {
@@ -15,7 +15,7 @@
                 "requiredAttributes":[],
                 "optionalAttributes":["title", "scriptingLanguage", "label", "style", "importCSS"],
                 "requiredChildren":[],
-                "optionalChildren":["flow", "form", "block", "grid", "htable", "detail", "select", "xeDropdown", "radio", "list",  "data", "resource", "literal", "display", "xeTextBox", "text", "xeTextArea", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "xeCheckbox", "xeButton", "button"]
+                "optionalChildren":["spareComponents","flow", "form", "block", "grid", "htable", "detail", "select", "xeDropdown", "radio", "list",  "data", "resource", "literal", "display", "xeTextBox", "text", "xeTextArea", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "xeCheckbox", "xeButton", "button"]
             },
             {
                 "componentType":["block"],
@@ -213,7 +213,8 @@
             {"AttributeType":["staticData"], "renderProperty":{"inputType":"arrayOfMap"}},
             {"AttributeType":["defaultValue"], "renderProperty":{"inputType":"text"}},
             {"AttributeType":["name"], "renderProperty":{"inputType":"nameText"}},
-            {"AttributeType":["subType"], "renderProperty":{"inputType":"dropdown", "dropDownName": "subType", "defaultValue":"text"}}
+            {"AttributeType":["subType"], "renderProperty":{"inputType":"dropdown", "dropDownName": "subType", "defaultValue":"text"}},
+            {"AttributeType":["mergeInfo","spareComponents"],"renderProperty":{"inputType":"hidden"}}
         ],
         "dropdowns" : {
             "subType": ["text", "number", "email", "tel", "primary", "secondary"]

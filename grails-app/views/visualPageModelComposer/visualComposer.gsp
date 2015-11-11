@@ -876,7 +876,10 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                     -->
 
                     <div ng-repeat="attr in dataHolder.allAttrs">
-                        <label style="text-align:end; width: 30%">{{i18nGet('attribute.'+attr.name)}}<span ng-show="attr.required">*</span> <span ng-show="attributeIsTranslatable(attr.name)">⊙</span></label>
+                        <span ng-switch on="attrRenderProps[attr.name].inputType" >
+                            <input ng-switch-when="hidden" type="hidden"/>
+                            <label ng-switch-default style="text-align:end; width: 30%">{{i18nGet('attribute.'+attr.name)}}<span ng-show="attr.required">*</span> <span ng-show="attributeIsTranslatable(attr.name)">⊙</span></label>
+                        </span>
                         <span ng-switch on="attrRenderProps[attr.name].inputType" >
                             <pb-Map ng-switch-when="map" label="{{i18nGet('sspb.page.visualbuilder.edit.map.title' , [i18nGet('attribute.'+attr.name),dataHolder.selectedComponent.name])}}"
                                     map='dataHolder.selectedComponent[attr.name]' pb-parent="dataHolder.selectedComponent" pb-attrname="attr.name"
@@ -904,10 +907,13 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                                    pb-parent="dataHolder.selectedComponent" pb-attrname="attr.name"></pb-Arrayofmap>
                             <input ng-switch-when="boolean" style="text-align:start;" type="checkbox" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
+
                             <!-- Added for xe-text-box so we can handle subtypes -->
                             <select ng-switch-when="dropdown" ng-options="type as i18nGet('subType.'+type) for type in getDropdown(attr)"
                                     ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                     ng-model="dataHolder.selectedComponent[attr.name]" ng-change="handleAttrChange()"></select>
+                            <!-- create a dummy hidden field for hidden attributes -->
+                            <input ng-switch-when="hidden" name="{{attr.name}}" type="hidden" ng-model="dataHolder.selectedComponent[attr.name]"/>
                             <!-- TODO default type is set in the model defintion - not mapped here  -->
                             <input ng-switch-default style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>

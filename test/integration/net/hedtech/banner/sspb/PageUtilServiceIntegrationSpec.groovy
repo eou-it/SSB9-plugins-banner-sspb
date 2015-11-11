@@ -1,3 +1,7 @@
+/*******************************************************************************
+ * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ ******************************************************************************/
+
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
@@ -124,7 +128,7 @@ class PageUtilServiceIntegrationSpec extends IntegrationSpec {
 
     void "Integration test compileAll"() {
         when:
-        def errors = pageUtilService.compileAll()
+        def errors = pageUtilService.compileAll('PageModel%')
 
         then:
         errors.empty
