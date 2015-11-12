@@ -41,11 +41,13 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         $scope.alertNote = function(note) {
             note.type = note.type||noteType.success;
             note.flash = note.flash||true;
+            note.message = note.message.replace(/\n/g, "<br />");
             notifications.addNotification(new Notification(note));
         };
 
          $scope.alertError = function(msg, stay) {
              var note = {type: noteType.error, message: msg};
+             note.message = note.message.replace(/\n/g, "<br />");
              if (!stay){
                  note.flash = true;
              }
@@ -641,7 +643,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                      $scope.extendsPage = data.extendsPage;
                      $scope.statusHolder.isPageModified = false;
                  } catch(ex) {
-                     $scope.alertError( $scope.i18nGet("${message(code:'sspb.page.visualbuilder.parsing.error.message')}",[ex]));
+                     $scope.alertError( $scope.i18nGet("${message(code:'sspb.page.visualbuilder.parsing.error.message', encodeAs: 'JavaScript')}",[ex]));
                  }
              }, function(response) {
                  var note={type: noteType.error, message: "${message(code: 'sspb.page.visualcomposer.page.load.failed.message', encodeAs: 'JavaScript')}"};
@@ -701,7 +703,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                          $scope.statusHolder.isPageModified = false;
                      }
                      else {
-                         var msg = "${message(code:'sspb.page.validation.error.message')}";
+                         var msg = "${message(code:'sspb.page.validation.error.message', encodeAs: 'JavaScript')}";
                          var err = response.pageValidationResult && response.pageValidationResult.errors?response.pageValidationResult.errors:"";
                          note.type  = noteType.error;
                          $scope.pageStatus.message = $scope.i18nGet(msg, [response.statusMessage, err]);
@@ -727,7 +729,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
           $scope.previewPageSource = function() {
               //check if page name is set
               if ($scope.pageCurName== undefined || $scope.pageCurName == '') {
-                  $scope.alertError( "${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
+                  $scope.alertError( "${message(code:'sspb.page.visualbuilder.page.name.prompt.message', encodeAs: 'JavaScript')}");
                   return;
               }
               window.open(rootWebApp+'customPage/page/'+ $scope.pageCurName, '_blank');
@@ -738,13 +740,13 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
           $scope.deletePageSource = function () {
               //check if page name is set
               if ($scope.pageCurName== undefined || $scope.pageCurName == '') {
-                  $scope.alertError("${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
+                  $scope.alertError("${message(code:'sspb.page.visualbuilder.page.name.prompt.message', encodeAs: 'JavaScript')}");
                   return;
               }
 
               Page.remove({constantName:$scope.pageCurName }, function() {
                   // on success
-                  $scope.alertNote({message: "${message(code:'sspb.page.visualbuilder.deletion.success.message')}"});
+                  $scope.alertNote({message: "${message(code:'sspb.page.visualbuilder.deletion.success.message', encodeAs: 'JavaScript')}"});
 
                   // clear the page name field and page source
                   $scope.pageCurName = "";
@@ -758,7 +760,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                   // refresh the page list after a page is deleted
                   $scope.loadPageNames();
               }, function(response) {
-                  var note={type: noteType.error, message: "${message(code:'sspb.page.visualbuilder.deletion.error.message')}",flash:true};
+                  var note={type: noteType.error, message: "${message(code:'sspb.page.visualbuilder.deletion.error.message', encodeAs: 'JavaScript')}",flash:true};
                   if (response.data != undefined && response.data.errors != undefined) {
                       note.message = $scope.i18nGet(note.message, [response.data.errors[0].errorMessage]);
                   } else {
@@ -792,7 +794,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                 $scope.pageSource[0] = $scope.pageOneSource;
                 $scope.sourceEditEnabled = false;
             } catch(ex) {
-                $scope.alertError( $scope.i18nGet("${message(code:'sspb.page.visualbuilder.parsing.error.message')}",[ex]));
+                $scope.alertError( $scope.i18nGet("${message(code:'sspb.page.visualbuilder.parsing.error.message', encodeAs: 'JavaScript')}",[ex]));
             }
          };
 
