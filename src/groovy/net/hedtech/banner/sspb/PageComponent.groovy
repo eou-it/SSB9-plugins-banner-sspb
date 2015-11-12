@@ -1,11 +1,8 @@
+/*******************************************************************************
+ * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ ******************************************************************************/
 
-/**
- * Created with IntelliJ IDEA.
- * User: hvthor
- * Date: 14-2-13
- * Time: 14:01
- * To change this template use File | Settings | File Templates.
- */
+
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
@@ -208,7 +205,7 @@ class PageComponent {
     PageComponent parent    // record parent component for special code generation in grid, etc.
     PageComponent root      // the root (page) component
 
-    Map mergeInfo  //readOnly property to provide merge information to user
+    Map mergeInfo          //readOnly property to provide merge information to user
     List spareComponents   // used in merging - will contain unreferenced components
 
     // for compiler

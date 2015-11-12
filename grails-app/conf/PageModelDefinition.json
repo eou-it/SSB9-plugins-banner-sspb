@@ -13,9 +13,9 @@
             {
                 "componentType":["page"],
                 "requiredAttributes":[],
-                "optionalAttributes":["title", "scriptingLanguage", "label", "style", "importCSS"],
+                "optionalAttributes":["title", "scriptingLanguage", "label", "style", "importCSS", "spareComponents"],
                 "requiredChildren":[],
-                "optionalChildren":["spareComponents","flow", "form", "block", "grid", "htable", "detail", "select", "xeDropdown", "radio", "list",  "data", "resource", "literal", "display", "xeTextBox", "text", "xeTextArea", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "xeCheckbox", "xeButton", "button"]
+                "optionalChildren":["flow", "form", "block", "grid", "htable", "detail", "select", "xeDropdown", "radio", "list",  "data", "resource", "literal", "display", "xeTextBox", "text", "xeTextArea", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "xeCheckbox", "xeButton", "button"]
             },
             {
                 "componentType":["block"],

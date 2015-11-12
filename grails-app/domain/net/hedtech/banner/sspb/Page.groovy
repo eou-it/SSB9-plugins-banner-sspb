@@ -11,7 +11,9 @@ import difflib.*
 class Page {
 
     static hasMany = [pageRoles: PageRole, extensions: Page] //Optional child page(s) (sub classes)
+
     Page extendsPage     //Optional parent page (super class), see constraints
+
     String constantName
 
     String modelView
@@ -57,6 +59,9 @@ class Page {
         )
     }
 
+    //Keys map to avoid hardcoding the key strings multiple times
+    final static Map KEYS = [page: null, deltas: null, meta: null, components: null, mergeInfo: null, noReference: null,
+                             idx: null, ext: null].collectEntries{ k, v -> [k,k] }
     //Methods for merging models and getting deltas
 
     //Use a common static method to convert json model to map
@@ -85,7 +90,7 @@ class Page {
                 result = extendsPage.getMergedModelMap()
             } else {
                 def diff = modelToMap(modelView)
-                if (diff.containsKey('deltas')) {
+                if (diff.containsKey(KEYS.deltas)) {
                     result = applyDiffs(diff.deltas)
                     log.info "Merged page models"
                 } else {
@@ -146,7 +151,7 @@ class Page {
     //Static method for Map type attributes such as parameters and validation
     private static diffMapAttribute(name, Map diff) {
         def nameProp = name.split(':')
-        if (nameProp[1] != 'meta') {
+        if (nameProp[1] != KEYS.meta) {
             [diff.base, diff.ext]*.keySet().flatten().unique().each { k ->
                 def hasBase = diff.base.containsKey(k)
                 def hasExt = diff.ext.containsKey(k)
@@ -176,7 +181,7 @@ class Page {
     //Merge attributes from diff into base
     private static mergeAttribute(name, base, diff) {
         def result = base
-        if (name != 'meta' && base instanceof Map) {
+        if (name != KEYS.meta && base instanceof Map) {
             [diff.base, diff.ext]*.keySet().flatten().unique().each { k ->
                 def hasBase = diff.base.containsKey(k)
                 def hasExt = diff.ext.containsKey(k)
@@ -216,10 +221,6 @@ class Page {
         [deltas: result]
     }
 
-    //Static helper method to determine name for components without name
-    private static def componentName(component, parent, siblingIndex) {
-        return component ? component.name ? component.name : "${ parent?.name }_child_${ siblingIndex }" : null
-    }
 
     //Static helper method to convert a page model JSON string to a propertyMap (intermediate format used in diff determination)
     private static Map propertyMap(String mergedModelString) {
@@ -232,7 +233,7 @@ class Page {
         def decomposed = decomposeComponents(comp).components
         decomposed.each {
             it.value.each { key, val ->
-                if (key != 'components' && key != 'mergeInfo' ) {
+                if (key != KEYS.components && key != KEYS.mergeInfo ) {
                     props[it.key + ':' + key] = val
                 }
             }
@@ -250,12 +251,12 @@ class Page {
             def comp = model.components[name]
             if (comp) { // Component exists, change props to match the extension
                 diff.each { prop, val ->
-                    if (val.base.equals(comp[prop]) || prop != 'meta') {
+                    if (val.base.equals(comp[prop]) || prop != KEYS.meta) {
                         // accept change as is.
-                        if (val.ext) {
+                        if (val.containsKey(KEYS.ext)) {
                             try {
                                 comp[prop] = mergeAttribute(prop, comp[prop], val)
-                                if (prop == 'meta') {
+                                if (prop == KEYS.meta) {
                                     def parent=model.components[comp.meta.parent]
                                     parent?.mergeInfo << [modifiedBy: constantName]
                                 } else {
@@ -266,7 +267,7 @@ class Page {
                             }
                         }
                     } else {
-                        if (prop == 'meta') {
+                        if (prop == KEYS.meta) {
                             def type = diff.meta.base.nextSibling.equals(comp.meta.nextSibling) ? "newParent" : "reOrder"
                             comp.mergeInfo  << [modifiedBy: constantName]
                             model.conflicts << [type: type, diff: diff, comp: comp]
@@ -302,30 +303,30 @@ class Page {
 
     //Static helper method to decompose a page model to a flat map, adding sibling and parent meta information
     private static Map decomposeComponents(Map comp, int siblingIndex = 0, Map parent = null, Map next = null, Map result = [:]) {
-        if (comp.type == 'page') {
+        if (comp.type == KEYS.page) {
             result = [root: comp.name, components: [:]]
         }
         Map clone = comp.clone()
         clone.meta = [:]
         if (next) {
-            clone.meta.nextSibling = componentName(next, parent, siblingIndex + 1)
+            clone.meta.nextSibling = next.name
         }
         if (parent) {
             clone.meta.parent = parent.name
             clone.mergeInfo=[noReference: true, idx: siblingIndex] // assume components are unreferenced until used in compose
         }
         if (comp.components) {
-            clone.remove('components')
+            clone.remove(KEYS.components)
             def nSiblings = comp.components ? comp.components.size() - 1 : 0
             if (nSiblings >= 0) {
-                clone.meta.firstChild = componentName(comp.components[0], parent, 0)
+                clone.meta.firstChild = comp.components[0].name
                 comp.components?.eachWithIndex { entry, i ->
                     def nextSibling = i < nSiblings ? comp.components[i + 1] : null
                     result = decomposeComponents(entry, i, comp, nextSibling, result)
                 }
             }
         }
-        result.components[componentName(comp, parent, siblingIndex)] = clone
+        result.components[comp.name] = clone
         result
     }
 
@@ -333,14 +334,14 @@ class Page {
     private static def cleanComponent(component) {
         if (component.mergeInfo)  {
             if ( !(component.mergeInfo?.noReference) ) {
-                component.mergeInfo.remove('noReference')
+                component.mergeInfo.remove(KEYS.noReference)
             }
-            component.mergeInfo.remove('idx')
+            component.mergeInfo.remove(KEYS.idx)
             if (component.mergeInfo.size()==0){
-                component.remove('mergeInfo')
+                component.remove(KEYS.mergeInfo)
             }
         }
-        component.remove('meta')
+        component.remove(KEYS.meta)
         component
     }
 
@@ -350,7 +351,7 @@ class Page {
         Map root = decomposedModel.components[decomposedModel.root]
         if (root.meta.firstChild) {
             def child = decomposedModel.components[root.meta.firstChild]
-            root.components = getSiblings(decomposedModel, child, root)
+            root.components = getComponents(decomposedModel, root)
         }
         //Iterate over components to see if we have any components with noReference.
         def unReferenced =[]
@@ -365,7 +366,7 @@ class Page {
         //Iterate over the unReferenced and add into parent components in whatever order we find them.
         //The order may not be optimal so we leave the mergeInfo in place; to be used to flag the field for checking by user
         //The base sibling index is present in mergeInfo.idx, so could asure that order is being followed, but it seem to preserve this order already as is.
-        //Also, if a parent is found where to add the component, the component is removed from finalUnreferenced
+        //Also, if a parent is found for adding the component, the component is removed from finalUnreferenced
         unReferenced .each { component ->
             def parent = decomposedModel.components[component.meta.parent]
             if (parent && parent.components) {
@@ -384,8 +385,8 @@ class Page {
     }
 
     //Static helper method to resolve conflicts after baseline upgrades
-    //The method for resolving baseline reorder conflicts is not correct.
-    // Consider just doing the extensions without any attempt to resolve and add rely on adding the orphans in a next step
+    //The method for resolving baseline reorder conflicts is not optimal.
+    //Any siblings that are missed here will be added in a final step to add un-referenced components
     private static def resolveConflicts(model) {
         model.conflicts.each { conflict ->
             if (conflict.type == "reOrder") {
@@ -395,11 +396,13 @@ class Page {
                 if (nextName == extNextName ) {
                     log.warn "Skip changing next component for ${ conflict.comp.name } - names already match"
                 } else if (extNextComp ) {
-                    //Schematically we replace B -> N with B -> E -> N; so we move the exten
+                    //Replace B -> N with B -> E -> N; so we move the extension between B and N
+                    //This only handles some cases; can improve this.
                     conflict.comp.meta.nextSibling = extNextName //Accept the new nextSibling from the extension  for this conflict
                     extNextComp.meta.nextSibling = nextName      //Set the nextSibling of the nextSibling to the existing next sibling of the conflict
                     log.warn "Resolved baseline reorder conflict by inserting new component $extNextName after component ${ conflict.comp.name }"
                 } else {
+                    //The next component is not a new component, assume an existing component (extension is a baseline reorder)
                     extNextComp = model.components[extNextName]
                     if (extNextComp) {
                         conflict.comp.meta.nextSibling = extNextName
@@ -443,34 +446,29 @@ class Page {
         model
     }
 
-    //Get a list of siblings given the first sibling
-    private static List getSiblings(Map flatModel, Map first, parent, boolean cleanMeta = true) {
-        def result = parent.components ? parent.component : []  //.remove('meta')
-        def next = first
-        log.info "Executing getSiblings for ${ parent.name }"
-        for (; next != null;) {
-            if (next.meta.added) {
+    //Construct a list of components for a parent component
+    private static List getComponents(Map decomposedModel, parent) {
+        def components = []
+        def nextComponent = { component ->
+            component.meta?.nextSibling ? decomposedModel.components[component.meta?.nextSibling] : null
+        }
+        def next = decomposedModel.components[parent.meta.firstChild]
+        log.info "Executing getComponents for parent ${ parent.name }, first = ${ next.name }"
+        while (next != null) {
+            if (next.mergeInfo.noReference == false) {
                 log.warn "Prevented adding existing child ${ next.name } of ${ parent.name }. Sequence is broken. \n    TODO: check all items with parent ${ parent.name } are included"
-                next = null //
+                next = null
             } else {
                 log.trace "Added ${ next.name } to ${ parent.name }"
-                next.meta.added = true
-                if (next.meta.firstChild) {
-                    next.components = getSiblings(flatModel, flatModel.components[next.meta.firstChild], next)
+                if (next.meta?.firstChild) {
+                    next.components = getComponents(decomposedModel, next)
                 }
-                next?.mergeInfo?.noReference=false
-                result << next
-                next = next.meta.nextSibling ? flatModel.components[next.meta.nextSibling] : null
-                if (next) {
-                    log.trace "Next: ${ next.name }"
-                }
+                next?.mergeInfo?.noReference = false
+                components << next
+                next = nextComponent(next)
             }
         }
-        if (cleanMeta) {
-            result.each {
-                it.remove('meta')
-            }
-        }
-        result
+        components.each { it.remove(KEYS.meta) }
+        components
     }
 }
