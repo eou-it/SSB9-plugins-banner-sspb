@@ -42,7 +42,7 @@ class PageServiceIntegrationSpec extends IntegrationSpec {
         Map extendedPageMap = [pageName: "ext.1",
                                source: '''{
                                      "type": "page",
-                                     "name": "StudentExtended",
+                                     "name": "StudentBase",
                                      "title": "Student Extended",
                                      "scriptingLanguage": "JavaScript",
                                      "components": null
