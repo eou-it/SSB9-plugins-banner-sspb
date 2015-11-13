@@ -115,7 +115,7 @@ class PageService {
 
                     def slurper = new groovy.json.JsonSlurper()
                     def VPCModel = slurper.parseText(pageSource)
-                    def MergedModelMap = pageInstance.getMergedModelMap(/*true*/) //get model without mergeInfo
+                    def MergedModelMap = pageInstance.getMergedModelMap(true) //get model without mergeInfo
                     if ( !VPCModel.equals(MergedModelMap) ) {
                         ret.pageValidationResult.errors = PageModelErrors.getError(error: PageModelErrors.MODEL_INVALID_DELTA_ERR).message
                         ret.statusCode = 8

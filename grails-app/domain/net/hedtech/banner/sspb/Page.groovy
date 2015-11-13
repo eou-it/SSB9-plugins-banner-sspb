@@ -280,8 +280,8 @@ class Page {
                 //a new component must at least have a type attribute
                 if (diff.type) {
                     diff.each { prop, val ->
-                        //if (val.containsKey(KEYS.ext)) {
-                        if (val.ext) {
+                        if (val.containsKey(KEYS.ext)) {
+                        //if (val.ext) {
                             if (!comp) {
                                 comp = [:] //we have an extension property so create the component
                             }
