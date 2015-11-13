@@ -107,13 +107,26 @@ class PageService {
             }
             pageInstance.modelView=pageSource
             ret = compilePage(pageInstance)
-            if (pageInstance.extendsPage) {
-                pageInstance.modelView = pageInstance.diffModelViewText(pageSource)// save the diff if an extension
-            }
+
             if (ret.statusCode == 0) {
-                if (!ret.page.save()) {
-                    ret.page.errors.allErrors.each { ret.statusMessage += it +"\n" }
-                    ret.statusCode = 3
+
+                if (pageInstance.extendsPage) {
+                    pageInstance.modelView = pageInstance.diffModelViewText(pageSource)// save the diff if an extension
+
+                    def slurper = new groovy.json.JsonSlurper()
+                    def VPCModel = slurper.parseText(pageSource)
+                    def MergedModelMap = pageInstance.getMergedModelMap()
+                    if ( !VPCModel.equals(MergedModelMap) ) {
+                        ret.pageValidationResult.errors = PageModelErrors.getError(error: PageModelErrors.MODEL_INVALID_DELTA_ERR).message
+                        ret.statusCode = 8
+                        ret.statusMessage = ""
+                    }
+                }
+                if (ret.statusCode == 0) {
+                    if (!ret.page.save()) {
+                        ret.page.errors.allErrors.each { ret.statusMessage += it +"\n" }
+                        ret.statusCode = 3
+                    }
                 }
             }
         } else
