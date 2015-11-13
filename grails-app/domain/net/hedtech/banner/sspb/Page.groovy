@@ -82,7 +82,7 @@ class Page {
     }
 
     //Member method to get the merged modelView as a Map
-    Map getMergedModelMap() {
+    Map getMergedModelMap(noInfo = false) {
         def result
         if (extendsPage) {
             //Should never return null
@@ -91,7 +91,7 @@ class Page {
             } else {
                 def diff = modelToMap(modelView)
                 if (diff.containsKey(KEYS.deltas)) {
-                    result = applyDiffs(diff.deltas)
+                    result = applyDiffs(diff.deltas, noInfo)
                     log.info "Merged page models"
                 } else {
                     result = modelToMap(modelView)
@@ -242,7 +242,7 @@ class Page {
     }
 
     //Member method to apply the differences to a decomposed page
-    private Map applyDiffs(Map diffs) {
+    private Map applyDiffs(Map diffs, noInfo = false) {
         def model = decomposeComponents(extendsPage.getMergedModelMap())
         model.added = [:]
         model.conflicts = []
@@ -280,6 +280,7 @@ class Page {
                 //a new component must at least have a type attribute
                 if (diff.type) {
                     diff.each { prop, val ->
+                        //if (val.containsKey(KEYS.ext)) {
                         if (val.ext) {
                             if (!comp) {
                                 comp = [:] //we have an extension property so create the component
@@ -298,7 +299,7 @@ class Page {
                 }
             }
         }
-        composeComponents(model)
+        composeComponents(model, noInfo)
     }
 
     //Static helper method to decompose a page model to a flat map, adding sibling and parent meta information
@@ -331,13 +332,15 @@ class Page {
     }
 
     //Remove temporary mergeInfo flags
-    private static def cleanComponent(component) {
-        if (component.mergeInfo)  {
-            if ( !(component.mergeInfo?.noReference) ) {
+    private static def cleanComponent(component, noInfo = false) {
+        if (noInfo) {
+            component.remove(KEYS.mergeInfo)
+        } else if (component.mergeInfo)  {
+            if (!(component.mergeInfo?.noReference)) {
                 component.mergeInfo.remove(KEYS.noReference)
             }
             component.mergeInfo.remove(KEYS.idx)
-            if (component.mergeInfo.size()==0){
+            if (component.mergeInfo.size() == 0) {
                 component.remove(KEYS.mergeInfo)
             }
         }
@@ -346,7 +349,7 @@ class Page {
     }
 
     //Static helper method to compose the page model from a decomposed model
-    private static Map composeComponents(Map decomposedModel) {
+    private static Map composeComponents(Map decomposedModel, noInfo=false) {
         decomposedModel = resolveConflicts(decomposedModel)
         Map root = decomposedModel.components[decomposedModel.root]
         if (root.meta.firstChild) {
@@ -359,7 +362,7 @@ class Page {
             if (component.mergeInfo?.noReference) {
                 unReferenced  << component
             } else {
-                component=cleanComponent(component)
+                component=cleanComponent(component, noInfo)
             }
         }
         def finalUnreferenced = unReferenced
@@ -367,11 +370,11 @@ class Page {
         //The order may not be optimal so we leave the mergeInfo in place; to be used to flag the field for checking by user
         //The base sibling index is present in mergeInfo.idx, so could asure that order is being followed, but it seem to preserve this order already as is.
         //Also, if a parent is found for adding the component, the component is removed from finalUnreferenced
-        unReferenced .each { component ->
-            def parent = decomposedModel.components[component.meta.parent]
+        unReferenced.each { component ->
+            def parent = decomposedModel.components[component?.meta?.parent]
             if (parent && parent.components) {
-                component = cleanComponent(component)
                 component.mergeInfo.validate=true
+                component = cleanComponent(component, noInfo)
                 parent.components << component
                 finalUnreferenced=finalUnreferenced.minus(component)
             }

@@ -20,7 +20,7 @@ class PageServiceIntegrationSpec extends IntegrationSpec {
         Map basePageMap = [pageName: "stu.base",
                            source: '''{
                                      "type": "page",
-                                     "name": "StudentBase",
+                                     "name": "student",
                                      "title": "Student Base",
                                      "scriptingLanguage": "JavaScript",
                                      "components": null
@@ -42,10 +42,19 @@ class PageServiceIntegrationSpec extends IntegrationSpec {
         Map extendedPageMap = [pageName: "ext.1",
                                source: '''{
                                      "type": "page",
-                                     "name": "StudentExtended",
+                                     "name": "student",
                                      "title": "Student Extended",
                                      "scriptingLanguage": "JavaScript",
-                                     "components": null
+                                     "components":
+                                      [{
+                                         "name": "t1",
+                                         "type": "text",
+                                         "parameters": {},
+                                         "validation": {},
+                                         "readonly": false,
+                                         "required": false,
+                                         "loadInitially": true
+                                      }]
                                      }''',
                                extendsPage: new JSONObject(new JSON(basePage).toString())]
         result = pageService.create(extendedPageMap,[:])
