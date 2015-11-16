@@ -54,7 +54,17 @@ class PageServiceIntegrationSpec extends IntegrationSpec {
                                          "readonly": false,
                                          "required": false,
                                          "loadInitially": true
-                                      }]
+                                      },
+                                      {
+                                         "name": "t2",
+                                         "type": "text",
+                                         "parameters": {},
+                                         "validation": {},
+                                         "readonly": false,
+                                         "required": false,
+                                         "loadInitially": true
+                                      }
+                                      ]
                                      }''',
                                extendsPage: new JSONObject(new JSON(basePage).toString())]
         result = pageService.create(extendedPageMap,[:])

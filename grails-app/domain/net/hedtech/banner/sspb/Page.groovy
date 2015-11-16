@@ -59,30 +59,42 @@ class Page {
         )
     }
 
+    //Compare the models
+    boolean equals(Map modelMap){
+        def thisMap = getMergedModelMap()
+        //thisMap.equals(modelMap)
+        modelMap.equals(thisMap)
+    }
+
+    boolean equals(String model) {
+        def modelMap = modelToMap(model)
+        equals(modelMap)
+    }
+
     //Keys map to avoid hardcoding the key strings multiple times
     final static Map KEYS = [page: null, deltas: null, meta: null, components: null, mergeInfo: null, noReference: null,
                              idx: null, ext: null].collectEntries{ k, v -> [k,k] }
     //Methods for merging models and getting deltas
 
     //Use a common static method to convert json model to map
-    private static Map modelToMap(String model) {
+    static Map modelToMap(String model) {
         //JSON.parse(model)
-        def slurper = new groovy.json.JsonSlurper()
+        def final slurper = new groovy.json.JsonSlurper()
         return slurper.parseText(model)
     }
 
     //Use a common static method to convert map to json string
-    private static String modelToString(Map model) {
+    static String modelToString(Map model) {
         return (model as JSON).toString(true)
     }
 
     //Member method to get the merged modelView as a JSON text
-    String getMergedModelText() {
-        extendsPage ? modelToString(getMergedModelMap()) : modelView
+    String getMergedModelText(withInfo = false) {
+        extendsPage ? modelToString(getMergedModelMap(withInfo)) : modelView
     }
 
     //Member method to get the merged modelView as a Map
-    Map getMergedModelMap(noInfo = false) {
+    Map getMergedModelMap(withInfo = false) {
         def result
         if (extendsPage) {
             //Should never return null
@@ -91,7 +103,7 @@ class Page {
             } else {
                 def diff = modelToMap(modelView)
                 if (diff.containsKey(KEYS.deltas)) {
-                    result = applyDiffs(diff.deltas, noInfo)
+                    result = applyDiffs(diff.deltas, withInfo)
                     log.info "Merged page models"
                 } else {
                     result = modelToMap(modelView)
@@ -242,7 +254,7 @@ class Page {
     }
 
     //Member method to apply the differences to a decomposed page
-    private Map applyDiffs(Map diffs, noInfo = false) {
+    private Map applyDiffs(Map diffs, withInfo = false) {
         def model = decomposeComponents(extendsPage.getMergedModelMap())
         model.added = [:]
         model.conflicts = []
@@ -265,6 +277,8 @@ class Page {
                             } catch (e) {
                                 model.conflicts << [type: "mergeAttribute", message: e.message, comp: comp, property: prop]
                             }
+                        } else {
+                            comp.remove(prop)
                         }
                     } else {
                         if (prop == KEYS.meta) {
@@ -299,7 +313,7 @@ class Page {
                 }
             }
         }
-        composeComponents(model, noInfo)
+        composeComponents(model, withInfo)
     }
 
     //Static helper method to decompose a page model to a flat map, adding sibling and parent meta information
@@ -331,9 +345,9 @@ class Page {
         result
     }
 
-    //Remove temporary mergeInfo flags
-    private static def cleanComponent(component, noInfo = false) {
-        if (noInfo) {
+    //Remove merge and meta information depending on withInfo
+    private static def cleanComponent(component, withInfo = false) {
+        if (!withInfo) {
             component.remove(KEYS.mergeInfo)
         } else if (component.mergeInfo)  {
             if (!(component.mergeInfo?.noReference)) {
@@ -349,7 +363,7 @@ class Page {
     }
 
     //Static helper method to compose the page model from a decomposed model
-    private static Map composeComponents(Map decomposedModel, noInfo=false) {
+    private static Map composeComponents(Map decomposedModel, withInfo=false) {
         decomposedModel = resolveConflicts(decomposedModel)
         Map root = decomposedModel.components[decomposedModel.root]
         if (root.meta.firstChild) {
@@ -362,7 +376,7 @@ class Page {
             if (component.mergeInfo?.noReference) {
                 unReferenced  << component
             } else {
-                component=cleanComponent(component, noInfo)
+                component=cleanComponent(component, withInfo)
             }
         }
         def finalUnreferenced = unReferenced
@@ -374,7 +388,7 @@ class Page {
             def parent = decomposedModel.components[component?.meta?.parent]
             if (parent && parent.components) {
                 component.mergeInfo.validate=true
-                component = cleanComponent(component, noInfo)
+                component = cleanComponent(component, withInfo)
                 parent.components << component
                 finalUnreferenced=finalUnreferenced.minus(component)
             }

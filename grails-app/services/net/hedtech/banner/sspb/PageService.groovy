@@ -63,7 +63,7 @@ class PageService {
         log.trace "PageService.show invoked"
         def page= Page.find{constantName==params.id}
         log.trace "PageService.show returning ${page}"
-        String model = page.getMergedModelText()
+        String model = page.getMergedModelText(true) //Get the merged model with merge Info
         def showResult = [constantName : page.constantName, id: page.id, extendsPage: page.extendsPage, version: page.version, modelView: model]
         showResult
     }
@@ -113,10 +113,8 @@ class PageService {
                 if (pageInstance.extendsPage) {
                     pageInstance.modelView = pageInstance.diffModelViewText(pageSource)// save the diff if an extension
 
-                    def slurper = new groovy.json.JsonSlurper()
-                    def VPCModel = slurper.parseText(pageSource)
-                    def MergedModelMap = pageInstance.getMergedModelMap(true) //get model without mergeInfo
-                    if ( !VPCModel.equals(MergedModelMap) ) {
+                    //Validate the extended model matches the submitted model
+                    if ( !pageInstance.equals(pageSource) ) {
                         ret.pageValidationResult.errors = PageModelErrors.getError(error: PageModelErrors.MODEL_INVALID_DELTA_ERR).message
                         ret.statusCode = 8
                         ret.statusMessage = ""

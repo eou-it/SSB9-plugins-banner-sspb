@@ -207,6 +207,18 @@ class PageSpec extends Specification {
         mergedModelMap.components.size() == extensionMergedModelMap2.components.size()
     }
 
+    @Unroll
+    def "Test Equals"() {
+        given:
+        expect:
+        // validate equals method
+        base.equals(baseModelView)
+        base.equals(Page.modelToMap(base.modelView))
+        extension1.equals(extensionMergedModelView1)
+        extension2.equals(extensionMergedModelView2)
+        !extension1.equals(extensionMergedModelView2)
+        !base.equals(extensionMergedModelView1)
+    }
 
     def setup() {
         setupModels()
