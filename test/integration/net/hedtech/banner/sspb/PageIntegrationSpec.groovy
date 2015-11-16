@@ -234,7 +234,7 @@ class PageIntegrationSpec extends IntegrationSpec {
         Page ext2 = new Page(constantName: "stu.ext.1.2", modelView:
                 '''{
                     "type": "page",
-                    "name": "StudentExtz12",
+                    "name": "StudentBase",
                     "title": "Student Base Extended 2",
                     "scriptingLanguage": "JavaScript",
                     "components": null
