@@ -654,14 +654,6 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                  }
                  $scope.alertNote( note);
              });
-
-             // ensure drop down list does not include currently selected page
-             $scope.extendPageList=[]
-             _.each($scope.pageList, function(page){
-                 if (page.constantName != $scope.pageName) {
-                     $scope.extendPageList.push($.extend({}, page))
-                 }
-             })
          };
 
          /* page operations */
@@ -836,7 +828,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
     <label><g:message code="sspb.page.visualbuilder.extends.label" /></label>
     <select name="extendsPage"
-            ng-options="page as page.constantName for page in extendPageList track by page.id"
+            ng-options="page as page.constantName disable when page.constantName==pageName for page in pageList track by page.id"
                 ng-model="extendsPage">
     </select>
 
