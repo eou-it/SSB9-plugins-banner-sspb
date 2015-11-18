@@ -33,6 +33,10 @@ label.pb-text.pb-form.pb-item.pb-label,
 label.pb-email.pb-form.pb-item.pb-label,
 label.pb-number.pb-form.pb-item.pb-label,
 label.pb-datetime.pb-form.pb-item.pb-label,
+label.pb-tel.pb-form.pb-item.pb-label,
+label.pb-radio.pb-form.pb-item.pb-label,
+label.pb-link.pb-form.pb-item.pb-label,
+label.pb-display.pb-form.pb-item.pb-label,
 label.pb-select.pb-form.pb-item.pb-label
 {
     display: inline-block;
