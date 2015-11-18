@@ -889,7 +889,7 @@ class PageComponent {
                 break;
             case COMP_TYPE_BOOLEAN:
                 result ="""<input ${getIdAttr(idTxtParam)} $autoStyleStr  type="checkbox" name="${name?name:model}"
-                           ${booleanTrueValue?"ng-true-value=\"'$booleanTrueValue'\"":""}  ${booleanFalseValue?"ng-false-value=\"'$booleanFalseValue\"'":""}
+                           ${booleanTrueValue?"ng-true-value=\"'$booleanTrueValue'\"":""}  ${booleanFalseValue?"ng-false-value=\"'$booleanFalseValue'\"'":""}
                            $ngChange $ngClick
                            """
                 // add change event handler for items in DataSet so the item can be marked dirty for save
