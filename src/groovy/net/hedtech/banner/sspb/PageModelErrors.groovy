@@ -19,7 +19,7 @@ class PageModelErrors {
     def static MODEL_REQUIRED_CHILD_MISSING_ERR = [code:   5, message: "sspb.modelValidation.modelMissingChildErr.message"]
     def static MODEL_CHILD_INVALID_ERR          = [code:   6, message: "sspb.modelValidation.modelInvalidChildErr.message"]
     def static MODEL_NAME_CONFLICT_ERR          = [code:   7, message: "sspb.modelValidation.modelInvalidNameErr.message"]
-    def static MODEL_INVALID_DELTA_ERR          = [code:   8, message: "sspb.modelValidation.modelInvalidDelta"]
+    def static MODEL_INVALID_DELTA_ERR          = [code:   8, message: "sspb.modelValidation.modelInvalidDeltaErr.message"]
     def static MODEL_UNKNOWN_ERR                = [code: 100, message: "sspb.modelValidation.modelUnknownErr.message"]
 
     def static getError( errorDetails )  {
