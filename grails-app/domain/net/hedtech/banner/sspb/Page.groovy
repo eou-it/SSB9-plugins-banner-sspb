@@ -61,14 +61,22 @@ class Page {
 
     //Compare the models
     boolean equals(Map modelMap){
-        def thisMap = getMergedModelMap()
-        //thisMap.equals(modelMap)
-        modelMap.equals(thisMap)
+        def thisMap = getMergedModelMap(false)        // get the model of this as a map without mergeInfo
+        thisMap.equals(cleanModelMap(modelMap)) // clean the input map to compare to and check for equality
     }
 
     boolean equals(String model) {
         def modelMap = modelToMap(model)
         equals(modelMap)
+    }
+
+    //Remove any mergeInfo recursively
+    static Map cleanModelMap(Map modelMap) {
+        def result = cleanComponent(modelMap,false)
+        result.components.each{ component ->
+            component = cleanModelMap(component)
+        }
+        result
     }
 
     //Keys map to avoid hardcoding the key strings multiple times
@@ -89,12 +97,12 @@ class Page {
     }
 
     //Member method to get the merged modelView as a JSON text
-    String getMergedModelText(withInfo = false) {
+    String getMergedModelText(withInfo = true) {
         extendsPage ? modelToString(getMergedModelMap(withInfo)) : modelView
     }
 
     //Member method to get the merged modelView as a Map
-    Map getMergedModelMap(withInfo = false) {
+    Map getMergedModelMap(withInfo = true) {
         def result
         if (extendsPage) {
             //Should never return null
@@ -254,7 +262,7 @@ class Page {
     }
 
     //Member method to apply the differences to a decomposed page
-    private Map applyDiffs(Map diffs, withInfo = false) {
+    private Map applyDiffs(Map diffs, withInfo) {
         def model = decomposeComponents(extendsPage.getMergedModelMap())
         model.added = [:]
         model.conflicts = []
@@ -282,7 +290,7 @@ class Page {
                         }
                     } else {
                         if (prop == KEYS.meta) {
-                            def type = diff.meta.base.nextSibling.equals(comp.meta.nextSibling) ? "newParent" : "reOrder"
+                            def type = diff.meta.base?.nextSibling?.equals(comp.meta.nextSibling) ? "newParent" : "reOrder"
                             comp.mergeInfo  << [modifiedBy: constantName]
                             model.conflicts << [type: type, diff: diff, comp: comp]
                             log.warn "Component $name: detected meta change in baseline ${ val.base } to ${ comp[prop] }. Change to be applied: ${ val.ext }"
@@ -346,10 +354,8 @@ class Page {
     }
 
     //Remove merge and meta information depending on withInfo
-    private static def cleanComponent(component, withInfo = false) {
-        if (!withInfo) {
-            component.remove(KEYS.mergeInfo)
-        } else if (component.mergeInfo)  {
+    private static def cleanComponent(component, withInfo) {
+       if (withInfo && component.mergeInfo)  {
             if (!(component.mergeInfo?.noReference)) {
                 component.mergeInfo.remove(KEYS.noReference)
             }
@@ -357,13 +363,15 @@ class Page {
             if (component.mergeInfo.size() == 0) {
                 component.remove(KEYS.mergeInfo)
             }
+        } else {
+            component.remove(KEYS.mergeInfo)
         }
         component.remove(KEYS.meta)
         component
     }
 
     //Static helper method to compose the page model from a decomposed model
-    private static Map composeComponents(Map decomposedModel, withInfo=false) {
+    private static Map composeComponents(Map decomposedModel, withInfo) {
         decomposedModel = resolveConflicts(decomposedModel)
         Map root = decomposedModel.components[decomposedModel.root]
         if (root.meta.firstChild) {
