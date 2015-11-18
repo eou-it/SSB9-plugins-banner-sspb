@@ -603,6 +603,13 @@ class PageComponent {
         // generate table column headers
         def thead=""
         def items=""
+        // Set label as header
+        def heading = ""
+        def MAX_HEADING = 6
+        if (label) {
+            def headingLevel = (depth < MAX_HEADING-1)? depth+1: MAX_HEADING
+            heading = """<h$headingLevel class="pb-htable-label" ${getIdAttr("-label")}>${tran("label")}</h$headingLevel>"""
+        }
         idTxtParam="-{{\$index}}"
         // add a delete checkbox column if allowDelete is true
         if (allowDelete) {
@@ -650,6 +657,7 @@ class PageComponent {
         result +=  recordControlPanel()
         //put in div with styleStr
         result = """|<div $styleStr ${getIdAttr()} class="pb-$type-container">
+                    |$heading
                     |$result
                     |</div>
                  """.stripMargin()
