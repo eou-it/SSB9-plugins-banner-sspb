@@ -19,7 +19,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
     <r:require modules="pageBuilderDev"/>
 
     <script type="text/javascript">
-     var myCustomServices = ['ngResource', 'ui.bootstrap', 'pagebuilder.directives'];
+     var myCustomServices = ['ngResource', 'ui.bootstrap', 'pagebuilder.directives', 'ngMessages'];
 
     // remove additional properties added by Angular resource when pretty print page source
     function JSONFilter(key, value) {
@@ -824,7 +824,12 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
 
     <label><g:message code="sspb.page.visualbuilder.name.label" /></label>
-    <input type="text" name="constantName" ng-model="pageCurName" required ng-maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/">
+    <input type="text" name="constantNameEdit" ng-model="pageCurName" required maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/">
+
+    <div ng-messages="pagemodelform.constantNameEdit.$error" role="alert" class="fieldValidationMessage">
+        <div ng-message="pattern" ><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" /></div>
+        <div ng-message="required" > <g:message code="sspb.page.visualbuilder.name.required.message" /></div>
+    </div>
 
     <label><g:message code="sspb.page.visualbuilder.extends.label" /></label>
     <select name="extendsPage"
@@ -896,18 +901,19 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                             <select ng-switch-when="select" ng-options="type as i18nGet('type.'+type) for type in dataHolder.selectedCompatibleTypes"
                                 ng-model="dataHolder.selectedComponent[attr.name]" ng-change="handleAttrChange()"></select>
                             <%--HvT re-introduced ng-change in previous line because changing type may cause issues. Seems to help. Not sure why it was removed?--%>
-                            <input ng-switch-when="text" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
-                                   ng-model="dataHolder.selectedComponent[attr.name]"/>
-                            <input ng-switch-when="nameText" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
-                                   ng-model="dataHolder.selectedComponent[attr.name]" ng-pattern="/^[a-zA-Z]\w*$/"/>
-                            <input ng-switch-when="number" style="text-align:start;" type="number" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
-                                   ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
-                            <input ng-switch-when="url" style="text-align:start;" type="url" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                            <input ng-switch-when="text" name="{{'prop_'+attr.name}}" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                                   ng-model="dataHolder.selectedComponent[attr.name]" ng-required="attr.required"/>
+                            <%-- validation name text --%>
+                            <input ng-switch-when="nameText" name="{{'prop_'+attr.name}}" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                                   ng-model="dataHolder.selectedComponent[attr.name]" ng-pattern="/^[a-zA-Z]\w*$/" ng-required="attr.required" />
+                            <input ng-switch-when="number" name="{{'prop_'+attr.name}}"style="text-align:start;" type="number" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                                   ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]" ng-required="attr.required"/>
+                            <input ng-switch-when="url" name="{{'prop_'+attr.name}}" style="text-align:start;" type="url" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
                             <pb-Arrayofmap ng-switch-when="arrayOfMap" label="{{i18nGet('sspb.page.visualbuilder.edit.map.title' , [i18nGet('attribute.'+attr.name),dataHolder.selectedComponent.name])}}"
                                    array='dataHolder.selectedComponent[attr.name]'
                                    pb-parent="dataHolder.selectedComponent" pb-attrname="attr.name"></pb-Arrayofmap>
-                            <input ng-switch-when="boolean" style="text-align:start;" type="checkbox" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                            <input ng-switch-when="boolean" name="{{'prop_'+attr.name}}" style="text-align:start;" type="checkbox" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
 
                             <!-- Added for xe-text-box so we can handle subtypes -->
@@ -919,8 +925,16 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                             <!-- TODO default type is set in the model defintion - not mapped here  -->
                             <input ng-switch-default style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
-
                         </span>
+                        <!-- Attribute Validation Errors -->
+                        <span ng-switch on="attr.name" >
+                            <div ng-switch-when="name" ng-messages="pagemodelform.prop_name.$error" role="alert">
+                                <div ng-message="pattern" class="attributeValidationMessage"><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" /></div>
+                            </div>
+                        </span>
+                        <div ng-messages="pagemodelform['prop_'+attr.name].$error" role="alert">
+                            <div ng-message="required" class="attributeValidationMessage"><g:message code="sspb.page.visualbuilder.property.required.message" /></div>
+                        </div>
                     </div>
                 </div>
              </td>

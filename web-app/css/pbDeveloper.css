@@ -34,6 +34,19 @@ ul {
     margin:10%;
 }
 
+.attributeValidationMessage {
+    margin-left: 30%;
+    padding-left: 10px;
+    color: maroon;
+}
+
+.fieldValidationMessage {
+    max-width: 20%;
+    display: inline-block;
+    padding: 5px;
+    color: maroon;
+}
+
 .componentEntry {
     display: inline-block;
     width: 200px;
