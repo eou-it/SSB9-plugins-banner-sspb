@@ -939,7 +939,7 @@ class PageComponent {
         // determine heading level
         def heading = ""
         def MAX_HEADING = 6
-        if (label && t in [COMP_TYPE_BLOCK,COMP_TYPE_FORM]) {
+        if (label && t in [COMP_TYPE_BLOCK,COMP_TYPE_FORM,COMP_TYPE_GRID]) {
             def headingLevel = (depth < MAX_HEADING-1)? depth+1: MAX_HEADING
             heading = """<h$headingLevel class="pb-${t}-label" ${getIdAttr("-label")}>${tran("label")}</h$headingLevel>"""
         }
@@ -954,7 +954,7 @@ class PageComponent {
                 def borderpx=2
                 //headerRowHeight doesn't work in {{ expression }} - assume same as rowHeight hence pageSize+1
                 //style="...{{expression }}..."  does not evaluate properly in IE8 - fixed using ng-style
-                return """\n<div ${getIdAttr(idTxtParam)} class="gridStyle" ng-grid="${name}Grid" $styleStr ng-style="{height: (${borderpx*2}+${pageSize+1}*rowHeight+footerRowHeight) + 'px' }"></div>\n"""
+                return """\n$heading\n<div ${getIdAttr(idTxtParam)} class="gridStyle" ng-grid="${name}Grid" $styleStr ng-style="{height: (${borderpx*2}+${pageSize+1}*rowHeight+footerRowHeight) + 'px' }"></div>\n"""
             case COMP_TYPE_DETAIL:
                 return detailCompile(depth+1)
             case COMP_TYPE_LIST:
