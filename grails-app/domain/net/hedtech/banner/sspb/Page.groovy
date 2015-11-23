@@ -432,9 +432,9 @@ class Page {
                     if (extNextComp) {
                         conflict.comp.meta.nextSibling = extNextName
                         //change next sibling of the base.
-                        def base = model.components[conflict.diff.meta.base.nextSibling]
+                        def base = model.components[conflict.diff.meta?.base?.nextSibling]
                         if (base) {
-                            base.meta.nextSibling = extNextComp.meta.nextSibling
+                            base.meta.nextSibling = extNextComp.meta?.nextSibling
                         }
                         //change the extended next comp
                         extNextComp.meta.nextSibling = nextName
@@ -449,10 +449,10 @@ class Page {
                 def removedNextName = conflict.diff.meta?.ext?.nextSibling
                 def addedNoReference = removedNextName ? model.added[removedNextName] : null
                 if (addedNoReference) {
-                    def addedNext = model.components[addedNoReference.meta.nextSibling]
+                    def addedNext = model.components[addedNoReference.meta?.nextSibling]
                     if (addedNext) {
                         def addedNextReference = model.components.find {
-                            it.value.meta?.nextSibling == addedNext.name
+                            it.value.meta?.nextSibling = addedNext.name
                         }
                         if (addedNextReference) {
                             addedNextReference.value.meta.nextSibling = addedNoReference.name
