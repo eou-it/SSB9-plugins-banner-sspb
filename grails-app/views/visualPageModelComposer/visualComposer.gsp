@@ -54,6 +54,24 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
              notifications.addNotification(new Notification(note));
          };
 
+         $scope.confirmDelete = function(msg,deleteAction) {
+             var note = {type: noteType.warning, message: msg};
+             note.message = note.message.replace(/\n/g, "<br />");
+             note.flash = false;
+             var n = new Notification( note );
+
+             n.addPromptAction( "${message(code:'sspb.page.visualbuilder.page.delete.cancel.message', encodeAs: 'Javascript')}", function() {
+                 notifications.remove( n );
+             });
+
+             n.addPromptAction( "${message(code:'sspb.page.visualbuilder.page.delete.continue.message', encodeAs: 'Javascript')}", function() {
+                 notifications.remove( n );
+                 deleteAction();
+             });
+
+             notifications.addNotification( n );
+         };
+
         $scope.component_entry_style = ["componentEntry", "componentEntry_selected"];
 
         $scope.pageName = "";
@@ -736,6 +754,34 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
           };
 
+         $scope.deletePage = function () {
+             Page.remove({constantName:$scope.pageCurName }, function() {
+                 // on success
+                 $scope.alertNote({message: "${message(code:'sspb.page.visualbuilder.deletion.success.message', encodeAs: 'JavaScript')}"});
+
+                 // clear the page name field and page source
+                 $scope.pageCurName = "";
+                 $scope.pageName = "";
+                 $scope.extendsPage = {};
+                 $scope.resetSelected();
+                 $scope.statusHolder.noDirtyCheck = true;
+                 $scope.pageSource[0] = {};
+                 $scope.pageOneSource= undefined;
+                 $scope.statusHolder.isPageModified = false;
+                 // refresh the page list after a page is deleted
+                 $scope.loadPageNames();
+             }, function(response) {
+                 var note={type: noteType.error, message: "${message(code:'sspb.page.visualbuilder.deletion.error.message', encodeAs: 'JavaScript')}",flash:true};
+                 if (response.data != undefined && response.data.errors != undefined) {
+                     note.message = $scope.i18nGet(note.message, [response.data.errors[0].errorMessage]);
+                 } else {
+                     note.message = $scope.i18nGet(note.message, ['']);
+                 }
+                 $scope.alertNote(note);
+             });
+
+         }
+
 
           $scope.deletePageSource = function () {
               //check if page name is set
@@ -744,30 +790,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                   return;
               }
 
-              Page.remove({constantName:$scope.pageCurName }, function() {
-                  // on success
-                  $scope.alertNote({message: "${message(code:'sspb.page.visualbuilder.deletion.success.message', encodeAs: 'JavaScript')}"});
-
-                  // clear the page name field and page source
-                  $scope.pageCurName = "";
-                  $scope.pageName = "";
-                  $scope.extendsPage = {};
-                  $scope.resetSelected();
-                  $scope.statusHolder.noDirtyCheck = true;
-                  $scope.pageSource[0] = {};
-                  $scope.pageOneSource= undefined;
-                  $scope.statusHolder.isPageModified = false;
-                  // refresh the page list after a page is deleted
-                  $scope.loadPageNames();
-              }, function(response) {
-                  var note={type: noteType.error, message: "${message(code:'sspb.page.visualbuilder.deletion.error.message', encodeAs: 'JavaScript')}",flash:true};
-                  if (response.data != undefined && response.data.errors != undefined) {
-                      note.message = $scope.i18nGet(note.message, [response.data.errors[0].errorMessage]);
-                  } else {
-                      note.message = $scope.i18nGet(note.message, ['']);
-                  }
-                  $scope.alertNote(note);
-              });
+              $scope.confirmDelete("${message(code:'sspb.page.visualbuilder.page.delete.check.message', encodeAs: 'Javascript')}",$scope.deletePage);
 
           };
 
