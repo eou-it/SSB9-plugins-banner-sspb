@@ -144,43 +144,52 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             JSON.use("deep") {
                 json = JSON.parse(jsonString)
             }
-            if (json.has('modelView')) // file contains a marshaled page
-                page.properties[ 'modelView' /*, 'fileTimestamp'*/] = json
-            else // file is a representation of the page modelView
-                page.modelView=jsonString
-            def compilationResult =  pageService.compilePage(page)
-            page=compilationResult.page
-            page.fileTimestamp=json2date(json.fileTimestamp)
-            if (file)
-                page.fileTimestamp=new Date(file.lastModified())
-            if (json.has('extendsPage') && json.extendsPage) {//pointer to parent page
-                Page extendsPage =  pageService.get(json.extendsPage.constantName)
-                if (!extendsPage) {  // page does not yet exist but may be imported after. Create dummy page for now
-                    extendsPage = pageService.getNew(json.extendsPage.constantName)
-                    extendsPage.modelView="{}"  // define it with empty contents
-                    extendsPage = saveObject(extendsPage)
-                }
-                if (extendsPage) {
-                    page.extendsPage = extendsPage
-                }
-                else {
-                    log.error "Error, referenced page does not exist and cannot be created: " + json.extendsPage.constantName
-                    return 0
+            def doLoad = true
+            // when loading from resources (stream), check the file time stamp in the Json
+            if ( stream && mode==loadIfNew ) {
+                def existingMaxTime = safeMaxTime(page?.fileTimestamp?.getTime(), page?.lastUpdated?.getTime())
+                def newTime = json2date(json.fileTimestamp).getTime()
+                if ( newTime && existingMaxTime && (existingMaxTime >= newTime) ) {
+                    doLoad = false
                 }
             }
-            associateRoles(page,json.pageRoles)
-            page = saveObject(page)
-            if (file) {
-                if ( compilationResult.statusCode>0) {
-                    log.info compilationResult
-                    def errorFile = new File(file.getCanonicalPath()+".err")
-                    errorFile.text = compilationResult
+            if (doLoad) {
+                if (json.has('modelView')) // file contains a marshaled page
+                    page.properties['modelView' /*, 'fileTimestamp'*/] = json
+                else // file is a representation of the page modelView
+                    page.modelView = jsonString
+                def compilationResult = pageService.compilePage(page)
+                page = compilationResult.page
+                page.fileTimestamp = json2date(json.fileTimestamp)
+                if (file)
+                    page.fileTimestamp = new Date(file.lastModified())
+                if (json.has('extendsPage') && json.extendsPage) {//pointer to parent page
+                    Page extendsPage = pageService.get(json.extendsPage.constantName)
+                    if (!extendsPage) {  // page does not yet exist but may be imported after. Create dummy page for now
+                        extendsPage = pageService.getNew(json.extendsPage.constantName)
+                        extendsPage.modelView = "{}"  // define it with empty contents
+                        extendsPage = saveObject(extendsPage)
+                    }
+                    if (extendsPage) {
+                        page.extendsPage = extendsPage
+                    } else {
+                        log.error "Error, referenced page does not exist and cannot be created: " + json.extendsPage.constantName
+                        return 0
+                    }
                 }
-                else {
-                    file.renameTo(file.getCanonicalPath()+'.'+nowAsIsoInFileName()+".imp"  )
+                associateRoles(page, json.pageRoles)
+                page = saveObject(page)
+                if (file) {
+                    if (compilationResult.statusCode > 0) {
+                        log.info compilationResult
+                        def errorFile = new File(file.getCanonicalPath() + ".err")
+                        errorFile.text = compilationResult
+                    } else {
+                        file.renameTo(file.getCanonicalPath() + '.' + nowAsIsoInFileName() + ".imp")
+                    }
                 }
+                result++
             }
-            result++
         }
         result
     }
