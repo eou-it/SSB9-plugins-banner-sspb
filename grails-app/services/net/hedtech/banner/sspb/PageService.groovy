@@ -168,7 +168,7 @@ class PageService {
         Page.withTransaction {
             def page = Page.find{constantName==params.id}
             if (page.extensions?.size() > 0) {
-                throw new RuntimeException( message(code:"sspb.page.visualComposer.deletion.failed.message"))
+                throw new RuntimeException( message(code:"sspb.page.visualComposer.deletion.failed.message",args: [page.extensions.constantName.join(", ")]))
             }
             else {
                 page.delete(failOnError:true)
