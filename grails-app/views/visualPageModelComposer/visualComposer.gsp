@@ -234,6 +234,8 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             tr['attribute.onClick'          ]="${message(code:'sspb.model.attribute.onClick')}";
             tr['attribute.onLoad'           ]="${message(code:'sspb.model.attribute.onLoad')}";
             tr['attribute.onError'          ]="${message(code:'sspb.model.attribute.onError')}";
+            tr['attribute.onSave'           ]="${message(code:'sspb.model.attribute.onSave')}";
+            tr['attribute.onSaveSuccess'    ]="${message(code:'sspb.model.attribute.onSaveSuccess')}";
             tr['attribute.labelKey'         ]="${message(code:'sspb.model.attribute.labelKey')}";
             tr['attribute.valueKey'         ]="${message(code:'sspb.model.attribute.valueKey')}";
             tr['attribute.sourceModel'      ]="${message(code:'sspb.model.attribute.sourceModel')}";

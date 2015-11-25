@@ -328,16 +328,18 @@ class CompileService {
                 // handle variable and constant in expression
                 def expr = pageComponent.compileCtrlFunction(pageComponent.onClick)
                 // if we are dealing with clicking on an item from a list or table then pass the current selection to the control function
-                def arg = "";
-                if (pageComponent.type == PageComponent.COMP_TYPE_LIST || pageComponent.type == PageComponent.COMP_TYPE_GRID || pageComponent.type == PageComponent.COMP_TYPE_HTABLE)
-                    arg = PageComponent.CURRENT_ITEM
+                def args = "";
+                if (pageComponent.type == PageComponent.COMP_TYPE_LIST || pageComponent.type == PageComponent.COMP_TYPE_GRID || pageComponent.type == PageComponent.COMP_TYPE_HTABLE) {
+                    args = "${PageComponent.CURRENT_ITEM}, field"
+                }
 
-                code += """    \$scope.${ pageComponent.name }_onClick = function($arg) { $expr}; \n"""
+                code += """    \$scope.${ pageComponent.name }_onClick = function($args) {\n    $expr\n    };\n"""
             }
         } else if (pageComponent.submit) {
-            // parse submit action
-            // do not need $scope. prefix or {{ }}
-            pageComponent.submit = pageComponent.compileDOMExpression(pageComponent.submit)
+            // handle variable and constant in expression
+            def expr = pageComponent.compileCtrlFunction(pageComponent.submit)
+            code += """    \$scope.${ pageComponent.name }_onSubmit = function(event) { $expr\n    };\n"""
+
             //TODO should there be a ! in next line?
             //I think yes(HvT) - because the onUpdate is put in the DataSet it doesn't need ng-change
         } else if (pageComponent.onUpdate && !pageComponent.root.meta.dataSetIDsIncluded.contains(pageComponent.ID)) {
@@ -376,7 +378,7 @@ class CompileService {
                        |""".stripMargin()
             }
         } else if (pageComponent.type == PageComponent.COMP_TYPE_XE_DROPDOWN) {
-            code += """ \$scope.${ pageComponent.name }_xeDropdownList = ${ pageComponent.model };"""
+            code += """ \$scope.${ pageComponent.name }_xeDropdownList = ${ pageComponent.model };\n"""
         }
         pageComponent.components.each { child ->
             code += buildControlVar(child, depth + 1)
@@ -414,9 +416,9 @@ class CompileService {
             it.parent = pageComponent
             it.root = pageComponent.root
             it.modelOrigin = it.model
-            // if a child component does not have a name, assign a name of format parent_child{componentIndex}
-            if (!it.name)
-                it.name = "${ pageComponent.name }_child$index"
+            if (!it.name) {
+                throw new Exception("*** ERROR *** This should never occur, component name is required.")
+            }
 
             if (!it.model) {
                 // generate a model of name_value if it is missing

@@ -237,6 +237,14 @@ class VirtualDomainSqlService {
         finally {
             sql?.close()
         }
+        data = data.findAll { it ->
+            !it.key.startsWith('parm_')
+        }
+        if (parameters.id) {
+            data.id = parameters.id
+        } else {
+            data.id = urlPathEncode(data.id)
+        }
         return data //should return updated object from db
     }
 
@@ -322,7 +330,13 @@ class VirtualDomainSqlService {
                 it.value=""
             }
         }
-        d << p  //append parameters (should we add some prefix to parameter names to distinguish from data?)
+        p.each { k,v ->
+            if (k.startsWith('user_') || k.equals('id')) {
+                d['parm_'+k] = v
+            } else if (k.equals('pluralizedResourceName')) {
+                d['parm_resource'] = v
+            }
+        }
         d.id = urlPathDecode(d.id)
         return d
     }

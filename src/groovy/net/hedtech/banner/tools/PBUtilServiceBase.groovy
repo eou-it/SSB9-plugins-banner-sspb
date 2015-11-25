@@ -64,14 +64,14 @@ class PBUtilServiceBase {
         def result= null
         switch ( mode )  {
             case loadIfNew:
-                //cannot obtain file timestamp for a stream
-                //do same as for next mode for now
-                //use timestamp from json instead?
-                //fall through
+                //use timeStamp from json object
+                doLoad = true
+                break
             case loadSkipExisting:
                 doLoad = (object == null)
                 break
             case loadOverwriteExisting:
+                doLoad = true
                 break
             case loadRenameExisting:
                 if (object) {

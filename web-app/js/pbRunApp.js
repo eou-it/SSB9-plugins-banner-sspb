@@ -36,8 +36,9 @@ function nvl(val,def){
 
 /* App Module */
 
-if (undefined == myCustomServices)
+if (undefined == myCustomServices) {
     var myCustomServices = [];
+}
 
 
 var appModule = appModule||angular.module('BannerOnAngular', myCustomServices);
@@ -152,21 +153,21 @@ appModule.factory('pbResource', function($resource ) {
         }
 
         //post (create) a new record immediately
-        this.post = function (item) {
+        this.post = function (item, params, success, error) {
             if (this.Resource == null) {
                 this.Resource = this.getResource();
             }
             var newItem = new this.Resource(item);
-            newItem.$save();
+            newItem.$save(params, success, error);
         }
 
         //put (update) a record immediately
-        this.put = function (item) {
+        this.put = function (item, params, success, error) {
             if (this.Resource == null) {
                 this.Resource = this.getResource();
             }
             var newItem = new this.Resource(item);
-            newItem.$update();
+            newItem.$update(params, success, error);
         }
     };
 
@@ -395,11 +396,22 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
             }
         }
 
-        var success = function (response) {
-            console.log(response);
-        }
+
 
         this.save = function() {
+            var success = function (response) {
+                       if (params.onSaveSuccess) {
+                           params.onSaveSuccess(response);
+                       }
+                   };
+            var replaces = false;
+            if (params.onSave) {
+                replaces = params.onSave();
+                if (replaces) {
+                    return;
+                }
+            }
+
             this.added.forEach( function(item)  {
                 item.$save({},success, post.error);
             });

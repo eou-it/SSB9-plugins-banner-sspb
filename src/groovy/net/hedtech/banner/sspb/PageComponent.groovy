@@ -141,8 +141,10 @@ class PageComponent {
     //String condition
 
     // data
-    String onLoad=""
-    String onError=""
+    String onLoad = ""
+    String onError = ""
+    String onSave = ""
+    String onSaveSuccess = ""
     Boolean loadInitially = true   // specify if  data (query) from resource should be loaded after page is loaded
 
     def errorHandling = [:]       // a map of error code-> code block that specifies what actions to take if an error is encountered during resource operation
@@ -505,7 +507,7 @@ class PageComponent {
             """\$scope.\$watch('${dataSet}.selectedRecords[0]', function(newVal, oldVal) {
                 if (newVal !== oldVal ) {
                     \$scope.${dataSet}.setCurrentRecord(newVal);
-                    $onClickCode
+                    //$onClickCode
                 }
             });
             """
@@ -537,8 +539,9 @@ class PageComponent {
         def placeholderAt=""
         def ngModel="ng-model=\"COL_FIELD\""    // shorthand for  row.entity[col.field]
         def ngChange=!ro?"ng-change=\""+(onUpdate?"\$parent.${parent.ID}_${name}_onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity)\"":""
-        def onClickCode=onClick?"\$scope.${name}_onClick(row.entity);":""
-        def ngClick="""ng-click="\$parent.${parent.name}DS.setCurrentRecord(row.entity);$onClickCode" """
+        def onClickCode=parent.onClick?"\$parent.${parent.name}_onClick(row.entity, col);":""
+        def ngClick="""ng-click="$onClickCode" """
+        //def ngClick="""ng-click="\$parent.${parent.name}DS.setCurrentRecord(row.entity);$onClickCode" """
         def typeInternal = type
         if (type == COMP_TYPE_NUMBER ) {
             //angular-ui doesn't use localized validators - use own (but rather limited still)
@@ -965,11 +968,11 @@ class PageComponent {
                 // handle flow controlled
                 def submitStr=""
                 if (submit)
-                    submitStr+=submit
+                    submitStr+="${name}_onSubmit(\$event)"
                 if (root.flowDefs)
                     submitStr+= "; _activateNextForm('$name');"
                 //don not use ng-form, this breaks page flows!
-                result += """<form ${getIdAttr()} $styleStr class="pb-$t" name="${name?name:model}" ng-show="${name}_visible"  ${submitStr?"""ng-submit="$submitStr" """:""}>$heading \n"""
+                result += """<form ${getIdAttr()} $styleStr class="pb-$t" name="${name}" ng-show="${name}_visible"  ${submitStr?"""ng-submit="$submitStr" """:""}>$heading \n"""
                 return result
             case COMP_TYPE_RESOURCE: //fall through
             case COMP_TYPE_DATA:
@@ -979,7 +982,7 @@ class PageComponent {
                 // Handle Items
                 result = compileItem(t,depth)
                 if (!result)
-                    println "*** WARNING: ComponentStart. No HTML generated for component: $type ${name?name:model} ***"
+                    println "*** WARNING: ComponentStart. No HTML generated for component: $type ${name} ***"
         }
         return result
     }
@@ -1010,10 +1013,12 @@ class PageComponent {
                     } else {
                         labelStr = tran('submitLabel')
                     }
-                    nextTxt += """<div ${getIdAttr("submit-container")} class="pb-form-submit" $styleStr>
-                    <input ${getIdAttr("submit")}  type="submit" value="$labelStr"/>
-                    </div>
-                    """
+                    if (labelStr) {
+                        nextTxt += """|<div ${ getIdAttr("submit-container") } class="pb-form-submit" $styleStr>
+                                      |  <input ${ getIdAttr("submit") }  type="submit" value="$labelStr"/>
+                                      |</div>
+                                   """.stripMargin()
+                    }
                 }
                 // <button ng-click="_activateNextForm('$name')">Next Step</button>
                 return "$nextTxt</form>\n"
@@ -1277,12 +1282,17 @@ class PageComponent {
         if (type != COMP_TYPE_SELECT)
              optionalParams+=",pageSize: $pageSize"
         if (onUpdate)
-            optionalParams+="\n,onUpdate: function(item){\n${compileCtrlFunction(onUpdate)}}"
+            optionalParams+="\n,onUpdate: function(item){\n${compileCtrlFunction(onUpdate)}\n}"
         if (onLoad)
-            optionalParams+="\n,postQuery: function(data,response){\n${compileCtrlFunction(onLoad)}}"
+            optionalParams+="\n,postQuery: function(data,response){\n${compileCtrlFunction(onLoad)}\n}"
         if (onError)
-            optionalParams+="\n,onError: function(response){\n${compileCtrlFunction(onError)}}"
-
+            optionalParams+="\n,onError: function(response){\n${compileCtrlFunction(onError)}\n}"
+        if (onSave) {
+            optionalParams += "\n,onSave: function(){\n${compileCtrlFunction(onSave)}\n}"
+        }
+        if (onSaveSuccess) {
+            optionalParams += "\n,onSaveSuccess: function(response){\n${compileCtrlFunction(onSaveSuccess)}\n}"
+        }
 
         result = """
               |    \$scope.$dataSetName = pbDataSet ( \$scope,
