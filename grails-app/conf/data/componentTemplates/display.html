@@ -13,7 +13,7 @@
     }
 
 %>
-<div id="pbid-${name}-container$index" ng-class="${name}_style"  class="pb-display">
+<div id="pbid-${name}-container$index" ng-class="${name}_style"  class="pb-${thiz.parent.type}-item-container pb-display">
     <% if (label)
     out <<"""
     <label class="pb-${thiz.parent.type}  pb-${type} pb-item pb-label" id="pbid-${name}-label$index" for="pbid-${name}$index" >
