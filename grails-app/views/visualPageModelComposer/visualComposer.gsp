@@ -718,7 +718,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                          $scope.pageStatus.message = $scope.i18nGet(response.statusMessage);
                          if (response.pageValidationResult.warn) {
                              $scope.pageStatus.message += response.pageValidationResult.warn;
-                             note.type = noteType.warning;
+                             note.type = noteType.success; //noteType.warning; warning needs an action
                          }
                          $scope.statusHolder.isPageModified = false;
                      }

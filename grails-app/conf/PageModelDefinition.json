@@ -63,6 +63,7 @@
                 "componentType":[ "text", "textArea", "datetime", "email", "tel"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "labelStyle", "style","valueStyle", "value", "model", "parameters", "validation", "placeholder", "readonly", "required", "onUpdate", "onLoad", "onError", "loadInitially"],
+                "ignoredAttributes":["subType"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
@@ -84,6 +85,7 @@
                 "componentType":[ "number"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "labelStyle", "style","valueStyle", "value", "model", "parameters", "validation", "fractionDigits", "placeholder", "readonly", "required", "onUpdate", "onLoad", "onError", "loadInitially"],
+                "ignoredAttributes":["subType"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },

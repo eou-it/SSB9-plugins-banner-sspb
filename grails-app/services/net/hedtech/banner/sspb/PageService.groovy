@@ -158,7 +158,7 @@ class PageService {
             result = [statusCode: 2, statusMessage: message(code:"sspb.page.visualcomposer.validation.error.message")]
         }
         result << [pageValidationResult:[errors: validateResult.error.join('\n'),
-                                         warn:  validateResult.warn ? message(code:"sspb.page.visualComposer.warnings", args[validateResult.warn.join('\n')]): ""]]
+                                         warn:  validateResult.warn ? message(code:"sspb.page.visualComposer.warnings", args: [validateResult.warn.join('\n')]): "" ]]
         return result
     }
 
