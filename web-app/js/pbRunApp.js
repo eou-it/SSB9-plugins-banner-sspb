@@ -2,6 +2,36 @@
 Common Javascript functions used by pagebuilder applications
 */
 
+// notification centre functionality to be invoked by pages created in page builder
+alert = function(message,promptMessage,type,flash,prompts) {
+
+    if ( arguments.length == 1) {
+        // default notification
+        promptMessage="";
+        type="success";
+        flash=false;
+        prompts=[];
+        prompts.push({label: $.i18n.prop("sspb.custom.page.default.affirm"), action:function(){}});
+    }
+
+    var note = new Notification({
+        message: message,
+        type:type,
+        promptMessage: promptMessage,
+        flash: flash
+    });
+
+    if (prompts) {
+        prompts.forEach( function(prompt) {
+            note.addPromptAction( prompt.label, function() {
+                prompt.action();
+                notifications.remove( note );
+            });
+        })
+    }
+    notifications.addNotification(note);
+}
+
 //remove by value for arrays. Return if value was remove
 Array.prototype.remove=function(value){
     var i =  this.indexOf(value);
