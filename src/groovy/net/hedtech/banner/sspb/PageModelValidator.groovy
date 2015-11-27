@@ -99,7 +99,7 @@ class PageModelValidator {
                         !compDef.all.requiredAttributes.contains(prop) &&
                         !compDef[component.type].requiredAttributes.contains(prop) &&
                         !compDef[component.type].optionalAttributes.contains(prop) &&
-                        !compDef[component.type].ignoredAttributes.contains(prop))) {
+                        !compDef[component.type].ignoredAttributes?.contains(prop))) {
                     //res.valid = false
                     res.warn << PageModelErrors.getError(error: PageModelErrors.MODEL_ATTR_INVALID_ERR, path: path, args: [prop,component.type])
                 }
