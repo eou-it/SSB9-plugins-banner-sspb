@@ -1075,7 +1075,7 @@ class PageComponent {
         |
         |</head>
         |<body>
-        |   <div id="content" ng-controller="CustomPageController"  class="customPage">
+        |   <div id="content" ng-controller="CustomPageController"  class="customPage container">
         |   ${label?"<h1 ${getIdAttr('label')}>${tran("label")}</h1>":""}
          """.stripMargin()
     }

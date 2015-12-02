@@ -836,7 +836,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 </head>
 <body>
 
-<div id="content" ng-controller="VisualPageComposerController" class="customPage" ng-form="pagemodelform">
+<div id="content" ng-controller="VisualPageComposerController" class="customPage container" ng-form="pagemodelform">
 
     <label><g:message code="sspb.page.visualbuilder.load.label" /></label>
     <select name="constantName"
@@ -877,12 +877,12 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             <td>
                 <span ng-show="pageCurName != '' && pageCurName != 'null'">
                     <div>
-                        <button class="btn btn-mini" ng-click='toggleSourceView()' ng-disabled='showTree || sourceEditEnabled'><g:message code="sspb.page.visualbuilder.page.treeview.label" /></button>
-                        <button class="btn btn-mini" ng-click='toggleSourceView()' ng-disabled='!showTree'><g:message code="sspb.page.visualbuilder.page.sourceview.label" /></button>
+                        <button class="btn btn-xs" ng-click='toggleSourceView()' ng-disabled='showTree || sourceEditEnabled'><g:message code="sspb.page.visualbuilder.page.treeview.label" /></button>
+                        <button class="btn btn-xs" ng-click='toggleSourceView()' ng-disabled='!showTree'><g:message code="sspb.page.visualbuilder.page.sourceview.label" /></button>
                         <span ng-show="!showTree" class="alignRight">
-                            <button class="btn btn-mini" ng-click='enableSourceEdit()' ng-disabled='sourceEditEnabled'><g:message code="sspb.page.visualbuilder.page.enable.edit.label" /></button>
-                            <button class="btn btn-mini" ng-click='applySourceEdit()' ng-disabled='!sourceEditEnabled'><g:message code="sspb.page.visualbuilder.page.apply.change.label" /></button>
-                            <button class="btn btn-mini" ng-click='discardSourceEdit()' ng-disabled='!sourceEditEnabled'><g:message code="sspb.page.visualbuilder.page.discard.change.label" /></button>
+                            <button class="btn btn-xs" ng-click='enableSourceEdit()' ng-disabled='sourceEditEnabled'><g:message code="sspb.page.visualbuilder.page.enable.edit.label" /></button>
+                            <button class="btn btn-xs" ng-click='applySourceEdit()' ng-disabled='!sourceEditEnabled'><g:message code="sspb.page.visualbuilder.page.apply.change.label" /></button>
+                            <button class="btn btn-xs" ng-click='discardSourceEdit()' ng-disabled='!sourceEditEnabled'><g:message code="sspb.page.visualbuilder.page.discard.change.label" /></button>
                         </span>
                     </div>
                     <div class="tabs-below">
@@ -988,7 +988,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         <button  title="${message(code:'sspb.page.visualbuilder.paste.component.title')}"  class="button_paste button_edit" ng-click="pasteComponent(data)"  ng-show="dataHolder.copy!=undefined" ></button>
 
 
-        <!--button  class="btn btn-mini" ng-click="deleteChildren(data)" ng-show="data.components.length > 0">--</button-->
+        <!--button  class="btn btn-xs" ng-click="deleteChildren(data)" ng-show="data.components.length > 0">--</button-->
         <!--input type="checkbox" ng-model="(index == statusHolder.selectedIndex)" ng-init="index=index+1" /-->
 
         <ul ng-show="showChildren" style="list-style: none;">

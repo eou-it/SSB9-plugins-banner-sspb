@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2009-2015 Ellucian Company L.P. and its affiliates.
+Copyright 2009-2016 Ellucian Company L.P. and its affiliates.
 *******************************************************************************/
 
 modules = {
@@ -7,15 +7,15 @@ modules = {
         resource url:[plugin: 'banner-ui-ss', dir: 'js/angular/', file: 'angular.js']
         resource url:[plugin: 'banner-ui-ss', dir: 'js/angular/', file: 'angular-resource.js']
         resource url:[plugin: 'banner-ui-ss', dir: 'js/angular/', file: 'angular-sanitize.min.js']
-
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular', file: "angular-messages.js"]
-        //resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular', file: "angular.js"]
-        //resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular', file: "angular-resource.js"]
-        //resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular', file: "angular-sanitize.js"]
     }
 
     'pageBuilderDev' {
         dependsOn "angular"
+        // file upload
+        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/ng-upload', file: "ng-upload.js"]
+        // modal dialog
+        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular-ui', file: "ui-bootstrap-tpls-0.3.0.js"]
         resource url:[plugin: 'banner-sspb', dir: 'js', file: "pbDirectives.js"]
     }
 
@@ -25,28 +25,17 @@ modules = {
 
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/ng-grid', file: "ng-grid.js"]
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular-ui', file: "angular-ui.js"]
-        // file upload
-        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/ng-upload', file: "ng-upload.js"]
-        // modal dialog
-        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular-ui', file: "ui-bootstrap-tpls-0.3.0.js"]
         // page builder pages at runtime
         resource url:[plugin: 'banner-sspb', dir: 'js', file: "pbRunDirectives.js"]
         // uxd components
-        //resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/uxd/js', file: "xe-ui-components.js"]
-        //resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/uxd/css', file: "xe-ui-components.min.css"]
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/xe-components/js', file: "xe-ui-components.js"]
-        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/xe-components/css', file: "xe-ui-components.min.css"]
 
-
-        // TODO bootstrap interferes with navigation bar  - caused by breadcrumb class in bootstrap.css. also ss_ui uses a later version of bootstrap
-        // TODO use common-control.css breadcrumb instead
-        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/bootstrap', file: "bootstrap.js"]
+        resource url:[plugin: 'banner-ui-ss', dir: 'bootstrap/js', file: "bootstrap.js"]
         resource url:[plugin: 'banner-sspb', dir: 'js', file: "pbRunApp.js"]
-
         //Load newer version of jquery required for date picker
-        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/jquery', file:  'jquery-1.8.2.js'], disposition: 'head'
+//        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/jquery', file:  'jquery-1.8.2.js'], disposition: 'head'
         //TODO jquery 1.9.1 is not supported by Aurora - update Aurora
-        //resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/jquery', file:  'jquery-1.9.1.min.js'], disposition: 'head'
+//        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/jquery', file:  'jquery-1.9.1.min.js'], disposition: 'head'
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/jquery', file:  'jquery-ui-1.8.24.custom.js'] , disposition: 'head'
     }
 
@@ -58,7 +47,8 @@ modules = {
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'jquery-ui.css']
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'ng-grid.css']
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'angular-ui.css']
-        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: "bootstrap_custom.css"]
+        resource url:[plugin: 'banner-ui-ss', dir: 'bootstrap/css', file: 'bootstrap.css']
+        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/xe-components/css', file: "xe-ui-components.min.css"]
         resource url:[plugin: 'banner-sspb', dir: 'css', file: 'main.css']
         resource url:[plugin: 'banner-sspb', dir: 'css', file: 'pbDefault.css']
     }
@@ -70,7 +60,8 @@ modules = {
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'jquery-ui-rtl.css']
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'ng-grid-rtl.css']
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'angular-ui-rtl.css']
-        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: "bootstrap_custom-rtl.css"]
+        resource url:[plugin: 'banner-ui-ss', dir: 'bootstrap/css', file: 'bootstrap-rtl.css']
+        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/xe-components/css', file: "xe-ui-components.min.css"]
         resource url:[plugin: 'banner-sspb', file: 'css/banner-sspb-rtl-patch.css']
         resource url:[plugin: 'banner-sspb', dir: 'css', file: 'main-rtl.css']
         resource url:[plugin: 'banner-sspb', dir: 'css', file: 'pbDefault-rtl.css']
@@ -110,7 +101,7 @@ modules = {
     }
 
     'min-bannerWebLTR' {
-        dependsOn "min-bannerWeb, aurora"
+        dependsOn "min-bannerWeb, min-auroraLTR"
         defaultBundle environment == "development" ? false : "bannerSelfServiceLTR"
 
         resource url:[plugin: 'banner-ui-ss', file: 'css/banner-ui-ss.css'],             attrs:[media:'screen, projection']
@@ -122,7 +113,7 @@ modules = {
     }
 
     'min-bannerWebRTL' {
-        dependsOn "min-bannerWeb, auroraRTL"
+        dependsOn "min-bannerWeb, min-auroraRTL"
         defaultBundle environment == "development" ? false : "bannerSelfServiceRTL"
 
         resource id: 'themeRTL', url:[plugin:'banner-ui-ss', dir:'css/themeroller/jquery-ui-1.8.13-lt.gry.ov/css/custom-theme', file:'jquery-ui-1.8.13.custom-rtl.css'], attrs:[media:'screen, projection']
@@ -133,6 +124,31 @@ modules = {
         resource url:[plugin: 'i18n-core', file: 'css/multiCalendar-rtl-patch.css']
     }
 
+    'min-auroraLTR' {
+        dependsOn "auroraCommon"
+        defaultBundle environment == "development" ? false : "aurora"
+
+        resource url:[plugin: 'sghe-aurora', file: 'css/common-controls.css'], attrs:[media:'screen, projection']
+//        resource url:[plugin: 'sghe-aurora', file: 'css/common-platform.css'], attrs:[media:'screen, projection']
+        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-header.css'], attrs:[media:'screen, projection']
+        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-breadcrumb.css'], attrs:[media:'screen, projection']
+        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-menu.css'], attrs:[media:'screen, projection']
+        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-tools.css'], attrs:[media:'screen, projection']
+        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-profile.css'], attrs:[media:'screen, projection']
+    }
+
+    'min-auroraRTL' {
+        dependsOn "auroraCommon"
+        resource url:[plugin: 'sghe-aurora', file: 'css/common-controls-rtl.css'], attrs:[media:'screen, projection']
+//        resource url:[plugin: 'sghe-aurora', file: 'css/common-platform-rtl.css'], attrs:[media:'screen, projection']
+        resource url:[plugin: 'sghe-aurora', file: 'css/rtl.css'],       attrs:[media:'screen, projection']
+        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-header-rtl.css'], attrs:[media:'screen, projection']
+        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-header-rtl-patch.css'], attrs:[media:'screen, projection']
+        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-menu-rtl.css'], attrs:[media:'screen, projection']
+        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-tools-rtl.css'], attrs:[media:'screen, projection']
+        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-profile-rtl.css'], attrs:[media:'screen, projection']
+        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-breadcrumb-rtl.css'], attrs:[media:'screen, projection']
+     }
 
     application {
         resource url:'js/application.js'

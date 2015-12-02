@@ -26,7 +26,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                     <input type="file" name="file" />
                 </div>
                 <div>
-                    <input upload-submit="complete(content, completed)" type="submit" class="btn" value="Submit" />
+                    <input upload-submit="complete(content, completed)" type="submit" class="btn btn-primary" value="Submit" />
                 </div>
             </form>
             <div class="alert alert-info"><g:message code="sspb.css.cssManager.upload.server.response.label" /> {{uploadResponse}}</div>

@@ -200,7 +200,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
     </script>
 </head>
 <body>
-    <div id="content" ng-controller="CssManagerController" class="customPage">
+    <div id="content" ng-controller="CssManagerController" class="customPage container">
 
         <label><g:message code="sspb.css.cssManager.load.label" /></label>
         <select name="constantName"
@@ -219,17 +219,23 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         </div>
         <div class="form-horizontal">
             <div class="control-group">
-                <label class="control-label"  for='cssName'><g:message code="sspb.css.cssManager.cssName.label" /></label>
-                <input name="cssName" id='cssName' ng-model='cssName'/>
+                <label class="col-sm-3 control-label"  for='cssName'><g:message code="sspb.css.cssManager.cssName.label" /></label>
+                <div class="col-sm-9">
+                    <input name="cssName" id='cssName' class="form-control" ng-model='cssName'/>
+                </div>
             </div>
             <div class="control-group">
-                <label class="control-label"  for='desc'><g:message code="sspb.css.cssManager.description.label" /></label>
-                <input name="description" id='desc' ng-model='description'/>
+                <label class="col-sm-3 control-label"  for='desc'><g:message code="sspb.css.cssManager.description.label" /></label>
+                <div class="col-sm-9">
+                    <input name="description" id='desc' class="form-control" ng-model='description'/>
+                </div>
             </div>
 
             <div class="control-group">
-                <label class="control-label" for='source'><g:message code="sspb.css.cssManager.cssSource.label" /></label>
-                <textarea ng-model='cssSource' id='source'></textarea>
+                <label class="col-sm-3 control-label" for='source'><g:message code="sspb.css.cssManager.cssSource.label" /></label>
+                <div class="col-sm-9">
+                    <textarea ng-model='cssSource' class="form-control" rows="9" id='source'></textarea>
+                </div>
             </div>
         </div>
         <textArea name="statusMessage" readonly="true" ng-model="cssStatus.message"

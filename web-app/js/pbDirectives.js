@@ -220,10 +220,10 @@ pagebuilderModule.directive('pbCombo', function() {
         scope:{loadSourceLabel:'@', editValueLabel:'@', selectLabel:'@', value:'=', sourceList:"=", pbParent:'=', pbAttrname:'=', pbChange:'&', pbLoadsourcelist:'&' },
         template: "<Span>" +
             "<select ng-show='showSelect' ng-model='value'  ng-options='val for val in sourceList' ng-change='processInput()'></select>" +
-            "<button ng-show='showSelect' class='btn btn-mini' ng-click='loadSourceList()'>{{loadSourceLabel}}</button>" +
-            "<button ng-show='showSelect' class='btn btn-mini' ng-click='showSelect=false'>{{editValueLabel}}</button>" +
+            "<button ng-show='showSelect' class='btn btn-xs' ng-click='loadSourceList()'>{{loadSourceLabel}}</button>" +
+            "<button ng-show='showSelect' class='btn btn-xs' ng-click='showSelect=false'>{{editValueLabel}}</button>" +
             "<input ng-show='!showSelect' type='text' ng-model='value' ng-change='processInput()'/>" +
-            "<button ng-show='!showSelect' class='btn btn-mini' ng-click='showSelect=true'>{{selectLabel}}</button>" +
+            "<button ng-show='!showSelect' class='btn btn-xs' ng-click='showSelect=true'>{{selectLabel}}</button>" +
             "</Span>",
         controller: ['$scope', '$element', '$attrs', '$transclude',
             function($scope, $element, $attrs, $transclude) {

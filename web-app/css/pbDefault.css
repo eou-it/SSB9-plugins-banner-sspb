@@ -1,202 +1,222 @@
-/* XE input with date picker does not line up well  */
-input.hasDatepicker {
-    height:  18px; /* set back to bootstrap height */
-    margin: 0;
-    border: 1px solid #cccccc;
-}
-input.hasDatepicker.pb-form {
-    /*height:1.7em; */
-    width:  210px; /* bootstrap */
-    margin: 0;
-    border: 1px solid #cccccc;
-}
-.columns-2 {
-    width:50%;
-    float:left;
-}
+/*/!* XE input with date picker does not line up well  *!/*/
+/*input.hasDatepicker {*/
+    /*height:  18px; /!* set back to bootstrap height *!/*/
+    /*margin: 0;*/
+    /*border: 1px solid #cccccc;*/
+/*}*/
+/*input.hasDatepicker.pb-form {*/
+    /*/!*height:1.7em; *!/*/
+    /*width:  210px; /!* bootstrap *!/*/
+    /*margin: 0;*/
+    /*border: 1px solid #cccccc;*/
+/*}*/
+/*.columns-2 {*/
+    /*width:50%;*/
+    /*float:left;*/
+/*}*/
 
-.pb-block-item-container,
-.pb-form-item-container {
-    /* .columns-2 */
-    width:40%;
-    float:left;
-    max-width:100%;
-}
-.pb-form-item-container.pb-button  {
-    width:auto;
-}
+/*.pb-block-item-container,*/
+/*.pb-form-item-container {*/
+    /*/!* .columns-2 *!/*/
+    /*width:40%;*/
+    /*float:left;*/
+    /*max-width:100%;*/
+/*}*/
+/*.pb-form-item-container.pb-button  {*/
+    /*width:auto;*/
+/*}*/
 
-label.pb-block.pb-item,
-label.pb-textArea.pb-form.pb-item.pb-label,
-label.pb-literal.pb-form.pb-item.pb-label,
-label.pb-text.pb-form.pb-item.pb-label,
-label.pb-email.pb-form.pb-item.pb-label,
-label.pb-number.pb-form.pb-item.pb-label,
-label.pb-datetime.pb-form.pb-item.pb-label,
-label.pb-tel.pb-form.pb-item.pb-label,
-label.pb-radio.pb-form.pb-item.pb-label,
-label.pb-link.pb-form.pb-item.pb-label,
-label.pb-display.pb-form.pb-item.pb-label,
-label.pb-select.pb-form.pb-item.pb-label
-{
-    display: inline-block;
-    width: 12em;
-    font-size:small;
-    font-weight:bold;
-    text-align: right;
-    padding: 0.2em 0 0.2em 0;
-    margin: 0.1em 0.1em 0.1em 0.1em;
-}
-.pb-form-item-container.pb-literal {
-    width:100%;
-}
-.pb-grid.pb-literal {
-    vertical-align: middle;
-    line-height: 30px;
-}
-
-label.pb-detail.pb-item.pb-label
-{
-    display: inline-block;
-    width: 48%;
-    font-size:small;
-    font-weight:bold;
-    text-align: right;
-    padding: 0.2em 0 0.2em 0;
-    margin: 0.1em 0.1em 0.1em 0.1em;
-}
-
-
-label.pb-boolean {
-    width: 48%;
-    text-align: left;
-}
-
-.radioVertical {
-    display: table-row;
-}
-
-input.pb-detail.pb-item,select.pb-detail.pb-item, input.pb-form.pb-item
-{
-    width: 48%;
-    /*height: 18px;*/
-    padding:  4px 0px 4px 2px;
-    margin: 0.1em 0.1em 0.1em 0.1em;
-    border: 1px solid #cccccc;
-}
-span.pb-literal.pb-detail.pb-item
-{
-    width: 48%;
-    /*height: 18px;*/
-    padding:  4px 0px 4px 2px;
-    margin: 0.1em 0.1em 0.1em 0.1em;
-    border: 1px solid #cccccc;
-}
-
-input[type='checkbox'].pb-form.pb-item {
-    width: auto;
-}
-
-input.pb-htable.pb-item,select.pb-htable.pb-item
-{
-    width: 100%;
-    padding:  4px 0px 4px 2px;
-    margin: 0.1em 0.1em 0.1em 0.1em;
-    border: 1px solid #cccccc;
-}
-
-input.pb-htable.pb-item.pb-boolean
-{
-    width: auto;
-}
-
-.pb-detail-container {
+/*label.pb-block.pb-item,*/
+/*label.pb-textArea.pb-form.pb-item.pb-label,*/
+/*label.pb-literal.pb-form.pb-item.pb-label,*/
+/*label.pb-text.pb-form.pb-item.pb-label,*/
+/*label.pb-email.pb-form.pb-item.pb-label,*/
+/*label.pb-number.pb-form.pb-item.pb-label,*/
+/*label.pb-datetime.pb-form.pb-item.pb-label,*/
+/*label.pb-tel.pb-form.pb-item.pb-label,*/
+/*label.pb-radio.pb-form.pb-item.pb-label,*/
+/*label.pb-link.pb-form.pb-item.pb-label,*/
+/*label.pb-display.pb-form.pb-item.pb-label,*/
+/*label.pb-select.pb-form.pb-item.pb-label*/
+/*{*/
+    /*display: inline-block;*/
+    /*width: 12em;*/
+    /*font-size:small;*/
+    /*font-weight:bold;*/
+    /*text-align: right;*/
+    /*padding: 0.2em 0 0.2em 0;*/
+    /*margin: 0.1em 0.1em 0.1em 0.1em;*/
+/*}*/
+/*.pb-form-item-container.pb-literal {*/
     /*width:100%;*/
-    clear:both;
-}
-select.pb-detail.pb-item
-{
-    width:48.5%;
-    padding: 2px 2px 2px 0px;
-}
+/*}*/
+/*.pb-grid.pb-literal {*/
+    /*vertical-align: middle;*/
+    /*line-height: 30px;*/
+/*}*/
 
-.pb-form, .pb-form-submit, .pb-block, .gridStyle, .new-line {
-    clear: both;
-}
-
-.gridStyle {
-    width:99.5%;
-    border: 2px solid rgb(212,212,212);
-}
-
-.pb-form-label {
-    font-size:x-large;
-}
-.pb-detail.pb-label {
-    font-size:large;
-    text-align:center;
-}
-button {
-    width:auto;
-}
+/*label.pb-detail.pb-item.pb-label*/
+/*{*/
+    /*display: inline-block;*/
+    /*width: 48%;*/
+    /*font-size:small;*/
+    /*font-weight:bold;*/
+    /*text-align: right;*/
+    /*padding: 0.2em 0 0.2em 0;*/
+    /*margin: 0.1em 0.1em 0.1em 0.1em;*/
+/*}*/
 
 
-.pb-record-control {
-    float: left;
-    clear: both;
-    width:100%;
-    display: inline-block;
-}
-.pb-pagination-control {
-    margin-right:2em;
-    display: inline-block;
-}
-.pb-change-data-control {
-    margin-left: 1em;
-    display: inline-block;
-}
+/*label.pb-boolean {*/
+    /*width: 48%;*/
+    /*text-align: left;*/
+/*}*/
+
+/*.radioVertical {*/
+    /*display: table-row;*/
+/*}*/
+
+/*input.pb-detail.pb-item,select.pb-detail.pb-item, input.pb-form.pb-item*/
+/*{*/
+    /*width: 48%;*/
+    /*/!*height: 18px;*!/*/
+    /*padding:  4px 0px 4px 2px;*/
+    /*margin: 0.1em 0.1em 0.1em 0.1em;*/
+    /*border: 1px solid #cccccc;*/
+/*}*/
+/*span.pb-literal.pb-detail.pb-item*/
+/*{*/
+    /*width: 48%;*/
+    /*/!*height: 18px;*!/*/
+    /*padding:  4px 0px 4px 2px;*/
+    /*margin: 0.1em 0.1em 0.1em 0.1em;*/
+    /*border: 1px solid #cccccc;*/
+/*}*/
+
+/*input[type='checkbox'].pb-form.pb-item {*/
+    /*width: auto;*/
+/*}*/
+
+/*input.pb-htable.pb-item,select.pb-htable.pb-item*/
+/*{*/
+    /*width: 100%;*/
+    /*padding:  4px 0px 4px 2px;*/
+    /*margin: 0.1em 0.1em 0.1em 0.1em;*/
+    /*border: 1px solid #cccccc;*/
+/*}*/
+
+/*input.pb-htable.pb-item.pb-boolean*/
+/*{*/
+    /*width: auto;*/
+/*}*/
+
+/*.pb-detail-container {*/
+    /*/!*width:100%;*!/*/
+    /*clear:both;*/
+/*}*/
+/*select.pb-detail.pb-item*/
+/*{*/
+    /*width:48.5%;*/
+    /*padding: 2px 2px 2px 0px;*/
+/*}*/
+
+/*.pb-form, .pb-form-submit, .pb-block, .gridStyle, .new-line {*/
+    /*clear: both;*/
+/*}*/
+
+/*.gridStyle {*/
+    /*width:99.5%;*/
+    /*border: 2px solid rgb(212,212,212);*/
+/*}*/
+
+/*.pb-form-label {*/
+    /*font-size:x-large;*/
+/*}*/
+/*.pb-detail.pb-label {*/
+    /*font-size:large;*/
+    /*text-align:center;*/
+/*}*/
+/*button {*/
+    /*width:auto;*/
+/*}*/
+
+
+/*.pb-record-control {*/
+    /*float: left;*/
+    /*clear: both;*/
+    /*width:100%;*/
+    /*display: inline-block;*/
+/*}*/
+/*.pb-pagination-control {*/
+    /*margin-right:2em;*/
+    /*display: inline-block;*/
+/*}*/
+/*.pb-change-data-control {*/
+    /*margin-left: 1em;*/
+    /*display: inline-block;*/
+/*}*/
 
 
 
-input.ng-invalid, select.ng-invalid, textarea.ng-invalid {
-    background: #fff3f3;
-    border-color: #ffaaaa;
-    color: #cc0000;
-}
-input.ng-invalid:focus, select.ng-invalid:focus, textarea.ng-invalid:focus {
-    border: 1px solid #ffaaaa;
-    -moz-box-shadow: 0 0 0.5em #ffaaaa;
-    -webkit-box-shadow: 0 0 0.5em #ffaaaa;
-    box-shadow: 0 0 0.5em #ffaaaa;
+/*input.ng-invalid, select.ng-invalid, textarea.ng-invalid {*/
+    /*background: #fff3f3;*/
+    /*border-color: #ffaaaa;*/
+    /*color: #cc0000;*/
+/*}*/
+/*input.ng-invalid:focus, select.ng-invalid:focus, textarea.ng-invalid:focus {*/
+    /*border: 1px solid #ffaaaa;*/
+    /*-moz-box-shadow: 0 0 0.5em #ffaaaa;*/
+    /*-webkit-box-shadow: 0 0 0.5em #ffaaaa;*/
+    /*box-shadow: 0 0 0.5em #ffaaaa;*/
+/*}*/
+
+/**.margin*/
+/*{*/
+    /*margin-top: 10px;*/
+    /*margin-left:10px;*/
+    /*margin-right:10px;*/
+    /*overflow-y:scroll;*/
+    /*overflow-x:auto;*/
+/*}*/
+
+/*/!* XE default overrides for content*!/*/
+/*#content {*/
+    /*text-align:start;*/
+    /*margin: 4px;*/
+    /*width: 99%;*/
+/*}*/
+
+/*.align-right*/
+/*{*/
+    /*text-align:right;*/
+    /*/!*float:right; *!/*/
+    /*padding-right:0.4em;*/
+/*}*/
+
+/*.float-right*/
+/*{*/
+    /*float:right;*/
+    /*padding-right:0.4em;*/
+/*}*/
+
+input, textarea, select {
+    line-height: normal;
+    border: 1px solid #CCC;
+    border-radius: 3px;
 }
 
-*.margin
-{
-    margin-top: 10px;
-    margin-left:10px;
-    margin-right:10px;
-    overflow-y:scroll;
-    overflow-x:auto;
+input, textarea {
+    padding-left: 4px;
 }
 
-/* XE default overrides for content*/
-#content {
-    text-align:start;
-    margin: 4px;
-    width: 99%;
+div[ng-grid] {
+    font-size: 10px;
 }
 
-.align-right
-{
-    text-align:right;
-    /*float:right; */
-    padding-right:0.4em;
+.pb-label {
+    font-weight: bold;    /* reset xe-ui-components non-bold label */
 }
 
-.float-right
-{
-    float:right;
-    padding-right:0.4em;
+.btn-sm, .btn-xs {
+    line-height: normal;
 }
-
-

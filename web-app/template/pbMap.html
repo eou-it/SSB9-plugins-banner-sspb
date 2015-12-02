@@ -1,6 +1,6 @@
 <span> <!--TODO referencing $parent.i18nGet, should not have this dependency-->
     <!--label>{{label}}</label-->
-    <input style="text-align:start;" readonly value='{{map}}'></input> <button class="btn btn-mini" ng-click='openMapEditModal(map)'>...</button>
+    <input style="text-align:start;" readonly value='{{map}}'></input> <button class="btn btn-xs" ng-click='openMapEditModal(map)'>...</button>
 
     <!-- map editing modal body-->
     <div modal="mapEditShouldBeOpen"  options="mapEditModalOpts">
@@ -19,7 +19,7 @@
                         <input type="number" ng-show='type1=="number"' ng-model='map[key]'/>
                         <input type="checkbox" ng-show='type1=="boolean"' ng-model='map[key]'/>
 
-                        <button class="btn btn-mini" ng-click="deleteEntry(key)">-</button>
+                        <button class="btn btn-xs" ng-click="deleteEntry(key)">-</button>
                     </td>
                 </tr>
             </table>
