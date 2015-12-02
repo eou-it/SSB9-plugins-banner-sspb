@@ -836,7 +836,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 </head>
 <body>
 
-<div id="content" ng-controller="VisualPageComposerController" class="customPage container" ng-form="pagemodelform">
+<div id="content" ng-controller="VisualPageComposerController" class="customPage container-fluid" ng-form="pagemodelform">
 
     <label><g:message code="sspb.page.visualbuilder.load.label" /></label>
     <select name="constantName"

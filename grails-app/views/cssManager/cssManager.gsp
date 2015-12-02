@@ -200,7 +200,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
     </script>
 </head>
 <body>
-    <div id="content" ng-controller="CssManagerController" class="customPage container">
+    <div id="content" ng-controller="CssManagerController" class="customPage container-fluid">
 
         <label><g:message code="sspb.css.cssManager.load.label" /></label>
         <select name="constantName"

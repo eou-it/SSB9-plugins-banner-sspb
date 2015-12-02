@@ -559,6 +559,9 @@ h6,
 	overflow: auto;
 	position: absolute;
  	bottom: 30px;
+	/* add some padding when container-fluid is used */
+	padding-right: 15px;
+	padding-left: 15px;
 }
 
 .ui-datepicker table {

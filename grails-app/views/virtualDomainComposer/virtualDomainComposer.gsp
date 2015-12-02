@@ -39,7 +39,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 </head>
 
 <body>
-<div id="content"  class="customPage container" >
+<div id="content"  class="customPage container-fluid" >
 <h3><g:message code="sspb.page.virtualdomain.heading" /></h3>
 <br/>
 <g:form name="LoadVDForm" action="loadVirtualDomain">

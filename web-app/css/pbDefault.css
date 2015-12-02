@@ -220,3 +220,8 @@ div[ng-grid] {
 .btn-sm, .btn-xs {
     line-height: normal;
 }
+
+/* container-fluid class missing in bootstrap 3.0.2 */
+.container-fluid {
+    width: 100%;
+}
