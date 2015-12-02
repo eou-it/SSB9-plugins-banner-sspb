@@ -8,6 +8,7 @@ modules = {
         resource url:[plugin: 'banner-ui-ss', dir: 'js/angular/', file: 'angular-resource.js']
         resource url:[plugin: 'banner-ui-ss', dir: 'js/angular/', file: 'angular-sanitize.min.js']
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular', file: "angular-messages.js"]
+        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular', file: "angular-translate.js"]
     }
 
     'pageBuilderDev' {

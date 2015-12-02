@@ -354,6 +354,7 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
                     //    iVal = this.currentRecord[this.selectValueKey];
                     //}
                     model.assign($scope, iVal);
+                    this.setCurrentRecord(iVal); //Adding this experimentally for xe-dropdown
                 }  else {
                     model.assign($scope, this.currentRecord);
                 }
@@ -465,6 +466,10 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
 
         if (params.autoPopulate) {
             this.load();
+        }
+
+        if (!params.resource && params.data) {
+            this.setInitialRecord();
         }
 
         return this;

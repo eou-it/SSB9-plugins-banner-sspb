@@ -61,7 +61,7 @@ class Page {
 
     //Compare the models
     boolean equals(Map modelMap){
-        def thisMap = getMergedModelMap(false)        // get the model of this as a map without mergeInfo
+        def thisMap = getMergedModelMap(false)  // get the model of this as a map without mergeInfo
         thisMap.equals(cleanModelMap(modelMap)) // clean the input map to compare to and check for equality
     }
 
@@ -81,7 +81,7 @@ class Page {
 
     //Keys map to avoid hardcoding the key strings multiple times
     final static Map KEYS = [page: null, deltas: null, meta: null, components: null, mergeInfo: null, noReference: null,
-                             idx: null, ext: null].collectEntries{ k, v -> [k,k] }
+                             idx: null, ext: null, spareComponents: null].collectEntries{ k, v -> [k,k] }
     //Methods for merging models and getting deltas
 
     //Use a common static method to convert json model to map
@@ -269,7 +269,9 @@ class Page {
         diffs.each { name, diff ->
             //println "Processing $name"
             def comp = model.components[name]
-            if (comp) { // Component exists, change props to match the extension
+            if (comp && diff.name && diff.name.base && !diff.name.ext) { //this component is removed by the extension
+                comp.mergeInfo  << [removedBy: constantName]
+            } else if (comp) { // Component exists, change props to match the extension
                 diff.each { prop, val ->
                     if (val.base.equals(comp[prop]) || prop != KEYS.meta) {
                         // accept change as is.
@@ -278,6 +280,9 @@ class Page {
                                 comp[prop] = mergeAttribute(prop, comp[prop], val)
                                 if (prop == KEYS.meta) {
                                     def parent=model.components[comp.meta.parent]
+                                    if (!parent.containsKey(KEYS.mergeInfo)) {
+                                        parent.mergeInfo=[:]
+                                    }
                                     parent?.mergeInfo << [modifiedBy: constantName]
                                 } else {
                                     comp.mergeInfo  << [modifiedBy: constantName]
@@ -338,6 +343,9 @@ class Page {
             clone.meta.parent = parent.name
             clone.mergeInfo=[noReference: true, idx: siblingIndex] // assume components are unreferenced until used in compose
         }
+        if (comp.spareComponents) {
+            clone.remove(KEYS.spareComponents)
+        }
         if (comp.components) {
             clone.remove(KEYS.components)
             def nSiblings = comp.components ? comp.components.size() - 1 : 0
@@ -365,6 +373,7 @@ class Page {
             }
         } else {
             component.remove(KEYS.mergeInfo)
+            component.remove(KEYS.spareComponents)
         }
         component.remove(KEYS.meta)
         component
@@ -394,7 +403,7 @@ class Page {
         //Also, if a parent is found for adding the component, the component is removed from finalUnreferenced
         unReferenced.each { component ->
             def parent = decomposedModel.components[component?.meta?.parent]
-            if (parent && parent.components) {
+            if (parent && parent.components && !component.mergeInfo.removedBy) {
                 component.mergeInfo.validate=true
                 component = cleanComponent(component, withInfo)
                 parent.components << component
@@ -403,7 +412,7 @@ class Page {
         }
         //If any components remain in the finalUnreferenced List, they are added as 'spare component'
         //They can be made visible in the VPC
-        if (finalUnreferenced.size()>0) {
+        if (withInfo && finalUnreferenced.size()>0) {
             root.spareComponents = finalUnreferenced
         }
         root

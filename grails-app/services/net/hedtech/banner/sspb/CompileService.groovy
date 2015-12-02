@@ -377,9 +377,12 @@ class CompileService {
                        |    };
                        |""".stripMargin()
             }
-        } else if (pageComponent.type == PageComponent.COMP_TYPE_XE_DROPDOWN) {
+        }
+        /* use data set instead
+        else if (pageComponent.type == PageComponent.COMP_TYPE_XE_DROPDOWN) {
             code += """ \$scope.${ pageComponent.name }_xeDropdownList = ${ pageComponent.model };\n"""
         }
+        */
         pageComponent.components.each { child ->
             code += buildControlVar(child, depth + 1)
         }
@@ -397,7 +400,9 @@ class CompileService {
         // type of input (except button or submit)
         def inputTypes = [PageComponent.COMP_TYPE_BOOLEAN, PageComponent.COMP_TYPE_TEXT, PageComponent.COMP_TYPE_TEXTAREA,
                           PageComponent.COMP_TYPE_EMAIL, PageComponent.COMP_TYPE_NUMBER, PageComponent.COMP_TYPE_DATETIME,
-                          PageComponent.COMP_TYPE_TEL, PageComponent.COMP_TYPE_SELECT, PageComponent.COMP_TYPE_RADIO]
+                          PageComponent.COMP_TYPE_TEL, PageComponent.COMP_TYPE_SELECT, PageComponent.COMP_TYPE_RADIO,
+                          /*PageComponent.COMP_TYPE_XE_DROPDOWN,*/ PageComponent.COMP_TYPE_XE_TEXT_BOX,PageComponent.COMP_TYPE_XE_TEXTAREA]
+        // model needs special value for dropdown
 
         switch (pageComponent.type) {
             case PageComponent.COMP_TYPE_PAGE:

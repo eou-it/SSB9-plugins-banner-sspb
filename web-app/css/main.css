@@ -274,12 +274,12 @@
 	/*vertical-align: top;*/
 /*}*/
 
-/*input[type=checkbox], input[type=radio] {*/
-	/*background-color: transparent;*/
-	/*border: 0;*/
-	/*padding: 0;*/
-	/*display: inline; //TODO review this. Specify inline to override UXD display: none*/
-/*}*/
+input[type=checkbox], input[type=radio] {
+	background-color: transparent;
+	border: 0;
+	padding: 0;
+	//display: inline; //TODO review this. Specify inline to override UXD display: none
+}
 
 /*input:focus, select:focus, textarea:focus {*/
 	/*background-color: #ffffff;*/
