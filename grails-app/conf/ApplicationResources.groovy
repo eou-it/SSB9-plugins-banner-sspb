@@ -9,6 +9,7 @@ modules = {
         resource url:[plugin: 'banner-ui-ss', dir: 'js/angular/', file: 'angular-sanitize.min.js']
 
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular', file: "angular-messages.js"]
+        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular', file: "angular-translate.js"]
         //resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular', file: "angular.js"]
         //resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular', file: "angular-resource.js"]
         //resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular', file: "angular-sanitize.js"]
@@ -35,7 +36,7 @@ modules = {
         //resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/uxd/js', file: "xe-ui-components.js"]
         //resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/uxd/css', file: "xe-ui-components.min.css"]
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/xe-components/js', file: "xe-ui-components.js"]
-        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/xe-components/css', file: "xe-ui-components.min.css"]
+        //resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/xe-components/css', file: "xe-ui-components.min.css"]
 
 
         // TODO bootstrap interferes with navigation bar  - caused by breadcrumb class in bootstrap.css. also ss_ui uses a later version of bootstrap
@@ -59,6 +60,7 @@ modules = {
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'ng-grid.css']
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'angular-ui.css']
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: "bootstrap_custom.css"]
+        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/xe-components/css', file: "xe-ui-components.min.css"]
         resource url:[plugin: 'banner-sspb', dir: 'css', file: 'main.css']
         resource url:[plugin: 'banner-sspb', dir: 'css', file: 'pbDefault.css']
     }

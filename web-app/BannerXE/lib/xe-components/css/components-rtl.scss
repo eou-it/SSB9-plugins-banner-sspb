@@ -7,26 +7,24 @@
 
 //Atoms
 @import "../../app/components/atoms/label/css/label.scss";
-@import "../../app/components/badge/css/badge.scss";
-@import "../../app/components/button/css/button.scss";
-@import "../../app/components/checkbox/css/checkbox.scss";
-@import "../../app/components/dropdown/css/dropdown.scss";
-@import "../../app/components/status-label/css/statusLabel.scss";
-@import "../../app/components/radio-button/css/radio-button.scss";
-@import "../../app/components/pillbox/css/pillbox.scss";
-@import "../../app/components/switch/css/switch.scss";
-@import "../../app/components/text-area/css/text-area.scss";
-@import "../../app/components/text-box/css/text-box.scss";
-@import "../../app/components/simple-textbox/css/simple-textbox.scss";
-@import "../../app/components/typography/css/typography.scss";
-@import "../../app/components/colors/css/colors.scss";
+@import "../../app/components/atoms/badge/css/badge.scss";
+@import "../../app/components/atoms/button/css/button.scss";
+@import "../../app/components/atoms/checkbox/css/checkbox.scss";
+@import "../../app/components/atoms/dropdown/css/dropdown.scss";
+@import "../../app/components/atoms/status-label/css/statusLabel.scss";
+@import "../../app/components/atoms/radio-button/css/radio-button.scss";
+@import "../../app/components/atoms/switch/css/switch.scss";
+@import "../../app/components/atoms/text-area/css/text-area.scss";
+@import "../../app/components/atoms/text-box/css/text-box.scss";
+@import "../../app/components/atoms/simple-textbox/css/simple-textbox.scss";
+@import "../../app/components/atoms/typography/css/typography.scss";
+@import "../../app/components/atoms/colors/css/colors.scss";
 
 
 
 //molecules
 @import "../../app/components/molecules/search-box/css/search.scss";
-@import "../../app/components/molecules/calendar/css/calendar.scss";
-@import "../../app/components/molecules/data-table/css/data-table.scss";
+@import "../../app/components/organisms/data-table/css/data-table.scss";
 @import "../../app/components/molecules/pagination/css/pagination.scss";
 @import "../../app/components/molecules/pagination/css/pagination.scss";
 @import "../../app/components/molecules/column-filter/css/column-filter.scss";

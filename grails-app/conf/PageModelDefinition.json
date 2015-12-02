@@ -98,8 +98,8 @@
             },
             {
                 "componentType":["xeDropdown"],
-                "requiredAttributes":["sourceModel"],
-                "optionalAttributes":["model", "placeholder","readonly","onUpdate","style"],
+                "requiredAttributes":["sourceModel", "labelKey", "valueKey"],
+                "optionalAttributes":["model","label","placeholder","value","readonly","onUpdate","style","sourceParameters","onLoad","onError"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },

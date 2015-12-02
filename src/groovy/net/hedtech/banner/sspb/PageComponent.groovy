@@ -67,7 +67,7 @@ class PageComponent {
     final static COMP_DISPLAY_TYPES =  [COMP_TYPE_LITERAL,COMP_TYPE_DISPLAY,COMP_TYPE_LINK,COMP_TYPE_HIDDEN]
 
     // Types that have a DataSet associated  - not completely orthogonal yet. COMP_ITEM_TYPES can have it too
-    final static COMP_DATASET_TYPES = [COMP_TYPE_GRID,COMP_TYPE_HTABLE,COMP_TYPE_LIST,COMP_TYPE_SELECT,COMP_TYPE_DETAIL,COMP_TYPE_DATA, COMP_TYPE_RADIO]
+    final static COMP_DATASET_TYPES = [COMP_TYPE_GRID,COMP_TYPE_HTABLE,COMP_TYPE_LIST,COMP_TYPE_SELECT,COMP_TYPE_XE_DROPDOWN,COMP_TYPE_DETAIL,COMP_TYPE_DATA, COMP_TYPE_RADIO]
 
     // Data Set types only for display
     final static COMP_DATASET_DISPLAY_TYPES = [COMP_TYPE_SELECT,COMP_TYPE_RADIO]
@@ -1192,7 +1192,7 @@ class PageComponent {
             }
         } else {
             if (model || sourceModel) {
-                println "model: $model sourceModel: $sourceModel"
+                //println "model: $model sourceModel: $sourceModel"
                 def ref = model?root.meta.pageResources[model.tokenize(".")[0]] : null
                 if (ref) {
                     ref.meta.referencedBy << this
@@ -1279,8 +1279,9 @@ class PageComponent {
         def optionalParams=""
         if  (COMP_ITEM_TYPES.contains(type)) //items don't support arrays, use the get
             optionalParams+=",useGet: true"
-        if (type != COMP_TYPE_SELECT)
-             optionalParams+=",pageSize: $pageSize"
+        if ( false == [COMP_TYPE_SELECT, COMP_TYPE_XE_DROPDOWN].contains(type)) {
+            optionalParams += ",pageSize: $pageSize"
+        }
         if (onUpdate)
             optionalParams+="\n,onUpdate: function(item){\n${compileCtrlFunction(onUpdate)}\n}"
         if (onLoad)
