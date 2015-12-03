@@ -62,7 +62,7 @@ modules = {
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'ng-grid-rtl.css']
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'angular-ui-rtl.css']
         resource url:[plugin: 'banner-ui-ss', dir: 'bootstrap/css', file: 'bootstrap-rtl.css']
-        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/xe-components/css', file: "xe-ui-components.min.css"]
+        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/xe-components/css', file: "xe-ui-components.min-rtl.css"]
         resource url:[plugin: 'banner-sspb', file: 'css/banner-sspb-rtl-patch.css']
         resource url:[plugin: 'banner-sspb', dir: 'css', file: 'main-rtl.css']
         resource url:[plugin: 'banner-sspb', dir: 'css', file: 'pbDefault-rtl.css']
