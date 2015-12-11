@@ -2,7 +2,6 @@
  * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 
-
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
@@ -56,7 +55,7 @@ class PageComponent {
     final static COMP_TYPE_XE_BUTTON = "xeButton"
     final static COMP_TYPE_XE_TEXTAREA = "xeTextArea"
     final static COMP_TYPE_XE_CHECKBOX = "xeCheckBox"
-    //final static COMP_TYPE_XE_RADIO    = "xeRadioButton"
+//    final static COMP_TYPE_XE_RADIO    = "xeRadioButton"
 
     // Types that can represent a single field - should add RADIO
     final static COMP_ITEM_TYPES = [COMP_TYPE_LITERAL,COMP_TYPE_DISPLAY,COMP_TYPE_TEXT,COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER,
@@ -636,10 +635,10 @@ class PageComponent {
             }   else {
                 def labelStyleStr=child.labelStyle?"class=\"$child.labelStyle\"":""
                 //get the labels from child components
-                thead+="<th ${getIdAttr('data-header-'+child.name)} $labelStyleStr $styleStr >${child.tran("label")}</th>"
+                thead+="<th ${getIdAttr('data-header-'+child.name)} $labelStyleStr>${child.tran("label")}</th>"
                 //get the child components
                 child.label=""
-                items+="<td ${getIdAttr('-td-' + child.name + idTxtParam )} $styleStr >${child.compileComponent("", depth)}</td>\n"
+                items+="<td ${getIdAttr('-td-' + child.name + idTxtParam )}>${child.compileComponent("", depth)}</td>\n"
             }
         }
         def click_txt=""
@@ -647,7 +646,8 @@ class PageComponent {
             click_txt = "ng-click=${name}_onClick($GRID_ITEM)"
 
         def result =  """
-                   |  <table ${getIdAttr()}>
+                   |  <table ${getIdAttr()} $styleStr>
+                   |    <caption>$heading</caption>
                    |    <thead ${getIdAttr('-th')} ><tr ${getIdAttr('-thr')} >$thead</tr></thead>
                    |    <tbody ${getIdAttr('-tb')} >
                    |      <!-- Do this for every object in objects -->
@@ -658,12 +658,7 @@ class PageComponent {
                    |  </table>
                    |""".stripMargin()
         result +=  recordControlPanel()
-        //put in div with styleStr
-        result = """|<div $styleStr ${getIdAttr()} class="pb-$type-container">
-                    |$heading
-                    |$result
-                    |</div>
-                 """.stripMargin()
+
         return result
     }
 
@@ -1458,7 +1453,5 @@ class PageComponent {
         println "-> $result"
         result
     }
-
-
 
 }

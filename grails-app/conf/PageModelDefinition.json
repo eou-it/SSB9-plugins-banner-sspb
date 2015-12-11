@@ -15,21 +15,21 @@
                 "requiredAttributes":[],
                 "optionalAttributes":["title", "scriptingLanguage", "label", "style", "importCSS", "spareComponents"],
                 "requiredChildren":[],
-                "optionalChildren":["flow", "form", "block", "grid", "htable", "detail", "select", "xeDropdown", "radio", "list",  "data", "resource", "literal", "display", "xeTextBox", "text", "xeTextArea", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "xeCheckbox", "xeButton", "button"]
+                "optionalChildren":["flow", "form", "block", "grid", "htable", "detail", "select", "xeDropdown", "radio", "list", "data", "resource", "literal", "display", "xeTextBox", "text", "xeTextArea", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "xeCheckbox", "xeButton", "button"]
             },
             {
                 "componentType":["block"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "style", "showInitially"],
                 "requiredChildren":[],
-                "optionalChildren":["block", "form", "grid", "htable", "detail", "select","xeDropdown", "radio", "list", "data", "literal", "display", "xeTextBox", "text", "xeTextArea", "textArea", "number", "datetime", "email", "tel", "link", "xeCheckbox", "boolean", "xeButton", "button" ]
+                "optionalChildren":["form", "block", "grid", "htable", "detail", "select", "xeDropdown", "radio", "list", "data", "literal", "display", "xeTextBox", "text", "xeTextArea", "textArea", "number", "datetime", "email", "tel", "link", "xeCheckbox", "boolean", "xeButton", "button" ]
             },
             {
                 "componentType":["form"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "style", "submit","submitLabel", "nextButtonLabel", "showInitially"],
                 "requiredChildren":[],
-                "optionalChildren":["grid", "htable", "detail", "select", "xeDropdown", "radio", "list",  "data", "literal", "display", "xeTextBox", "text", "xeTextArea", "textArea", "number", "datetime", "email", "tel", "link", "xeCheckbox", "boolean", "xeButton", "button" ]
+                "optionalChildren":["block", "grid", "htable", "detail", "select", "xeDropdown", "radio", "list",  "data", "literal", "display", "xeTextBox", "text", "xeTextArea", "textArea", "number", "datetime", "email", "tel", "link", "xeCheckbox", "boolean", "xeButton", "button" ]
             },
             {
                 "componentType":["grid"],
@@ -55,14 +55,14 @@
             {
                 "componentType":["link"],
                 "requiredAttributes":[],
-                "optionalAttributes":["label", "labelStyle", "style", "valueStyle", "description", "url", "onClick", "imageUrl", "replaceView"],
+                "optionalAttributes":["label", "style", "labelStyle", "valueStyle", "description", "url", "onClick", "imageUrl", "replaceView"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
             {
                 "componentType":[ "text", "textArea", "datetime", "email", "tel"],
                 "requiredAttributes":[],
-                "optionalAttributes":["label", "labelStyle", "style","valueStyle", "value", "model", "parameters", "validation", "placeholder", "readonly", "required", "onUpdate", "onLoad", "onError", "loadInitially"],
+                "optionalAttributes":["label", "style", "labelStyle", "valueStyle", "value", "model", "parameters", "validation", "placeholder", "readonly", "required", "onUpdate", "onLoad", "onError", "loadInitially"],
                 "ignoredAttributes":["subType"],
                 "requiredChildren":[],
                 "optionalChildren":[]
@@ -84,7 +84,7 @@
             {
                 "componentType":[ "number"],
                 "requiredAttributes":[],
-                "optionalAttributes":["label", "labelStyle", "style","valueStyle", "value", "model", "parameters", "validation", "fractionDigits", "placeholder", "readonly", "required", "onUpdate", "onLoad", "onError", "loadInitially"],
+                "optionalAttributes":["label", "style", "labelStyle", "valueStyle", "value", "model", "parameters", "validation", "fractionDigits", "placeholder", "readonly", "required", "onUpdate", "onLoad", "onError", "loadInitially"],
                 "ignoredAttributes":["subType"],
                 "requiredChildren":[],
                 "optionalChildren":[]
@@ -92,56 +92,56 @@
             {
                 "componentType":["select"],
                 "requiredAttributes":["sourceModel","labelKey", "valueKey" ],
-                "optionalAttributes":["label", "style","labelStyle","valueStyle", "sourceParameters", "model", "required", "placeholder", "value", "onUpdate", "onLoad", "onError", "loadInitially"],
+                "optionalAttributes":["label", "style", "labelStyle", "valueStyle", "sourceParameters", "model", "required", "placeholder", "value", "onUpdate", "onLoad", "onError", "loadInitially"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
             {
                 "componentType":["xeDropdown"],
                 "requiredAttributes":["sourceModel", "labelKey", "valueKey"],
-                "optionalAttributes":["model","label","placeholder","value","readonly","onUpdate","style","sourceParameters","onLoad","onError"],
+                "optionalAttributes":["model", "label", "placeholder", "value", "readonly", "onUpdate", "style", "sourceParameters", "onLoad", "onError"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
             {
                 "componentType":["radio"],
                 "requiredAttributes":["sourceModel","labelKey", "valueKey" ],
-                "optionalAttributes":["label","style","labelStyle","valueStyle", "sourceParameters", "model", "required", "value", "onUpdate", "onLoad", "onError", "loadInitially"],
+                "optionalAttributes":["label", "style", "labelStyle", "valueStyle", "sourceParameters", "model", "required", "value", "onUpdate", "onLoad", "onError", "loadInitially"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
             {
                 "componentType":["list"],
                 "requiredAttributes":["model", "value"],
-                "optionalAttributes":["label", "style","labelStyle","valueStyle", "allowReload", "parameters",  "required", "onClick", "pageSize", "onUpdate", "onLoad", "onError", "loadInitially"],
+                "optionalAttributes":["label", "style", "labelStyle", "valueStyle", "allowReload", "parameters",  "required", "onClick", "pageSize", "onUpdate", "onLoad", "onError", "loadInitially"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
             {
                 "componentType":["boolean"],
                 "requiredAttributes":[],
-                "optionalAttributes":["label", "style","labelStyle","valueStyle", "value", "booleanTrueValue", "booleanFalseValue", "readonly", "onUpdate", "model", "onLoad", "onError", "loadInitially"],
+                "optionalAttributes":["label", "style", "labelStyle", "valueStyle", "value", "booleanTrueValue", "booleanFalseValue", "readonly", "onUpdate", "model", "onLoad", "onError", "loadInitially"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
             {
                 "componentType":["xeCheckbox"],
                 "requiredAttributes":[],
-                "optionalAttributes":["label", "model", "value", "readonly", "onUpdate","style"],
+                "optionalAttributes":["label", "style", "model", "value", "readonly", "onUpdate"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
             {
                 "componentType":["display"],
                 "requiredAttributes":[],
-                "optionalAttributes":["label", "labelStyle", "style","valueStyle", "value", "model", "loadInitially", "onLoad", "onError", "asHtml"],
+                "optionalAttributes":["label", "style", "labelStyle", "valueStyle", "value", "model", "loadInitially", "onLoad", "onError", "asHtml"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
             {
                 "componentType":["literal"],
                 "requiredAttributes":["value"],
-                "optionalAttributes":["label", "labelStyle","style","valueStyle"],
+                "optionalAttributes":["label", "style", "labelStyle", "valueStyle"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },

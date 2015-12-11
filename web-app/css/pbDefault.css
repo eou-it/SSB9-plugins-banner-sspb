@@ -28,3 +28,7 @@ div[ng-grid] {
 .container-fluid {
     width: 100%;
 }
+
+.table {
+    border: none;        /* disable border set in banner_ui_ss */
+}
