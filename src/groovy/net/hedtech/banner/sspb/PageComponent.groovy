@@ -798,13 +798,13 @@ class PageComponent {
                 def radioLabelStyleStr= """class="pb-${parent.type} pb-item pb-radiolabel $labelStyle" """
 
                 result = """
-                  |<div class="$valueStyle" ng-repeat="$SELECT_ITEM in $arrayName" $initTxt >
-                  | <label  ${getIdAttr("-label-$idxStr")} ${getIdFor("-radio-$idxStr")} $radioLabelStyleStr>
-                  | <input ${getIdAttr("-radio-$idxStr")} type="radio" ng-model=$ngModel name="$nameTxt" $ngChange value="{{$SELECT_ITEM.$valueKey}}"/>
+                  |<div class="$valueStyle" ng-repeat="$SELECT_ITEM in $arrayName" $initTxt>
+                  | <label ${idAttribute("-label-$idxStr")} ${idForAttribute("-radio-$idxStr")} $radioLabelStyleStr>
+                  | <input ${idAttribute("-radio-$idxStr")} type="radio" ng-model=$ngModel name="$nameTxt" $ngChange value="{{$SELECT_ITEM.$valueKey}}"/>
                   | {{$SELECT_ITEM.$labelKey}} </label>
                   |</div>""".stripMargin()
 
-                result = """<div ${getIdAttr(idTxtParam)} $autoStyleStr> $result </div>"""
+                result = """<div ${idAttribute(idTxtParam)} $autoStyleStr> $result </div>"""
                 break;
             case COMP_TYPE_LITERAL:
                 //Todo: should we do something for safe/unsafe binding as in next item type?
