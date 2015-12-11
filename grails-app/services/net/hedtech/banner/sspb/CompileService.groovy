@@ -191,7 +191,7 @@ class CompileService {
             if (PageComponent.COMP_DATASET_TYPES.contains(component.type)
                     || (PageComponent.COMP_ITEM_TYPES.contains(component.type) && resource.binding != "page")) {
 
-                functions << component.getDataSetControlCode()
+                functions << component.dataSetControlCode()
             } else if (resource.binding != "page") {
                 throw new Exception("*** Unhandled case in code generator for ${ component.type } $component.name}")
             }
