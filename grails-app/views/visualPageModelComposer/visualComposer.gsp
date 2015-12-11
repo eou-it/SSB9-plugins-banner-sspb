@@ -861,6 +861,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
     <select name="extendsPage"
             ng-options="page as page.constantName disable when page.constantName==pageName for page in pageList track by page.id"
                 ng-model="extendsPage">
+        <option value=""> </option>
     </select>
 
     <button ng-click='newPageSource()'><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
