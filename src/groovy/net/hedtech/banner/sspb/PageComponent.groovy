@@ -617,10 +617,10 @@ class PageComponent {
         // add a delete checkbox column if allowDelete is true
         if (allowDelete) {
             def deleteLabel=deleteRecordLabel?tran("deleteRecordLabel"):tranGlobal("delete.label","Delete")
-            thead = "<th ${idAttribute('delete-column-header')} $styleStr >$deleteLabel</th>"
+            thead = "<th ${idAttribute('delete-column-header')}>$deleteLabel</th>"
             items = """
-                  |<td ${idAttribute('delete-column-data'+idTxtParam)} $styleStr >
-                  |<input ${idAttribute('delete-column-checkbox'+idTxtParam)} $styleStr ng-click="${dataSet}.deleteRecords($GRID_ITEM)" type="checkbox" />
+                  |<td ${idAttribute('delete-column-data'+idTxtParam)}>
+                  |<input ${idAttribute('delete-column-checkbox'+idTxtParam)} ng-click="${dataSet}.deleteRecords($GRID_ITEM)" type="checkbox" />
                   |</td>
                   |""".stripMargin()
         }

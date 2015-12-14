@@ -1,14 +1,11 @@
+/*******************************************************************************
+ * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ ******************************************************************************/
+
 package net.hedtech.banner.sspb
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 
-/**
- * Created with IntelliJ IDEA.
- * User: hvthor
- * Date: 20/08/13
- * Time: 10:12
- * To change this template use File | Settings | File Templates.
- */
 class PageSecurityService {
     static transactional = true
     static datasource = 'sspb'
@@ -121,7 +118,7 @@ class PageSecurityService {
                     rm.save()
                     println "Updated Requestmap entry $url : $configAttribute"
                 } else {
-                    rm.delete()
+                    rm.delete(flush: true)
                     println "Removed Requestmap entry for url $url"
                 }
 
@@ -131,7 +128,7 @@ class PageSecurityService {
         } else {
             if (configAttribute) {
                 rm=new Requestmap (url: url, configAttribute: configAttribute)
-                rm.save(validate: false) //try no validate to get rid of annoying message
+                rm.save()
                 println "Created new Requestmap entry $url : $configAttribute"
             }
         }
