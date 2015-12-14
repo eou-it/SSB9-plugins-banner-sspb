@@ -269,9 +269,10 @@ class PageComponent {
 
     def tranSourceValue(data) {
         def result = []
+        def baseKey = propertiesBaseKey()
         data.each {
             def row = new HashMap(it) //Make sure to create a deep copy and not modify data in input
-            def key ="${propertiesBaseKey()}.staticData.${it."$valueKey"}"
+            def key ="${baseKey}.staticData.${it."$valueKey"}"
             def labelRoot=it."$labelKey"
             row."$labelKey"=tran(key,labelRoot,[] as List,ESC_JS)
             result << row
