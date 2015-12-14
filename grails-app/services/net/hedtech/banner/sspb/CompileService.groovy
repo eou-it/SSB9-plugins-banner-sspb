@@ -465,7 +465,7 @@ class CompileService {
         // check if name already exists on the page
         if (nameSet.contains(pageComponent.name)) {
             valid = false
-            def error = PageModelErrors.getError(error: PageModelErrors.MODEL_NAME_CONFLICT_ERR, path: getComponentNamePath(pageComponent), args: [pageComponent.type, pageComponent.name])
+            def error = PageModelErrors.getError(error: PageModelErrors.MODEL_NAME_CONFLICT_ERR, path: getComponentNamePath(pageComponent), args: [message(code: 'sspb.model.type.'+pageComponent.type), pageComponent.name])
             errors << error
         } else
             nameSet << pageComponent.name
