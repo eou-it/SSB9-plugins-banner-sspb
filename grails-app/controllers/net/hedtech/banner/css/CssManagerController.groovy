@@ -14,7 +14,7 @@ class CssManagerController {
 
     // TODO use REST API
     def uploadCss = {
-        println "in uploadCss. Params = $params"
+        log.trace "in uploadCss. Params = $params"
 
         MultipartFile mpf = request.getFile('file')
         def filename = mpf.originalFilename.toLowerCase()

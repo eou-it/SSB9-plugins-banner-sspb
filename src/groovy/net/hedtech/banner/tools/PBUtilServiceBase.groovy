@@ -1,5 +1,11 @@
 package net.hedtech.banner.tools
 
+import groovy.util.logging.Log4j
+import org.hibernate.HibernateException
+
+import java.text.ParseException
+
+@Log4j
 class PBUtilServiceBase {
     def final static propertyDataDir = 'SSPB_DATA_DIR'
     def final static loadOverwriteExisting=0
@@ -19,7 +25,7 @@ class PBUtilServiceBase {
     def bootMsg = { msg ->
         def tempMsg = "***** ${nowAsIsoTime()} - Bootstrap: $msg "
         //tempMsg=tempMsg.padRight(120,"*")
-        println tempMsg
+        log.info tempMsg
     }
 
     def safeMaxTime = { i,j ->
@@ -34,8 +40,8 @@ class PBUtilServiceBase {
         def savedObject = null
         try {
             savedObject = o.merge(flush:true)
-        } catch (org.hibernate.HibernateException e ) {
-            println "Exception in saveObject: $e"
+        } catch (HibernateException e ) {
+            log.error "Exception in saveObject: $e"
             return null
         }
         return savedObject
@@ -45,17 +51,18 @@ class PBUtilServiceBase {
         Date date
         try {
             date = s?javax.xml.bind.DatatypeConverter.parseDateTime(s).time:null
-        } catch (e) {
-            println "Exception in json2date: $e"
+        } catch (ParseException e) {
+            log.error "Exception in json2date: $e"
         }
         date
     }
 
     def renameExisting = { object ->
-        if  (object.hasProperty("constantName"))
-            object.constantName += "."+nowAsIsoInFileName()+".bak"
-        else
-            object.serviceName += "."+nowAsIsoInFileName()+".bak"
+        if  (object.hasProperty("constantName")) {
+            object.constantName += "." + nowAsIsoInFileName() + ".bak"
+        } else {
+            object.serviceName += "." + nowAsIsoInFileName() + ".bak"
+        }
         object.save()
     }
 

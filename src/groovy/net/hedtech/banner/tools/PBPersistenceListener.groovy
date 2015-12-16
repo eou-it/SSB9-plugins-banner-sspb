@@ -1,11 +1,14 @@
 package net.hedtech.banner.tools
 
+import groovy.util.logging.Log4j
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEventListener
 import org.grails.datastore.mapping.engine.event.EventType
+import org.hibernate.PropertyValueException
 import org.springframework.context.ApplicationEvent
 
+@Log4j
 class PBPersistenceListener extends AbstractPersistenceEventListener {
     public PBPersistenceListener(final Datastore datastore) {
         super(datastore)
@@ -43,8 +46,8 @@ class PBPersistenceListener extends AbstractPersistenceEventListener {
             try {
                 entity.lastUpdated = new Date()
             }
-            catch (e) {
-                println "error adding last updated"
+            catch (PropertyValueException e) {
+                log.error "error adding last updated", e
             }
         }
     }
@@ -53,8 +56,8 @@ class PBPersistenceListener extends AbstractPersistenceEventListener {
             try {
                 entity.dateCreated = new Date()
             }
-            catch (e) {
-                println "error adding date created"
+            catch (PropertyValueException e) {
+                log.error "error adding date created", e
             }
         }
     }

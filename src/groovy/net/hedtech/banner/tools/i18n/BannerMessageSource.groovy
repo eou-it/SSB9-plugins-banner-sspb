@@ -11,6 +11,7 @@ import java.text.MessageFormat
 import java.util.concurrent.ConcurrentHashMap
 
 // from ssh://git@devgit1/banner/plugins/banner_tools.git
+@SuppressWarnings('UnusedPrivateField')
 class BannerMessageSource extends PluginAwareResourceBundleMessageSource {
 
     private PathMatchingResourcePatternResolver extensibleResourceResolver;

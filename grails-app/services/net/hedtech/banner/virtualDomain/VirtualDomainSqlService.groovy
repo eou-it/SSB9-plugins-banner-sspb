@@ -1,13 +1,14 @@
 package net.hedtech.banner.virtualDomain
 
 import groovy.sql.Sql
-import groovy.sql.SqlWithParams
-import static javax.xml.bind.DatatypeConverter.parseDateTime
-import java.sql.SQLException
-import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
+import groovy.util.logging.Log4j
+import net.hedtech.banner.exceptions.ApplicationException
 import net.hedtech.banner.sspb.PBUser
 
+import java.sql.SQLException
+import java.text.ParseException
 
+@Log4j
 class VirtualDomainSqlService {
 
     def sessionFactory    //injected by Spring
@@ -18,10 +19,10 @@ class VirtualDomainSqlService {
     //def dataSource
     def dataSource_sspb
 
-    private def getSql =  { ds ->
+    private def getSql (vdDatasource) {
         def result
 
-        if ( ds == "B") {
+        if ( vdDatasource == "B") {
             result = new Sql(sessionFactory.getCurrentSession().connection())
         } else {
             result = new Sql(dataSource_sspb)
@@ -31,16 +32,17 @@ class VirtualDomainSqlService {
 
     // copy params rather than changing params itself
     //changing param pluralizedResourceName made the restful api fail
-    private def getNormalized = {  p ->
+    private def getNormalized (params) {
         Map result = [:]
-        p.each { key, value ->
+        params.each { key, value ->
             def k=key
             def v=value
             if ( !["action","virtualDomain","controller","pluralizedResourceName"].contains(key) )  {
                 if (key=="id")
                     v = urlPathDecode(value)
-                else
+                else {
                     k = k.toLowerCase()
+                }
                 // unmarshall null from JS - if it is undefined change to null
                 // HvT: This leads to issues if user wants to pass string undefined in a parameter.
                 //      Is it possible to fix this in AngularJS?
@@ -53,20 +55,20 @@ class VirtualDomainSqlService {
         result
     }
 
-    private def addUser = { params ->
+    private def addUser (params) {
         def user = PBUser.get()
         user.each { k,v ->
             try {
                 params.put("user_" + k, v)
             }
-            catch (e) {
-                println e
+            catch (ApplicationException e) {
+                log.error "Exception adding user:", e
             }
         }
     }
     /* Check the user roles against the virtual domain roles
      */
-    private def userAccessRights = { vd, userRoles ->
+    private def userAccessRights (vd, userRoles) {
         def result=[get: false, put: false, post: false, delete: false, debug: false ]
         for (it in userRoles) {
             //objectName is like SELFSERVICE-ALUMNI
@@ -89,14 +91,15 @@ class VirtualDomainSqlService {
     Replace the default order by clause with an order by clause provided as parameters (or append clause to query)
     This closure may fail to do the right thing if an inner query contains an order by and the outer query does not
     */
-    private def replaceOrderBy = {statement, orderBy ->
+    private def replaceOrderBy (statement, orderBy) {
         def result=statement
         if (orderBy && statement) {
             def orderByList=[]
             if (orderBy instanceof String)
                 orderByList << orderBy
-            else
-                orderByList=orderBy
+            else {
+                orderByList = orderBy
+            }
             def ob="order by"
             //assume order by and ) is not in comments
             def regex=/(?i:order+[ \t\n\r]by)/
@@ -156,8 +159,9 @@ class VirtualDomainSqlService {
         try {
             if (parameters.max) //make sure that an integer was passed in (avoid sql injection)
                 parameters.max=parameters.max.toInteger()
-            else
-                parameters.max=1000.toInteger()
+            else {
+                parameters.max = 1000.toInteger()
+            }
             if (parameters.debug == true)
                 parameters.max=5.toInteger()
             if (!parameters.offset)
@@ -183,7 +187,7 @@ class VirtualDomainSqlService {
         } finally {
             sql.close()
         }
-        println logmsg
+        log.debug logmsg
 
         return [error: errorMessage, rows:rows, totalCount: rows?.size()]
     }
@@ -213,7 +217,7 @@ class VirtualDomainSqlService {
         } finally {
             sql.close()
         }
-        println logmsg
+        log.debug logmsg
         return [error: errorMessage, totalCount:totalCount.longValue()]
     }
 
@@ -230,8 +234,8 @@ class VirtualDomainSqlService {
             sql = getSql(vd.dataSource)
             sql.execute(vd.codePut, data)
         }
-        catch(e) {
-            println "exception in update statement: $e"
+        catch(ApplicationException e) {
+            log.debug "exception in update statement: $e"
             throw new VirtualDomainException( privs.debug?e.getLocalizedMessage():"Unable to update resource.")
         }
         finally {
@@ -261,8 +265,8 @@ class VirtualDomainSqlService {
             sql = getSql(vd.dataSource)
             sql.execute(vd.codePost, data)
         }
-        catch(e) {
-            println "exception in create statement: $e"
+        catch(SQLException e) {
+            log.error "exception in create statement: $e"
             throw new VirtualDomainException( privs.debug?e.getLocalizedMessage():"Unable to create resource.")
         }
         finally {
@@ -284,8 +288,8 @@ class VirtualDomainSqlService {
             sql = getSql(vd.dataSource)
             sql.execute(vd.codeDelete, params)
         }
-        catch(e) {
-            println "exception in delete statement: $e"
+        catch(SQLException e) {
+            log.error "exception in delete statement: $e"
             throw new VirtualDomainException( privs.debug?e.getLocalizedMessage():"Unable to delete resource.")
         }
         finally {
@@ -306,8 +310,9 @@ class VirtualDomainSqlService {
                 try {
                     def p1 = javax.xml.bind.DatatypeConverter.parseDateTime(convertDateString)
                     it.value=new java.sql.Timestamp(p1.getTime().time)
-                } catch (e) {
+                } catch (ParseException e) {
                     //do nothing it is not a date so it should be ok
+                    log.error "Exception in parsing date", e
                 }
             }  else if (  (it.value instanceof String)  && it.value.endsWith('Z')) {
                 //not really needed to use a regular expression - as parseDateTime should raise exception
@@ -321,9 +326,10 @@ class VirtualDomainSqlService {
                         // it.value += "+00:00"
                     def date = javax.xml.bind.DatatypeConverter.parseDateTime(it.value)
                     it.value=new java.sql.Timestamp(date.getTime().time)
-                    println "java.sql.Timestamp value: ${it.value}  Milliseconds past 1970 ${it.value.getTime()} date milli: ${date.getTimeInMillis()}"
-                } catch (e) {
+                    log.debug "java.sql.Timestamp value: ${it.value}  Milliseconds past 1970 ${it.value.getTime()} date milli: ${date.getTimeInMillis()}"
+                } catch (ApplicationException e) {
                     //do nothing it is not a date so it should be ok
+                    log.error "Exception in Date conversion:", e
                 }
             }
             if (it.value.getClass().toString().endsWith("JSONObject\$Null") ) {
@@ -346,34 +352,35 @@ class VirtualDomainSqlService {
     // Use Hex encoding example is following conversion of concatenation of two ROWID's
     // AAAO/0AAHAAABpFAAA:AAAO/2AAHAAAREwAAA -> 4141414f2f304141484141414270464141413a4141414f2f32414148414141524577414141
 
-    private def urlPathEncode = {
-         it.bytes.encodeAsHex()   // Hex encoding doesn't use problematic characters like / in Base64
+    private def urlPathEncode  (id) {
+         id.bytes.encodeAsHex()   // Hex encoding doesn't use problematic characters like / in Base64
     }
 
-    private def urlPathDecode = {
-        if (it)
-            new String( it.decodeHex())
-        else
+    private def urlPathDecode (id) {
+        if (id) {
+            new String(id.decodeHex())
+        } else {
             ""
+        }
     }
 
-    private def idEncodeRows = {
-        for ( row in it ) {
+    private def idEncodeRows(rows) {
+        for ( row in rows ) {
             if (row.containsKey("id")) {
                 String idString = row.id
                 idString = urlPathEncode(idString)
-                println "${row.id} -> $idString"
+                log.debug "${row.id} -> $idString"
                 row.id=idString
             }  else {
-                return it  // no need to traverse the whole array if first row doesn't have an id property
+                return rows  // no need to traverse the whole array if first row doesn't have an id property
             }
         }
-        return it
+        return rows
     }
 
-    private def handleClobRows = {
+    private def handleClobRows(rows) {
         def foundClob=false
-        for ( row in it )  {
+        for ( row in rows )  {
             for (col in row ) {
                 if (col.value.getClass().toString().endsWith("CLOB"))  {
                     String s=getStringValue(col.value)
@@ -382,9 +389,9 @@ class VirtualDomainSqlService {
                 }
             }
             if (!foundClob)
-                return it // no need to traverse the whole array if first row doesn't have a CLOB
+                return rows // no need to traverse the whole array if first row doesn't have a CLOB
         }
-        return it
+        return rows
     }
 
     // For CLOB support. Based on code found on forum.springsource.org

@@ -5,15 +5,16 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
+import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.web.context.ServletContextHolder
 import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
 import org.springframework.context.ApplicationContext
 import net.hedtech.banner.tools.i18n.SortedProperties
 
-
+@Log4j
 class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     def pageService
-    def static bundleLocation = getBundleLocation()
+    def static final bundleLocation = getBundleLocation()
 
     def static getBundleLocation() {
         if (bundleLocation) //only need to determine location once
@@ -97,8 +98,14 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         load(null, null, file, mode)
     }
 
-    private def associateRoles = { page, roles ->
-        if (!roles.equals(null)){  //have to use equals for JSONObject as it is not really null
+    private def associateRoles(page, roles) {
+        if (roles.equals(null)){  //have to use equals for JSONObject as it is not really null
+            if (page.constantName.startsWith("pbadm.")){
+                //add a WTAILORADMIN role so the pages can be used
+                def role=new PageRole(roleName: "WTAILORADMIN")
+                page.addToPageRoles(role)
+            }
+        } else {
             roles.each { newRole ->
                 if ( newRole.roleName && !page.pageRoles.find{ it.roleName == newRole.roleName } ) {
                     try {
@@ -109,12 +116,6 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                         log.error "Exception adding role: ${e.message}"
                     }
                 }
-            }
-        } else {
-            if (page.constantName.startsWith("pbadm.")){
-                //add a WTAILORADMIN role so the pages can be used
-                def role=new PageRole(roleName: "WTAILORADMIN")
-                page.addToPageRoles(role)
             }
         }
     }
@@ -154,10 +155,11 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 }
             }
             if (doLoad) {
-                if (json.has('modelView')) // file contains a marshaled page
+                if (json.has('modelView')) {// file contains a marshaled page
                     page.properties['modelView' /*, 'fileTimestamp'*/] = json
-                else // file is a representation of the page modelView
+                } else { // file is a representation of the page modelView
                     page.modelView = jsonString
+                }
                 def compilationResult = pageService.compilePage(page)
                 page = compilationResult.page
                 page.fileTimestamp = json2date(json.fileTimestamp)

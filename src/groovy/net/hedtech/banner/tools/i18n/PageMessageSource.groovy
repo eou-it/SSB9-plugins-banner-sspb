@@ -1,5 +1,6 @@
 package net.hedtech.banner.tools.i18n
 
+import net.hedtech.banner.exceptions.ApplicationException
 import net.hedtech.banner.sspb.PageUtilService
 import grails.util.Holders as CH
 
@@ -72,7 +73,7 @@ class PageMessageSource extends ReloadableResourceBundleMessageSource {
         logger.debug "Initialize PageResources"
         try {
             bundleLocation=PageUtilService.getBundleLocation()
-            println "External Bundle location : $bundleLocation (Banner configuration pageBuilder.locations.bundles default: \$temp or \$tmp)"
+            logger.debug "External Bundle location : $bundleLocation (Banner configuration pageBuilder.locations.bundles default: \$temp or \$tmp)"
             //Get the basenames from the external root properties files (assume filename has no underscore)
             new File(bundleLocation).eachFileMatch(~/[^_]*.properties/) {   file ->
                 String fileName = file.name
@@ -100,10 +101,10 @@ class PageMessageSource extends ReloadableResourceBundleMessageSource {
 
             setBasenames((String []) pageResources)
             //logger.debug("Added to page resources: " + baseName)
-           println "Added to page resources: " + baseName
-        } catch (ex) {
+           logger.debug "Added to page resources: " + baseName
+        } catch (ApplicationException ex) {
             logger.error "Exception while adding page resource $baseName in PageMessageSource:\n${ex.getMessage()}"
-            throw ex
+            throw new ApplicationException(PageMessageSource, ex)
         }
     }
 

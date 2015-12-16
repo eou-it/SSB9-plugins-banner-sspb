@@ -60,11 +60,13 @@ class Page {
     }
 
     //Compare the models
+    @SuppressWarnings('EqualsOverloaded')
     boolean equals(Map modelMap){
         def thisMap = getMergedModelMap(false)  // get the model of this as a map without mergeInfo
         thisMap.equals(cleanModelMap(modelMap)) // clean the input map to compare to and check for equality
     }
 
+    @SuppressWarnings('EqualsOverloaded')
     boolean equals(String model) {
         def modelMap = modelToMap(model)
         equals(modelMap)
@@ -164,7 +166,7 @@ class Page {
         if (diff.base instanceof Map) {
             diff = diffMapAttribute(name, diff)
         } else if (diff.base instanceof String) {
-            diff = diffStringAttribute(name, diff)
+            diff = diffStringAttribute(diff)
         }
         diff
     }
@@ -186,7 +188,7 @@ class Page {
     }
 
     //Static method for String type attribute
-    private static diffStringAttribute(name, diff) {
+    private static diffStringAttribute(diff) {
         List<String> base = diff.base.split('\n')
         List<String> ext = diff.ext.split('\n')
         if (base.size() > 1) {
@@ -248,7 +250,7 @@ class Page {
     }
 
     //Static helper method to convert a page model Map to a propertyMap (intermediate format used in diff determination)
-    private static Map propertyMap(Map comp, int siblingIndex = 0, Map parent = null, Map next = null) {
+    private static Map propertyMap(Map comp) {
         def props = [:]
         def decomposed = decomposeComponents(comp).components
         decomposed.each {
@@ -272,46 +274,16 @@ class Page {
             if (comp && diff.name && diff.name.base && !diff.name.ext) { //this component is removed by the extension
                 comp.mergeInfo  << [removedBy: constantName]
             } else if (comp) { // Component exists, change props to match the extension
-                diff.each { prop, val ->
-                    if (val.base.equals(comp[prop]) || prop != KEYS.meta) {
-                        // accept change as is.
-                        if (val.containsKey(KEYS.ext)) {
-                            try {
-                                comp[prop] = mergeAttribute(prop, comp[prop], val)
-                                if (prop == KEYS.meta) {
-                                    def parent=model.components[comp.meta.parent]
-                                    if (!parent.containsKey(KEYS.mergeInfo)) {
-                                        parent.mergeInfo=[:]
-                                    }
-                                    parent?.mergeInfo << [modifiedBy: constantName]
-                                } else {
-                                    comp.mergeInfo  << [modifiedBy: constantName]
-                                }
-                            } catch (e) {
-                                model.conflicts << [type: "mergeAttribute", message: e.message, comp: comp, property: prop]
-                            }
-                        } else {
-                            comp.remove(prop)
-                        }
-                    } else {
-                        if (prop == KEYS.meta) {
-                            def type = diff.meta.base?.nextSibling?.equals(comp.meta.nextSibling) ? "newParent" : "reOrder"
-                            comp.mergeInfo  << [modifiedBy: constantName]
-                            model.conflicts << [type: type, diff: diff, comp: comp]
-                            log.warn "Component $name: detected meta change in baseline ${ val.base } to ${ comp[prop] }. Change to be applied: ${ val.ext }"
-                        }
-                    }
-                }
+                changeProps(diff, comp, model)
             } else {
                 //if we are here, a new component is added by the extension or a baseline component is removed
                 //a new component must at least have a type attribute
                 if (diff.type) {
                     diff.each { prop, val ->
                         if (val.containsKey(KEYS.ext)) {
-                        //if (val.ext) {
-                            if (!comp) {
+                            //if (val.ext) {
+                            if (!comp)
                                 comp = [:] //we have an extension property so create the component
-                            }
                             comp[prop] = val.ext
                         }
                     }
@@ -327,6 +299,40 @@ class Page {
             }
         }
         composeComponents(model, withInfo)
+    }
+
+    // Component exists, change props to match the extension
+    private static changeProps(diff, comp, model){
+        diff.each { prop, val ->
+            if (val.base.equals(comp[prop]) || prop != KEYS.meta) {
+                // accept change as is.
+                if (val.containsKey(KEYS.ext)) {
+                    try {
+                        comp[prop] = mergeAttribute(prop, comp[prop], val)
+                        if (prop == KEYS.meta) {
+                            def parent=model.components[comp.meta.parent]
+                            if (!parent.containsKey(KEYS.mergeInfo))
+                                parent.mergeInfo=[:]
+                            parent?.mergeInfo << [modifiedBy: constantName]
+                        } else {
+                            comp.mergeInfo  << [modifiedBy: constantName]
+                        }
+                    } catch (e) {
+                        model.conflicts << [type: "mergeAttribute", message: e.message, comp: comp, property: prop]
+                    }
+                } else {
+                    comp.remove(prop)
+                }
+            } else {
+                if (prop == KEYS.meta) {
+                    def type = diff.meta.base?.nextSibling?.equals(comp.meta.nextSibling) ? "newParent" : "reOrder"
+                    comp.mergeInfo  << [modifiedBy: constantName]
+                    model.conflicts << [type: type, diff: diff, comp: comp]
+                    log.warn "Component $name: detected meta change in baseline ${ val.base } to ${ comp[prop] }. Change to be applied: ${ val.ext }"
+                }
+            }
+        }
+
     }
 
     //Static helper method to decompose a page model to a flat map, adding sibling and parent meta information
@@ -363,7 +369,7 @@ class Page {
 
     //Remove merge and meta information depending on withInfo
     private static def cleanComponent(component, withInfo) {
-       if (withInfo && component.mergeInfo)  {
+        if (withInfo && component.mergeInfo)  {
             if (!(component.mergeInfo?.noReference)) {
                 component.mergeInfo.remove(KEYS.noReference)
             }
@@ -384,7 +390,7 @@ class Page {
         decomposedModel = resolveConflicts(decomposedModel)
         Map root = decomposedModel.components[decomposedModel.root]
         if (root.meta.firstChild) {
-            def child = decomposedModel.components[root.meta.firstChild]
+            //def child = decomposedModel.components[root.meta.firstChild]
             root.components = getComponents(decomposedModel, root)
         }
         //Iterate over components to see if we have any components with noReference.

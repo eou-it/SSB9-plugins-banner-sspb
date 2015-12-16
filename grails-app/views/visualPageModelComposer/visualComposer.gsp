@@ -721,7 +721,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                              $scope.pageStatus.message += response.pageValidationResult.warn;
                              note.type = noteType.success; //noteType.warning; warning needs an action
                          }
-                         $scope.statusHolder.isPageModified = false;
+                             $scope.statusHolder.isPageModified = false;
                      }
                      else {
                          var msg = "${message(code:'sspb.page.validation.error.message', encodeAs: 'JavaScript')}";

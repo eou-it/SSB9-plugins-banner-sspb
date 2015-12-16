@@ -4,15 +4,15 @@
 
 package net.hedtech.banner.sspb
 
-import net.hedtech.banner.tools.i18n.PageMessageSource
-import org.apache.commons.logging.LogFactory
 import grails.util.Holders as CH
+import groovy.util.logging.Log4j
+import net.hedtech.banner.exceptions.ApplicationException
+import net.hedtech.banner.tools.i18n.PageMessageSource
 
+@Log4j
 class CompileService {
 
-    def static log = LogFactory.getLog(this)
-
-    def static pageBuilderModel = (new groovy.json.JsonSlurper())
+    def static final pageBuilderModel = (new groovy.json.JsonSlurper())
             .parseText(CompileService.class.classLoader.getResourceAsStream('PageModelDefinition.json').text)
     // TODO configure Hibernate
     def transactional = false
@@ -53,11 +53,10 @@ class CompileService {
             page.updateResourceBindings()
             valid = pageValidation.valid
             errors += pageValidation.errors
-        } catch (Exception e) {
-            log.error "Parsing page model exception: " + e
+        } catch (ApplicationException e) {
+            log.error "Parsing page model exception: ", org.codehaus.groovy.runtime.StackTraceUtils.sanitize( e )
             errors << PageModelErrors.getError(error: PageModelErrors.MODEL_UNKNOWN_ERR, args: [e.message])
             valid = false
-            org.codehaus.groovy.runtime.StackTraceUtils.printSanitizedStackTrace(e)
         }
         return [valid: valid, pageComponent: page, error: errors, warn: warn]
     }
@@ -193,7 +192,7 @@ class CompileService {
 
                 functions << component.dataSetControlCode()
             } else if (resource.binding != "page") {
-                throw new Exception("*** Unhandled case in code generator for ${ component.type } $component.name}")
+                throw new ApplicationException(CompileService, "*** Unhandled case in code generator for ${ component.type } $component.name}")
             }
         }
         return functions.join("\n")
@@ -353,7 +352,7 @@ class CompileService {
                             || pageComponent.parent.type == PageComponent.COMP_TYPE_HTABLE)) {
                 // if a select is used in a grid or detail control its model is bound to parent model, we need to copy
                 // the model to $<selectName> in order for it to be referenced by other controls
-                println "****WARNING**** using duplicate - is this still needed?"
+                log.error "****WARNING**** using duplicate - is this still needed?"
                 duplicateExpr =
                         "//duplicate\n" +
                                 "\$scope.$pageComponent.name = \$scope._${ pageComponent.parent.model.toLowerCase() }s_${ pageComponent.parent.name }[0].$pageComponent.model;"
@@ -422,7 +421,7 @@ class CompileService {
             it.root = pageComponent.root
             it.modelOrigin = it.model
             if (!it.name) {
-                throw new Exception("*** ERROR *** This should never occur, component name is required.")
+                throw new ApplicationException(CompileService, "*** ERROR *** This should never occur, component name is required.")
             }
 
             if (!it.model) {
@@ -467,8 +466,9 @@ class CompileService {
             valid = false
             def error = PageModelErrors.getError(error: PageModelErrors.MODEL_NAME_CONFLICT_ERR, path: getComponentNamePath(pageComponent), args: [message(code: 'sspb.model.type.'+pageComponent.type), pageComponent.name])
             errors << error
-        } else
+        } else {
             nameSet << pageComponent.name
+        }
 
         // validate all child component
         // JsonSlurper does not automatically cast components from a list of Map to a list of PageComponent

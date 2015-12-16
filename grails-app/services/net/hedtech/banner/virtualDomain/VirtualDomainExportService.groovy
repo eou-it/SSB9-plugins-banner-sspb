@@ -10,10 +10,11 @@ class VirtualDomainExportService {
         def result = []
         if (sortBy) {
             def sortByList = []
-            if (sortBy instanceof String)
+            if (sortBy instanceof String) {
                 sortByList << sortBy
-            else
+            } else {
                 sortByList = sortBy
+            }
             for (s in sortByList) {
                 //replace operator and special characters to avoid sql injection
                 s = (String) s.tr(" ',.<>?;:|+=!/&*(){}[]`~@#\$%\"^-", " ")
@@ -70,14 +71,15 @@ class VirtualDomainExportService {
     //Todo: add pageLike criteria
     def count(Map params) {
         def result
-        if (params.serviceName)
+        if (params.serviceName) {
             result = VirtualDomain.countByServiceNameLike(params.serviceName)
-        else
+        } else {
             result = VirtualDomain.count()
+        }
         return result
     }
 
-    def create(Map content, params) {
+    def create(Map content, ignore) {
         def result
         if (content.exportVirtualDomain == "1") {
             def vdUtilService = new VirtualDomainUtilService()
@@ -88,7 +90,7 @@ class VirtualDomainExportService {
     }
 
     // handle export of single vd
-    def update(/*def id,*/ Map content, params) {
+    def update(/*def id,*/ Map content, ignore) {
         def result
         if (content.exportVirtualDomain == "1") {
             def vdUtilService = new VirtualDomainUtilService()

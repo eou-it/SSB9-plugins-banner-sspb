@@ -5,21 +5,24 @@
 package net.hedtech.banner.sspb
 
 import grails.plugin.springsecurity.SpringSecurityUtils
+import groovy.util.logging.Log4j
+import org.omg.CORBA.portable.ApplicationException
 
+@Log4j
 class PageSecurityService {
     static transactional = true
-    static datasource = 'sspb'
+    static final datasource = 'sspb'
     def springSecurityService
 
     // For Restful interface
-    def update(/*def id,*/ Map content, params)  {
+    def update(/*def id,*/ Map ignore, params)  {
         def page=Page.get(params.id);
-        def rm=mergePage(page)
+        mergePage(page)
     }
-    def create(Map content, params)  {
-        def rm=update( /*content.pageId,*/ content, [id:content.pageId])
+    def create(Map content, ignore)  {
+        update( /*content.pageId,*/ content, [id:content.pageId])
     }
-    def delete(Map content, params) {
+    def delete(Map ignore, params) {
         def url = "/customPage/page/${params.constantName}/**"
         def rm=Requestmap.findByUrl(url)
         if (rm) {
@@ -29,7 +32,7 @@ class PageSecurityService {
 
     // Called from application bootstrap
     def init () {
-        println "************  Initializing Request map **********"
+        log.trace "************  Initializing Request map **********"
         //def session = grails.util.Holders.grailsApplication.mainContext.sessionFactory.currentSession
         //Next delete introduces hibernate errors (that don't seem to matter)
         //def tx = session.beginTransaction();
@@ -66,8 +69,8 @@ class PageSecurityService {
                     configAttribute=configAttribute.substring(1) //strip first comma
                 saveRequestmap(url, configAttribute)
             }
-            catch(e) {
-                println "Exception merging $entry: \n $e"
+            catch(ApplicationException e) {
+                log.error "Exception merging $entry: \n $e"
             }
         }
     }
@@ -97,8 +100,8 @@ class PageSecurityService {
                 configAttribute=configAttribute.substring(1) //strip first comma
             rm=saveRequestmap(url, configAttribute)
         }
-        catch(e) {
-            println "Exception merging $url - $configAttribute: \n $e"
+        catch(ApplicationException e) {
+            log.error "Exception merging $url - $configAttribute: \n $e"
         }
         if (clearCache) {
             springSecurityService.clearCachedRequestmaps()
@@ -116,20 +119,20 @@ class PageSecurityService {
                 rm.configAttribute = configAttribute
                 if (configAttribute) {
                     rm.save()
-                    println "Updated Requestmap entry $url : $configAttribute"
+                    log.info "Updated Requestmap entry $url : $configAttribute"
                 } else {
                     rm.delete(flush: true)
-                    println "Removed Requestmap entry for url $url"
+                    log.info "Removed Requestmap entry for url $url"
                 }
 
             } else {
-                println "Requestmap entry for url $url is not changed"
+                log.info "Requestmap entry for url $url is not changed"
             }
         } else {
             if (configAttribute) {
                 rm=new Requestmap (url: url, configAttribute: configAttribute)
                 rm.save()
-                println "Created new Requestmap entry $url : $configAttribute"
+                log.debug "Created new Requestmap entry $url : $configAttribute"
             }
         }
         return rm

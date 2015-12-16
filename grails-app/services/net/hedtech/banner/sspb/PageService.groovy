@@ -4,17 +4,19 @@
 
 package net.hedtech.banner.sspb
 
+import net.hedtech.banner.exceptions.ApplicationException
+
 class PageService {
     def compileService
     def groovyPagesTemplateEngine
     def pageSecurityService
 
     def get(String constantName) {
-        def result = Page.findByConstantName(constantName)
+        Page.findByConstantName(constantName)
     }
 
     def getNew(String constantName) {
-        def result = new Page(constantName:constantName)
+        new Page(constantName:constantName)
     }
 
     def list(Map params) {
@@ -52,10 +54,11 @@ class PageService {
 
     def count(Map params) {
         log.trace "PageService.count invoked"
-        if (params.constantName)
+        if (params.constantName) {
             Page.countByConstantNameLike(params.constantName)
-        else
+        } else {
             Page.count()
+        }
     }
 
 
@@ -71,7 +74,7 @@ class PageService {
 
 
     // TODO for now update(post) handles both update and creation to simplify client side logic
-    def create(Map content, params) {
+    def create(Map content, ignore) {
         log.trace "PageService.create invoked"
         def result
         Page.withTransaction {
@@ -99,11 +102,10 @@ class PageService {
                 extendsPage = extendsPage.equals(null)||extendsPage?.size()==0?null:extendsPage
             }
 
-            if (!pageInstance) {
-                pageInstance = new Page([constantName:pageName, extendsPage:extendsPage])
-            }
-            else {
+            if (pageInstance) {
                 pageInstance.extendsPage = extendsPage ? Page.findByConstantName(extendsPage.constantName) : null
+            } else {
+                pageInstance = new Page([constantName:pageName, extendsPage:extendsPage])
             }
             pageInstance.modelView=pageSource
             ret = compilePage(pageInstance)
@@ -127,8 +129,9 @@ class PageService {
                     }
                 }
             }
-        } else
-            ret = [statusCode: 1, statusMessage: message(code:"sspb.page.visualcomposer.no.source.message")]
+        } else {
+            ret = [statusCode: 1, statusMessage: message(code: "sspb.page.visualcomposer.no.source.message")]
+        }
 
         groovyPagesTemplateEngine.clearPageCache() //Make sure that new page gets used
         return ret
@@ -163,12 +166,12 @@ class PageService {
     }
 
     // note the content-type header still needs to be set in the request even we don't send in any content in the body
-    void delete(Map content, params) {
+    void delete(Map ignore, params) {
         pageSecurityService.delete([:],[constantName:params.id])
         Page.withTransaction {
             def page = Page.find{constantName==params.id}
             if (page.extensions?.size() > 0) {
-                throw new RuntimeException( message(code:"sspb.page.visualComposer.deletion.failed.message",args: [page.extensions.constantName.join(", ")]))
+                throw new ApplicationException(PageService, message(code:"sspb.page.visualComposer.deletion.failed.message",args: [page.extensions.constantName.join(", ")]))
             }
             else {
                 page.delete(failOnError:true)
@@ -190,6 +193,7 @@ class PageService {
      * @param testExtensionsFile : tes extension file in JSON format
      * @return map of file contents
      */
+    @SuppressWarnings('UnusedPrivateMethod')
     private Map loadTestData(testPageFile,
                              testExtensionsFile) {
         Map testData = [:]

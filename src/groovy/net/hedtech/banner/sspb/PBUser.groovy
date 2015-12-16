@@ -15,7 +15,7 @@ class PBUser {
         new ValidationTagLib().message( mapToLocalize )
     }
 
-    static def get(groovy.sql.Sql sql=null) {
+    static def get() {
         def userIn = SecurityContextHolder?.context?.authentication?.principal
         def user
         LogFactory.getLog(this).info "Getting new PB User $userIn"

@@ -9,10 +9,11 @@ class CssExportService {
         def result=[]
         if (sortBy ) {
             def sortByList=[]
-            if (sortBy instanceof String)
+            if (sortBy instanceof String) {
                 sortByList << sortBy
-            else
-                sortByList=sortBy
+            } else {
+                sortByList = sortBy
+            }
             for (s in sortByList) {
                 //replace operator and special characters to avoid sql injection
                 s=(String) s.tr(" ',.<>?;:|+=!/&*(){}[]`~@#\$%\"^-", " ")
@@ -75,14 +76,15 @@ class CssExportService {
     //Todo: add pageLike criteria
     def count(Map params) {
         def result
-        if (params.constantName)
+        if (params.constantName) {
             result = Css.countByConstantNameLike(params.constantName)
-        else
+        } else {
             result = Css.count()
+        }
         return result
     }
 
-    def create(Map content, params) {
+    def create(Map content, ignore) {
         def result
         if (content.exportCss == "1") {
             def cssUtilService = new CssUtilService()
@@ -93,7 +95,7 @@ class CssExportService {
     }
 
     // handle export of single css file
-    def update(/*def id,*/ Map content, params) {
+    def update(/*def id,*/ Map content, ignore) {
         def result
         if (content.exportCss == "1") {
             def cssUtilService = new CssUtilService()

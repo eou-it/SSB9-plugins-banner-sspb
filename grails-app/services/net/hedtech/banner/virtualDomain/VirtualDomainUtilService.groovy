@@ -1,7 +1,9 @@
 package net.hedtech.banner.virtualDomain
 
 import grails.converters.JSON
+import groovy.util.logging.Log4j
 
+@Log4j
 class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
 
     //Used in integration test

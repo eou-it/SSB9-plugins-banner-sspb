@@ -1,5 +1,6 @@
 package net.hedtech.banner.sspb
 
+@SuppressWarnings('UnusedMethodParameter')
 class PageExportService {
     static transactional = false  //Getting error connection closed without this
 
@@ -7,10 +8,11 @@ class PageExportService {
         def result=[]
         if (sortBy ) {
             def sortByList=[]
-            if (sortBy instanceof String)
+            if (sortBy instanceof String) {
                 sortByList << sortBy
-            else
-                sortByList=sortBy
+            } else {
+                sortByList = sortBy
+            }
             for (s in sortByList) {
                 //replace operator and special characters to avoid sql injection
                 s=(String) s.tr(" ',.<>?;:|+=!/&*(){}[]`~@#\$%\"^-", " ")
@@ -62,10 +64,11 @@ class PageExportService {
 
     def count(Map params) {
         def result
-        if (params.constantName)
+        if (params.constantName) {
             result = Page.countByConstantNameLike(params.constantName)
-        else
+        } else {
             result = Page.count()
+        }
         return result
     }
 

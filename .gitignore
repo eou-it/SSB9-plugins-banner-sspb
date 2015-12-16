@@ -5,3 +5,7 @@
 *-rtl.css
 /**/selenium*
 grails-app/conf/SeleniumConfig.groovy
+.sonar
+cobertura.ser
+sonar-project.properties
+

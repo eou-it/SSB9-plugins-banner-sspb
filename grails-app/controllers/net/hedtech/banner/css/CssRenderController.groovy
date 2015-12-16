@@ -1,5 +1,8 @@
 package net.hedtech.banner.css
 
+import groovy.util.logging.Log4j
+
+@Log4j
 class CssRenderController {
     static defaultAction = "loadCss"
     static rtlReplace = [[from:"\$start"        , to:"right"],
@@ -16,7 +19,7 @@ class CssRenderController {
 
     // loading a stylesheet by name, expecting ?name=<name>
     def loadCss = {
-        println "in loadCss. Params = $params"
+        log.debug "in loadCss. Params = $params"
         // find the CSS by name
         def ret = cssService.show([id:params.name])
 
@@ -38,6 +41,6 @@ class CssRenderController {
         // TODO set Last-Modified, Cache-Control, Expires
         //response.setContentType('text/css')
         render (text: css, contentType: "text/css", encoding: "UTF-8")
-        println "rendered css"
+        log.debug "rendered css"
     }
 }

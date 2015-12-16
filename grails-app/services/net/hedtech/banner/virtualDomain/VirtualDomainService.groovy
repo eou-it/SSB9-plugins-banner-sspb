@@ -1,6 +1,6 @@
 package net.hedtech.banner.virtualDomain
 
-import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
+import org.hibernate.HibernateException
 
 class VirtualDomainService {
 
@@ -58,7 +58,7 @@ class VirtualDomainService {
     }
 
     def create (Map data, params) {
-        println "Data for post/save/create:" + data
+        log.debug "Data for post/save/create:", data
         def serviceName = vdName(params)
         def vd = loadVirtualDomain(serviceName)
         if (vd.error) {
@@ -70,7 +70,7 @@ class VirtualDomainService {
     }
 
     def update (/*def id,*/ Map data, params) {
-        println "Data for put/update:" + data
+        log.debug "Data for put/update:" + data
         def serviceName = vdName(params)
         def vd = loadVirtualDomain(serviceName)
         if (vd.error) {
@@ -82,7 +82,7 @@ class VirtualDomainService {
     }
 
     def delete (/*def id,*/ Map data,  params) {
-        println "Data for DELETE:" + data
+        log.debug "Data for DELETE:" + data
         def serviceName = vdName(params)
         def vd = loadVirtualDomain(serviceName)
         if (vd.error) {
@@ -119,8 +119,9 @@ class VirtualDomainService {
                 if (vd)
                     success = true
             }
-        } catch (Exception ex) {
+        } catch (HibernateException ex) {
             error = ex.getMessage()
+            log.error ex
         }
         return [success:success, updated:updateVD, error:error, id:vd?.id, version:vd?.version]
     }
@@ -138,8 +139,9 @@ class VirtualDomainService {
                 success = true
                 error = null
             }
-        } catch (Exception ex) {
+        } catch (HibernateException ex) {
             error = ex.getMessage()
+            log.error ex
         }
         return [success:success, virtualDomain:vd, error:error]
     }

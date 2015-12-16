@@ -17,7 +17,6 @@ class CustomPageController {
             return
         }
         def page
-        def allow = false
         def pageId = params.id
         //support numeric ID or constantName
         try {
@@ -66,12 +65,12 @@ class CustomPageController {
             if (page && page.compiledView && page.compiledController)
                 html = compileService.assembleFinalPage(page.compiledView, page.compiledController)
         }
-        if (html)
+        if (html) {
             render renderGsp(html, "Page$pageId")
-        else if (!allow) {
+        } else if (!allow) {
             render(status: 401, message(code: "sspb.renderer.page.deny.access",  args:user.loginName))
+        } else {
+            invalidPage(message(code: "sspb.renderer.page.does.not.exist"))
         }
-        else
-            invalidPage(message(code:"sspb.renderer.page.does.not.exist"))
     }
 }

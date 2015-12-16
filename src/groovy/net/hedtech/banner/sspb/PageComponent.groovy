@@ -5,10 +5,13 @@
 package net.hedtech.banner.sspb
 
 import groovy.json.StringEscapeUtils
+import groovy.util.logging.Log4j
 import net.hedtech.banner.css.Css
+import net.hedtech.banner.exceptions.ApplicationException
 
 import java.util.regex.Pattern
 
+@Log4j
 class PageComponent {
 
     // Context for parsing expressions
@@ -247,8 +250,9 @@ class PageComponent {
     static boolean isDataSetEditControl ( PageComponent pc ){
         if (pc)
             [COMP_TYPE_DETAIL,COMP_TYPE_GRID,COMP_TYPE_HTABLE,COMP_TYPE_LIST].contains(pc?.type)
-        else
+        else {
             false;
+        }
     }
 
     boolean isDataSetEditControl() {
@@ -314,8 +318,9 @@ class PageComponent {
         key = "global.$key"
         if (text)
             root.globalProperties[key] = text
-        else
+        else {
             text = root.globalProperties[key]
+        }
         if (text) {
             return tranMsg(key,args,esc)
         }
@@ -341,11 +346,12 @@ class PageComponent {
    Additional tag is used to differentiate generated controls inside an component (such as new button for grid)
    id is used for styling purpose
     */
+
     def idAttribute(tag = "") {
-        def s = """id='pbid-$name${tag?tag:""}'"""
+        """id='pbid-$name${tag?tag:""}'"""
     }
     def idForAttribute(tag = "") {
-        def s = """for="pbid-$name${tag?tag:""}" """
+        """for="pbid-$name${tag?tag:""}" """
     }
 
     def recordControlPanel()  {
@@ -440,7 +446,7 @@ class PageComponent {
         // generate all table columns from the data model
         components.each { child ->
             child.parent = this
-            def ro= child.readonly || COMP_DISPLAY_TYPES.contains(child.type)
+            //def ro= child.readonly || COMP_DISPLAY_TYPES.contains(child.type)
             if (items.length()>0)
                 items+=",\n"
             def optional =  (child.type==COMP_TYPE_HIDDEN)? ",visible: false":""
@@ -515,11 +521,11 @@ class PageComponent {
         code
     }
 
-    private def javaScriptString(s) {
+    /*private def javaScriptString(s) {
         def result = s.replaceAll("\'","\\\\'").replaceAll("\n","\\n")
         println result
         result
-    }
+    }*/
     //this returns a html template string as a javascript string - escape strings
     String gridChildHTML( int depth=0) {
         def templateResult = compileComponentTemplate(depth)
@@ -539,7 +545,7 @@ class PageComponent {
         def validateAt = ""
         def placeholderAt=""
         def ngModel="ng-model=\"COL_FIELD\""    // shorthand for  row.entity[col.field]
-        def ngChange=!ro?"ng-change=\""+(onUpdate?"\$parent.${parent.ID}_${name}_onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity)\"":""
+        def ngChange=ro?"":"ng-change=\""+(onUpdate?"\$parent.${parent.ID}_${name}_onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity)\""
         def onClickCode=parent.onClick?"\$parent.${parent.name}_onClick(row.entity, col);":""
         def ngClick="""ng-click="$onClickCode" """
         //def ngClick="""ng-click="\$parent.${parent.name}DS.setCurrentRecord(row.entity);$onClickCode" """
@@ -587,7 +593,7 @@ class PageComponent {
                 return "<span $styleAt $ngClick>" + tran(propertiesBaseKey()+".value",compileDOMDisplay(value).replaceAll("item.","row.entity.") ) + "</span>"
                 break
             default :
-                println "***No ng-grid html edit template for $type ${name?name:model}"
+                log.info "***No ng-grid html edit template for $type ${name?name:model}"
         }
         def result = "$tagStart $nameAt $typeAt $styleAt $specialAt $readonlyAt $requiredAt $validateAt $placeholderAt" +
                      " $ngModel $ngChange $ngClick $tagEnd"
@@ -701,7 +707,7 @@ class PageComponent {
     /*
     Special compilation for generating table specific controls
      */
-    def listCompile(int depth=0) {
+    def listCompile(int ignoreDepth=0) {
         def dataSet = "${name}DS"
         def txt = "<span ${idAttribute()} $styleStr>"
         def repeat = "$LIST_ITEM in ${dataSet}.data"
@@ -723,7 +729,7 @@ class PageComponent {
         return txt
     }
 
-    String compileItem(String t, int depth=0){
+    String compileItem(String t, int ignoreDepth=0){
         def autoStyleStr //generate class attributes from model
         // handle ID generation for items in a dataset
         // append -$index to each rendered items
@@ -819,19 +825,19 @@ class PageComponent {
                 if ( [COMP_TYPE_HTABLE, COMP_TYPE_DETAIL].contains(parent.type)) {
                     if (type == COMP_TYPE_DATETIME) {
                         modelTxt_safe = "{{ $GRID_ITEM.${model}|date:'medium' }}"
-                    }
-                    else if (asHtml)
+                    } else if (asHtml) {
                         modelTxt_unsafe = "ng-bind-html='$GRID_ITEM.$model | to_trusted' "
-                    else
-                        modelTxt_safe = "{{ $GRID_ITEM.${model} }}"
+                    } else {
+                        modelTxt_safe = "{{ $GRID_ITEM.${ model } }}"
+                    }
                 } else {
                     if (type == COMP_TYPE_DATETIME) {
                         modelTxt_safe = "{{value|date:'medium'}}"
+                    } else if (asHtml) {
+                        modelTxt_unsafe = "ng-bind-html='${ compileDOMExpression(value) } | to_trusted' "
+                    } else {
+                            modelTxt_safe = "${ compileDOMDisplay(value) }"
                     }
-                    else if (asHtml)
-                        modelTxt_unsafe = "ng-bind-html='${compileDOMExpression(value)} | to_trusted' "
-                    else
-                        modelTxt_safe = "${compileDOMDisplay(value)}"
                 }
                 result = """<span ${idAttribute(idTxtParam)} $ngClick $autoStyleStr $modelTxt_unsafe> $modelTxt_safe </span>""";
                 break;
@@ -887,8 +893,9 @@ class PageComponent {
                     if (model && !readonly) {
                         if (binding != BINDING_PAGE) // use DataSet current record
                             result+="ng-model=\"${ID}DS.currentRecord"
-                        else // there may be a value instead of a model
-                            result+= """ng-model="$modelRoot"""
+                        else {// there may be a value instead of a model
+                            result += """ng-model="$modelRoot"""
+                        }
                         if (modelComponent)
                             result+=".$modelComponent"
                         result+='" '
@@ -919,7 +926,7 @@ class PageComponent {
                 break;
             default :
                 // TODO log and ignore not implemented component
-                println "*** WARNING: Compile Item. No HTML generated for component: $type ${name?name:model} ***"
+                log.warn "*** WARNING: Compile Item. No HTML generated for component: $type ${name?name:model} ***"
                 result = ""
         }
         if ([COMP_TYPE_BOOLEAN,COMP_TYPE_BUTTON, COMP_TYPE_SUBMIT].contains(type))
@@ -980,13 +987,13 @@ class PageComponent {
                 // Handle Items
                 result = compileItem(t,depth)
                 if (!result)
-                    println "*** WARNING: ComponentStart. No HTML generated for component: $type ${name} ***"
+                    log.debug "*** WARNING: ComponentStart. No HTML generated for component: $type ${name} ***"
         }
         return result
     }
 
     // handle non-terminal nodes
-    String componentEnd(String t, int depth=0) {
+    String componentEnd(String t, int ignoreDepth=0) {
         switch (t) {
             case COMP_TYPE_PAGE:
                 return  "</div>\n</body>\n"
@@ -1005,8 +1012,9 @@ class PageComponent {
                         } else {
                             if ( nextButtonLabel == NEXT_BUTTON_DEFAULT_LABEL)
                                 labelStr = tranGlobal("flow.next.label",NEXT_BUTTON_DEFAULT_LABEL)
-                            else
+                            else {
                                 labelStr = tran("nextButtonLabel")
+                            }
                         }
                     } else {
                         labelStr = tran('submitLabel')
@@ -1044,8 +1052,9 @@ class PageComponent {
         for (css in is) {
             if (  Css.findByConstantName(css) )
                 cssImp += """<link type="text/css" rel="stylesheet" href="$importPath?name=${css.trim()}" />\n"""
-            else
-                println "Warning: Style sheet $css will not be imported as it does not exist."
+            else {
+                log.warn "Warning: Style sheet $css will not be imported as it does not exist."
+            }
         }
 
         """
@@ -1185,7 +1194,7 @@ class PageComponent {
     // New method for resource usage
     def updateResourceBindings() {
         if (ID != name) {
-            throw new Exception("***WARN*** Found a component with ID != name") //Todo: remove once we have consolidated name and ID
+            throw new ApplicationException(PageComponent, "***WARN*** Found a component with ID != name") //Todo: remove once we have consolidated name and ID
         }
         if (type == COMP_TYPE_PAGE) { //Make sure to have the resources first
             components.each { pc ->
@@ -1344,13 +1353,15 @@ class PageComponent {
         prep.eachWithIndex { str, i ->
             def subParts = str.split(Pattern.quote(exprKet))
             if (subParts.size()==1) {   // did not find exprKet or there is no part after it
-                if (i==0 && !expr.startsWith(exprBra) )
-                    parts += [preBra:subParts[0]]
-                else
-                    parts += [expression:subParts[0]]
+                if (i==0 && !expr.startsWith(exprBra) ) {
+                    parts += [preBra: subParts[0]]
+                } else {
+                    parts += [expression: subParts[0]]
+                }
             }
-            else
-                parts += [expression:subParts[0], postKet:subParts[1]]
+            else {
+                parts += [expression: subParts[0], postKet: subParts[1]]
+            }
         }
         parts
     }
@@ -1434,11 +1445,11 @@ class PageComponent {
             result
         }
         if (expression == null) {
-            println "Compile Expression: skip null"
+            log.debug "Compile Expression: skip null"
             return expression
         }
         def result = expression
-        println "Compile Expression: $expression"
+        log.debug "Compile Expression: $expression"
         if (target in [ExpressionTarget.CtrlFunction, ExpressionTarget.DOMExpression] )
             result = expressionReplace(result)
         else {
@@ -1457,7 +1468,7 @@ class PageComponent {
                 }
             }
         }
-        println "-> $result"
+        log.debug "-> $result"
         result
     }
 }

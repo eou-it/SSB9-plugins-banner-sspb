@@ -1,8 +1,10 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
+import groovy.util.logging.Log4j
 import net.hedtech.banner.css.Css
 
+@Log4j
 class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
 
 

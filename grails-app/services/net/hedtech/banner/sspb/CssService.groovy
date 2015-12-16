@@ -7,6 +7,7 @@ package net.hedtech.banner.sspb
 import grails.validation.ValidationException
 import org.codehaus.groovy.grails.web.util.WebUtils
 import org.hibernate.StaleObjectStateException
+import net.hedtech.banner.exceptions.ApplicationException
 import org.springframework.dao.OptimisticLockingFailureException
 import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException
 
@@ -43,7 +44,7 @@ class CssService {
     }
 
 
-    def count(Map params) {
+    def count(Map ignore) {
         log.trace "CssService.count invoked"
         Css.count()
     }
@@ -65,12 +66,12 @@ class CssService {
 
 
     // TODO for now update(post) handles both update and creation to simplify client side logic
-    def create(Map content, params) {
+    def create(Map content, ignore) {
         log.trace "CssService.create invoked"
 
 
         if (WebUtils.retrieveGrailsWebRequest().getParameterMap().forceGenericError == 'y') {
-            throw new Exception( "generic failure" )
+            throw new ApplicationException( CssService, "generic failure" )
         }
 
         def result
@@ -121,14 +122,15 @@ class CssService {
                 ret = [statusCode: 2, statusMessage:message(code:"sspb.css.cssManager.stylesheet.validation.error.message")]
                 ret << [cssValidationResult:[errors: validateResult.error.join('\n')] ]
             }
-        } else
+        } else {
             ret = [statusCode: 1, statusMessage: message(code:"sspb.css.cssManager.cssSource.empty.message")]
+        }
 
         return ret
     }
 
     // note the content-type header still needs to be set in the request even we don't send in any content in the body
-    void delete(Map content, params) {
+    void delete(Map ignore, params) {
         Css.withTransaction {
             def css = Css.find{constantName==params.id}
             css.delete(failOnError:true)
@@ -152,7 +154,7 @@ class CssService {
     }
 
 
-    private def exceptionForOptimisticLock( domainObject, content ) {
+    private def exceptionForOptimisticLock( domainObject, ignore ) {
         new HibernateOptimisticLockingFailureException( new StaleObjectStateException( domainObject.class.getName(), domainObject.id ) )
     }
 
@@ -168,9 +170,9 @@ class CssService {
         if (params.throwOptimisticLock == 'y') {
             throw new OptimisticLockingFailureException( "requested optimistic lock for testing" )
         }
-        if (params.throwApplicationException == 'y') {
+        /*if (params.throwApplicationException == 'y') {
            //throw new DummyApplicationException( params.appStatusCode, params.appMsgCode, params.appErrorType )
-        }
+        }*/
     }
 
 

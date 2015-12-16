@@ -7,6 +7,7 @@ package net.hedtech.banner.sspb
  * Time: 9:38 AM
  * To change this template use File | Settings | File Templates.
  */
+@SuppressWarnings('UnusedVariable')
 class PageModelErrors {
 
 

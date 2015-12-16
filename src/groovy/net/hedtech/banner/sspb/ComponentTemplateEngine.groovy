@@ -1,10 +1,14 @@
 package net.hedtech.banner.sspb
 import grails.util.Environment
 import groovy.json.StringEscapeUtils
+import groovy.util.logging.Log4j
 import jdk.nashorn.api.scripting.NashornScriptEngineFactory
+import net.hedtech.banner.exceptions.ApplicationException
+
 import javax.script.ScriptContext
 import javax.script.SimpleScriptContext
 
+@Log4j
 class ComponentTemplateEngine {
 
     static final def resourcePath ="data/componentTemplates"
@@ -41,7 +45,7 @@ class ComponentTemplateEngine {
                 }
             }
             timeLoaded = new Date()
-            println ("*** Loaded Template at $timeLoaded ***")
+            log.debug ("*** Loaded Template at $timeLoaded ***")
         }
     }
 
@@ -92,9 +96,9 @@ class ComponentTemplateEngine {
         }
         try {
             template.engine.eval(js)
-        } catch(e) {
-            println "Error Executing JavaScript:\n $js"
-            throw (e)
+        } catch(ScriptException e) {
+            log.error "Error Executing JavaScript:\n $js"
+            throw new ApplicationException(ComponentTemplateEngine, e)
         }
         //println b // see if we can grab the result from b or if we need to get things back from the context somehow
         return "\n"+b._renderResult.trim()+"\n"
