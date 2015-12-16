@@ -15,7 +15,7 @@ class PageExportServiceIntegrationSpec extends IntegrationSpec {
         def params = [offset: "0", constantName: "%pbadm%", max: "10", sortby: "constantName asc",  controller: "restfulApi" ,pluralizedResourceName: "pageexports"]
         def result =pageExportService.list(params)
         expect:
-        assert result.size() == 6
+        assert result.size() > 0
     }
 
     void "test count"() {
@@ -23,7 +23,7 @@ class PageExportServiceIntegrationSpec extends IntegrationSpec {
         def params = [offset: "0", constantName: "%pbadm%", max: "10", sortby: "constantName asc",  controller: "restfulApi" ,pluralizedResourceName: "pageexports"]
         def result =pageExportService.count(params)
         expect:
-        assert result == 6
+        assert result > 0
     }
 
     void "test create"() {
