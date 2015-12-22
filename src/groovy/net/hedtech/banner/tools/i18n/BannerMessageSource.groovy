@@ -1,23 +1,13 @@
 package net.hedtech.banner.tools.i18n
 
 import grails.util.Holders as CH
-
 import org.codehaus.groovy.grails.context.support.PluginAwareResourceBundleMessageSource
-import org.springframework.core.io.ResourceLoader
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.springframework.web.context.request.RequestContextHolder
 
 import java.text.MessageFormat
-import java.util.concurrent.ConcurrentHashMap
 
 // from ssh://git@devgit1/banner/plugins/banner_tools.git
-@SuppressWarnings('UnusedPrivateField')
 class BannerMessageSource extends PluginAwareResourceBundleMessageSource {
-
-    private PathMatchingResourcePatternResolver extensibleResourceResolver;
-    private ResourceLoader extensibleResourceLoader;
-    private Map cachedExtensibleProperties = new ConcurrentHashMap();
-    private int externalBundleCacheMillis = -1;
 
     PageMessageSource pageMessageSource
 

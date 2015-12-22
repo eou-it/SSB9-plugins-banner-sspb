@@ -235,7 +235,7 @@ class VirtualDomainSqlService {
             sql.execute(vd.codePut, data)
         }
         catch(ApplicationException e) {
-            log.debug "exception in update statement: $e"
+            log.error "Exception in update statement", e
             throw new VirtualDomainException( privs.debug?e.getLocalizedMessage():"Unable to update resource.")
         }
         finally {

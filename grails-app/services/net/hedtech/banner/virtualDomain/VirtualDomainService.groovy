@@ -1,7 +1,9 @@
 package net.hedtech.banner.virtualDomain
 
+import groovy.util.logging.Log4j
 import org.hibernate.HibernateException
 
+@Log4j
 class VirtualDomainService {
 
     def virtualDomainSqlService
@@ -58,7 +60,7 @@ class VirtualDomainService {
     }
 
     def create (Map data, params) {
-        log.debug "Data for post/save/create:", data
+        log.debug "Data for post/save/create:" + data
         def serviceName = vdName(params)
         def vd = loadVirtualDomain(serviceName)
         if (vd.error) {

@@ -11,8 +11,9 @@ class CssManagerControllerIntegrationSpec extends IntegrationSpec {
     def CssDirPath = "target/testData/css"
 
     def setup() {
-        new File(CssDirPath).mkdirs()
-        new File(cssFilePath).write(cssString)
+        def pbConfig = grails.util.Holders.getConfig().pageBuilder
+        def path = pbConfig.locations.css
+        new File(path+"/testCss.json").write(cssString)
     }
 
     def cleanup() {
@@ -29,11 +30,9 @@ class CssManagerControllerIntegrationSpec extends IntegrationSpec {
                 "text/css",
                 contentStream)
             cssManagerController.request.addFile(file)
-            def result = cssManagerController.uploadCss(params)
+            cssManagerController.uploadCss(params)
         expect:
-            cssManagerController.response
-            cssManagerController.response !=  null
-            println(cssManagerController.response)
+            cssManagerController.response.status == 200
 
     }
 }

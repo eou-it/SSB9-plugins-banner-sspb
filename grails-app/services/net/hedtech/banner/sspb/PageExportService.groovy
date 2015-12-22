@@ -1,6 +1,5 @@
 package net.hedtech.banner.sspb
 
-@SuppressWarnings('UnusedMethodParameter')
 class PageExportService {
     static transactional = false  //Getting error connection closed without this
 
@@ -72,7 +71,7 @@ class PageExportService {
         return result
     }
 
-    def create(Map content, params) {
+    def create(Map content, ignore) {
         def result
         if (content.exportPage == "1") {
             def pageUtilService = new PageUtilService()
@@ -82,7 +81,7 @@ class PageExportService {
         result
     }
 
-    def update(/*def id,*/ Map content, params) {
+    def update(/*def id,*/ Map content, ignore) {
         def result
         if (content.exportPage == "1") {
             def pageUtilService = new PageUtilService()

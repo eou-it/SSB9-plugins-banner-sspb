@@ -446,7 +446,6 @@ class PageComponent {
         // generate all table columns from the data model
         components.each { child ->
             child.parent = this
-            //def ro= child.readonly || COMP_DISPLAY_TYPES.contains(child.type)
             if (items.length()>0)
                 items+=",\n"
             def optional =  (child.type==COMP_TYPE_HIDDEN)? ",visible: false":""
@@ -521,11 +520,6 @@ class PageComponent {
         code
     }
 
-    /*private def javaScriptString(s) {
-        def result = s.replaceAll("\'","\\\\'").replaceAll("\n","\\n")
-        println result
-        result
-    }*/
     //this returns a html template string as a javascript string - escape strings
     String gridChildHTML( int depth=0) {
         def templateResult = compileComponentTemplate(depth)

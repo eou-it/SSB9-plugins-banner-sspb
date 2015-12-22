@@ -31,7 +31,7 @@ class CssUtilServiceIntegrationSpec extends IntegrationSpec {
 
     void "test importAllFromDir"() {
         given:
-        def result = cssUtilService.importAllFromDir()
+        cssUtilService.importAllFromDir()
         expect:
         def cssInstance  = Css.findByConstantName("testCss")
         def isPersisted
