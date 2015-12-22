@@ -17,8 +17,6 @@ class VirtualDomainComposerControllerIntegrationSpec extends IntegrationSpec {
         vdController.composeVirtualDomain()
         expect:
         vdController.response.status == 200
-        // println vdcController.response.contentAsString
-
 
     }
 
@@ -30,6 +28,5 @@ class VirtualDomainComposerControllerIntegrationSpec extends IntegrationSpec {
             vdController.saveVirtualDomain()
         expect:
             vdController.response.status == 200
-            println vdController.response.contentAsString
     }
 }

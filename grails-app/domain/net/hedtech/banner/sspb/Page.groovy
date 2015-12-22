@@ -274,7 +274,9 @@ class Page {
             if (comp && diff.name && diff.name.base && !diff.name.ext) { //this component is removed by the extension
                 comp.mergeInfo  << [removedBy: constantName]
             } else if (comp) { // Component exists, change props to match the extension
-                changeProps(diff, comp, model)
+                def result = changeProps(diff, comp, model)
+                comp = result.comp
+                model = result.model
             } else {
                 //if we are here, a new component is added by the extension or a baseline component is removed
                 //a new component must at least have a type attribute
@@ -302,7 +304,7 @@ class Page {
     }
 
     // Component exists, change props to match the extension
-    private static changeProps(diff, comp, model){
+    private Map changeProps(diff, comp, model){
         diff.each { prop, val ->
             if (val.base.equals(comp[prop]) || prop != KEYS.meta) {
                 // accept change as is.
@@ -328,11 +330,11 @@ class Page {
                     def type = diff.meta.base?.nextSibling?.equals(comp.meta.nextSibling) ? "newParent" : "reOrder"
                     comp.mergeInfo  << [modifiedBy: constantName]
                     model.conflicts << [type: type, diff: diff, comp: comp]
-                    log.warn "Component $name: detected meta change in baseline ${ val.base } to ${ comp[prop] }. Change to be applied: ${ val.ext }"
+                    log.warn "Component $comp.name: detected meta change in baseline ${ val.base } to ${ comp[prop] }. Change to be applied: ${ val.ext }"
                 }
             }
         }
-
+        [comp: comp, model: model]
     }
 
     //Static helper method to decompose a page model to a flat map, adding sibling and parent meta information
