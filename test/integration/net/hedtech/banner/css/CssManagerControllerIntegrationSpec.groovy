@@ -8,6 +8,7 @@ class CssManagerControllerIntegrationSpec extends IntegrationSpec {
     def cssDirPath   = "target/testData/css"
     def cssString = "body {color: red;}"
     def setup() {
+        new File(cssDirPath).mkdir()
         new File(cssDirPath+"/testCss.json").write(cssString)
     }
 
