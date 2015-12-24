@@ -22,37 +22,40 @@ class CssExportServiceIntegrationSpec extends IntegrationSpec {
         new File(path+"/testExportCss.json").delete()
     }
 
-    void "test list"() {
+    void "test CSS export list"() {
         given:
-        def params = [offset: "0", constantName: "%testExportCss%", max: "10", sortby: "constantName asc",  controller: "restfulApi" ,pluralizedResourceName: "cssexports"]
+        def params = [offset: "0", constantName: "%testExportCss%", max: "10", sortby: "constantName asc"]
+        when:
         def result = cssExportService.list(params)
-        expect:
-        assert result.size() == 1
+        then:
+        result.size() == 1
     }
 
-    void "test update"() {
+    void "test CSS export update"() {
         given:
         def cssInstance = Css.findAllByConstantNameLike("testExportCss")
         def params = [controller: "restfulApi", id: cssInstance.id, pluralizedResourceName: "cssexports"]
-        def content = [constantName: "testExportCss", exportCss: "1", id: "10000"]
+        def content = [constantName: "testExportCss", exportCss: "1", id: cssInstance.id]
+        when:
         def result = cssExportService.update(content, params)
-        expect:
-        assert result.size() == 3
-        assert result.constantName == 'testExportCss'
-        assert result.exportCss == "1"
-        assert result.id != null
+        then:
+        result.size() == 3
+        result.constantName == 'testExportCss'
+        result.exportCss == "1"
+        result.id != null
     }
 
-    void "test create"() {
+    void "test CSS export create"() {
         given:
         def cssInstance = Css.findAllByConstantNameLike("testExportCss")
         def params = [controller: "restfulApi", id: cssInstance.id, pluralizedResourceName: "cssexports"]
-        def content = [constantName: "testExportCss", exportCss: "1", id: "10000"]
+        def content = [constantName: "testExportCss", exportCss: "1", id: cssInstance.id]
+        when:
         def result = cssExportService.create(content, params)
-        expect:
-        assert result.size() == 3
-        assert result.constantName == 'testExportCss'
-        assert result.exportCss == "1"
-        assert result.id != null
+        then:
+        result.size() == 3
+        result.constantName == 'testExportCss'
+        result.exportCss == "1"
+        result.id != null
     }
 }

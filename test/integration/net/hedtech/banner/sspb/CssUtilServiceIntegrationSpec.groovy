@@ -29,16 +29,18 @@ class CssUtilServiceIntegrationSpec extends IntegrationSpec {
     def cleanup() {
     }
 
-    void "test importAllFromDir"() {
+    void "test Import CSS files"() {
         given:
         cssUtilService.importAllFromDir()
-        expect:
+        when:
         def cssInstance  = Css.findByConstantName("testCss")
+        and:
         def isPersisted
         if(cssInstance) {
             isPersisted = true
         }
-        assert isPersisted ==  true
+        then:
+        isPersisted ==  true
 
     }
 }

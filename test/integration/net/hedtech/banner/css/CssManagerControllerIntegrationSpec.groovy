@@ -5,34 +5,33 @@ import java.io.File
 import org.springframework.mock.web.MockMultipartFile
 
 class CssManagerControllerIntegrationSpec extends IntegrationSpec {
-    def cssService
-    def cssFilePath   = "target/testData/css/testCss.css"
+    def cssDirPath   = "target/testData/css"
     def cssString = "body {color: red;}"
-    def CssDirPath = "target/testData/css"
-
     def setup() {
-        def pbConfig = grails.util.Holders.getConfig().pageBuilder
-        def path = pbConfig.locations.css
-        new File(path+"/testCss.json").write(cssString)
+        new File(cssDirPath+"/testCss.json").write(cssString)
     }
 
     def cleanup() {
-
+        new File(cssDirPath+"/testCss.json").delete()
     }
 
-    void "Integration uploadCss"() {
-        given:
-            def cssManagerController = new CssManagerController()
-            def params = [cssName:"test", description: "test desc", file: new File(cssFilePath)]
-            def contentStream = new FileInputStream(cssFilePath)
-            def file = new MockMultipartFile("file",
-                cssFilePath,
+    void "Integration test uploading of CSS file"() {
+        given: "mock multipart file "
+        def cssManagerController = new CssManagerController()
+        def contentStream = new FileInputStream(cssDirPath + "/testCss.json")
+        def file = new MockMultipartFile("file",
+                cssDirPath + "/testCss.json",
                 "text/css",
                 contentStream)
-            cssManagerController.request.addFile(file)
-            cssManagerController.uploadCss(params)
-        expect:
-            cssManagerController.response.status == 200
+        cssManagerController.request.addFile(file)
+        when: "Upload CSS file"
+        cssManagerController.params.name = "test"
+        cssManagerController.params.description = "test desc"
+        cssManagerController.params.file =  new File(cssDirPath + "/testCss.json")
+        cssManagerController.uploadCss()
+        then: "status code with 0 should be returned"
+        cssManagerController.response.status == 200
+        cssManagerController.response.json.statusCode == 0
 
     }
 }

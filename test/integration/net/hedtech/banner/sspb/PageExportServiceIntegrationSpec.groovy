@@ -25,10 +25,11 @@ class PageExportServiceIntegrationSpec extends IntegrationSpec {
     void "test list"() {
         given:
         def params = [offset: "0", constantName: "%integrationTestPage%", max: "10", sortby: "constantName asc",  controller: "restfulApi" ,pluralizedResourceName: "pageexports"]
+        when:
         def result =pageExportService.list(params)
-        expect:
-        assert result.size() == 1
-        assert result[0].constantName == "integrationTestPage"
+        then:
+        result.size() == 1
+        result[0].constantName == "integrationTestPage"
     }
 
     void "test create"() {
@@ -36,25 +37,27 @@ class PageExportServiceIntegrationSpec extends IntegrationSpec {
         def pageInstance = Page.findByConstantName("integrationTestPage")
         def params = [controller: "restfulApi", id: pageInstance.id, pluralizedResourceName: "pageexports"]
         def content = [constantName: "integrationTestPage", exportPage: "1", id: pageInstance.id]
+        when:
         def result = pageExportService.create(content, params)
-        expect:
-        assert result!=null
-        assert result.constantName == "integrationTestPage"
-        assert result.exportPage == "1"
-        assert result.id!=null
+        then:
+        result!=null
+        result.constantName == "integrationTestPage"
+        result.exportPage == "1"
+        result.id!=null
     }
 
-    void "test update"() {
+    void "test page export update method"() {
         given:
         def pageInstance = Page.findByConstantName("integrationTestPage")
         def params = [controller: "restfulApi", id: pageInstance.id, pluralizedResourceName: "pageexports"]
         def content = [constantName: "integrationTestPage", exportPage: "1", id: pageInstance.id]
+        when:
         def result = pageExportService.update(content, params)
-        expect:
-        assert result!=null
-        assert result.constantName == "integrationTestPage"
-        assert result.exportPage == "1"
-        assert result.id!=null
+        then:
+        result!=null
+        result.constantName == "integrationTestPage"
+        result.exportPage == "1"
+        result.id!=null
     }
 
 }
