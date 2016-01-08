@@ -162,25 +162,28 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 }
                 def compilationResult = pageService.compilePage(page)
                 page = compilationResult.page
-                page.fileTimestamp = json2date(json.fileTimestamp)
-                if (file)
-                    page.fileTimestamp = new Date(file.lastModified())
-                if (json.has('extendsPage') && json.extendsPage) {//pointer to parent page
-                    Page extendsPage = pageService.get(json.extendsPage.constantName)
-                    if (!extendsPage) {  // page does not yet exist but may be imported after. Create dummy page for now
-                        extendsPage = pageService.getNew(json.extendsPage.constantName)
-                        extendsPage.modelView = "{}"  // define it with empty contents
-                        extendsPage = saveObject(extendsPage)
+                if(page) {
+                    page.fileTimestamp = json2date(json.fileTimestamp)
+                    if (file)
+                        page.fileTimestamp = new Date(file.lastModified())
+                    if (json.has('extendsPage') && json.extendsPage) {//pointer to parent page
+                        Page extendsPage = pageService.get(json.extendsPage.constantName)
+                        if (!extendsPage) {  // page does not yet exist but may be imported after. Create dummy page for now
+                            extendsPage = pageService.getNew(json.extendsPage.constantName)
+                            extendsPage.modelView = "{}"  // define it with empty contents
+                            extendsPage = saveObject(extendsPage)
+                        }
+                        if (extendsPage) {
+                            page.extendsPage = extendsPage
+                        } else {
+                            log.error "Error, referenced page does not exist and cannot be created: " + json.extendsPage.constantName
+                            return 0
+                        }
                     }
-                    if (extendsPage) {
-                        page.extendsPage = extendsPage
-                    } else {
-                        log.error "Error, referenced page does not exist and cannot be created: " + json.extendsPage.constantName
-                        return 0
-                    }
+                    associateRoles(page, json.pageRoles)
+                    page = saveObject(page)
                 }
-                associateRoles(page, json.pageRoles)
-                page = saveObject(page)
+
                 if (file) {
                     if (compilationResult.statusCode > 0) {
                         log.info compilationResult

@@ -98,10 +98,10 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
 
     <g:if test="${localeLanguage!='en'}">
-        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery.ui.datepicker-${localeLanguage}.js" />"> </script>
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery/i18n" file="jquery.ui.datepicker-${localeLanguage}.js" />"> </script>
     </g:if>
-    <g:if test="${localeBrowserFull!='en-US'}">
-        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery" file="jquery.ui.datepicker-${localeBrowserFull}.js" />"> </script>
+    <g:if test="${localeBrowserFull!='en-US' && localeBrowserFull != localeLanguage }">
+        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery/i18n" file="jquery.ui.datepicker-${localeBrowserFull}.js" />"> </script>
     </g:if>
     <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeLanguage}.js" />"> </script>
     <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeBrowserFull.toLowerCase()}.js" />"> </script>

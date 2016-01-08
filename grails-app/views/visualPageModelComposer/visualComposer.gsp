@@ -19,6 +19,11 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
     <r:require modules="pageBuilderDev"/>
 
     <script type="text/javascript">
+        $(function(){
+            $(".tab-content").on("hover", function(){
+                $("input[name='prop_name']").tooltip();
+            });
+         })
      var myCustomServices = ['ngResource', 'ui.bootstrap', 'pagebuilder.directives', 'ngMessages'];
 
     // remove additional properties added by Angular resource when pretty print page source
@@ -54,19 +59,19 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
              notifications.addNotification(new Notification(note));
          };
 
-         $scope.confirmDelete = function(msg,deleteAction) {
+         $scope.confirmPageAction = function(msg, pageAction) {
              var note = {type: noteType.warning, message: msg};
              note.message = note.message.replace(/\n/g, "<br />");
              note.flash = false;
              var n = new Notification( note );
 
-             n.addPromptAction( "${message(code:'sspb.page.visualbuilder.page.delete.cancel.message', encodeAs: 'Javascript')}", function() {
+             n.addPromptAction( "${message(code:'sspb.page.visualbuilder.page.cancel.message', encodeAs: 'Javascript')}", function() {
                  notifications.remove( n );
              });
 
-             n.addPromptAction( "${message(code:'sspb.page.visualbuilder.page.delete.continue.message', encodeAs: 'Javascript')}", function() {
+             n.addPromptAction( "${message(code:'sspb.page.visualbuilder.page.continue.message', encodeAs: 'Javascript')}", function() {
                  notifications.remove( n );
-                 deleteAction();
+                 pageAction();
              });
 
              notifications.addNotification( n );
@@ -349,6 +354,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             tr['pb.template.combo.loadsource.label'     ] = "${message(code:'pb.template.combo.loadsource.label',encodeAs: 'JavaScript')}";
             tr['pb.template.combo.edit.label'           ] = "${message(code:'pb.template.combo.edit.label',encodeAs: 'JavaScript')}";
             tr['pb.template.combo.select.label'         ] = "${message(code:'pb.template.combo.select.label',encodeAs: 'JavaScript')}";
+            tr['sspb.page.visualbuilder.page.name.hint.message'      ] = "${message(code:'sspb.page.visualbuilder.page.name.hint.message',encodeAs: 'JavaScript')}";
 
 
             var res=tr[key];
@@ -487,7 +493,6 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             // update the current selected component's property list
             $scope.findAllAttrs(data.type);
 
-            //console.log("scope = " + $scope.$id);
         };
 
         // handle type switch for a component
@@ -697,6 +702,12 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             $scope.statusHolder.isPageModified = false;
           };
 
+          //check if page name is changed, display confirmation msg.
+          $scope.validateAndSubmitPageSource = function () {
+              if($scope.pageOneSource.name != undefined && $scope.pageOneSource.name != $scope.pageName) {
+                  $scope.confirmPageAction("${message(code:'sspb.page.visualbuilder.page.name.edit.check.message', encodeAs: 'Javascript')}", $scope.submitPageSource);
+              }
+          }
           $scope.submitPageSource = function () {
              var saveErrorId = "saveErrorId";
              var note = {type: noteType.success, id: saveErrorId, flash: true};
@@ -793,10 +804,9 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                   return;
               }
 
-              $scope.confirmDelete("${message(code:'sspb.page.visualbuilder.page.delete.check.message', encodeAs: 'Javascript')}",$scope.deletePage);
+              $scope.confirmPageAction("${message(code:'sspb.page.visualbuilder.page.delete.check.message', encodeAs: 'Javascript')}",$scope.deletePage);
 
           };
-
          /* tab controls */
          // show tree view initially
          $scope.showTree= true;
@@ -848,7 +858,6 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
     <button ng-click='loadPageNames()'><g:message code="sspb.page.visualbuilder.reload.pages.label" /></button>
 <br/>
 
-
     <label><g:message code="sspb.page.visualbuilder.name.label" /></label>
     <input type="text" name="constantNameEdit" ng-model="pageCurName" required maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/">
 
@@ -865,7 +874,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
     </select>
 
     <button ng-click='newPageSource()'><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
-    <button ng-click='submitPageSource()' ng-disabled='sourceEditEnabled || !pagemodelform.$valid'><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
+    <button ng-click='validateAndSubmitPageSource()' ng-disabled='sourceEditEnabled || !pagemodelform.$valid'><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
     <button ng-click="getPageSource()"><g:message code="sspb.page.visualbuilder.reload.label" /></button>
     <button ng-click="previewPageSource()"><g:message code="sspb.page.visualbuilder.preview.label" /></button>
     <button ng-click='deletePageSource()'><g:message code="sspb.page.visualbuilder.delete.label" /></button>
@@ -932,7 +941,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                                    ng-model="dataHolder.selectedComponent[attr.name]" ng-required="attr.required"/>
                             <%-- validation name text --%>
                             <input ng-switch-when="nameText" name="{{'prop_'+attr.name}}" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
-                                   ng-model="dataHolder.selectedComponent[attr.name]" ng-pattern="/^[a-zA-Z]\w*$/" ng-required="attr.required" />
+                                   ng-model="dataHolder.selectedComponent[attr.name]" ng-pattern="/^[a-zA-Z]\w*$/" ng-required="attr.required" title="{{i18nGet('sspb.page.visualbuilder.page.name.hint.message')}}" />
                             <input ng-switch-when="number" name="{{'prop_'+attr.name}}"style="text-align:start;" type="number" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]" ng-required="attr.required"/>
                             <input ng-switch-when="url" name="{{'prop_'+attr.name}}" style="text-align:start;" type="url" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
