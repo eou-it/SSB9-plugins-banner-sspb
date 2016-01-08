@@ -1,25 +1,128 @@
 {
    "constantName": "pbadm.ExportPages",
    "extendsPage": null,
-   "modelView": "{\n      \"type\": \"page\",\n      \"name\": \"pbadmExportPages\",\n      \"components\": [\n            {\n                  \"name\": \"pageResource\",\n                  \"type\": \"resource\",\n                  \"resource\": \"pageexports\",\n                  \"staticData\": []\n            },\n            {\n                  \"name\": \"SelectPageBlock\",\n                  \"type\": \"block\",\n                  \"label\": \"\",\n                  \"showInitially\": true,\n                  \"components\": [\n                        {\n                              \"name\": \"pageFilter\",\n                              \"type\": \"text\",\n                              \"label\": \"Page Filter\",\n                              \"model\": \"\",\n                              \"onUpdate\": \"$pageGrid.$load();\",\n                              \"required\": false,\n                              \"placeholder\": \"Filter...\",\n                              \"loadInitially\": false,\n                              \"parameters\": {},\n                              \"validation\": {},\n                              \"readonly\": false\n                        },\n                        {\n                              \"name\": \"ApplyFiltered\",\n                              \"type\": \"button\",\n                              \"label\": \"Export all filtered pages\",\n                              \"onClick\": \"$pageResource.$post(\\n  {constantName:$pageFilter, exportPage:'1'},\\n  null, /*params*/\\n   function(response) {\\n      alert('Exported filtered pages')\\n   }, \\n   function(response) {\\n      alert('Failed exporting pages')\\n   }\\n);\"\n                        }\n                  ]\n            },\n            {\n                  \"name\": \"ShowPages\",\n                  \"type\": \"form\",\n                  \"showInitially\": true,\n                  \"components\": [\n                        {\n                              \"name\": \"Intro\",\n                              \"type\": \"literal\",\n                              \"label\": \"\",\n                              \"value\": \"The table below shows the Page Builder pages matching the Page Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button.\"\n                        },\n                        {\n                              \"name\": \"pageGrid\",\n                              \"type\": \"grid\",\n                              \"model\": \"pageResource\",\n                              \"label\": \"Pages to export\",\n                              \"parameters\": {\n                                    \"constantName\": \"$pageFilter\"\n                              },\n                              \"allowNew\": false,\n                              \"allowModify\": true,\n                              \"allowDelete\": false,\n                              \"allowReload\": true,\n                              \"pageSize\": 10,\n                              \"components\": [\n                                    {\n                                          \"name\": \"pageID\",\n                                          \"type\": \"display\",\n                                          \"value\": \"\",\n                                          \"model\": \"constantName\",\n                                          \"loadInitially\": true,\n                                          \"label\": \"Name\",\n                                          \"asHtml\": false\n                                    },\n                                    {\n                                          \"name\": \"lastUpdated\",\n                                          \"type\": \"datetime\",\n                                          \"label\": \"Last update\",\n                                          \"model\": \"lastUpdated\",\n                                          \"loadInitially\": true,\n                                          \"parameters\": {},\n                                          \"validation\": {},\n                                          \"readonly\": true,\n                                          \"required\": false\n                                    },\n                                    {\n                                          \"name\": \"fileTimestamp\",\n                                          \"type\": \"datetime\",\n                                          \"label\": \"Timestamp File\",\n                                          \"model\": \"fileTimestamp\",\n                                          \"parameters\": {},\n                                          \"validation\": {},\n                                          \"readonly\": true,\n                                          \"required\": false,\n                                          \"loadInitially\": true\n                                    },\n                                    {\n                                          \"name\": \"export\",\n                                          \"type\": \"boolean\",\n                                          \"label\": \"Select for Export\",\n                                          \"value\": \"1\",\n                                          \"booleanTrueValue\": \"1\",\n                                          \"booleanFalseValue\": \"0\",\n                                          \"readonly\": false,\n                                          \"model\": \"exportPage\",\n                                          \"onUpdate\": \"\",\n                                          \"loadInitially\": true\n                                    }\n                              ],\n                              \"submit\": \"\",\n                              \"loadInitially\": false,\n                              \"saveDataLabel\": \"Export\",\n                              \"onSaveSuccess\": \"if (response.exportPage == \\\"1\\\") {\\n  alert( \\\"Exported page: \\\" + response.constantName);\\n}\"\n                        }\n                  ],\n                  \"nextButtonLabel\": \"\",\n                  \"label\": \"Filtered pages\"\n            }\n      ],\n      \"documentation\": \"Export Pages\",\n      \"title\": \"Export Pages\",\n      \"scriptingLanguage\": \"JavaScript\",\n      \"label\": \"Export Pages\"\n}",
-   "compiledView": null,
-   "compiledController": null,
-   "version": null,
-   "lastUpdated": null,
-   "extensions": null,
-   "dateCreated": null,
-   "id": null,
-   "fileTimestamp": "2015-11-25T23:59:00Z",
+   "modelView": {
+      "components": [
+         {
+            "resource": "pageexports",
+            "name": "pageResource",
+            "type": "resource",
+            "staticData": []
+         },
+         {
+            "components": [
+               {
+                  "readonly": false,
+                  "name": "pageFilter",
+                  "model": "",
+                  "label": "Page Filter",
+                  "loadInitially": false,
+                  "placeholder": "Filter...",
+                  "type": "text",
+                  "onUpdate": "$pageGrid.$load();",
+                  "parameters": {},
+                  "required": false,
+                  "validation": {}
+               },
+               {
+                  "onClick": "$pageResource.$post(\n  {constantName:$pageFilter, exportPage:'1'},\n  null, /*params*/\n   function(response) {\n      alert('Exported filtered pages')\n   }, \n   function(response) {\n      alert('Failed exporting pages')\n   }\n);",
+                  "name": "ApplyFiltered",
+                  "label": "Export all filtered pages",
+                  "type": "button"
+               }
+            ],
+            "name": "SelectPageBlock",
+            "showInitially": true,
+            "label": "",
+            "type": "block"
+         },
+         {
+            "components": [
+               {
+                  "name": "Intro",
+                  "label": "",
+                  "type": "literal",
+                  "value": "The table below shows the Page Builder pages matching the Page Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button."
+               },
+               {
+                  "allowDelete": false,
+                  "components": [
+                     {
+                        "asHtml": false,
+                        "name": "pageID",
+                        "model": "constantName",
+                        "label": "Name",
+                        "loadInitially": true,
+                        "type": "display",
+                        "value": ""
+                     },
+                     {
+                        "readonly": true,
+                        "name": "lastUpdated",
+                        "model": "lastUpdated",
+                        "label": "Last update",
+                        "loadInitially": true,
+                        "type": "datetime",
+                        "parameters": {},
+                        "required": false,
+                        "validation": {}
+                     },
+                     {
+                        "readonly": true,
+                        "name": "fileTimestamp",
+                        "model": "fileTimestamp",
+                        "label": "Timestamp File",
+                        "loadInitially": true,
+                        "type": "datetime",
+                        "parameters": {},
+                        "required": false,
+                        "validation": {}
+                     },
+                     {
+                        "readonly": false,
+                        "booleanTrueValue": "1",
+                        "booleanFalseValue": "0",
+                        "name": "export",
+                        "model": "exportPage",
+                        "label": "Select for Export",
+                        "loadInitially": true,
+                        "type": "boolean",
+                        "onUpdate": "",
+                        "value": "1"
+                     }
+                  ],
+                  "submit": "",
+                  "allowNew": false,
+                  "onSaveSuccess": "if (response.exportPage == \"1\") {\n  alert( \"Exported page: \" + response.constantName);\n}",
+                  "pageSize": 10,
+                  "saveDataLabel": "Export",
+                  "label": "Pages to export",
+                  "loadInitially": false,
+                  "type": "grid",
+                  "name": "pageGrid",
+                  "allowModify": true,
+                  "model": "pageResource",
+                  "allowReload": true,
+                  "parameters": {"constantName": "$pageFilter"}
+               }
+            ],
+            "nextButtonLabel": "",
+            "name": "ShowPages",
+            "showInitially": true,
+            "label": "Filtered pages",
+            "type": "form"
+         }
+      ],
+      "documentation": "Export Pages",
+      "name": "pbadmExportPages",
+      "scriptingLanguage": "JavaScript",
+      "label": "Export Pages",
+      "title": "Export Pages",
+      "type": "page"
+   },
+   "fileTimestamp": "2016-01-08T13:22:33Z",
    "pageRoles": [{
       "allow": true,
-      "roleName": "WTAILORADMIN",
-      "id": null,
-      "page": {
-         "_ref": "../..",
-         "class": "net.hedtech.banner.sspb.Page"
-      },
-      "class": "net.hedtech.banner.sspb.PageRole",
-      "version": null
-   }],
-   "class": "net.hedtech.banner.sspb.Page"
+      "roleName": "WTAILORADMIN"
+   }]
 }

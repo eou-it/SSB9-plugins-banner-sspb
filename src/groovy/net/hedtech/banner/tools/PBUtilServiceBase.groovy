@@ -7,7 +7,6 @@ import java.text.ParseException
 
 @Log4j
 class PBUtilServiceBase {
-    def final static propertyDataDir = 'SSPB_DATA_DIR'
     def final static loadOverwriteExisting=0
     def final static loadSkipExisting=1
     def final static loadRenameExisting =2

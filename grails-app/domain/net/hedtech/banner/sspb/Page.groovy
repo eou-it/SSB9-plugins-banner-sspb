@@ -48,7 +48,7 @@ class Page {
         //compiledController type: "clob"
     }
 
-    static transients = ['mergedModelText', 'mergedModelMap']
+    static transients = ['mergedModelText', 'mergedModelMap', 'modelMap']
 
 
     boolean isEmptyInstance() {
@@ -123,6 +123,10 @@ class Page {
             result = modelToMap(modelView)
         }
         result
+    }
+
+    Map getModelMap() {
+        modelToMap(modelView)
     }
 
     //Member method to retrieve the delta for a given full page model text in JSON text format

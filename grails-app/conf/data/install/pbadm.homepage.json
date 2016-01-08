@@ -1,38 +1,134 @@
 {
    "constantName": "pbadm.homepage",
    "extendsPage": null,
-   "modelView": "{\n      \"type\": \"page\",\n      \"name\": \"homepage\",\n      \"scriptingLanguage\": \"JavaScript\",\n      \"title\": \"Page Builder Home\",\n      \"components\": [\n            {\n                  \"name\": \"pbPages\",\n                  \"type\": \"resource\",\n                  \"staticData\": [],\n                  \"resource\": \"virtualDomains.pbadmNonAdmPages\"\n            },\n            {\n                  \"name\": \"pageBlock\",\n                  \"type\": \"block\",\n                  \"showInitially\": true,\n                  \"components\": [\n                        {\n                              \"name\": \"adminPagesForm\",\n                              \"type\": \"form\",\n                              \"label\": \"Page Builder Administration\",\n                              \"nextButtonLabel\": \"Next\",\n                              \"showInitially\": false,\n                              \"components\": [\n                                    {\n                                          \"name\": \"virtualDomainLink\",\n                                          \"type\": \"link\",\n                                          \"label\": \"\",\n                                          \"url\": \"/banner-sspb-test-app/virtualDomainComposer/loadVirtualDomain\",\n                                          \"imageUrl\": \"\",\n                                          \"replaceView\": true,\n                                          \"description\": \"Virtual Domain Composer\",\n                                          \"documentation\": \"test\",\n                                          \"labelStyle\": \"\",\n                                          \"style\": \"list-link\"\n                                    },\n                                    {\n                                          \"name\": \"visualPageComposerLink\",\n                                          \"type\": \"link\",\n                                          \"url\": \"/banner-sspb-test-app/visualPageModelComposer/loadComposerPage\",\n                                          \"replaceView\": true,\n                                          \"description\": \"Visual Page Composer\",\n                                          \"style\": \"list-link\"\n                                    },\n                                    {\n                                          \"name\": \"cssStyleSheetManagerLink\",\n                                          \"type\": \"link\",\n                                          \"url\": \"/banner-sspb-test-app/cssManager/loadCssManagerPage\",\n                                          \"replaceView\": true,\n                                          \"description\": \"CSS Stylesheet Manager\",\n                                          \"style\": \"list-link\"\n                                    },\n                                    {\n                                          \"name\": \"pageRolesLink\",\n                                          \"type\": \"link\",\n                                          \"url\": \"/banner-sspb-test-app/customPage/page/pbadm.PageRoles\",\n                                          \"replaceView\": true,\n                                          \"description\": \"Page Roles\",\n                                          \"style\": \"list-link\"\n                                    },\n                                    {\n                                          \"name\": \"virtualDomainRolesLink\",\n                                          \"type\": \"link\",\n                                          \"url\": \"/banner-sspb-test-app/customPage/page/pbadm.VirtualDomainRoles\",\n                                          \"replaceView\": true,\n                                          \"description\": \"Virtual Domain Roles\",\n                                          \"style\": \"list-link\"\n                                    },\n                                    {\n                                          \"name\": \"exportPageLink\",\n                                          \"type\": \"link\",\n                                          \"url\": \"/banner-sspb-test-app/customPage/page/pbadm.ExportPages\",\n                                          \"replaceView\": true,\n                                          \"description\": \"Export Pages\",\n                                          \"style\": \"list-link\"\n                                    },\n                                    {\n                                          \"name\": \"exportDomainsLink\",\n                                          \"type\": \"link\",\n                                          \"url\": \"/banner-sspb-test-app/customPage/page/pbadm.ExportVirtualDomains\",\n                                          \"replaceView\": true,\n                                          \"description\": \"Export Domains\",\n                                          \"style\": \"list-link\"\n                                    },\n                                    {\n                                          \"name\": \"exportCssStylesheetsLink\",\n                                          \"type\": \"link\",\n                                          \"url\": \"/banner-sspb-test-app/customPage/page/pbadm.ExportCss\",\n                                          \"replaceView\": true,\n                                          \"description\": \"Export Css Stylesheets\",\n                                          \"style\": \"list-link\"\n                                    }\n                              ]\n                        },\n                        {\n                              \"name\": \"pageForm\",\n                              \"type\": \"form\",\n                              \"nextButtonLabel\": \"Next\",\n                              \"showInitially\": true,\n                              \"components\": [\n                                    {\n                                          \"name\": \"pageList\",\n                                          \"type\": \"list\",\n                                          \"model\": \"pbPages\",\n                                          \"allowReload\": false,\n                                          \"parameters\": {},\n                                          \"required\": false,\n                                          \"pageSize\": 0,\n                                          \"loadInitially\": true,\n                                          \"value\": \"CONSTANT_NAME\",\n                                          \"onClick\": \"window.location.assign(rootWebApp + 'customPage/page/' + currentSelection.CONSTANT_NAME);\",\n                                          \"onLoad\": \"$adminPagesForm.$visible = false;\\nif (typeof($$user) !== 'undefined') {\\n    if ($$user.authenticated) {\\n        if ($$user.authorities && $$user.authorities.length > 0 &&\\n            _.findWhere($$user.authorities, {assignedSelfServiceRole: \\\"WTAILORADMIN\\\"})) {\\n            $adminPagesForm.$visible = true;\\n        }\\n   }\\n}\"\n                                    }\n                              ],\n                              \"label\": \"Runtime Pages\"\n                        }\n                  ]\n            }\n      ],\n      \"importCSS\": \"pbadm.homePageCss\"\n}",
-   "compiledView": null,
-   "compiledController": null,
-   "version": null,
-   "lastUpdated": null,
-   "extensions": null,
-   "dateCreated": null,
-   "id": null,
-   "fileTimestamp": "2015-12-03T00:00:00Z",
+   "modelView": {
+      "components": [
+         {
+            "resource": "virtualDomains.pbadmNonAdmPages",
+            "name": "pbPages",
+            "type": "resource",
+            "staticData": []
+         },
+         {
+            "components": [
+               {
+                  "components": [
+                     {
+                        "documentation": "test",
+                        "imageUrl": "",
+                        "labelStyle": "",
+                        "name": "virtualDomainLink",
+                        "description": "Virtual Domain Composer",
+                        "style": "list-link",
+                        "label": "",
+                        "type": "link",
+                        "replaceView": true,
+                        "url": "/banner-sspb-test-app/virtualDomainComposer/loadVirtualDomain"
+                     },
+                     {
+                        "name": "visualPageComposerLink",
+                        "description": "Visual Page Composer",
+                        "style": "list-link",
+                        "type": "link",
+                        "replaceView": true,
+                        "url": "/banner-sspb-test-app/visualPageModelComposer/loadComposerPage"
+                     },
+                     {
+                        "name": "cssStyleSheetManagerLink",
+                        "description": "CSS Stylesheet Manager",
+                        "style": "list-link",
+                        "type": "link",
+                        "replaceView": true,
+                        "url": "/banner-sspb-test-app/cssManager/loadCssManagerPage"
+                     },
+                     {
+                        "name": "pageRolesLink",
+                        "description": "Page Roles",
+                        "style": "list-link",
+                        "type": "link",
+                        "replaceView": true,
+                        "url": "/banner-sspb-test-app/customPage/page/pbadm.PageRoles"
+                     },
+                     {
+                        "name": "virtualDomainRolesLink",
+                        "description": "Virtual Domain Roles",
+                        "style": "list-link",
+                        "type": "link",
+                        "replaceView": true,
+                        "url": "/banner-sspb-test-app/customPage/page/pbadm.VirtualDomainRoles"
+                     },
+                     {
+                        "name": "exportPageLink",
+                        "description": "Export Pages",
+                        "style": "list-link",
+                        "type": "link",
+                        "replaceView": true,
+                        "url": "/banner-sspb-test-app/customPage/page/pbadm.ExportPages"
+                     },
+                     {
+                        "name": "exportDomainsLink",
+                        "description": "Export Domains",
+                        "style": "list-link",
+                        "type": "link",
+                        "replaceView": true,
+                        "url": "/banner-sspb-test-app/customPage/page/pbadm.ExportVirtualDomains"
+                     },
+                     {
+                        "name": "exportCssStylesheetsLink",
+                        "description": "Export Css Stylesheets",
+                        "style": "list-link",
+                        "type": "link",
+                        "replaceView": true,
+                        "url": "/banner-sspb-test-app/customPage/page/pbadm.ExportCss"
+                     }
+                  ],
+                  "nextButtonLabel": "Next",
+                  "name": "adminPagesForm",
+                  "showInitially": false,
+                  "label": "Page Builder Administration",
+                  "type": "form"
+               },
+               {
+                  "components": [{
+                     "onClick": "window.location.assign(rootWebApp + 'customPage/page/' + currentSelection.CONSTANT_NAME);",
+                     "name": "pageList",
+                     "onLoad": "$adminPagesForm.$visible = false;\nif (typeof($$user) !== 'undefined') {\n    if ($$user.authenticated) {\n        if ($$user.authorities && $$user.authorities.length > 0 &&\n            _.findWhere($$user.authorities, {assignedSelfServiceRole: \"WTAILORADMIN\"})) {\n            $adminPagesForm.$visible = true;\n        }\n   }\n}",
+                     "pageSize": 0,
+                     "model": "pbPages",
+                     "allowReload": false,
+                     "loadInitially": true,
+                     "type": "list",
+                     "parameters": {},
+                     "value": "CONSTANT_NAME",
+                     "required": false
+                  }],
+                  "nextButtonLabel": "Next",
+                  "name": "pageForm",
+                  "showInitially": true,
+                  "label": "Runtime Pages",
+                  "type": "form"
+               }
+            ],
+            "name": "pageBlock",
+            "showInitially": true,
+            "type": "block"
+         }
+      ],
+      "name": "homepage",
+      "scriptingLanguage": "JavaScript",
+      "title": "Page Builder Home",
+      "type": "page",
+      "importCSS": "pbadm.homePageCss"
+   },
+   "fileTimestamp": "2016-01-08T13:22:33Z",
    "pageRoles": [
       {
          "allow": true,
-         "roleName": "WEBUSER",
-         "id": null,
-         "page": {
-            "_ref": "../..",
-            "class": "net.hedtech.banner.sspb.Page"
-         },
-         "class": "net.hedtech.banner.sspb.PageRole",
-         "version": null
+         "roleName": "GUEST"
       },
       {
          "allow": true,
-         "roleName": "GUEST",
-         "id": null,
-         "page": {
-            "_ref": "../..",
-            "class": "net.hedtech.banner.sspb.Page"
-         },
-         "class": "net.hedtech.banner.sspb.PageRole",
-         "version": null
+         "roleName": "WEBUSER"
       }
-   ],
-   "class": "net.hedtech.banner.sspb.Page"
+   ]
 }

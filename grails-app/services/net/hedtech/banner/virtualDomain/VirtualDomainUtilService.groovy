@@ -103,22 +103,34 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
             JSON.use("deep") {
                 json = JSON.parse(jsonString)
             }
-            vd.properties[ 'typeOfCode', 'dataSource', 'codeGet', 'codePost', 'codePut', 'codeDelete'/*, 'fileTimestamp'*/] = json
-            if (!json.virtualDomainRoles.equals(null)) {  //have to use equals for JSONObject as it is not really null
-                json.virtualDomainRoles.each { newRole ->
-                    if ( newRole.roleName && !vd.virtualDomainRoles.find{ it.roleName == newRole.roleName } ) {
-                        vd.addToVirtualDomainRoles(new VirtualDomainRole(newRole))
-                    }
+            def doLoad = true
+            // when loading from resources (stream), check the file time stamp in the Json
+            if ( stream && mode==loadIfNew ) {
+                def existingMaxTime = safeMaxTime(vd?.fileTimestamp?.getTime(), vd?.lastUpdated?.getTime())
+                def newTime = json2date(json.fileTimestamp).getTime()
+                if ( newTime && existingMaxTime && (existingMaxTime >= newTime) ) {
+                    doLoad = false
                 }
             }
-            vd.fileTimestamp=json2date(json.fileTimestamp)
-            if (file)
-                vd.fileTimestamp = new Date(file.lastModified())
-            vd = saveObject(vd)
-            if (file && !vd.hasErrors()) {
-                file.renameTo(file.getCanonicalPath() + '.' + nowAsIsoInFileName() + ".imp")
+            if (doLoad) {
+                vd.properties['typeOfCode', 'dataSource', 'codeGet', 'codePost', 'codePut', 'codeDelete'] = json
+                if (!json.virtualDomainRoles.equals(null)) {
+                    //have to use equals for JSONObject as it is not really null
+                    json.virtualDomainRoles.each { newRole ->
+                        if (newRole.roleName && !vd.virtualDomainRoles.find { it.roleName == newRole.roleName }) {
+                            vd.addToVirtualDomainRoles(new VirtualDomainRole(newRole))
+                        }
+                    }
+                }
+                vd.fileTimestamp = json2date(json.fileTimestamp)
+                if (file)
+                    vd.fileTimestamp = new Date(file.lastModified())
+                vd = saveObject(vd)
+                if (file && !vd.hasErrors()) {
+                    file.renameTo(file.getCanonicalPath() + '.' + nowAsIsoInFileName() + ".imp")
+                }
+                result++
             }
-            result ++
         }
         result
     }
