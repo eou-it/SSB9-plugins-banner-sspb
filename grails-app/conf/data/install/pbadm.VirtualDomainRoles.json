@@ -1,23 +1,157 @@
 {
-   "id": null,
-   "compiledView": null,
-   "compiledController": null,
-   "pageRoles": [{
-      "id": null,
-      "allow": true,
-      "page": {
-         "_ref": "../..",
-         "class": "net.hedtech.banner.sspb.Page"
-      },
-      "class": "net.hedtech.banner.sspb.PageRole",
-      "roleName": "WTAILORADMIN",
-      "version": null
-   }],
-   "lastUpdated": null,
-   "fileTimestamp": "2013-12-05T09:16:56Z",
-   "dateCreated": null,
-   "class": "net.hedtech.banner.sspb.Page",
-   "modelView": "{\n      \"type\": \"page\",\n      \"name\": \"pbadmVirtualDomainRoles\",\n      \"components\": [\n            {\n                  \"name\": \"virtualDomainRoles\",\n                  \"type\": \"resource\",\n                  \"resource\": \"virtualDomains.pbadmVirtualDomainRoles\",\n                  \"staticData\": []\n            },\n            {\n                  \"name\": \"virtualDomainLookup\",\n                  \"type\": \"resource\",\n                  \"resource\": \"virtualDomains.pbadmVirtualDomainLookup\",\n                  \"staticData\": []\n            },\n            {\n                  \"name\": \"webTailorRolesLookup\",\n                  \"type\": \"resource\",\n                  \"resource\": \"virtualDomains.pbadmWebTailorRoles\",\n                  \"staticData\": []\n            },\n            {\n                  \"name\": \"SelectVirtualDomainBlock\",\n                  \"type\": \"block\",\n                  \"label\": \"\",\n                  \"showInitially\": true,\n                  \"components\": [\n                        {\n                              \"name\": \"selectVirtualDomain\",\n                              \"type\": \"select\",\n                              \"labelKey\": \"SERVICE_NAME\",\n                              \"valueKey\": \"VID\",\n                              \"label\": \"Virtual Domain\",\n                              \"sourceModel\": \"virtualDomainLookup\",\n                              \"sourceParameters\": {},\n                              \"model\": \"selectVirtualDomain\",\n                              \"onUpdate\": \"$editVirtualDomainRoles.$load();\\n$EditRolesForm.$visible=$selectVirtualDomain;\\n $roleName.$populateSource();\",\n                              \"required\": false,\n                              \"placeholder\": \"Select...\",\n                              \"loadInitially\": true\n                        }\n                  ]\n            },\n            {\n                  \"name\": \"EditRolesForm\",\n                  \"type\": \"block\",\n                  \"showInitially\": false,\n                  \"components\": [\n                        {\n                              \"name\": \"editVirtualDomainRoles\",\n                              \"type\": \"grid\",\n                              \"model\": \"virtualDomainRoles\",\n                              \"label\": \"Edit Roles for selected virtual domain\",\n                              \"parameters\": {\n                                    \"VIRTUAL_DOMAIN_ID\": \"$selectVirtualDomain\"\n                              },\n                              \"allowNew\": true,\n                              \"allowModify\": true,\n                              \"allowDelete\": true,\n                              \"allowReload\": true,\n                              \"pageSize\": 5,\n                              \"components\": [\n                                    {\n                                          \"name\": \"roleName\",\n                                          \"type\": \"select\",\n                                          \"labelKey\": \"DESCRIPTION\",\n                                          \"valueKey\": \"CODE\",\n                                          \"documentation\": \"Should have some way to forbid selecting existing roles for this domain...\",\n                                          \"label\": \"Role\",\n                                          \"sourceModel\": \"webTailorRolesLookup\",\n                                          \"sourceParameters\": {},\n                                          \"model\": \"ROLE_NAME\",\n                                          \"onUpdate\": \"\",\n                                          \"required\": true,\n                                          \"placeholder\": \"Select unique role...\",\n                                          \"value\": \"\",\n                                          \"loadInitially\": true\n                                    },\n                                    {\n                                          \"name\": \"allowAll\",\n                                          \"type\": \"boolean\",\n                                          \"label\": \"Allow All\",\n                                          \"value\": \"0\",\n                                          \"booleanTrueValue\": \"1\",\n                                          \"booleanFalseValue\": \"0\",\n                                          \"readonly\": false,\n                                          \"model\": \"\",\n                                          \"onUpdate\": \"currentSelection.ALLOW_GET=currentSelection.allowAll;\\ncurrentSelection.ALLOW_POST=currentSelection.allowAll;\\ncurrentSelection.ALLOW_PUT=currentSelection.allowAll;\\ncurrentSelection.ALLOW_DELETE=currentSelection.allowAll;\",\n                                          \"loadInitially\": true\n                                    },\n                                    {\n                                          \"name\": \"allowGet\",\n                                          \"type\": \"boolean\",\n                                          \"label\": \"Allow Get\",\n                                          \"value\": \"1\",\n                                          \"booleanTrueValue\": \"1\",\n                                          \"booleanFalseValue\": \"0\",\n                                          \"readonly\": false,\n                                          \"model\": \"ALLOW_GET\",\n                                          \"onUpdate\": \"\",\n                                          \"loadInitially\": true\n                                    },\n                                    {\n                                          \"name\": \"allowPost\",\n                                          \"type\": \"boolean\",\n                                          \"label\": \"Allow Post\",\n                                          \"value\": \"0\",\n                                          \"booleanTrueValue\": \"1\",\n                                          \"booleanFalseValue\": \"0\",\n                                          \"readonly\": false,\n                                          \"model\": \"ALLOW_POST\",\n                                          \"loadInitially\": true\n                                    },\n                                    {\n                                          \"name\": \"allowPut\",\n                                          \"type\": \"boolean\",\n                                          \"label\": \"Allow Put\",\n                                          \"value\": \"0\",\n                                          \"booleanTrueValue\": \"1\",\n                                          \"booleanFalseValue\": \"0\",\n                                          \"readonly\": false,\n                                          \"model\": \"ALLOW_PUT\",\n                                          \"loadInitially\": true\n                                    },\n                                    {\n                                          \"name\": \"allowDelete\",\n                                          \"type\": \"boolean\",\n                                          \"label\": \"Allow Delete\",\n                                          \"value\": \"0\",\n                                          \"booleanTrueValue\": \"1\",\n                                          \"booleanFalseValue\": \"0\",\n                                          \"readonly\": false,\n                                          \"model\": \"ALLOW_DELETE\",\n                                          \"loadInitially\": true\n                                    },\n                                    {\n                                          \"name\": \"virtualDomainID\",\n                                          \"type\": \"hidden\",\n                                          \"value\": \"$selectVirtualDomain\",\n                                          \"model\": \"VIRTUAL_DOMAIN_ID\",\n                                          \"loadInitially\": true\n                                    }\n                              ],\n                              \"loadInitially\": true\n                        }\n                  ]\n            }\n      ],\n      \"documentation\": \"Associate Roles with a virtual domain\",\n      \"title\": \"Associate Roles with a virtual domain\",\n      \"scriptingLanguage\": \"JavaScript\",\n      \"label\": \"Virtual Domain Roles\"\n}",
    "constantName": "pbadm.VirtualDomainRoles",
-   "version": null
+   "extendsPage": null,
+   "modelView": {
+      "components": [
+         {
+            "resource": "virtualDomains.pbadmVirtualDomainRoles",
+            "name": "virtualDomainRoles",
+            "type": "resource",
+            "staticData": []
+         },
+         {
+            "resource": "virtualDomains.pbadmVirtualDomainLookup",
+            "name": "virtualDomainLookup",
+            "type": "resource",
+            "staticData": []
+         },
+         {
+            "resource": "virtualDomains.pbadmWebTailorRoles",
+            "name": "webTailorRolesLookup",
+            "type": "resource",
+            "staticData": []
+         },
+         {
+            "components": [{
+               "sourceParameters": {},
+               "name": "selectVirtualDomain",
+               "model": "selectVirtualDomain",
+               "sourceModel": "virtualDomainLookup",
+               "label": "Virtual Domain",
+               "loadInitially": true,
+               "placeholder": "Select...",
+               "labelKey": "SERVICE_NAME",
+               "type": "select",
+               "valueKey": "VID",
+               "onUpdate": "$editVirtualDomainRoles.$load();\n$EditRolesForm.$visible=$selectVirtualDomain;\n $roleName.$populateSource();",
+               "required": false
+            }],
+            "name": "SelectVirtualDomainBlock",
+            "showInitially": true,
+            "label": "",
+            "type": "block"
+         },
+         {
+            "components": [{
+               "allowDelete": true,
+               "components": [
+                  {
+                     "documentation": "Should have some way to forbid selecting existing roles for this domain...",
+                     "label": "Role",
+                     "loadInitially": true,
+                     "type": "select",
+                     "required": true,
+                     "sourceParameters": {},
+                     "name": "roleName",
+                     "model": "ROLE_NAME",
+                     "sourceModel": "webTailorRolesLookup",
+                     "placeholder": "Select unique role...",
+                     "labelKey": "DESCRIPTION",
+                     "valueKey": "CODE",
+                     "onUpdate": "",
+                     "value": ""
+                  },
+                  {
+                     "readonly": false,
+                     "booleanTrueValue": "1",
+                     "booleanFalseValue": "0",
+                     "name": "allowAll",
+                     "model": "",
+                     "label": "Allow All",
+                     "loadInitially": true,
+                     "type": "boolean",
+                     "onUpdate": "currentSelection.ALLOW_GET=currentSelection.allowAll;\ncurrentSelection.ALLOW_POST=currentSelection.allowAll;\ncurrentSelection.ALLOW_PUT=currentSelection.allowAll;\ncurrentSelection.ALLOW_DELETE=currentSelection.allowAll;",
+                     "value": "0"
+                  },
+                  {
+                     "readonly": false,
+                     "booleanTrueValue": "1",
+                     "booleanFalseValue": "0",
+                     "name": "allowGet",
+                     "model": "ALLOW_GET",
+                     "label": "Allow Get",
+                     "loadInitially": true,
+                     "type": "boolean",
+                     "onUpdate": "",
+                     "value": "1"
+                  },
+                  {
+                     "readonly": false,
+                     "booleanTrueValue": "1",
+                     "booleanFalseValue": "0",
+                     "name": "allowPost",
+                     "model": "ALLOW_POST",
+                     "label": "Allow Post",
+                     "loadInitially": true,
+                     "type": "boolean",
+                     "value": "0"
+                  },
+                  {
+                     "readonly": false,
+                     "booleanTrueValue": "1",
+                     "booleanFalseValue": "0",
+                     "name": "allowPut",
+                     "model": "ALLOW_PUT",
+                     "label": "Allow Put",
+                     "loadInitially": true,
+                     "type": "boolean",
+                     "value": "0"
+                  },
+                  {
+                     "readonly": false,
+                     "booleanTrueValue": "1",
+                     "booleanFalseValue": "0",
+                     "name": "allowDelete",
+                     "model": "ALLOW_DELETE",
+                     "label": "Allow Delete",
+                     "loadInitially": true,
+                     "type": "boolean",
+                     "value": "0"
+                  },
+                  {
+                     "name": "virtualDomainID",
+                     "model": "VIRTUAL_DOMAIN_ID",
+                     "loadInitially": true,
+                     "type": "hidden",
+                     "value": "$selectVirtualDomain"
+                  }
+               ],
+               "allowNew": true,
+               "name": "editVirtualDomainRoles",
+               "allowModify": true,
+               "pageSize": 5,
+               "model": "virtualDomainRoles",
+               "allowReload": true,
+               "label": "Edit Roles for selected virtual domain",
+               "loadInitially": true,
+               "type": "grid",
+               "parameters": {"VIRTUAL_DOMAIN_ID": "$selectVirtualDomain"}
+            }],
+            "name": "EditRolesForm",
+            "showInitially": false,
+            "type": "block"
+         }
+      ],
+      "documentation": "Associate Roles with a virtual domain",
+      "name": "pbadmVirtualDomainRoles",
+      "scriptingLanguage": "JavaScript",
+      "label": "Virtual Domain Roles",
+      "title": "Associate Roles with a virtual domain",
+      "type": "page"
+   },
+   "fileTimestamp": "2016-01-08T13:22:33Z",
+   "pageRoles": [{
+      "allow": true,
+      "roleName": "WTAILORADMIN"
+   }]
 }

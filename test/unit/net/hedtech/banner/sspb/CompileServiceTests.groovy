@@ -1,15 +1,14 @@
+/*******************************************************************************
+ * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ ******************************************************************************/
 package net.hedtech.banner.sspb
 
-/**
- * Created by IntelliJ IDEA.
- * User: jzhong
- * Date: 4/1/13
- * Time: 3:43 PM
- * To change this template use File | Settings | File Templates.
- */
 import grails.test.mixin.Mock
+import grails.test.mixin.TestMixin
+import grails.test.mixin.web.ControllerUnitTestMixin
 import net.hedtech.banner.css.Css
-
+//Need next mixin for json converter
+@TestMixin(ControllerUnitTestMixin)
 @Mock(Css)
 class CompileServiceTests extends GroovyTestCase  {
     protected void setUp() {
@@ -38,7 +37,7 @@ class CompileServiceTests extends GroovyTestCase  {
                 println "expected page source JSON object to have constantName and modelView properties"
             }
             // parse, normalize and validate page model
-            def validateResult =  CompileService.preparePage(page.modelView)
+            def validateResult =  CompileService.preparePage(Page.modelToString(page.modelView))
             if (validateResult.valid) {
                 // generate JS first because it will set the binding correctly for some components
                 def compiledJSCode=CompileService.compileController(validateResult.pageComponent)

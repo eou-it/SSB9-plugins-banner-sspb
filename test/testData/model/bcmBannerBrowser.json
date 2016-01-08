@@ -1,23 +1,226 @@
 {
-   "id": null,
-   "compiledView": null,
-   "compiledController": null,
-   "pageRoles": [{
-      "id": null,
-      "allow": true,
-      "page": {
-         "_ref": "../..",
-         "class": "net.hedtech.banner.sspb.Page"
-      },
-      "class": "net.hedtech.banner.sspb.PageRole",
-      "roleName": "WTAILORADMIN",
-      "version": null
-   }],
-   "lastUpdated": null,
-   "fileTimestamp": "2013-12-05T09:16:56Z",
-   "dateCreated": null,
-   "class": "net.hedtech.banner.sspb.Page",
-   "modelView": "{\n      \"type\": \"page\",\n      \"name\": \"bcmBannerBrowser\",\n      \"title\": \"Banner DB Browser\",\n      \"scriptingLanguage\": \"JavaScript\",\n      \"label\": \"Banner DB Browser\",\n      \"components\": [\n            {\n                  \"name\": \"ProductResource\",\n                  \"type\": \"resource\",\n                  \"resource\": \"virtualDomains.bcmProductLookup\",\n                  \"staticData\": []\n            },\n            {\n                  \"name\": \"TableResource\",\n                  \"type\": \"resource\",\n                  \"resource\": \"virtualDomains.bcmTableLookup\"\n            },\n            {\n                  \"name\": \"RelatedTableResource\",\n                  \"type\": \"resource\",\n                  \"resource\": \"virtualDomains.bcmRelatedTableLookup\"\n            },\n            {\n                  \"name\": \"ProductFilter\",\n                  \"type\": \"block\",\n                  \"showInitially\": true,\n                  \"components\": [\n                        {\n                              \"name\": \"productSelection\",\n                              \"type\": \"select\",\n                              \"labelKey\": \"DESCRIPTION\",\n                              \"valueKey\": \"OWNER\",\n                              \"label\": \"Product:\",\n                              \"sourceModel\": \"ProductResource\",\n                              \"sourceParameters\": {},\n                              \"model\": \"productSelection\",\n                              \"required\": false,\n                              \"placeholder\": \"Select product...\",\n                              \"loadInitially\": true,\n                              \"onUpdate\": \"$TablesNGrid.$load()\"\n                        },\n                        {\n                              \"name\": \"tableFilter\",\n                              \"type\": \"text\",\n                              \"label\": \"Table:\",\n                              \"model\": \"\",\n                              \"parameters\": {},\n                              \"required\": false,\n                              \"loadInitially\": true,\n                              \"onUpdate\": \"$TablesNGrid.$load()\",\n                              \"validation\": {}\n                        },\n                        {\n                              \"name\": \"commentsFilter\",\n                              \"type\": \"text\",\n                              \"label\": \"Table Description:\",\n                              \"parameters\": {},\n                              \"required\": false,\n                              \"loadInitially\": true,\n                              \"onUpdate\": \"$TablesNGrid.$load()\"\n                        }\n                  ]\n            },\n            {\n                  \"name\": \"Objects\",\n                  \"type\": \"block\",\n                  \"label\": \"Product Tables\",\n                  \"showInitially\": true,\n                  \"components\": [\n                        {\n                              \"name\": \"TablesNGrid\",\n                              \"type\": \"grid\",\n                              \"model\": \"TableResource\",\n                              \"label\": \"Tables\",\n                              \"parameters\": {\n                                    \"owner\": \"$productSelection\",\n                                    \"table\": \"$tableFilter\",\n                                    \"comments\": \"$commentsFilter\"\n                              },\n                              \"allowNew\": false,\n                              \"allowModify\": false,\n                              \"allowDelete\": false,\n                              \"allowReload\": true,\n                              \"pageSize\": 5,\n                              \"loadInitially\": false,\n                              \"components\": [\n                                    {\n                                          \"name\": \"OWNER\",\n                                          \"type\": \"display\",\n                                          \"label\": \"Owner\",\n                                          \"model\": \"OWNER\",\n                                          \"loadInitially\": true,\n                                          \"asHtml\": false\n                                    },\n                                    {\n                                          \"name\": \"TABLE_NAME\",\n                                          \"type\": \"text\",\n                                          \"label\": \"Table\",\n                                          \"model\": \"TABLE_NAME\",\n                                          \"loadInitially\": true,\n                                          \"parameters\": {},\n                                          \"validation\": {},\n                                          \"readonly\": true,\n                                          \"required\": false\n                                    },\n                                    {\n                                          \"name\": \"COMMENTS\",\n                                          \"type\": \"display\",\n                                          \"label\": \"Description\",\n                                          \"model\": \"COMMENTS\",\n                                          \"loadInitially\": true,\n                                          \"asHtml\": false\n                                    }\n                              ],\n                              \"onClick\": \"$ChildTablesNGrid.$load();$ParentTablesNGrid.$load();$ChildTables_visible=true;$ParentTables_visible=true;\"\n                        },\n                        {\n                              \"name\": \"ChildTables\",\n                              \"type\": \"block\",\n                              \"label\": \"Child Tables of {{$TablesNGrid.TABLE_NAME}}\",\n                              \"showInitially\": false,\n                              \"components\": [\n                                    {\n                                          \"name\": \"ChildTablesNGrid\",\n                                          \"type\": \"grid\",\n                                          \"model\": \"RelatedTableResource\",\n                                          \"label\": \"\",\n                                          \"parameters\": {\n                                                \"parent_table\": \"$TablesNGrid.TABLE_NAME\",\n                                                \"parent_owner\": \"$TablesNGrid.OWNER\"\n                                          },\n                                          \"allowNew\": false,\n                                          \"allowModify\": false,\n                                          \"allowDelete\": false,\n                                          \"allowReload\": true,\n                                          \"pageSize\": 3,\n                                          \"loadInitially\": false,\n                                          \"components\": [\n                                                {\n                                                      \"name\": \"CHILD_OWNER\",\n                                                      \"type\": \"display\",\n                                                      \"label\": \"Owner\",\n                                                      \"model\": \"CHILD_OWNER\",\n                                                      \"loadInitially\": true,\n                                                      \"asHtml\": false\n                                                },\n                                                {\n                                                      \"name\": \"CHILD_TABLE\",\n                                                      \"type\": \"display\",\n                                                      \"label\": \"Table\",\n                                                      \"model\": \"CHILD_TABLE\",\n                                                      \"loadInitially\": true,\n                                                      \"asHtml\": false\n                                                },\n                                                {\n                                                      \"name\": \"CHILD_COMMENTS\",\n                                                      \"type\": \"display\",\n                                                      \"label\": \"Description\",\n                                                      \"model\": \"CHILD_COMMENTS\",\n                                                      \"loadInitially\": false,\n                                                      \"asHtml\": false\n                                                }\n                                          ]\n                                    }\n                              ]\n                        },\n                        {\n                              \"name\": \"ParentTables\",\n                              \"type\": \"block\",\n                              \"label\": \"Parent Tables of {{$TablesNGrid.TABLE_NAME}}\",\n                              \"showInitially\": false,\n                              \"components\": [\n                                    {\n                                          \"name\": \"ParentTablesNGrid\",\n                                          \"type\": \"grid\",\n                                          \"model\": \"RelatedTableResource\",\n                                          \"label\": \"Parent Tables\",\n                                          \"parameters\": {\n                                                \"child_table\": \"$TablesNGrid.TABLE_NAME\",\n                                                \"child_owner\": \"$TablesNGrid.OWNER\"\n                                          },\n                                          \"allowNew\": false,\n                                          \"allowModify\": false,\n                                          \"allowDelete\": false,\n                                          \"allowReload\": true,\n                                          \"pageSize\": 3,\n                                          \"loadInitially\": false,\n                                          \"components\": [\n                                                {\n                                                      \"name\": \"PARENT_OWNER\",\n                                                      \"type\": \"display\",\n                                                      \"label\": \"Owner\",\n                                                      \"model\": \"CHILD_OWNER\",\n                                                      \"loadInitially\": true,\n                                                      \"asHtml\": false\n                                                },\n                                                {\n                                                      \"name\": \"PARENT_TABLE\",\n                                                      \"type\": \"display\",\n                                                      \"label\": \"Table\",\n                                                      \"model\": \"PARENT_TABLE\",\n                                                      \"loadInitially\": true,\n                                                      \"asHtml\": false\n                                                },\n                                                {\n                                                      \"name\": \"PARENT_COMMENTS\",\n                                                      \"type\": \"display\",\n                                                      \"label\": \"Description\",\n                                                      \"model\": \"PARENT_COMMENTS\",\n                                                      \"loadInitially\": false,\n                                                      \"asHtml\": false\n                                                }\n                                          ]\n                                    }\n                              ]\n                        }\n                  ]\n            }\n      ]\n}",
    "constantName": "bcmBannerBrowser",
-   "version": null
+   "extendsPage": null,
+   "modelView": {
+      "components": [
+         {
+            "resource": "virtualDomains.bcmProductLookup",
+            "name": "ProductResource",
+            "type": "resource",
+            "staticData": []
+         },
+         {
+            "resource": "virtualDomains.bcmTableLookup",
+            "name": "TableResource",
+            "type": "resource"
+         },
+         {
+            "resource": "virtualDomains.bcmRelatedTableLookup",
+            "name": "RelatedTableResource",
+            "type": "resource"
+         },
+         {
+            "components": [
+               {
+                  "sourceParameters": {},
+                  "name": "productSelection",
+                  "model": "productSelection",
+                  "sourceModel": "ProductResource",
+                  "label": "Product:",
+                  "loadInitially": true,
+                  "placeholder": "Select product...",
+                  "labelKey": "DESCRIPTION",
+                  "type": "select",
+                  "valueKey": "OWNER",
+                  "onUpdate": "$TablesNGrid.$load()",
+                  "required": false
+               },
+               {
+                  "name": "tableFilter",
+                  "model": "",
+                  "label": "Table:",
+                  "loadInitially": true,
+                  "type": "text",
+                  "onUpdate": "$TablesNGrid.$load()",
+                  "parameters": {},
+                  "required": false,
+                  "validation": {}
+               },
+               {
+                  "name": "commentsFilter",
+                  "label": "Table Description:",
+                  "loadInitially": true,
+                  "type": "text",
+                  "onUpdate": "$TablesNGrid.$load()",
+                  "parameters": {},
+                  "required": false
+               }
+            ],
+            "name": "ProductFilter",
+            "showInitially": true,
+            "type": "block"
+         },
+         {
+            "components": [
+               {
+                  "allowDelete": false,
+                  "components": [
+                     {
+                        "asHtml": false,
+                        "name": "OWNER",
+                        "model": "OWNER",
+                        "label": "Owner",
+                        "loadInitially": true,
+                        "type": "display"
+                     },
+                     {
+                        "readonly": true,
+                        "name": "TABLE_NAME",
+                        "model": "TABLE_NAME",
+                        "label": "Table",
+                        "loadInitially": true,
+                        "type": "text",
+                        "parameters": {},
+                        "required": false,
+                        "validation": {}
+                     },
+                     {
+                        "asHtml": false,
+                        "name": "COMMENTS",
+                        "model": "COMMENTS",
+                        "label": "Description",
+                        "loadInitially": true,
+                        "type": "display"
+                     }
+                  ],
+                  "onClick": "$ChildTablesNGrid.$load();$ParentTablesNGrid.$load();$ChildTables_visible=true;$ParentTables_visible=true;",
+                  "allowNew": false,
+                  "pageSize": 5,
+                  "label": "Tables",
+                  "loadInitially": false,
+                  "type": "grid",
+                  "name": "TablesNGrid",
+                  "allowModify": false,
+                  "model": "TableResource",
+                  "allowReload": true,
+                  "parameters": {
+                     "owner": "$productSelection",
+                     "comments": "$commentsFilter",
+                     "table": "$tableFilter"
+                  }
+               },
+               {
+                  "components": [{
+                     "allowDelete": false,
+                     "components": [
+                        {
+                           "asHtml": false,
+                           "name": "CHILD_OWNER",
+                           "model": "CHILD_OWNER",
+                           "label": "Owner",
+                           "loadInitially": true,
+                           "type": "display"
+                        },
+                        {
+                           "asHtml": false,
+                           "name": "CHILD_TABLE",
+                           "model": "CHILD_TABLE",
+                           "label": "Table",
+                           "loadInitially": true,
+                           "type": "display"
+                        },
+                        {
+                           "asHtml": false,
+                           "name": "CHILD_COMMENTS",
+                           "model": "CHILD_COMMENTS",
+                           "label": "Description",
+                           "loadInitially": false,
+                           "type": "display"
+                        }
+                     ],
+                     "allowNew": false,
+                     "name": "ChildTablesNGrid",
+                     "allowModify": false,
+                     "pageSize": 3,
+                     "model": "RelatedTableResource",
+                     "allowReload": true,
+                     "label": "",
+                     "loadInitially": false,
+                     "type": "grid",
+                     "parameters": {
+                        "parent_owner": "$TablesNGrid.OWNER",
+                        "parent_table": "$TablesNGrid.TABLE_NAME"
+                     }
+                  }],
+                  "name": "ChildTables",
+                  "showInitially": false,
+                  "label": "Child Tables of {{$TablesNGrid.TABLE_NAME}}",
+                  "type": "block"
+               },
+               {
+                  "components": [{
+                     "allowDelete": false,
+                     "components": [
+                        {
+                           "asHtml": false,
+                           "name": "PARENT_OWNER",
+                           "model": "CHILD_OWNER",
+                           "label": "Owner",
+                           "loadInitially": true,
+                           "type": "display"
+                        },
+                        {
+                           "asHtml": false,
+                           "name": "PARENT_TABLE",
+                           "model": "PARENT_TABLE",
+                           "label": "Table",
+                           "loadInitially": true,
+                           "type": "display"
+                        },
+                        {
+                           "asHtml": false,
+                           "name": "PARENT_COMMENTS",
+                           "model": "PARENT_COMMENTS",
+                           "label": "Description",
+                           "loadInitially": false,
+                           "type": "display"
+                        }
+                     ],
+                     "allowNew": false,
+                     "name": "ParentTablesNGrid",
+                     "allowModify": false,
+                     "pageSize": 3,
+                     "model": "RelatedTableResource",
+                     "allowReload": true,
+                     "label": "Parent Tables",
+                     "loadInitially": false,
+                     "type": "grid",
+                     "parameters": {
+                        "child_owner": "$TablesNGrid.OWNER",
+                        "child_table": "$TablesNGrid.TABLE_NAME"
+                     }
+                  }],
+                  "name": "ParentTables",
+                  "showInitially": false,
+                  "label": "Parent Tables of {{$TablesNGrid.TABLE_NAME}}",
+                  "type": "block"
+               }
+            ],
+            "name": "Objects",
+            "showInitially": true,
+            "label": "Product Tables",
+            "type": "block"
+         }
+      ],
+      "name": "bcmBannerBrowser",
+      "scriptingLanguage": "JavaScript",
+      "label": "Banner DB Browser",
+      "title": "Banner DB Browser",
+      "type": "page"
+   },
+   "fileTimestamp": "2016-01-08T14:16:25Z",
+   "pageRoles": [{
+      "allow": true,
+      "roleName": "WTAILORADMIN"
+   }]
 }

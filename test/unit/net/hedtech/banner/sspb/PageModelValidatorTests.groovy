@@ -43,7 +43,7 @@ class PageModelValidatorTests extends GrailsUnitTestCase   {
             def modelFilePath = getModelPath(i)
             println "testing $modelFilePath}"
             def page = jsonSlurper.parseText(new File(modelFilePath).getText())
-            def validateResult =  pageModelValidator.parseAndValidatePage(page.modelView)
+            def validateResult =  pageModelValidator.parseAndValidatePage(Page.modelToString(page.modelView))
             println "Validation result: valid =  $validateResult.valid"
             if (validateResult?.error) {
                 println "There are ${validateResult.error.size()} validation error(s):"

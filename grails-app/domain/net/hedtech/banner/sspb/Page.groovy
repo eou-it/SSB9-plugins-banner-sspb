@@ -48,7 +48,7 @@ class Page {
         //compiledController type: "clob"
     }
 
-    static transients = ['mergedModelText', 'mergedModelMap']
+    static transients = ['mergedModelText', 'mergedModelMap', 'modelMap']
 
 
     boolean isEmptyInstance() {
@@ -123,6 +123,10 @@ class Page {
             result = modelToMap(modelView)
         }
         result
+    }
+
+    Map getModelMap() {
+        modelToMap(modelView)
     }
 
     //Member method to retrieve the delta for a given full page model text in JSON text format
@@ -302,7 +306,7 @@ class Page {
     }
 
     // Component exists, change props to match the extension
-    private static changeProps(diff, comp, model){
+    private changeProps(diff, comp, model){
         diff.each { prop, val ->
             if (val.base.equals(comp[prop]) || prop != KEYS.meta) {
                 // accept change as is.
@@ -328,7 +332,7 @@ class Page {
                     def type = diff.meta.base?.nextSibling?.equals(comp.meta.nextSibling) ? "newParent" : "reOrder"
                     comp.mergeInfo  << [modifiedBy: constantName]
                     model.conflicts << [type: type, diff: diff, comp: comp]
-                    log.warn "Component $name: detected meta change in baseline ${ val.base } to ${ comp[prop] }. Change to be applied: ${ val.ext }"
+                    log.warn "Component $comp.name: detected meta change in baseline ${ val.base } to ${ comp[prop] }. Change to be applied: ${ val.ext }"
                 }
             }
         }

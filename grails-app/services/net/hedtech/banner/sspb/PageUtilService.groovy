@@ -20,11 +20,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         if (bundleLocation) //only need to determine location once
             return bundleLocation
 
-        def result = pbConfig.locations.bundle
-        if (!result) result = System.getProperties().get(propertyDataDir)
-        if (!result) result = System.getenv("temp")
-        if (!result) result = System.getenv("tmp")
-        result
+        pbConfig.locations.bundle?pbConfig.locations.bundle:System.getProperty("java.io.tmpdir")
     }
 
     //Used in integration test
@@ -41,16 +37,8 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             else {
                 def file = new File("$path/${page.constantName}.json")
                 JSON.use("deep") {
-                    def pageStripped = new Page()
-                    //nullify data that is not applicable in other environment
-                    pageStripped.properties['constantName', 'modelView', 'fileTimestamp'] = page.properties
-                    page.pageRoles.each { role ->
-                        pageStripped.addToPageRoles(new PageRole(roleName: role.roleName, allow: role.allow))
-                    }
-                    if (page.extendsPage) {
-                        pageStripped.extendsPage = new Page(constantName: page.extendsPage.constantName)
-                    }
-                    def json = new JSON(pageStripped)
+                    def pageExport = new PageExport(page)
+                    def json = new JSON(pageExport)
                     def jsonString = json.toString(true)
                     log.info message(code:"sspb.pageutil.export.page.done.message", args:[page.constantName])
                     file.text = jsonString
@@ -156,7 +144,8 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             }
             if (doLoad) {
                 if (json.has('modelView')) {// file contains a marshaled page
-                    page.properties['modelView' /*, 'fileTimestamp'*/] = json
+                    page.modelView = json.modelView // instanceof String ? json.modelView : Page.modelToString(json.modelView)
+                    //page.properties['modelView' /*, 'fileTimestamp'*/] = json
                 } else { // file is a representation of the page modelView
                     page.modelView = jsonString
                 }
