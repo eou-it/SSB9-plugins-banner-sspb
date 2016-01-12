@@ -19,17 +19,13 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
     <r:require modules="pageBuilderDev"/>
 
     <script type="text/javascript">
-        $(function(){
-            $(".tab-content").on("hover", function(){
-                $("input[name='prop_name']").tooltip();
-            });
-         })
+
      var myCustomServices = ['ngResource', 'ui.bootstrap', 'pagebuilder.directives', 'ngMessages'];
 
     // remove additional properties added by Angular resource when pretty print page source
     function JSONFilter(key, value) {
       if (key == "\$resolved" || key == "\$\$hashKey") {
-        return undefined;
+        return undefined;                                                      5
       }
       return value;
     }
@@ -668,6 +664,18 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                      $scope.pageCurName= $scope.pageName;
                      $scope.extendsPage = data.extendsPage;
                      $scope.statusHolder.isPageModified = false;
+                     $(".tab-content").on("hover", function () {
+                         $element = $("input[name='prop_name']");
+                         if ($scope.pageOneSource.name!="newpage" && $scope.pageName!="newpage") {
+                             if(!$element.data('ui-tooltip')) {
+                                 $($element).attr('title', $scope.i18nGet("${message(code:'sspb.page.visualbuilder.page.name.hint.message', encodeAs: 'JavaScript')}"))
+                                 $($element).tooltip();
+                             }
+                         } else {
+                             $($element).attr('title', '');
+                         }
+                     });
+
                  } catch(ex) {
                      $scope.alertError( $scope.i18nGet("${message(code:'sspb.page.visualbuilder.parsing.error.message', encodeAs: 'JavaScript')}",[ex]));
                  }
@@ -680,11 +688,12 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                  }
                  $scope.alertNote( note);
              });
+
          };
 
          /* page operations */
           $scope.newPageSource = function() {
-            // TODO generate a unique page name
+              // TODO generate a unique page name
               if ($scope.isPageModified())   {
                 var r=confirm("${message(code: 'sspb.page.visualbuilder.newpage.unsaved.changes.message', encodeAs: 'JavaScript')}");
                 if (!r)
@@ -704,8 +713,10 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
           //check if page name is changed, display confirmation msg.
           $scope.validateAndSubmitPageSource = function () {
-              if($scope.pageOneSource.name != undefined && $scope.pageOneSource.name != $scope.pageName) {
+              if($scope.pageOneSource.name!="newpage" && $scope.pageOneSource.name != $scope.pageCurName) {
                   $scope.confirmPageAction("${message(code:'sspb.page.visualbuilder.page.name.edit.check.message', encodeAs: 'Javascript')}", $scope.submitPageSource);
+              } else {
+                  $scope.submitPageSource();
               }
           }
           $scope.submitPageSource = function () {
@@ -941,7 +952,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                                    ng-model="dataHolder.selectedComponent[attr.name]" ng-required="attr.required"/>
                             <%-- validation name text --%>
                             <input ng-switch-when="nameText" name="{{'prop_'+attr.name}}" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
-                                   ng-model="dataHolder.selectedComponent[attr.name]" ng-pattern="/^[a-zA-Z]\w*$/" ng-required="attr.required" title="{{i18nGet('sspb.page.visualbuilder.page.name.hint.message')}}" />
+                                   ng-model="dataHolder.selectedComponent[attr.name]" ng-pattern="/^[a-zA-Z]\w*$/" ng-required="attr.required"/>
                             <input ng-switch-when="number" name="{{'prop_'+attr.name}}"style="text-align:start;" type="number" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]" ng-required="attr.required"/>
                             <input ng-switch-when="url" name="{{'prop_'+attr.name}}" style="text-align:start;" type="url" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
