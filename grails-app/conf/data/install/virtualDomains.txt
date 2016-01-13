@@ -4,3 +4,4 @@ pbadmVirtualDomainLookup.json
 pbadmVirtualDomainRoles.json
 pbadmWebTailorRoles.json
 pbadmNonAdmPages.json
+pbadmListPages.json

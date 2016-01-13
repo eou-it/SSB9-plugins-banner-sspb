@@ -19,7 +19,7 @@
          "allowDelete": false,
          "allowPost": false,
          "allowPut": false,
-         "roleName": "GUEST",
+         "roleName": "WEBUSER",
          "id": null,
          "allowGet": true,
          "virtualDomain": {
@@ -33,7 +33,7 @@
          "allowDelete": false,
          "allowPost": false,
          "allowPut": false,
-         "roleName": "WEBUSER",
+         "roleName": "GUEST",
          "id": null,
          "allowGet": true,
          "virtualDomain": {
@@ -44,9 +44,9 @@
          "version": null
       }
    ],
-   "codeGet": "select id pid, constant_name, to_char(last_updated, 'Mon ddth, YYYY') last_updated from page\r\nwhere constant_name not like 'pbadm%'\r\norder by 2",
+   "codeGet": "select id pid, constant_name, CAST(last_updated AS DATE), to_char(last_updated, 'Mon ddth, YYYY') last_updated from page\r\nwhere constant_name not like 'pbadm%'\r\norder by 3 desc",
    "codePost": null,
-   "serviceName": "pbadmNonAdmPages",
+   "serviceName": "pbadmListPages",
    "version": null,
    "codeDelete": null,
    "lastUpdated": null,
