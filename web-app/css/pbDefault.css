@@ -32,3 +32,10 @@ div[ng-grid] {
 .table {
     border: none;        /* disable border set in banner_ui_ss */
 }
+
+/* Disable breadcrumb-panel for now */
+#breadcrumb-panel {
+    height: 0;
+    min-height: 0;
+    border-bottom: none;
+}
