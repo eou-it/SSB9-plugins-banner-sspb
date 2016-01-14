@@ -34,20 +34,46 @@
             ]
          },
          {
-            "components": [{
-               "sourceParameters": {},
-               "name": "SelectDept",
-               "sourceModel": "Dept",
-               "label": "Department",
-               "loadInitially": true,
-               "placeholder": "All Departments",
-               "labelKey": "DNAME",
-               "type": "select",
-               "valueKey": "DEPTNO",
-               "onUpdate": "$EmpDetails.$load()",
-               "value": "",
-               "required": false
-            }],
+            "components": [
+               {
+                  "sourceParameters": {},
+                  "name": "SelectDept",
+                  "sourceModel": "Dept",
+                  "label": "Department",
+                  "loadInitially": true,
+                  "placeholder": "All Departments",
+                  "labelKey": "DNAME",
+                  "type": "select",
+                  "valueKey": "DEPTNO",
+                  "onUpdate": "$EmpDetails.$load()",
+                  "value": "",
+                  "required": false
+               },
+               {
+                  "readonly": false,
+                  "name": "EmployeeNameFilter",
+                  "label": "Employee Name",
+                  "loadInitially": true,
+                  "placeholder": "Filter with wild cards",
+                  "type": "text",
+                  "onUpdate": "$EmpDetails.$load()",
+                  "parameters": {},
+                  "required": false,
+                  "validation": {}
+               },
+               {
+                  "readonly": false,
+                  "name": "EmployeeNumberFilter",
+                  "label": "Employee Number",
+                  "loadInitially": true,
+                  "placeholder": "Filter",
+                  "type": "text",
+                  "onUpdate": "$EmpDetails.$load()",
+                  "parameters": {},
+                  "required": false,
+                  "validation": {}
+               }
+            ],
             "nextButtonLabel": "Next",
             "name": "SelectDepartment",
             "showInitially": true,
@@ -169,7 +195,7 @@
                "allowNew": true,
                "pageSize": 8,
                "saveDataLabel": "",
-               "label": "Employee Grid label",
+               "label": "",
                "loadInitially": true,
                "type": "grid",
                "newRecordLabel": "",
@@ -178,7 +204,11 @@
                "allowModify": true,
                "model": "Empdept",
                "allowReload": true,
-               "parameters": {"DEPTNO": "$SelectDept"}
+               "parameters": {
+                  "ENAME": "$EmployeeNameFilter",
+                  "EMPNO": "$EmployeeNumberFilter",
+                  "DEPTNO": "$SelectDept"
+               }
             }],
             "nextButtonLabel": "Next",
             "name": "EditEmpList",
@@ -220,7 +250,7 @@
       "title": "Employee Details page",
       "type": "page"
    },
-   "fileTimestamp": "2016-01-08T14:15:52Z",
+   "fileTimestamp": "2016-01-14T15:13:33Z",
    "pageRoles": [
       {
          "allow": true,

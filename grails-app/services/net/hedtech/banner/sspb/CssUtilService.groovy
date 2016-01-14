@@ -32,7 +32,8 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                     JSON.use("deep") {
                         def cssStripped = new Css()
                         //nullify data that is derivable or not applicable in other environment
-                        cssStripped.properties['constantName', 'css', 'description', 'fileTimestamp'] = css.properties
+                        cssStripped.properties['constantName', 'css', 'description'] = css.properties
+                        cssStripped.fileTimestamp = new Date()
                         def json = new JSON(cssStripped)
                         def jsonString = json.toString(true)
                         log.info message(code: "sspb.css.export.done.message", args: [css.constantName])

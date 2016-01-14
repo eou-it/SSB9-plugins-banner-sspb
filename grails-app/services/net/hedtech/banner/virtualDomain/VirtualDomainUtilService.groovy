@@ -27,7 +27,8 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
                     JSON.use("deep") {
                         def vdStripped = new VirtualDomain()
                         //nullify data that is derivable or not applicable in other environment
-                        vdStripped.properties['serviceName', 'typeOfCode', 'dataSource', 'codeGet', 'codePost', 'codePut', 'codeDelete', 'fileTimestamp'] = vd.properties
+                        vdStripped.properties['serviceName', 'typeOfCode', 'dataSource', 'codeGet', 'codePost', 'codePut', 'codeDelete'] = vd.properties
+                        vdStripped.fileTimestamp = new Date()
                         vd.virtualDomainRoles.each { role ->
                             def r = new VirtualDomainRole()
                             r.properties['roleName', 'allowGet', 'allowPost', 'allowPut', 'allowDelete'] = role.properties
@@ -107,7 +108,7 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
             // when loading from resources (stream), check the file time stamp in the Json
             if ( stream && mode==loadIfNew ) {
                 def existingMaxTime = safeMaxTime(vd?.fileTimestamp?.getTime(), vd?.lastUpdated?.getTime())
-                def newTime = json2date(json.fileTimestamp).getTime()
+                def newTime = json.fileTimestamp ? json2date(json.fileTimestamp).getTime() : (new Date()).getTime()
                 if ( newTime && existingMaxTime && (existingMaxTime >= newTime) ) {
                     doLoad = false
                 }
@@ -122,7 +123,7 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
                         }
                     }
                 }
-                vd.fileTimestamp = json2date(json.fileTimestamp)
+                vd.fileTimestamp = json.fileTimestamp? json2date(json.fileTimestamp) : new Date()
                 if (file)
                     vd.fileTimestamp = new Date(file.lastModified())
                 vd = saveObject(vd)
