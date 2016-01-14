@@ -52,7 +52,7 @@
    "lastUpdated": null,
    "dateCreated": null,
    "id": null,
-   "fileTimestamp": null,
+   "fileTimestamp": "2016-01-08T13:22:33Z",
    "typeOfCode": "S",
    "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
 }
