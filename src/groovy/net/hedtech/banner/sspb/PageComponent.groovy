@@ -359,13 +359,13 @@ class PageComponent {
         def result = """|
                    |<!-- pagination -->
                    |<span ${idAttribute('-pagination-container')} class="pb-pagination-control" ng-show='${dataSet}.totalCount > ${dataSet}.pagingOptions.pageSize'>
-                   |    <button ${idAttribute('-pagination-prev-button')} ng-disabled="${dataSet}.pagingOptions.currentPage == 1" ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1">
+                   |    <button ${idAttribute('-pagination-prev-button')} class="btn btn-sm" ng-disabled="${dataSet}.pagingOptions.currentPage == 1" ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1">
                    |            ${tranGlobal("page.previous.label","Previous")}
                    |    </button>
                    |    <span ${idAttribute('-pagination-page-count')}>
                    |        {{${dataSet}.pagingOptions.currentPage}}/{{${dataSet}.numberOfPages()}}
                    |    </span>
-                   |    <button ${idAttribute('-pagination-next-button')}  ng-disabled="${dataSet}.pagingOptions.currentPage >= ${dataSet}.totalCount/${dataSet}.pagingOptions.pageSize " ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1">
+                   |    <button ${idAttribute('-pagination-next-button')}  class="btn btn-sm" ng-disabled="${dataSet}.pagingOptions.currentPage >= ${dataSet}.totalCount/${dataSet}.pagingOptions.pageSize " ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1">
                    |            ${tranGlobal("page.next.label","Next")}
                    |    </button>
                    |</span>
