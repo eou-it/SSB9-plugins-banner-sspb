@@ -5,6 +5,20 @@
          "allowDelete": false,
          "allowPost": false,
          "allowPut": false,
+         "roleName": "WEBUSER",
+         "id": null,
+         "allowGet": true,
+         "virtualDomain": {
+            "_ref": "../..",
+            "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+         },
+         "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
+         "version": null
+      },
+      {
+         "allowDelete": false,
+         "allowPost": false,
+         "allowPut": false,
          "roleName": "WTAILORADMIN",
          "id": null,
          "allowGet": true,
@@ -28,23 +42,9 @@
          },
          "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
          "version": null
-      },
-      {
-         "allowDelete": false,
-         "allowPost": false,
-         "allowPut": false,
-         "roleName": "WEBUSER",
-         "id": null,
-         "allowGet": true,
-         "virtualDomain": {
-            "_ref": "../..",
-            "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
-         },
-         "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
-         "version": null
       }
    ],
-   "codeGet": "select id pid, constant_name, to_char(last_updated, 'Mon ddth, YYYY') last_updated from page\r\nwhere constant_name not like 'pbadm%'\r\norder by 2",
+   "codeGet": "select id pid, constant_name, to_char(last_updated, 'Mon ddth, YYYY') last_updated from page\r\nwhere constant_name not like 'pbadm%'\r\norder by lower(constant_name)",
    "codePost": null,
    "serviceName": "pbadmNonAdmPages",
    "version": null,
@@ -52,7 +52,7 @@
    "lastUpdated": null,
    "dateCreated": null,
    "id": null,
-   "fileTimestamp": "2016-01-08T13:22:33Z",
+   "fileTimestamp": "2016-01-15T11:56:08Z",
    "typeOfCode": "S",
    "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
 }
