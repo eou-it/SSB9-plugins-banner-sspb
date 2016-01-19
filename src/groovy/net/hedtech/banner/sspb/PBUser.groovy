@@ -11,13 +11,18 @@ import org.apache.commons.logging.LogFactory
 // Define a user object with relevant attributes from the Banner user
 class PBUser {
 
+    static def userNameCache
+    static def userCache
+
     private def static localizer = { mapToLocalize ->
         new ValidationTagLib().message( mapToLocalize )
     }
 
     static def get() {
         def userIn = SecurityContextHolder?.context?.authentication?.principal
-        def user
+        if (userIn.username.equals(userNameCache) ) {
+            return userCache
+        }
         LogFactory.getLog(this).info "Getting new PB User $userIn"
         //avoid direct dependency on BannerUser
         if (userIn.class.name.endsWith('BannerUser')) {
@@ -27,16 +32,17 @@ class PBUser {
             }
             // assume all authenticated users have WEBUSER role implicitly
             authorities << BannerGrantedAuthority.create( "SELFSERVICE-WEBUSER", "BAN_DEFAULT_M", null )
-            user = [authenticated:  true, pidm: userIn.pidm,gidm: userIn.gidm, loginName: userIn.username, fullName: userIn.fullName,
+            userCache = [authenticated:  true, pidm: userIn.pidm,gidm: userIn.gidm, loginName: userIn.username, fullName: userIn.fullName,
                     authorities: authorities]
 
 
         }  else { //create guest authorities
             Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>()
             authorities << BannerGrantedAuthority.create( "SELFSERVICE-GUEST", "BAN_DEFAULT_M", null )
-            user = [authenticated: false, pidm: null, gidm: null,  loginName: userIn,
+            userCache = [authenticated: false, pidm: null, gidm: null,  loginName: userIn.username,
                     fullName: localizer(code:"sspb.renderer.page.anonymous.full.name"),authorities: authorities]
         }
-        user
+        userNameCache = userIn.username
+        userCache
     }
 }
