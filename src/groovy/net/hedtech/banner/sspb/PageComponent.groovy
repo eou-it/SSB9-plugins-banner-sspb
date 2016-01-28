@@ -541,8 +541,8 @@ class PageComponent {
         def ngModel="ng-model=\"COL_FIELD\""    // shorthand for  row.entity[col.field]
         def ngChange=ro?"":"ng-change=\""+(onUpdate?"\$parent.${parent.ID}_${name}_onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity)\""
         def onClickCode=parent.onClick?"\$parent.${parent.name}_onClick(row.entity, col);":""
-        def ngClick="""ng-click="$onClickCode" """
-        //def ngClick="""ng-click="\$parent.${parent.name}DS.setCurrentRecord(row.entity);$onClickCode" """
+        //Do not remove setCurrentRecord without checking all is good (may be done 2x but need to make sure it is before onClickCode)
+        def ngClick="""ng-click="\$parent.${parent.name}DS.setCurrentRecord(row.entity);$onClickCode" """
         def typeInternal = type
         if (type == COMP_TYPE_NUMBER ) {
             //angular-ui doesn't use localized validators - use own (but rather limited still)

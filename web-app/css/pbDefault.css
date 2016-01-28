@@ -12,6 +12,10 @@ input, textarea {
     padding-left: 4px;
 }
 
+input.hasDatepicker.pb-datetime{
+    width: auto;
+}
+
 div[ng-grid] {
     font-size: 10px;
 }

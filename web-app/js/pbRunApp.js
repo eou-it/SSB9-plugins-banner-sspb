@@ -119,8 +119,7 @@ appModule.run( function($templateCache )  {
         "        <div class=\"divider\"></div>" +
         "        <span class=\"paging-text page-per\"> {{i18n.ngPageSizeLabel}} </span>" +
         "        <div class=\"page-size-select-wrapper\" >" +
-        "            <select page-size-select  ng-model=\"pagingOptions.pageSize\"  style=\"width: 100%; \"> "+
-        "                <option ng-repeat=\"size in pagingOptions.pageSizes\">{{size}}</option>" +
+        "            <select page-size-select  ng-model=\"pagingOptions.pageSize\" ng-options=\"s as s for s in pagingOptions.pageSizes\" style=\"width: 100%; \"> "+
         "             </select>" +
         "        </div>"+
         "    </div>" +
@@ -269,7 +268,7 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
         this.pageSize=params.pageSize;
         if (this.pageSize>0){
             this.pagingOptions = {  pageSizes: [this.pageSize, this.pageSize*2, this.pageSize*4],
-                pageSize: this.pageSize,
+                pageSize: this.pageSize, //.toString(), //With number, the select shows empty initially
                 currentPage: null
             };
         }

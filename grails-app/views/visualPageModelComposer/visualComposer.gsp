@@ -25,7 +25,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
     // remove additional properties added by Angular resource when pretty print page source
     function JSONFilter(key, value) {
       if (key == "\$resolved" || key == "\$\$hashKey") {
-        return undefined;                                                      5
+        return undefined;
       }
       return value;
     }
