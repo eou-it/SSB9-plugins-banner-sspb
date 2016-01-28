@@ -96,18 +96,33 @@ input[type="text"] {
 fieldset {
     padding: 0;
     margin: 15px 0;
+    /*border: 1px solid #9AC0D2;*/
     border: 0;
 }
 
 legend {
-    font-size: 16px;
+    /*font-size: 16px;*/
+    font: inherit;
+    font-family: "OpenSans-semibold", sans-serif;
     color: #4F585F;
-    border-bottom: 1px solid #e5e5e5;
+    /*border-bottom: 1px solid #e5e5e5;*/
+    /*margin-bottom: 0;*/
+    border: 1px solid #9AC0D2;
+    padding: 15px 25px;
+}
+
+fieldset:first-child>legend {
+    border-right: none;
 }
 
 .form-horizontal .form-group {
     margin-right: -15px;
     margin-left: 0;
+    /*border-left: 1px solid #9AC0D2;*/
+}
+
+fieldset:first-child>.form-group {
+    border-left: none;
 }
 
 ul {
@@ -117,10 +132,94 @@ ul {
 }
 
 label {
-    font-weight: 400;
+    font-weight: 500;
 }
 
+/* New Layout */
+/*.col-xs-1, .col-sm-1, .col-md-1, .col-lg-1, .col-xs-2, .col-sm-2, .col-md-2, .col-lg-2, .col-xs-3, .col-sm-3, .col-md-3, .col-lg-3, .col-xs-4, .col-sm-4, .col-md-4, .col-lg-4, .col-xs-5, .col-sm-5, .col-md-5, .col-lg-5, .col-xs-6, .col-sm-6, .col-md-6, .col-lg-6, .col-xs-7, .col-sm-7, .col-md-7, .col-lg-7, .col-xs-8, .col-sm-8, .col-md-8, .col-lg-8, .col-xs-9, .col-sm-9, .col-md-9, .col-lg-9, .col-xs-10, .col-sm-10, .col-md-10, .col-lg-10, .col-xs-11, .col-sm-11, .col-md-11, .col-lg-11, .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {*/
+     /*padding-right: 0;*/
+     /*padding-left: 0;*/
+/*}*/
+
+/*.vpc-head {*/
+    /*border: 1px solid #9AC0D2;*/
+    /*margin: 1.25em 0;*/
+    /*padding: 15px;*/
+    /*/!*min-height: 6em;*!/*/
+/*}*/
+
+/*.vpc-page {*/
+    /*margin-right: 0.625em;*/
+    /*float: left;*/
+/*}*/
+
+/*.vpc-page label {*/
+    /*display: block;*/
+/*}*/
+
+/*.vpc-page select {*/
+    /*border-radius: 4px;*/
+    /*border: 1px solid #869FB1;*/
+    /*/!*box-shadow: inset 4px 4px 4px #E2EAEF;*!/*/
+    /*box-shadow: inset 0 -4px #DEE5E7;*/
+    /*padding: .5em;*/
+/*}*/
+
+/*.vpc-menu-btn {*/
+    /*float: right;*/
+    /*margin-top: 16px;*/
+/*}*/
+
+/*.pb-btn-primary {*/
+    /*background-color: #206E9F;*/
+    /*box-shadow: inset 0 -4px #1D5F8C;*/
+    /*color: #fff;*/
+    /*margin-top: 25px;*/
+/*}*/
+
+/*.pb-btn-primary:hover {*/
+    /*color: #fff;*/
+/*}*/
+
+/*.pb-btn-primary:active {*/
+    /*color: #fff;*/
+/*}*/
+
+/*.vpc-menu-btn button {*/
+    /*background-color: #fff;*/
+    /*color: #206E9F;*/
+    /*border: none;*/
+    /*border-left: 1px solid #9AC0D2;*/
+    /*height: 0;*/
+    /*padding: 25px 10px 19px;*/
+    /*font-family: "OpenSans-semibold", sans-serif;*/
+/*}*/
+
+/*.vpc-menu-btn button:first-of-type {*/
+    /*border: none;*/
+/*}*/
+
+/*#reload-btn {*/
+    /*background: url(../images/Reload_icon.png) center 0 no-repeat;*/
+/*}*/
+
+/*#preview-btn {*/
+    /*background: url(../images/Preview_icon.png) center 0 no-repeat;*/
+/*}*/
+
+/*#export-btn {*/
+    /*background: url(../images/Export_icon.png) center 0 no-repeat;*/
+/*}*/
+
+/*#delete-btn {*/
+    /*background: url(../images/Delete_icon.png) center 0 no-repeat;*/
+/*}*/
+
+/*#pagerole-btn {*/
+    /*background: url(../images/PageRoll_icon.png) center 0 no-repeat;*/
+/*}*/
 /* End Visual Page Composer */
+
 /* Start Virtual Domain Composer (mainly moved from main.css) */
 
 table {
