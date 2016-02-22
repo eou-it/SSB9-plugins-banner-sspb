@@ -1,9 +1,0 @@
-{
-  "name": "basePage",
-  "type": "page",
-  "attr1": "attribute 1",
-  "components": [
-    { "name": "componentD" },
-    { "name": "componentE"}
-  ]
-}

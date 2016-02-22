@@ -1,5 +1,0 @@
-{
-  "extensions": [
-    { "name": "subcomponent", "parent": "parentComponent2", "nextSibling": null  }
-  ]
-}
