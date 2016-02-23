@@ -55,7 +55,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
              notifications.addNotification(new Notification(note));
          };
 
-         $scope.confirmPageAction = function(msg, pageAction) {
+         $scope.confirmPageAction = function(msg, pageAction, cancelAction) {
              var note = {type: noteType.warning, message: msg};
              note.message = note.message.replace(/\n/g, "<br />");
              note.flash = false;
@@ -63,6 +63,9 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
              n.addPromptAction( "${message(code:'sspb.page.visualbuilder.page.cancel.message', encodeAs: 'Javascript')}", function() {
                  notifications.remove( n );
+                 if (cancelAction) {
+                     cancelAction();
+                 }
              });
 
              n.addPromptAction( "${message(code:'sspb.page.visualbuilder.page.continue.message', encodeAs: 'Javascript')}", function() {
@@ -712,9 +715,22 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
           };
 
           //check if page name is changed, display confirmation msg.
+          //this validation is not correct, disable for now
           $scope.validateAndSubmitPageSource = function () {
-              if($scope.pageOneSource.name!="newpage" && $scope.pageOneSource.name != $scope.pageCurName) {
-                  $scope.confirmPageAction("${message(code:'sspb.page.visualbuilder.page.name.edit.check.message', encodeAs: 'Javascript')}", $scope.submitPageSource);
+              //$scope.submitPageSource();
+              //return;
+              if ($scope.pageCurName === "newpage") {
+                  alert("Enter a new page name");
+                  return;
+              }
+              if( $scope.pageCurName != null && $scope.pageName != $scope.pageCurName && $scope.pageName != "newpage" ) {
+                  var msg;
+                  if ($scope.pageList.findIndex(function(it) { return it.constantName == $scope.pageCurName ;}) >-1){
+                      msg =  "${message(code:'sspb.page.visualbuilder.page.name.edit.overwrite.existing', encodeAs: 'Javascript')}";
+                  } else {
+                      msg =  "${message(code:'sspb.page.visualbuilder.page.name.edit.check.message', encodeAs: 'Javascript')}";
+                  }
+                  $scope.confirmPageAction(msg, $scope.submitPageSource);
               } else {
                   $scope.submitPageSource();
               }
@@ -756,6 +772,9 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                      $scope.pageStatus.message = $filter('date')(new Date(), 'medium') + ': ' + $scope.pageStatus.message;
                      // refresh the page list in case new page is added
                      $scope.loadPageNames();
+                     if ($scope.pageCurName) {
+                        $scope.pageName = $scope.pageCurName;
+                     }
                  },
                  function (response) {
                      var msg = "${message(code: 'sspb.page.visualcomposer.page.submit.failed.message', encodeAs: 'JavaScript')}";
@@ -795,6 +814,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                  $scope.statusHolder.isPageModified = false;
                  // refresh the page list after a page is deleted
                  $scope.loadPageNames();
+                 $scope.pagemodelform.$setUntouched();
              }, function(response) {
                  var note={type: noteType.error, message: "${message(code:'sspb.page.visualbuilder.deletion.error.message', encodeAs: 'JavaScript')}",flash:true};
                  if (response.data != undefined && response.data.errors != undefined) {
@@ -864,18 +884,23 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
     <select name="constantName"
             ng-options="page.constantName as page.constantName for page in pageList"
                 ng-model="pageName"
-                ng-change="getPageSource()"></select>
+                ng-change="getPageSource();saveAs=false;"></select>
 
-    <button ng-click='loadPageNames()'><g:message code="sspb.page.visualbuilder.reload.pages.label" /></button>
+    <button ng-click='loadPageNames(); saveAs=false;'><g:message code="sspb.page.visualbuilder.reload.pages.label" /></button>
+    <button ng-click='newPageSource()'><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
+    <button ng-click='saveAs=true;' ng-show="pageName && pageName!='newpage'"> Save As</button>
+    <span ng-hide="pageCurName == pageName && pageCurName != 'newpage' && !saveAs">
+        <label><g:message code="sspb.page.visualbuilder.name.label" /></label>
+        <input type="text" name="constantNameEdit" ng-model="pageCurName" required maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/">
+
+        <span ng-messages="pagemodelform.constantNameEdit.$error" role="alert" class="fieldValidationMessage">
+            <span ng-message="pattern" ><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" /></span>
+            <span ng-message="required" > <g:message code="sspb.page.visualbuilder.name.required.message" /></span>
+        </span>
+    </span>
 <br/>
 
-    <label><g:message code="sspb.page.visualbuilder.name.label" /></label>
-    <input type="text" name="constantNameEdit" ng-model="pageCurName" required maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/">
 
-    <div ng-messages="pagemodelform.constantNameEdit.$error" role="alert" class="fieldValidationMessage">
-        <div ng-message="pattern" ><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" /></div>
-        <div ng-message="required" > <g:message code="sspb.page.visualbuilder.name.required.message" /></div>
-    </div>
 
     <label><g:message code="sspb.page.visualbuilder.extends.label" /></label>
     <select name="extendsPage"
@@ -884,11 +909,12 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         <option value=""> </option>
     </select>
 
-    <button ng-click='newPageSource()'><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
-    <button ng-click='validateAndSubmitPageSource()' ng-disabled='sourceEditEnabled || !pagemodelform.$valid'><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
-    <button ng-click="getPageSource()"><g:message code="sspb.page.visualbuilder.reload.label" /></button>
-    <button ng-click="previewPageSource()"><g:message code="sspb.page.visualbuilder.preview.label" /></button>
-    <button ng-click='deletePageSource()'><g:message code="sspb.page.visualbuilder.delete.label" /></button>
+
+    <button ng-click='validateAndSubmitPageSource(); saveAs=false;' ng-show="pageName && pageCurName != 'newpage'"
+            ng-disabled='sourceEditEnabled || !pagemodelform.$valid'><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
+    <button ng-click="getPageSource(); saveAs=false;" ng-show="pageName && pageCurName != 'newpage'"><g:message code="sspb.page.visualbuilder.reload.label" /></button>
+    <button ng-click="previewPageSource()" ng-show="pageName && pageCurName != 'newpage'"><g:message code="sspb.page.visualbuilder.preview.label" /></button>
+    <button ng-click='deletePageSource(); saveAs=false;' ng-show="pageName && pageName != 'newpage'"><g:message code="sspb.page.visualbuilder.delete.label" /></button>
 
     <table style="height:80%; min-width: 60em">
         <tr>

@@ -1,0 +1,11 @@
+{
+   "lastUpdated": null,
+   "css": "body, html {\n  font-size: 100%;\n  font-family: OpenSans-regular;\n}\n\n#content {\n  font-size: 100%;\n  font-family: OpenSans-regular;\n}\n\n.pb-form-item-container {\n  padding-top: 1em;\n}\n\ninput.pb-item {\n  width: 18.75em;\n  border-radius: 4px;\n  border: 1px solid #869FB1;\n  box-shadow: inset 4px 4px 4px #E2EAEF;\n  padding: 1em 0.75em;\n  box-sizing: border-box;\n  webkit-box-sizing: border-box;\n  background-color: #FFFFFF;\n  font-size: 0.875em;\n }\n input.pb-item:focus {\n        border: 1px solid #206E9F;\n        box-shadow: inset 0px 2px 2px #CBE2E8;\n        color: #4F585F;\n }\n\nlabel.pb-label{\n  size: 1em;\n  color: #4F585F;\n  font-weight: 400; \n  display:block;\n}\n\nselect.pb-item.pb-select {\n    color:#4F585F;\n    border: 2px solid #869FB1;\n    box-shadow: inset 0px -4px #DEE5E7;\n    width: 18.75em;   \n   padding: 1em 0.75em;\n   font-size: 0.875em;\n    -moz-border-radius       : 4px;\n    -webkit-border-radius    : 4px;\n    border-radius:4px;\n}\n\nselect.pb-select:focus {\n  background-color: #FFFFFF;\n  border: 2px solid #206E9F; }",
+   "dateCreated": null,
+   "constantName": "xeStyle",
+   "description": "Stylesheet based on xe-ui-components",
+   "id": null,
+   "fileTimestamp": "2016-02-23T11:42:25Z",
+   "class": "net.hedtech.banner.css.Css",
+   "version": null
+}
