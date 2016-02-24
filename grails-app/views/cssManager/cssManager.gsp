@@ -103,7 +103,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                         $scope.cssSource = data.css;
                         $scope.description = data.description;
                     } catch(ex) {
-                        alert($scope.i18nGet("${message(code:'sspb.css.cssManager.parsing.error.message')}",[ex]));
+                        alert($scope.i18nGet("${message(code:'sspb.css.cssManager.parsing.error.message')}",[ex]),{type:"error"});
                     }
                 }, function(response) {
                     var msg  = "${message(code: 'sspb.css.cssManager.Stylesheet.load.failed.message', encodeAs: 'JavaScript')}";
@@ -112,7 +112,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                     else
                         msg = $scope.i18nGet(msg, ['']);
 
-                    alert(msg);
+                    alert(msg, {type:"error"});
                 });
             };
 
@@ -139,17 +139,18 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
                 Css.save({cssName:$scope.cssName, source:$scope.cssSource, description:$scope.description }, function(response) {
                     //console.log("save response = " + response.statusCode + ", " +response.statusMessage);
-                    if (response.statusCode == 0)
+                    var note = {type:"error"};
+                    if (response.statusCode == 0) {
                         $scope.cssStatus.message = $scope.i18nGet(response.statusMessage);
-                    else {
+                        note = {type: "success", flash: true};
+                    } else {
                         var msg="${message(code:'sspb.css.cssManager.validation.error.message', encodeAs: 'JavaScript')}";
                         if (response.cssValidationResult != undefined)
                             $scope.cssStatus.message = $scope.i18nGet(msg, [$scope.i18nGet(response.statusMessage), response.cssValidationResult.errors]);
                         else
                             $scope.cssStatus.message = $scope.i18nGet(msg, [$scope.i18nGet(response.statusMessage), ""]);
                     }
-
-                    alert($scope.cssStatus.message);
+                    alert($scope.cssStatus.message, note );
 
                     // refresh the page list in case new page is added
                     $scope.loadCssNames();
@@ -160,7 +161,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                     else
                         msg = $scope.i18nGet(msg, ['']);
 
-                    alert(msg);
+                    alert(msg,{type: "error"});
                 });
 
             }
@@ -168,14 +169,13 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             $scope.deleteCssSource = function () {
                 //check if page name is set
                 if ($scope.cssName== undefined || $scope.cssName == '') {
-                    alert("${message(code:'sspb.css.cssManager.cssName.prompt.message')}");
-
+                    alert("${message(code:'sspb.css.cssManager.cssName.prompt.message')}",{type: "warning"});
                     return;
                 }
 
                 Css.delete({constantName:$scope.cssName }, function() {
                     // on success
-                    alert("${message(code:'sspb.css.cssManager.deletion.success.message')}");
+                    alert("${message(code:'sspb.css.cssManager.deletion.success.message')}",{flash:true});
                     // clear the page name field and page source
                     $scope.cssName = "";
                     $scope.description = "";
@@ -190,7 +190,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                     else
                         msg = $scope.i18nGet(msg, ['']);
 
-                    alert(msg);
+                    alert(msg,{type: "error"});
 
                 });
 

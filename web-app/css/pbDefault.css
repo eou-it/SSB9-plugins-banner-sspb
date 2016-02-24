@@ -24,6 +24,14 @@ div[ng-grid] {
     font-weight: bold;    /* reset xe-ui-components non-bold label */
 }
 
+.pb-list-label {
+    display:block;
+}
+
+.pb-inline {
+    display: inline-block;
+}
+
 .btn-sm, .btn-xs {
     line-height: normal;
 }

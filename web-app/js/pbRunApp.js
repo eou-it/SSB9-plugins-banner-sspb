@@ -3,24 +3,16 @@ Common Javascript functions used by pagebuilder applications
 */
 
 // notification centre functionality to be invoked by pages created in page builder
-alert = function(message,promptMessage,type,flash,prompts) {
-
-    if ( arguments.length == 1) {
-        // default notification
-        promptMessage="";
-        type="success";
-        flash=false;
-        prompts=[];
-        prompts.push({label: $.i18n.prop("sspb.custom.page.default.affirm"), action:function(){}});
-    }
-
-    var note = new Notification({
+alert = function(message, params ){ //message,promptMessage,type,flash,prompts) {
+    //give default values
+    var noteSpec = {
         message: message,
-        type:type,
-        promptMessage: promptMessage,
-        flash: flash
-    });
-
+        type: params&&params.type?params.type:"success",
+        promptMessage: params&&params.promptMessage?params.promptMessage:"",
+        flash: params&&params.flash?params.flash:false,
+    };
+    var prompts = params&&params.prompts?params.prompts:[{label: $.i18n.prop("sspb.custom.page.default.affirm"), action:function(){}}];
+    var note = new Notification(noteSpec);
     if (prompts) {
         prompts.forEach( function(prompt) {
             note.addPromptAction( prompt.label, function() {

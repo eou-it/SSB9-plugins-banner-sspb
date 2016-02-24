@@ -2,7 +2,7 @@
  * component-library
  * 
 
- * Version: 0.0.1 - 2015-11-30
+ * Version: 0.0.1 - 2016-02-23
  * License: ISC
  */
 angular.module("xe-ui-components", ['badge','button','checkbox','dropdown','label','radiobutton','simpleTextbox','statusLabel','switch','textarea','textbox','external-resouces','utils','columnFilter','pagination','search','dataTableModule','xe-ui-components-tpls']);

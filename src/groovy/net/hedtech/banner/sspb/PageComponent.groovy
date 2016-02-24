@@ -703,23 +703,23 @@ class PageComponent {
      */
     def listCompile(int ignoreDepth=0) {
         def dataSet = "${name}DS"
-        def txt = "<span ${idAttribute()} $styleStr>"
+        def txt = "<div ${idAttribute()} $styleStr>"
         def repeat = "$LIST_ITEM in ${dataSet}.data"
         idTxtParam = "-{{\$index}}"
         if (label)
-            txt += """<label class="${type} label $labelStyle" ${idAttribute('label')} >${tran("label")}</label>"""
+            txt += """<label class="pb-${type}-label  $labelStyle" ${idAttribute('label')} >${tran("label")}</label>"""
         // handle click event
         def click_txt=""
         if (onClick)
             click_txt = "ng-click=${name}_onClick($LIST_ITEM)"
         txt +=
-            """<ul ${idAttribute('-ul')}  >
-            <li ${idAttribute("-li" + idTxtParam)} $click_txt ng-repeat="$repeat">
+            """<ul ${idAttribute('-ul')} class = "pb-ul">
+            <li ${idAttribute("-li" + idTxtParam)} class="pb-list-item" $click_txt ng-repeat="$repeat">
              ${onClick?"<a ${idAttribute('-a'+ idTxtParam)} href=\"\">":""} {{$LIST_ITEM.$value}}  ${onClick?"</a>":""}
             </li>
             </ul>
             """
-        txt += recordControlPanel() +  "</span>"
+        txt += recordControlPanel() +  "</div>"
         return txt
     }
 
@@ -802,7 +802,7 @@ class PageComponent {
                   |<div class="$valueStyle" ng-repeat="$SELECT_ITEM in $arrayName" $initTxt>
                   | <label ${idAttribute("-label-$idxStr")} ${idForAttribute("-radio-$idxStr")} $radioLabelStyleStr>
                   | <input ${idAttribute("-radio-$idxStr")} type="radio" ng-model=$ngModel name="$nameTxt" $ngChange value="{{$SELECT_ITEM.$valueKey}}"/>
-                  | {{$SELECT_ITEM.$labelKey}} </label>
+                  | <span>{{$SELECT_ITEM.$labelKey}}</span></label>
                   |</div>""".stripMargin()
 
                 result = """<div ${idAttribute(idTxtParam)} $autoStyleStr> $result </div>"""
@@ -859,6 +859,8 @@ class PageComponent {
             case COMP_TYPE_EMAIL:
             case COMP_TYPE_TEL:
             case COMP_TYPE_HIDDEN:
+                def tag = "input"
+                def endTag = "/>"
                 def attributes = "${validationAttributes()} ${required?"required":""} ${placeholder?"placeholder=\"${tran("placeholder")}\"":""}".trim()
                 def typeString= "type=\"$t\""
                 if (type == COMP_TYPE_NUMBER) {  // angular-ui doesn't use localized validators
@@ -868,20 +870,25 @@ class PageComponent {
                 if (type == COMP_TYPE_DATETIME)  { //Assume format comes from jquery.ui.datepicker-<locale>.js
                     typeString=" ui-date=\"{ changeMonth: true, changeYear: true}\" "
                 }
+                if (type == COMP_TYPE_TEXTAREA) {
+                    tag = "textarea"
+                    endTag = "></$COMP_TYPE_TEXTAREA>"
+                }
+
                 // for datetime input do NOT assign an ID otherwise it won't work!
                 def inputIdStr = (type==COMP_TYPE_DATETIME)?"":idAttribute(idTxtParam)
                 //Cannot choose format with time, but lots of options. See http://jqueryui.com/datepicker/
                 if (isDataSetEditControl(parent)) {
                     //ngChange moved to common part
                     //defaulValue() removed, now should be handled by initNewRecordJS() call in compileService.
-                    result = """|<input $inputIdStr $typeString $autoStyleStr  name="${name?name:model}" ${parent.allowModify && !readonly?"":"readonly"}
+                    result = """|<$tag $inputIdStr $typeString $autoStyleStr  name="${name?name:model}" ${parent.allowModify && !readonly?"":"readonly"}
                                 | ng-model="$GRID_ITEM.${model}"
-                                | $ngChange $attributes $ngClick />
+                                | $ngChange $attributes $ngClick $endTag
                                 |""".stripMargin()
                 } else {
                     // TODO do we need a value field if ng-model is defined?  //added defaultValue
                     attributes += " ${readonly?"readonly":""}"
-                    result = """|<input $inputIdStr $typeString $autoStyleStr  name="${name?name:model}" ${value?"value=\"{{${compileDOMExpression(value)}}}\"":"" }
+                    result = """|<$tag $inputIdStr $typeString $autoStyleStr  name="${name?name:model}" ${value?"value=\"{{${compileDOMExpression(value)}}}\"":"" }
                                 |${defaultValue()} $ngChange $attributes
                                 |""".stripMargin()
                     if (model && !readonly) {
@@ -894,7 +901,7 @@ class PageComponent {
                             result+=".$modelComponent"
                         result+='" '
                     }
-                    result+="/>\n"
+                    result+="$endTag\n"
                 }
                 break;
             case COMP_TYPE_BOOLEAN:
@@ -911,20 +918,24 @@ class PageComponent {
                     result += """  ng-model="$model" ${readonly?"readonly":""} ${value?"value=\"{{$value}}\"":"" } ${defaultValue()}/> $labelTxt """
                 }
                 break;
-            case COMP_TYPE_SUBMIT:
-                result = """<input ${idAttribute(idTxtParam)} $autoStyleStr  type="submit" value="${tran("label")}"/> """
+            case COMP_TYPE_SUBMIT: //Is this ever used?
+                result = """<input ${idAttribute(idTxtParam)} $autoStyleStr $styleStr  type="submit" value="${tran("label")}"/> """
+                styleStr = ""
+                break;
             case COMP_TYPE_BUTTON:
                 // TODO for SQL generate the action ID for each method, assign ID to each click action
                 if (onClick)
-                    result = """<button ${idAttribute(idTxtParam)} ng-click="${name}_onClick()">${tran("label")}</button>\n"""
+                    result = """<button ${idAttribute(idTxtParam)} $autoStyleStr $styleStr ng-click="${name}_onClick()">${tran("label")}</button>\n"""
+                styleStr = ""
                 break;
             default :
                 // TODO log and ignore not implemented component
                 log.warn "*** WARNING: Compile Item. No HTML generated for component: $type ${name?name:model} ***"
                 result = ""
         }
-        if ([COMP_TYPE_BOOLEAN,COMP_TYPE_BUTTON, COMP_TYPE_SUBMIT].contains(type))
-            labelTxt="" //No labels in front
+        if ([COMP_TYPE_BOOLEAN,COMP_TYPE_BUTTON, COMP_TYPE_SUBMIT].contains(type)) {
+            labelTxt = "" //No labels in front
+        }
         if (parent.type==COMP_TYPE_DETAIL) {
             result = """|<div ${idAttribute("-container"+idTxtParam)} $styleStr class="pb-${parent.type}-item-container pb-$type">
                         |$labelTxt $result
@@ -1015,7 +1026,7 @@ class PageComponent {
                     }
                     if (labelStr) {
                         nextTxt += """|<div ${ idAttribute("submit-container") } class="pb-form-submit" $styleStr>
-                                      |  <input ${ idAttribute("submit") }  type="submit" value="$labelStr"/>
+                                      |  <input ${ idAttribute("submit") } class="pb-form-submit-button" ng-class='${name}_$STYLE_ATTR' type="submit" value="$labelStr"/>
                                       |</div>
                                    """.stripMargin()
                     }

@@ -1,11 +1,11 @@
 {
    "lastUpdated": null,
-   "css": "#header-main-section {\n    width: 100%;\n    background-color: #006E9F;\n    height: 5.859375%;\n    position: relative;\n    min-height: 3.4em;\n}\n\n.inline {\n  display: inline-block;\n}",
+   "css": "#header-main-section {\n    width: 100%;\n    background-color: #006E9F;\n    height: 5.859375%;\n    position: relative;\n    min-height: 3.4em;\n}\n}",
    "dateCreated": null,
    "constantName": "pbDefault",
    "description": "Default styles",
    "id": null,
-   "fileTimestamp": "2016-02-23T11:42:55Z",
+   "fileTimestamp": "2016-02-23T11:42:56Z",
    "class": "net.hedtech.banner.css.Css",
    "version": null
 }
