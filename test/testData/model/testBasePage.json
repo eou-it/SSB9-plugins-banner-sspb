@@ -1,15 +1,23 @@
 {
    "constantName": "testBasePage",
    "extendsPage": null,
-   "modelView": "{\n      \"type\": \"page\",\n      \"name\": \"basePage\",\n      \"title\": \"Test Base Page\",\n      \"scriptingLanguage\": \"JavaScript\",\n      \"components\": [\n            {\n                  \"name\": \"xeTextBox\",\n                  \"type\": \"xeTextBox\",\n                  \"subType\": \"text\",\n                  \"label\": \"Text Box\",\n                  \"placeholder\": \"Enter some Text\",\n                  \"parameters\": {},\n                  \"validation\": {},\n                  \"readonly\": false,\n                  \"required\": false,\n                  \"loadInitially\": true\n            }\n      ]\n}",
-   "compiledView": null,
-   "compiledController": null,
-   "version": null,
-   "lastUpdated": null,
-   "extensions": null,
-   "dateCreated": null,
-   "id": null,
-   "fileTimestamp": null,
-   "pageRoles": null,
-   "class": "net.hedtech.banner.sspb.Page"
+   "modelView": {
+      "components": [{
+         "readonly": false,
+         "name": "theText",
+         "label": "Text Box",
+         "loadInitially": true,
+         "placeholder": "Enter some Text",
+         "type": "text",
+         "parameters": {},
+         "required": false,
+         "validation": {}
+      }],
+      "name": "basePage",
+      "scriptingLanguage": "JavaScript",
+      "title": "Test Base Page",
+      "type": "page"
+   },
+   "fileTimestamp": "2016-03-10T11:12:36Z",
+   "pageRoles": []
 }

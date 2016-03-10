@@ -1,29 +1,23 @@
 {
    "constantName": "testAnExtPage2",
-   "extendsPage": {
-      "constantName": "testBasePage2",
-      "extendsPage": null,
-      "modelView": null,
-      "compiledView": null,
-      "compiledController": null,
-      "version": null,
-      "lastUpdated": null,
-      "extensions": null,
-      "dateCreated": null,
-      "id": null,
-      "fileTimestamp": null,
-      "pageRoles": null,
-      "class": "net.hedtech.banner.sspb.Page"
+   "extendsPage": {"constantName": "testBasePage2"},
+   "modelView": {
+      "components": [{
+         "readonly": false,
+         "name": "aText",
+         "label": "xe Text",
+         "loadInitially": true,
+         "placeholder": "Enter some text",
+         "type": "text",
+         "parameters": {},
+         "required": false,
+         "validation": {}
+      }],
+      "name": "testAnExtPage2",
+      "scriptingLanguage": "JavaScript",
+      "title": "Test Extension Page 2",
+      "type": "page"
    },
-   "modelView": "{\n      \"type\": \"page\",\n      \"name\": \"testAnExtPage2\",\n      \"title\": \"Test Extension Page 2\",\n      \"scriptingLanguage\": \"JavaScript\",\n      \"components\": [\n            {\n                  \"name\": \"xeTextBox\",\n                  \"type\": \"xeTextBox\",\n                  \"subType\": \"text\",\n                  \"label\": \"xe Text\",\n                  \"placeholder\": \"Enter some text\",\n                  \"parameters\": {},\n                  \"validation\": {},\n                  \"readonly\": false,\n                  \"required\": false,\n                  \"loadInitially\": true\n            }\n      ]\n}",
-   "compiledView": null,
-   "compiledController": null,
-   "version": null,
-   "lastUpdated": null,
-   "extensions": null,
-   "dateCreated": null,
-   "id": null,
-   "fileTimestamp": null,
-   "pageRoles": null,
-   "class": "net.hedtech.banner.sspb.Page"
+   "fileTimestamp": "2016-03-10T11:12:37Z",
+   "pageRoles": []
 }

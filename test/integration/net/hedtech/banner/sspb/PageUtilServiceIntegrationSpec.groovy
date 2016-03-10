@@ -56,6 +56,11 @@ class PageUtilServiceIntegrationSpec extends IntegrationSpec {
 
     void "Integration test export"() {
         when:
+        pageUtilService.importAllFromDir(workPath)
+        new File(workPath).eachFileMatch(~/.*.json.*/) { file ->
+            file.delete()
+        }
+
         pageUtilService.exportToFile( "testBasePage%", workPath, true)
 
         then: "test base pages exported"

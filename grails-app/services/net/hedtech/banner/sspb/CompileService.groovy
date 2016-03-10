@@ -320,8 +320,10 @@ class CompileService {
 
     def static buildControlVar(pageComponent, depth = 0) {
         def code = ""
-        if ([PageComponent.COMP_TYPE_BUTTON, PageComponent.COMP_TYPE_LIST, PageComponent.COMP_TYPE_GRID, PageComponent.COMP_TYPE_HTABLE, PageComponent.COMP_TYPE_LINK,
-             PageComponent.COMP_TYPE_XE_BUTTON].contains(pageComponent.type)) {
+        // The logic below may be more complex than needed.
+        // Are the 3 if - else if blocks below really mutually exclusive?
+        if ([PageComponent.COMP_TYPE_BUTTON, PageComponent.COMP_TYPE_LIST, PageComponent.COMP_TYPE_GRID, PageComponent.COMP_TYPE_HTABLE, PageComponent.COMP_TYPE_LINK
+             ].contains(pageComponent.type)) {
             // generate a control function for each button/list/link/grid 'click' property
             if (pageComponent.onClick) {
                 // handle variable and constant in expression
@@ -377,11 +379,6 @@ class CompileService {
                        |""".stripMargin()
             }
         }
-        /* use data set instead
-        else if (pageComponent.type == PageComponent.COMP_TYPE_XE_DROPDOWN) {
-            code += """ \$scope.${ pageComponent.name }_xeDropdownList = ${ pageComponent.model };\n"""
-        }
-        */
         pageComponent.components.each { child ->
             code += buildControlVar(child, depth + 1)
         }
@@ -399,8 +396,7 @@ class CompileService {
         // type of input (except button or submit)
         def inputTypes = [PageComponent.COMP_TYPE_BOOLEAN, PageComponent.COMP_TYPE_TEXT, PageComponent.COMP_TYPE_TEXTAREA,
                           PageComponent.COMP_TYPE_EMAIL, PageComponent.COMP_TYPE_NUMBER, PageComponent.COMP_TYPE_DATETIME,
-                          PageComponent.COMP_TYPE_TEL, PageComponent.COMP_TYPE_SELECT, PageComponent.COMP_TYPE_RADIO,
-                          /*PageComponent.COMP_TYPE_XE_DROPDOWN,*/ PageComponent.COMP_TYPE_XE_TEXT_BOX,PageComponent.COMP_TYPE_XE_TEXTAREA]
+                          PageComponent.COMP_TYPE_TEL, PageComponent.COMP_TYPE_SELECT, PageComponent.COMP_TYPE_RADIO]
         // model needs special value for dropdown
 
         switch (pageComponent.type) {

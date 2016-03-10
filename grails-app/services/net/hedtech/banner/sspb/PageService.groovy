@@ -4,8 +4,6 @@
 
 package net.hedtech.banner.sspb
 
-import net.hedtech.banner.exceptions.ApplicationException
-
 class PageService {
     def compileService
     def groovyPagesTemplateEngine
@@ -171,7 +169,7 @@ class PageService {
         Page.withTransaction {
             def page = Page.find{constantName==params.id}
             if (page.extensions?.size() > 0) {
-                throw new ApplicationException(PageService, message(code:"sspb.page.visualComposer.deletion.failed.message",args: [page.extensions.constantName.join(", ")]))
+                throw new RuntimeException( message(code:"sspb.page.visualComposer.deletion.failed.message",args: [page.extensions.constantName.join(", ")]))
             }
             else {
                 page.delete(failOnError:true)

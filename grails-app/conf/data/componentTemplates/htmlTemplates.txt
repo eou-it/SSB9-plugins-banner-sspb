@@ -3,8 +3,3 @@ grid.display.html
 tab.html
 tabset.html
 component.html
-xeTextBox.html
-xeButton.html
-xeDropdown.html
-xeTextArea.html
-xeCheckbox.html
