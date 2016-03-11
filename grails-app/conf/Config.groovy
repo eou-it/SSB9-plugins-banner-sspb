@@ -140,7 +140,6 @@ formControllerMap = [
         'virtualdomaincomposer'   : ['SELFSERVICE'],
         'cssmanager'              : ['SELFSERVICE'],
         'visualpagemodelcomposer' : ['SELFSERVICE'],
-        'pagemodelcomposer'       : ['SELFSERVICE'], // kind of obsolete, but useful for viewing the generated code
         'custompage'              : ['SELFSERVICE'], // renders the page builder pages
         'restfulapi'              : ['SELFSERVICE']
 ]
@@ -246,8 +245,6 @@ restfulApi.page.offset = 'offset'
 
 // API path component to construct the REST API URL
 sspb.apiPath = 'internal'
-// Reveal detailed SQL error messages to users with this role
-sspb.debugRoleName = "SELFSERVICE-WTAILORADMIN"
 
 // ******************************************************************************
 //                       RESTful API Endpoint Configuration

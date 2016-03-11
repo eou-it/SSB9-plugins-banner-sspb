@@ -70,6 +70,7 @@ class VirtualDomainSqlService {
      */
     private def userAccessRights (vd, userRoles) {
         def result=[get: false, put: false, post: false, delete: false, debug: false ]
+        String debugRoles = grailsApplication.config.pageBuilder.debugRoles?grailsApplication.config.pageBuilder.debugRoles:""
         for (it in userRoles) {
             //objectName is like SELFSERVICE-ALUMNI
             //role is BAN_DEFAULT_M
@@ -81,8 +82,7 @@ class VirtualDomainSqlService {
                 result.post |= it.allowPost
                 result.delete |= it.allowDelete
             }
-            if ( it.objectName == grailsApplication.config.sspb.debugRoleName)
-                result.debug=true
+            result.debug |= debugRoles.indexOf(it.objectName)>-1
         }
         result
     }
@@ -157,15 +157,9 @@ class VirtualDomainSqlService {
         }
         def rows
         try {
-            if (parameters.max) //make sure that an integer was passed in (avoid sql injection)
-                parameters.max=parameters.max.toInteger()
-            else {
-                parameters.max = 1000.toInteger()
-            }
-            if (parameters.debug == true)
-                parameters.max=5.toInteger()
-            if (!parameters.offset)
-                parameters.offset=0.toLong()
+            //make sure paging params are valid numbers (and avoid sql injection and errors in oracle)
+            parameters.max=parameters.max?parameters.max.toInteger():parameters.debug?5.toInteger():10000.toInteger()
+            parameters.offset = parameters.offset?parameters.offset.toLong():0.toLong()
             if (parameters.sortby) {
                 statement=replaceOrderBy(statement, parameters.sortby)
             }
