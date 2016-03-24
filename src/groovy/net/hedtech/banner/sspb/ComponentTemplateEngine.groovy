@@ -2,11 +2,13 @@ package net.hedtech.banner.sspb
 import grails.util.Environment
 import groovy.json.StringEscapeUtils
 import groovy.util.logging.Log4j
-import jdk.nashorn.api.scripting.NashornScriptEngineFactory
+
 import net.hedtech.banner.exceptions.ApplicationException
 
 import javax.script.ScriptContext
 import javax.script.SimpleScriptContext
+import javax.script.ScriptEngineManager
+//import jdk.nashorn.api.scripting.NashornScriptEngineFactory
 
 @Log4j
 class ComponentTemplateEngine {
@@ -51,7 +53,13 @@ class ComponentTemplateEngine {
 
     static def getJavaScriptTemplate(text) {
         if (!nashornEngine) {
-            nashornEngine = new NashornScriptEngineFactory().getScriptEngine( "-scripting" )
+            // Need nashornEngine with scripting option to replace variables in template
+            // nashornEngine = new NashornScriptEngineFactory().getScriptEngine( "-scripting" )
+            ScriptEngineManager manager = new ScriptEngineManager()
+            nashornEngine = manager.getEngineByExtension("js")
+            if (nashornEngine == null) {
+                throw new RuntimeException("no JavaScript engine registered")
+            }
         }
         def jsEnd = text.indexOf(jsEndTag) //only support simple non nested script
         [ javaScript: text[jsStartTag.length()+1..jsEnd-1], html: text.substring(jsEnd+jsEndTag.length()), engine: nashornEngine]
