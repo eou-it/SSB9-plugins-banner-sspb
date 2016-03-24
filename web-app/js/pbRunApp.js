@@ -24,6 +24,11 @@ alert = function(message, params ){ //message,promptMessage,type,flash,prompts) 
     notifications.addNotification(note);
 }
 
+//Temporary fix for framework issue. ToDo remove when not needed any more.
+$(function() {
+    _.defer( ContentManager.setContentPosition );
+});
+
 //remove by value for arrays. Return if value was remove
 Array.prototype.remove=function(value){
     var i =  this.indexOf(value);
