@@ -104,14 +104,14 @@ class CompileService {
 
         //  Removed Dependencies: $http,$resource,$cacheFactory,$parse (now in pbDataSet )
         result = """
-               |function CustomPageController(\$scope ,\$locale,\$templateCache,pbDataSet,pbResource,pbAddCommon) {
+               |function (\$scope ,\$locale,\$templateCache,pbDataSet,pbResource,pbAddCommon) {
                |    // copy global var to scope
                |    \$scope._user = user;
                |    \$scope._params = params;
                |    // page specific code
                |    $result
                |    $common
-               |};// End Controller
+               |}/* End Controller */
                |""".stripMargin()
         return result
     }

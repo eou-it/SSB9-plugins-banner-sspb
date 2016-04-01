@@ -1053,33 +1053,23 @@ class PageComponent {
                 log.warn "Warning: Style sheet $css will not be imported as it does not exist."
             }
         }
+        def controllerName = "CustomPageController_${name}"
 
         """
         |<head>
         |<!-- sitemesh -->
         |<meta name="layout" content="bannerSelfServicePBPage"/>
-        |
         |<!-- import custom stylesheets -->
         |$cssImp
-        |<meta name="menuEndPoint" content="\${request.contextPath}/ssb/menu"/>
-        |<meta name="menuBaseURL" content="\${request.contextPath}/ssb"/>
-        |
         |<!--meta name="layout" content="simple"/-->
         |<title>${tran("title")}</title>
-        |<script>
-        |var pageID = "$name"
-        | // inject services and controller modules to be registered with the global ng-app
-        | var myCustomServices = ['ngResource','ngGrid','ui', 'pbrun.directives', 'ngSanitize', 'xe-ui-components'];
+        |<script type="text/javascript">
+        |  var pageID = "$name";
+        |  pageControllers["$controllerName"] = $CONTROLLER_PLACEHOLDER;
         |</script>
-        |<!-- inject global functions -->
-        | <script type="text/javascript">
-        |    // Inject controller code here
-        |    $CONTROLLER_PLACEHOLDER
-        |</script>
-        |
         |</head>
         |<body>
-        |   <div id="content" ng-controller="CustomPageController"  class="customPage container-fluid">
+        |   <div id="content" ng-controller="$controllerName"  class="customPage container-fluid">
         |   ${label?"<h1 ${idAttribute('label')}>${tran("label")}</h1>":""}
          """.stripMargin()
     }

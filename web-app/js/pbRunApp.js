@@ -1,3 +1,7 @@
+/******************************************************************************
+ *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ ******************************************************************************/
+
 /*
 Common Javascript functions used by pagebuilder applications
 */
@@ -67,24 +71,16 @@ if (undefined == myCustomServices) {
     var myCustomServices = [];
 }
 
-
 var appModule = appModule||angular.module('BannerOnAngular', myCustomServices);
 
-var CustomPageController = CustomPageController||undefined;
-if ( CustomPageController) {
-    appModule.controller("CustomPageController", CustomPageController);
+if (pageControllers) {
+    if (window["CustomPageController"]) { // backwards compatibel with alpha release
+        pageControllers["CustomPageController"] = window["CustomPageController"];
+    }
+    for (var pc in pageControllers) {
+        appModule.controller(pc, pageControllers[pc]);
+    }
 }
-
-var VisualPageComposerController = VisualPageComposerController||undefined;
-if (VisualPageComposerController) {
-    appModule.controller("VisualPageComposerController", VisualPageComposerController);
-}
-
-var CssManagerController = CssManagerController||undefined;
-if (CssManagerController) {
-    appModule.controller("CssManagerController", CssManagerController);
-}
-
 
 // below filter is used for pagination
 appModule.filter('startFrom', function() {

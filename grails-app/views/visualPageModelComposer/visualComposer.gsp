@@ -32,7 +32,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
 
      // define angular controller
-     function VisualPageComposerController( $scope, $http, $resource, $parse, $filter) {
+    pageControllers["VisualPageComposerController"] = function ( $scope, $http, $resource, $parse, $filter) {
 
         var noteType = {
             success: "success",

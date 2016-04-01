@@ -75,8 +75,13 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             var user = ${PBUser.get()?.encodeAsJSON()};
             var gridLocale = '${localeBrowserFull.toLowerCase()}';
             var params = ${params?.encodeAsJSON()};
-            if (!window.console)
+            if (!window.console) {
                 console = {log: function() {}};
+            }
+            // inject services and controller modules to be registered with the global ng-app
+            var myCustomServices = ['ngResource','ngGrid','ui', 'pbrun.directives', 'ngSanitize', 'xe-ui-components'];
+            var pageControllers = {};
+
         </script>
 
         <g:customStylesheetIncludes/>
