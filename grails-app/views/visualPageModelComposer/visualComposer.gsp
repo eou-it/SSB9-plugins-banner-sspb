@@ -1062,7 +1062,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
 
     <textarea name="statusMessage" ng-model="pageStatus.message"
-              style="width:99.7%; height: 10%;"></textarea>
+              style="width:99.99%; height: 8%; resize: vertical;"></textarea>
 
 </div>
 

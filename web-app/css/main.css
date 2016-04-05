@@ -30,9 +30,11 @@ h6,
 #content{
     font: 14px "Open Sans", sans-serif;
 	/* Next 3 selectors are needed when common-platform.css is not used (to enable vertical scroll bar) */
-	overflow: auto;
+	/*
+    overflow: auto;
 	position: absolute;
  	bottom: 30px;
+    */
 	/* add some padding when container-fluid is used */
 	padding-right: 15px;
 	padding-left: 15px;
