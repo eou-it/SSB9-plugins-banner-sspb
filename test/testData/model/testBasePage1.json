@@ -3,14 +3,14 @@
    "pageRoles": [],
    "fileTimestamp": "2016-04-08T11:48:26Z",
    "modelView": {
-      "title": "Test Base Page 2",
+      "title": "Test Base Page",
       "scriptingLanguage": "JavaScript",
-      "name": "basePage2",
+      "name": "basePage",
       "components": [{
          "validation": {},
-         "placeholder": "Enter some text",
-         "name": "xeTextBox",
-         "label": "xe Text",
+         "placeholder": "Enter some Text",
+         "name": "theText",
+         "label": "Text Box",
          "parameters": {},
          "type": "text",
          "required": false,
@@ -19,5 +19,5 @@
       }],
       "type": "page"
    },
-   "constantName": "testBasePage2"
+   "constantName": "testBasePage"
 }

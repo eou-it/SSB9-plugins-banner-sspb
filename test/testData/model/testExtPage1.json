@@ -1,36 +1,57 @@
 {
-   "constantName": "testExtPage1",
-   "extendsPage": {"constantName": "testBasePage"},
-   "modelView": {
-      "components": [
-         {
-            "readonly": false,
-            "name": "xeTextBox",
-            "label": "Text Box",
-            "loadInitially": true,
-            "placeholder": "Enter some Text",
-            "type": "text",
-            "parameters": {},
-            "required": false,
-            "validation": {}
+   "extendsPage": {"constantName": "testBasePage1"},
+   "pageRoles": [],
+   "fileTimestamp": "2016-04-08T11:48:26Z",
+   "modelView": {"deltas": {
+      "theText": {
+         "validation": {"base": {}},
+         "placeholder": {"base": "Enter some Text"},
+         "name": {"base": "theText"},
+         "label": {"base": "Text Box"},
+         "parameters": {"base": {}},
+         "type": {"base": "text"},
+         "required": {"base": false},
+         "readonly": {"base": false},
+         "loadInitially": {"base": true},
+         "meta": {"base": {"parent": "basePage"}}
+      },
+      "xeTextArea": {
+         "validation": {"ext": {}},
+         "placeholder": {"ext": "Enter some text"},
+         "name": {"ext": "xeTextArea"},
+         "label": {"ext": "Text Area"},
+         "parameters": {"ext": {}},
+         "type": {"ext": "textArea"},
+         "required": {"ext": false},
+         "readonly": {"ext": false},
+         "loadInitially": {"ext": true},
+         "meta": {"ext": {"parent": "basePage"}}
+      },
+      "basePage": {
+         "title": {
+            "base": "Test Base Page",
+            "ext": "Test Extension Page"
          },
-         {
-            "readonly": false,
-            "name": "xeTextArea",
-            "label": "Text Area",
-            "loadInitially": true,
-            "placeholder": "Enter some text",
-            "type": "textArea",
-            "parameters": {},
-            "required": false,
-            "validation": {}
+         "meta": {
+            "base": {"firstChild": "theText"},
+            "ext": {"firstChild": "xeTextBox"}
          }
-      ],
-      "name": "testExtPage1",
-      "scriptingLanguage": "JavaScript",
-      "title": "Test Extension Page",
-      "type": "page"
-   },
-   "fileTimestamp": "2016-03-10T11:12:36Z",
-   "pageRoles": []
+      },
+      "xeTextBox": {
+         "validation": {"ext": {}},
+         "placeholder": {"ext": "Enter some Text"},
+         "name": {"ext": "xeTextBox"},
+         "label": {"ext": "Text Box"},
+         "parameters": {"ext": {}},
+         "type": {"ext": "text"},
+         "required": {"ext": false},
+         "readonly": {"ext": false},
+         "loadInitially": {"ext": true},
+         "meta": {"ext": {
+            "parent": "basePage",
+            "nextSibling": "xeTextArea"
+         }}
+      }
+   }},
+   "constantName": "testExtPage1"
 }

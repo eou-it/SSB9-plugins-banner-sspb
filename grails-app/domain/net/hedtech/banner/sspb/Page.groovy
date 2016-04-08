@@ -369,7 +369,9 @@ class Page {
                 }
             }
         }
-        result.components[comp.name] = clone
+        if (comp.name) {
+            result.components[comp.name] = clone
+        }
         result
     }
 
@@ -394,6 +396,9 @@ class Page {
     //Static helper method to compose the page model from a decomposed model
     private static Map composeComponents(Map decomposedModel, withInfo) {
         decomposedModel = resolveConflicts(decomposedModel)
+        if (decomposedModel.components == null) {
+            return [:]
+        }
         Map root = decomposedModel.components[decomposedModel.root]
         if (root.meta.firstChild) {
             //def child = decomposedModel.components[root.meta.firstChild]
