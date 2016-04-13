@@ -38,11 +38,14 @@ class PageSpec extends Specification {
         def diff = Page.modelToMap(extension1.modelView)
         expect:
         // validate merged models are equal (limited test) and delta has 3 entries with key A,B and I
-        mergedModelMap.components.size() == extensionMergedModelMap1.components.size() &&
-                mergedModelMap.components[0].label == "Text 1 label modified" &&
-                mergedModelMap.components[0].validation.size() == 2 &&
-                mergedModelMap.components[2].name == "I" &&
-                diff.deltas.size() == 3 && diff.deltas['A'] && diff.deltas['I'] && diff.deltas['B']
+        mergedModelMap.components.size() == extensionMergedModelMap1.components.size()
+        mergedModelMap.components[0].label == "Text 1 label modified"
+        mergedModelMap.components[0].validation.size() == 2
+        mergedModelMap.components[2].name == "I"
+        diff.deltas.size() == 4
+        diff.deltas['A'] && diff.deltas['I'] && diff.deltas['B']
+
+        mergedModelMap.name.equals("xeTest.e1")
     }
 
 
@@ -309,11 +312,11 @@ class PageSpec extends Specification {
                       ],
                       "style": ""
                 }"""
-        // Insert a new element I after B
+        // Insert a new element I after B and change PageName for extension
         extensionMergedModelView1 = """
                 {
                       "type": "page",
-                      "name": "xeTest",
+                      "name": "xeTest.e1",
                       "title": "",
                       "scriptingLanguage": "JavaScript",
                       "components": [

@@ -87,7 +87,7 @@ class Page {
 
     //Keys map to avoid hardcoding the key strings multiple times
     final static Map KEYS = [page: null, deltas: null, meta: null, components: null, mergeInfo: null, noReference: null,
-                             idx: null, ext: null, spareComponents: null].collectEntries{ k, v -> [k,k] }
+                             idx: null, ext: null, spareComponents: null, _root: null].collectEntries{ k, v -> [k,k] }
     //Methods for merging models and getting deltas
 
     //Use a common static method to convert json model to map
@@ -100,6 +100,15 @@ class Page {
     //Use a common static method to convert map to json string
     static String modelToString(Map model) {
         return (model as JSON).toString(true)
+    }
+
+    //Static helper method to change a map key
+    static Map replaceKey(Map map, oldKey, newKey) {
+        if (oldKey && newKey && map[oldKey] != null ) {
+            map[newKey] = map[oldKey]
+            map.remove(oldKey)
+        }
+        map
     }
 
     //Member method to get the merged modelView as a JSON text
@@ -139,7 +148,7 @@ class Page {
         return modelToString(diffModelView(model))
     }
 
-    // Member method to determine the difference  between the full page model and this.extendsPage
+    //Member method to determine the difference  between the full page model and this.extendsPage
     private Map diffModelView(mergedModelView) {
         def start = new Date()
         def base = extendsPage.getMergedModelMap()
@@ -161,6 +170,8 @@ class Page {
             }
         }
         diff = convertDiff(diff)
+        // replace the _root key with the base root element name
+        //diff.deltas = replaceKey(diff.deltas, KEYS._root, base.name)
         log.info "Determined diff in ${ new Date().getTime() - start.getTime() } ms. diff= $diff"
         diff
     }
@@ -244,7 +255,6 @@ class Page {
             }
             result[name][prop] = v
         }
-        println "deltaVersionSave=$deltaVersionSave"
         [deltas: result, deltaVersion: deltaVersionSave]
     }
 
@@ -257,9 +267,9 @@ class Page {
     //Member method to convert a page model Map to a propertyMap (intermediate format used in diff determination)
     private Map propertyMap(Map comp) {
         def props = [:]
-        println "PropertyMap  - Delta Version for $constantName = $deltaVersion"
-        def decomposed = decomposeComponents(comp).components
-        decomposed.each {
+        def decomposed = decomposeComponents(comp)
+        decomposed.components = replaceKey(decomposed.components, decomposed.root, KEYS._root)
+        decomposed.components.each{
             it.value.each { key, val ->
                 if (key != KEYS.components && key != KEYS.mergeInfo ) {
                     props[it.key + ':' + key] = val
@@ -274,6 +284,9 @@ class Page {
         def model = decomposeComponents(extendsPage.getMergedModelMap())
         model.added = [:]
         model.conflicts = []
+        if (diffs[KEYS._root]) {
+            replaceKey(model.components, model.root, KEYS._root)
+        }
         diffs.each { name, diff ->
             //println "Processing $name"
             def comp = model.components[name]
@@ -305,6 +318,9 @@ class Page {
                     model.conflicts << [type: "removedBaseline", diff: diff, comp: [name: name]]
                 }
             }
+        }
+        if (model.components[KEYS._root]) {
+            replaceKey(model.components,  KEYS._root, model.root)
         }
         composeComponents(model, withInfo)
     }
@@ -345,10 +361,8 @@ class Page {
 
     //Member method to decompose a page model to a flat map, adding sibling and parent meta information
     private Map decomposeComponents(Map comp, int siblingIndex = 0, Map parent = null, Map next = null, Map result = [:]) {
-        def final rootName = '_page'
-        def compName = (comp.type == KEYS.page) && (this.deltaVersion != "0.0")  ? rootName : comp.name
         if (comp.type == KEYS.page) {
-            result = [root: compName, components: [:]]
+            result = [root: comp.name, components: [:]]
         }
         Map clone = comp.clone()
         clone.meta = [:]
@@ -374,7 +388,7 @@ class Page {
             }
         }
         if (comp.name) {
-            result.components[compName] = clone
+            result.components[comp.name] = clone
         }
         result
     }
