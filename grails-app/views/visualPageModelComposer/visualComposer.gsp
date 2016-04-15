@@ -39,6 +39,9 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             warning: "warning",
             error:   "error"
         };
+
+        $scope.newPageName = "newpage";
+
         $scope.alertNote = function(note) {
             note.type = note.type||noteType.success;
             note.flash = note.flash||true;
@@ -54,6 +57,12 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
              }
              notifications.addNotification(new Notification(note));
          };
+
+         $scope.toPageTreeName = function(name) {
+             var result = name.replace(/[-_\.]([a-zA-Z])/g, function (g) { return g[1].toUpperCase(); });
+             result = result.replace(/[_\-\.]/g, "");
+             return result;
+         }
 
          $scope.confirmPageAction = function(msg, pageAction, cancelAction) {
              var note = {type: noteType.warning, message: msg};
@@ -106,11 +115,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         // used to highlight the selected component in the component tree
         // TODO this does not work with IE 9
         $scope.componentLabelStyle = function(selected) {
-        if (selected)
-            //return "text-decoration:underline;";
-            return "border-style:ridge; border-width:2px; color:red";
-        else
-            return "";
+            return selected?"border-style:ridge; border-width:2px; color:blue;":"";
         };
 
 
@@ -121,22 +126,18 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             $scope.sourceRenderDef = data.definitions.sourceRenderDefinitions;
             $scope.dropdownsDef = data.definitions.dropdowns;
             $scope.setAttributeRenderProperties();
-            //console.log($scope.sourceRenderDef);
           });
 
          // create a map of {attribute type -> rendering property} for editing a component attribute
          // can not do this dynamically when ng-switch is called because it will keep calling the function to monitor the change
          $scope.setAttributeRenderProperties = function() {
             $scope.attrRenderProps = {};
-            //var defaultRenderProp = {renderType:"text"};
-            //var found = false;
             for(var i=0; i < $scope.sourceRenderDef.length; i++ ){
                 var attrDef = $scope.sourceRenderDef[i];
                 for (var j = 0; j < attrDef.AttributeType.length; j++) {
                     $scope.attrRenderProps[attrDef.AttributeType[j]] = attrDef.renderProperty;
                 }
             }
-            //console.log("attrRenderProps = " + $scope.attrRenderProps);
          };
 
          $scope.getDropdown = function(attribute) {
@@ -241,6 +242,8 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             tr['attribute.type'             ]="${message(code:'sspb.model.attribute.type')}";
             tr['attribute.subType'          ]="${message(code:'sspb.model.attribute.subtype')}";
             tr['attribute.name'             ]="${message(code:'sspb.model.attribute.name')}";
+            tr['attribute.name.hint'        ]="${message(code:'sspb.model.attribute.name.hint', encodeAs: 'JavaScript')}";
+            tr['attribute.name.hint.new'    ]="${message(code:'sspb.model.attribute.name.hint.new', encodeAs: 'JavaScript')}";
             tr['attribute.documentation'    ]="${message(code:'sspb.model.attribute.documentation')}";
             tr['attribute.title'            ]="${message(code:'sspb.model.attribute.title')}";
             tr['attribute.scriptingLanguage']="${message(code:'sspb.model.attribute.scriptingLanguage')}";
@@ -322,12 +325,6 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             tr['type.button'      ]="${message(code:'sspb.model.type.button'   )}";
             tr['type.hidden'      ]="${message(code:'sspb.model.type.hidden'   )}";
             tr['type.style'       ]="${message(code:'sspb.model.type.style'   )}";
-            tr['type.xeTextBox'   ]="${message(code:'sspb.model.type.xeTextBox'  )}";
-            tr['type.xeTextArea'  ]="${message(code:'sspb.model.type.xeTextArea'  )}";
-            tr['type.xeButton'  ]="${message(code:'sspb.model.type.xeButton' )}";
-            tr['type.xeDropdown'  ]="${message(code:'sspb.model.type.xeDropdown' )}";
-            tr['type.xeCheckbox'  ]="${message(code:'sspb.model.type.xeCheckbox' )}";
-            %{--tr['type.xeRadioButton']="${message(code:'sspb.model.type.xeRadioButton' )}";--}%
             tr['subType.text'     ]="${message(code:'sspb.model.subType.text'    )}";
             tr['subType.number'   ]="${message(code:'sspb.model.subType.number'  )}";
             tr['subType.email'    ]="${message(code:'sspb.model.subType.email'   )}";
@@ -353,7 +350,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             tr['pb.template.combo.loadsource.label'     ] = "${message(code:'pb.template.combo.loadsource.label',encodeAs: 'JavaScript')}";
             tr['pb.template.combo.edit.label'           ] = "${message(code:'pb.template.combo.edit.label',encodeAs: 'JavaScript')}";
             tr['pb.template.combo.select.label'         ] = "${message(code:'pb.template.combo.select.label',encodeAs: 'JavaScript')}";
-            tr['sspb.page.visualbuilder.page.name.hint.message'      ] = "${message(code:'sspb.page.visualbuilder.page.name.hint.message',encodeAs: 'JavaScript')}";
+
 
 
             var res=tr[key];
@@ -556,7 +553,6 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             $scope.selectData(newComp, $scope.index+1, parent);
             // modal dialog is associated with parent scope
             //$scope.handlePageTreeChange();
-
           };
 
           $scope.cancelTypeSelectionModal = function() {
@@ -648,6 +644,27 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
              $scope.handlePageTreeChange();
          }, true);
 
+        $scope.addTooltips = function(attr,that){
+            var el = $("input[name='prop_name']");
+            if (!el.data('original-title')) {
+                var title = ($scope.pageName == null || $scope.pageName != $scope.newPageName) ?
+                        el.attr('title', $scope.i18nGet("attribute.name.hint")) :
+                        el.attr('title', $scope.i18nGet("attribute.name.hint.new"));
+                el.tooltip();
+            }
+        };
+
+        $scope.mouseOver = function(ev) {
+            $scope.addTooltips();
+        };
+
+        // handle page name change
+        $scope.$watch('pageCurName', function() {
+            if ($scope.pageOneSource) {
+                $scope.pageOneSource.name = $scope.toPageTreeName(nvl($scope.pageCurName,""));
+            }
+        }, true);
+
          $scope.getPageSource = function() {
              //TODO prompt for unsaved data
              if ($scope.isPageModified())   {
@@ -666,19 +683,9 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                      //$scope.handlePageTreeChange();
                      $scope.pageCurName= $scope.pageName;
                      $scope.extendsPage = data.extendsPage;
+                     $scope.pageOneSource.name=$scope.toPageTreeName($scope.pageCurName);
                      $scope.statusHolder.isPageModified = false;
-                     $(".tab-content").on("hover", function () {
-                         $element = $("input[name='prop_name']");
-                         if ($scope.pageOneSource.name!="newpage" && $scope.pageName!="newpage") {
-                             if(!$element.data('ui-tooltip')) {
-                                 $($element).attr('title', $scope.i18nGet("${message(code:'sspb.page.visualbuilder.page.name.hint.message', encodeAs: 'JavaScript')}"))
-                                 $($element).tooltip();
-                             }
-                         } else {
-                             $($element).attr('title', '');
-                         }
-                     });
-
+                     $scope.pagemodelform.$setUntouched();
                  } catch(ex) {
                      $scope.alertError( $scope.i18nGet("${message(code:'sspb.page.visualbuilder.parsing.error.message', encodeAs: 'JavaScript')}",[ex]));
                  }
@@ -703,8 +710,8 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                     return;
             }
 
-            $scope.pageName= "${message( code:'sspb.page.visualbuilder.newpage.default', encodeAs: 'JavaScript')}";
-            $scope.pageCurName= $scope.pageName;
+            $scope.pageName= $scope.newPageName;
+            $scope.pageCurName = "";
             $scope.extendsPage = {};
             $scope.statusHolder.noDirtyCheck = true;
             $scope.pageSource[0] = {"type": "page", "name": $scope.pageName};
@@ -719,11 +726,11 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
           $scope.validateAndSubmitPageSource = function () {
               //$scope.submitPageSource();
               //return;
-              if ($scope.pageCurName === "newpage") {
+              if ($scope.pageCurName === $scope.newPageName || !$scope.pageCurName ) {
                   alert("Enter a new page name");
                   return;
               }
-              if( $scope.pageCurName != null && $scope.pageName != $scope.pageCurName && $scope.pageName != "newpage" ) {
+              if( $scope.pageCurName != null && $scope.pageName != $scope.pageCurName && $scope.pageName != $scope.newPageName ) {
                   var msg;
                   if ($scope.pageList.findIndex(function(it) { return it.constantName == $scope.pageCurName ;}) >-1){
                       msg =  "${message(code:'sspb.page.visualbuilder.page.name.edit.overwrite.existing', encodeAs: 'Javascript')}";
@@ -880,42 +887,42 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
 <div id="content" ng-controller="VisualPageComposerController" class="customPage container-fluid" ng-form="pagemodelform">
 
-    <label><g:message code="sspb.page.visualbuilder.load.label" /></label>
-    <select name="constantName"
+    <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.load.label" /></label>
+    <select class="vpc-name-input" name="constantName"
             ng-options="page.constantName as page.constantName for page in pageList"
                 ng-model="pageName"
                 ng-change="getPageSource();saveAs=false;"></select>
 
     <button ng-click='loadPageNames(); saveAs=false;'><g:message code="sspb.page.visualbuilder.reload.pages.label" /></button>
     <button ng-click='newPageSource()'><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
-    <button ng-click='saveAs=true;' ng-show="pageName && pageName!='newpage'"> Save As</button>
-    <span ng-hide="pageCurName == pageName && pageCurName != 'newpage' && !saveAs">
-        <label><g:message code="sspb.page.visualbuilder.name.label" /></label>
-        <input type="text" name="constantNameEdit" ng-model="pageCurName" required maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/">
+    <button ng-click='saveAs=true;' ng-show="pageName && pageName!=newPageName"> <g:message code="sspb.page.visualbuilder.save.as.label" /></button>
+    <span ng-hide="pageCurName == pageName && pageCurName != newPageName && !saveAs">
+        <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.name.label" /></label>
+        <input id="saveAsInput" class="vpc-name-input" type="text" name="constantNameEdit" ng-model="pageCurName" required maxlength="60"
+               placeholder='<g:message code="sspb.page.visualbuilder.new.page.label" />' ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/">
 
         <span ng-messages="pagemodelform.constantNameEdit.$error" role="alert" class="fieldValidationMessage">
             <span ng-message="pattern" ><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" /></span>
             <span ng-message="required" > <g:message code="sspb.page.visualbuilder.name.required.message" /></span>
         </span>
     </span>
-<br/>
+    <br/>
 
 
 
-    <label><g:message code="sspb.page.visualbuilder.extends.label" /></label>
-    <select name="extendsPage"
+    <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.extends.label" /></label>
+    <select class="vpc-name-input" name="extendsPage"
             ng-options="page as page.constantName disable when page.constantName==pageName for page in pageList track by page.id"
-                ng-model="extendsPage">
+            ng-model="extendsPage">
         <option value=""> </option>
     </select>
 
 
-    <button ng-click='validateAndSubmitPageSource(); saveAs=false;' ng-show="pageName && pageCurName != 'newpage'"
+    <button ng-show="pageName && pageCurName && pageCurName != newPageName" ng-click='validateAndSubmitPageSource(); saveAs=false;'
             ng-disabled='sourceEditEnabled || !pagemodelform.$valid'><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
-    <button ng-click="getPageSource(); saveAs=false;" ng-show="pageName && pageCurName != 'newpage'"><g:message code="sspb.page.visualbuilder.reload.label" /></button>
-    <button ng-click="previewPageSource()" ng-show="pageName && pageCurName != 'newpage'"><g:message code="sspb.page.visualbuilder.preview.label" /></button>
-    <button ng-click='deletePageSource(); saveAs=false;' ng-show="pageName && pageName != 'newpage'"><g:message code="sspb.page.visualbuilder.delete.label" /></button>
-
+    <button ng-show="pageName != newPageName" ng-click="getPageSource(); saveAs=false;" ><g:message code="sspb.page.visualbuilder.reload.label" /></button>
+    <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click="previewPageSource()" ><g:message code="sspb.page.visualbuilder.preview.label" /></button>
+    <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click='deletePageSource(); saveAs=false;'><g:message code="sspb.page.visualbuilder.delete.label" /></button>
     <table style="height:80%; min-width: 60em">
         <tr>
             <th style="width:50%"><g:message code="sspb.page.visualbuilder.page.view.label" /></th>
@@ -950,12 +957,13 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                 </span>
             </td>
             <td>
-                <div ng-show="dataHolder.selectedComponent!=undefined">
+                <div ng-show="dataHolder.selectedComponent!=undefined" ng-mouseover="mouseOver($event)">
                     <!--
                     <div>Selected Component = {{dataHolder.selectedComponent.type}}</div>
                     -->
 
                     <div ng-repeat="attr in dataHolder.allAttrs">
+                    <%--span ng-if="!(attr.name=='name' && dataHolder.selectedComponent.type=='page') "--%>
                         <span ng-switch on="attrRenderProps[attr.name].inputType" >
                             <input ng-switch-when="hidden" type="hidden"/>
                             <label ng-switch-default style="text-align:end; width: 30%">{{i18nGet('attribute.'+attr.name)}}<span ng-show="attr.required">*</span> <span ng-show="attributeIsTranslatable(attr.name)">⊙</span></label>
@@ -974,7 +982,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                             <select ng-switch-when="select" ng-options="type as i18nGet('type.'+type) for type in dataHolder.selectedCompatibleTypes"
                                 ng-model="dataHolder.selectedComponent[attr.name]" ng-change="handleAttrChange()"></select>
                             <%--HvT re-introduced ng-change in previous line because changing type may cause issues. Seems to help. Not sure why it was removed?--%>
-                            <input ng-switch-when="text" name="{{'prop_'+attr.name}}" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                            <input ng-switch-when="text" name="{{'prop_'+attr.name}}" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name]);'
                                    ng-model="dataHolder.selectedComponent[attr.name]" ng-required="attr.required"/>
                             <%-- validation name text --%>
                             <input ng-switch-when="nameText" name="{{'prop_'+attr.name}}" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
@@ -1001,13 +1009,14 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                         </span>
                         <!-- Attribute Validation Errors -->
                         <span ng-switch on="attr.name" >
-                            <div ng-switch-when="name" ng-messages="pagemodelform.prop_name.$error" role="alert">
+                            <span ng-switch-when="name" ng-messages="pagemodelform.prop_name.$error " role="alert">
                                 <div ng-message="pattern" class="attributeValidationMessage"><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" /></div>
-                            </div>
+                            </span>
                         </span>
-                        <div ng-messages="pagemodelform['prop_'+attr.name].$error" role="alert">
-                            <div ng-message="required" class="attributeValidationMessage"><g:message code="sspb.page.visualbuilder.property.required.message" /></div>
-                        </div>
+                        <span ng-if="pagemodelform['prop_'+attr.name].$touched"  ng-messages="pagemodelform['prop_'+attr.name].$error" role="alert">
+                            <span ng-message="required" class="attributeValidationMessage"><g:message code="sspb.page.visualbuilder.property.required.message" /></span>
+                        </span>
+                    <%--/span--%>
                     </div>
                 </div>
              </td>
@@ -1021,7 +1030,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         </span>
         <!-- align text if there is no expand/collapse button-->
         <span  ng-show="data.components==undefined || data.components.length==0" style="background:none;border:none; font-size:100%">
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         </span>
         <!--input type="checkbox" ng-model="showChildren" ng-show="data.components!=undefined && data.type!=undefined"/-->
         <span ng-init="index=nextIndex()" ng-click="selectData(data, index, $parent.$parent.data)"

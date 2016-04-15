@@ -127,7 +127,7 @@ class Page {
                 def diff = modelToMap(modelView)
                 if (diff.containsKey(KEYS.deltas)) {
                     this.deltaVersion = diff.deltaVersion?:"0.0"
-                    result = applyDiffs(diff.deltas, withInfo)
+                    result = applyDiffs(diff, withInfo)
                     log.info "Merged page models"
                 } else {
                     result = modelToMap(modelView)
@@ -171,7 +171,8 @@ class Page {
         }
         diff = convertDiff(diff)
         // replace the _root key with the base root element name
-        //diff.deltas = replaceKey(diff.deltas, KEYS._root, base.name)
+        diff.deltas = replaceKey(diff.deltas, KEYS._root, base._name)
+        diff.baseRoot = base._name
         log.info "Determined diff in ${ new Date().getTime() - start.getTime() } ms. diff= $diff"
         diff
     }
@@ -242,7 +243,7 @@ class Page {
         result
     }
 
-    //Static helper method to convert the properties into the common delta format
+    //Member method to convert the properties into the common delta format
     private static Map convertDiff(propsDiff) {
         def result = [:]
         //convert the diff properties to a map
@@ -255,7 +256,7 @@ class Page {
             }
             result[name][prop] = v
         }
-        [deltas: result, deltaVersion: deltaVersionSave]
+        [ deltas: result, deltaVersion: deltaVersionSave]
     }
 
 
@@ -266,9 +267,11 @@ class Page {
 
     //Member method to convert a page model Map to a propertyMap (intermediate format used in diff determination)
     private Map propertyMap(Map comp) {
+        def decomposed = replaceKey(comp, "name", "_name")        //Normalize the name before determining the difference
+        decomposed.name = KEYS._root
         def props = [:]
-        def decomposed = decomposeComponents(comp)
-        decomposed.components = replaceKey(decomposed.components, decomposed.root, KEYS._root)
+        decomposed = decomposeComponents(decomposed)
+        //decomposed.components = replaceKey(decomposed.components, decomposed.root, KEYS._root)
         decomposed.components.each{
             it.value.each { key, val ->
                 if (key != KEYS.components && key != KEYS.mergeInfo ) {
@@ -281,13 +284,18 @@ class Page {
 
     //Member method to apply the differences to a decomposed page
     private Map applyDiffs(Map diffs, withInfo) {
-        def model = decomposeComponents(extendsPage.getMergedModelMap())
+
+        def model = extendsPage.getMergedModelMap()
+        if (deltaVersion >= "1.0") {
+            model=replaceKey(model, "name", "_name")
+            model.name = KEYS._root
+            diffs.deltas=replaceKey(diffs.deltas, diffs.baseRoot, KEYS._root)
+        }
+        model = decomposeComponents(model)
         model.added = [:]
         model.conflicts = []
-        if (diffs[KEYS._root]) {
-            replaceKey(model.components, model.root, KEYS._root)
-        }
-        diffs.each { name, diff ->
+
+        diffs.deltas.each { name, diff ->
             //println "Processing $name"
             def comp = model.components[name]
             if (comp && diff.name && diff.name.base && !diff.name.ext) { //this component is removed by the extension
@@ -319,10 +327,9 @@ class Page {
                 }
             }
         }
-        if (model.components[KEYS._root]) {
-            replaceKey(model.components,  KEYS._root, model.root)
-        }
-        composeComponents(model, withInfo)
+
+        model = composeComponents(model, withInfo)
+        replaceKey(model, "_name", "name")
     }
 
     // Component exists, change props to match the extension

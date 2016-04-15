@@ -36,8 +36,10 @@ h6,
  	bottom: 30px;
     */
 	/* add some padding when container-fluid is used */
-	padding-right: 15px;
-	padding-left: 15px;
+    padding-top: 2px;
+	padding-right: 10px;
+	padding-left: 10px;
+    padding-bottom: 2px;
 }
 
 .ui-datepicker table {

@@ -218,6 +218,17 @@ label {
 /*#pagerole-btn {*/
     /*background: url(../images/PageRoll_icon.png) center 0 no-repeat;*/
 /*}*/
+
+.vpc-name-input {
+    height: 2.2em;
+    margin-bottom: 2px;
+}
+
+.vpc-name-label {
+    width: 7em;
+    text-align: right;
+}
+
 /* End Visual Page Composer */
 
 /* Start Virtual Domain Composer (mainly moved from main.css) */
