@@ -670,10 +670,10 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
              if ($scope.isPageModified())   {
                  var r=confirm("${message(code: 'sspb.page.visualbuilder.loadpage.unsaved.changes.message', encodeAs: 'JavaScript')}");
                  if (!r)  {
-                     $scope.pageName = $scope.pageCurName;
                      return;
                  }
              }
+             $scope.pageCurName = $scope.pageName; //Avoid flashing Page Name save as field
              Page.get({constantName:$scope.pageName}, function (data){
                  try {
                      $scope.statusHolder.noDirtyCheck = true;
@@ -681,7 +681,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                      $scope.pageSource[0] = $scope.pageOneSource;
                      $scope.resetSelected();
                      //$scope.handlePageTreeChange();
-                     $scope.pageCurName= $scope.pageName;
+                     $scope.pageCurName = $scope.pageName;
                      $scope.extendsPage = data.extendsPage;
                      $scope.pageOneSource.name=$scope.toPageTreeName($scope.pageCurName);
                      $scope.statusHolder.isPageModified = false;
@@ -896,7 +896,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
     <button ng-click='loadPageNames(); saveAs=false;'><g:message code="sspb.page.visualbuilder.reload.pages.label" /></button>
     <button ng-click='newPageSource()'><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
     <button ng-click='saveAs=true;' ng-show="pageName && pageName!=newPageName"> <g:message code="sspb.page.visualbuilder.save.as.label" /></button>
-    <span ng-hide="pageCurName == pageName && pageCurName != newPageName && !saveAs">
+    <span ng-hide="pageCurName == pageName && !saveAs">
         <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.name.label" /></label>
         <input id="saveAsInput" class="vpc-name-input" type="text" name="constantNameEdit" ng-model="pageCurName" required maxlength="60"
                placeholder='<g:message code="sspb.page.visualbuilder.new.page.label" />' ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/">
