@@ -43,9 +43,9 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
         <title><g:layoutTitle default="Banner Page Builder"/></title>
 
-        <%--
-        <link rel="shortcut icon" href="${resource(dir:'images',file:'favicon.ico')}" type="image/x-icon"/>
-        --%>
+
+        <link rel="shortcut icon" href="${resource(plugin: 'banner-ui-ss', dir:'images',file:'favicon.ico')}" type="image/x-icon"/>
+
 
         <r:script>
             <g:i18nJavaScript/>
