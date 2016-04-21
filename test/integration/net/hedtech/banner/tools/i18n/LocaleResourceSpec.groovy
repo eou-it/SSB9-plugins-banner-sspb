@@ -10,16 +10,6 @@ import org.springframework.web.context.request.RequestContextHolder
 
 class LocaleResourceSpec extends IntegrationSpec {
 
-    /* Integration tests don't work for LocaleResource as it uses an http request and needs the web server to be up */
-
-    void "Implement a test that works"() {
-        when:
-        def test = true
-        then:
-        test
-    }
-
-    /*
     void "Integration test importExisting for datepicker resources"() {
         expect:
         LocaleResource.importExisting(plugin:'banner-sspb', dir: 'BannerXE/lib/jquery/i18n',
@@ -56,6 +46,5 @@ class LocaleResourceSpec extends IntegrationSpec {
         'pt-BR' | 75
         'xx'    | null
     }
-    */
 
 }
