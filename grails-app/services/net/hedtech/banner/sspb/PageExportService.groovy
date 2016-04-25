@@ -44,13 +44,6 @@ class PageExportService {
             else {
                 order ("constantName", "asc")
             }
-            /* want to reduce the data in result set but doesn't seem to work like this
-            projections {
-                property('id', 'id')
-                property('lastUpdated', 'lastUpdated')
-                property('constantName', 'constantName')
-            }
-            */
         }
         def listResult = []
         result.each {
@@ -73,7 +66,7 @@ class PageExportService {
 
     def create(Map content, ignore) {
         def result
-        if (content.exportPage == "1") {
+        if (content.exportPage == 1) {
             def pageUtilService = new PageUtilService()
             pageUtilService.exportToFile(content.constantName)
             result = content
@@ -81,9 +74,9 @@ class PageExportService {
         result
     }
 
-    def update(/*def id,*/ Map content, ignore) {
+    def update(Map content, ignore) {
         def result
-        if (content.exportPage == "1") {
+        if (content.exportPage == 1) {
             def pageUtilService = new PageUtilService()
             pageUtilService.exportToFile(content.constantName)
             result = content

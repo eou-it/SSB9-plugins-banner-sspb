@@ -1,0 +1,214 @@
+{
+   "extendsPage": null,
+   "pageRoles": [{
+      "allow": true,
+      "roleName": "WTAILORADMIN"
+   }],
+   "fileTimestamp": "2016-04-25T10:00:47Z",
+   "modelView": {
+      "title": "Admin tasks",
+      "scriptingLanguage": "JavaScript",
+      "name": "pbadmAdminTasks",
+      "documentation": "Miscellaneous tasks",
+      "label": "Admin tasks",
+      "importCSS": "xeStyle",
+      "components": [
+         {
+            "staticData": [],
+            "name": "pageResource",
+            "resource": "pageexports",
+            "type": "resource"
+         },
+         {
+            "staticData": [],
+            "name": "vdResource",
+            "resource": "virtualdomainexports",
+            "type": "resource"
+         },
+         {
+            "staticData": [],
+            "name": "adminTaskResource",
+            "resource": "admintasks",
+            "type": "resource"
+         },
+         {
+            "name": "ImportSources",
+            "showInitially": true,
+            "label": "Import artifacts from file system",
+            "components": [
+               {
+                  "name": "pages",
+                  "value": "true",
+                  "booleanTrueValue": "",
+                  "label": "Pages",
+                  "type": "boolean",
+                  "readonly": false,
+                  "loadInitially": true,
+                  "booleanFalseValue": ""
+               },
+               {
+                  "name": "virtualDomains",
+                  "value": "true",
+                  "label": "Virtual Domains",
+                  "type": "boolean",
+                  "readonly": false,
+                  "loadInitially": true
+               },
+               {
+                  "onClick": "if ($pages || $virtualDomains) {\n\t$adminTaskResource.$post({\n\t\t\ttask : 'import',\n\t\t\tpages : $pages,\n\t\t\tvirtualDomains : $virtualDomains\n\t\t},\n\t\tnull, /*no params*/\n\t\tfunction (response) {\n\t\t\talert('Imported pages: '+response.importedPagesCount+ \n\t\t\t      '\\nImported virtualDomains:'+ response.importedVirtualDomainsCount,{flash : true});\n\t    },\n\t\tfunction (response) { alert('Failed importing artifacts');}\n\t);\n} else {\n\talert('No artifact type is selected for import', {flash : true,type : 'info'});\n}",
+                  "valueStyle": "primary",
+                  "name": "startImport",
+                  "label": "Import",
+                  "type": "button"
+               }
+            ],
+            "type": "block"
+         },
+         {
+            "name": "ShowPages",
+            "nextButtonLabel": "",
+            "showInitially": true,
+            "label": "View pages",
+            "components": [
+               {
+                  "model": "",
+                  "validation": {},
+                  "placeholder": "Filter pages by name...",
+                  "name": "pageFilter",
+                  "value": "",
+                  "label": "",
+                  "parameters": {},
+                  "type": "text",
+                  "required": false,
+                  "onUpdate": "$pageGrid.$load();",
+                  "readonly": false,
+                  "loadInitially": false
+               },
+               {
+                  "model": "pageResource",
+                  "submit": "",
+                  "pageSize": 5,
+                  "label": "Pages",
+                  "type": "htable",
+                  "allowModify": false,
+                  "allowDelete": false,
+                  "allowReload": true,
+                  "style": "table table-striped table-bordered",
+                  "name": "pageGrid",
+                  "allowNew": false,
+                  "components": [
+                     {
+                        "model": "constantName",
+                        "name": "pageID",
+                        "value": "",
+                        "label": "Name",
+                        "type": "display",
+                        "loadInitially": true,
+                        "asHtml": false
+                     },
+                     {
+                        "model": "lastUpdated",
+                        "validation": {},
+                        "name": "lastUpdated",
+                        "label": "Last update",
+                        "parameters": {},
+                        "type": "datetime",
+                        "required": false,
+                        "readonly": true,
+                        "loadInitially": true
+                     },
+                     {
+                        "model": "fileTimestamp",
+                        "validation": {},
+                        "name": "fileTimestamp",
+                        "label": "Timestamp File",
+                        "parameters": {},
+                        "type": "datetime",
+                        "required": false,
+                        "readonly": true,
+                        "loadInitially": true
+                     }
+                  ],
+                  "parameters": {"constantName": "\"%\"+nvl( $pageFilter,\"\")+\"%\""},
+                  "loadInitially": false,
+                  "saveDataLabel": "",
+                  "onSaveSuccess": ""
+               }
+            ],
+            "type": "form"
+         },
+         {
+            "name": "ShowVirtualDomains",
+            "nextButtonLabel": "Next",
+            "showInitially": true,
+            "label": "View virtual domains",
+            "components": [
+               {
+                  "validation": {},
+                  "placeholder": "Filter virtual domains by name...",
+                  "name": "vdFilter",
+                  "parameters": {},
+                  "type": "text",
+                  "required": false,
+                  "onUpdate": "$virtualDomainGrid.$load();",
+                  "readonly": false,
+                  "loadInitially": true
+               },
+               {
+                  "model": "vdResource",
+                  "submit": "",
+                  "pageSize": 5,
+                  "label": "Virtual domains",
+                  "type": "htable",
+                  "allowModify": false,
+                  "allowDelete": false,
+                  "allowReload": true,
+                  "style": "table table-striped table-bordered",
+                  "name": "virtualDomainGrid",
+                  "allowNew": false,
+                  "components": [
+                     {
+                        "model": "serviceName",
+                        "name": "vdID",
+                        "value": "",
+                        "label": "Name",
+                        "type": "display",
+                        "loadInitially": true,
+                        "asHtml": false
+                     },
+                     {
+                        "model": "lastUpdated",
+                        "validation": {},
+                        "name": "vdLastUpdated",
+                        "label": "Last update",
+                        "parameters": {},
+                        "type": "datetime",
+                        "required": false,
+                        "readonly": true,
+                        "loadInitially": true
+                     },
+                     {
+                        "model": "fileTimestamp",
+                        "validation": {},
+                        "name": "vdFileTimestamp",
+                        "label": "Timestamp File",
+                        "parameters": {},
+                        "type": "datetime",
+                        "required": false,
+                        "readonly": true,
+                        "loadInitially": true
+                     }
+                  ],
+                  "parameters": {"serviceName": "\"%\"+nvl( $vdFilter,\"\")+\"%\""},
+                  "loadInitially": false,
+                  "saveDataLabel": "",
+                  "onSaveSuccess": ""
+               }
+            ],
+            "type": "form"
+         }
+      ],
+      "type": "page"
+   },
+   "constantName": "pbadm.AdminTasks"
+}

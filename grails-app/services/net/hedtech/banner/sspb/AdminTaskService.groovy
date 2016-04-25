@@ -8,6 +8,7 @@ class AdminTaskService {
     //static transactional = false
 
     def pageUtilService
+    def virtualDomainUtilService
 
     def create(Map content, ignore) {
         def result = [:]
@@ -15,6 +16,10 @@ class AdminTaskService {
             if (content.pages) {
                 def count = pageUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.page, PBUtilServiceBase.loadOverwriteExisting)
                 result << [importedPagesCount: count]
+            }
+            if (content.virtualDomains) {
+                def count = virtualDomainUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.virtualDomain, PBUtilServiceBase.loadOverwriteExisting)
+                result << [importedVirtualDomainsCount: count]
             }
         }
         result

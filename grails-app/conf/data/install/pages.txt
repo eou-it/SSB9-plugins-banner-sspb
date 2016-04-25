@@ -4,3 +4,4 @@ pbadm.ExportCss.json
 pbadm.ExportPages.json
 pbadm.ExportVirtualDomains.json
 pbadm.LandingPage.json
+pbadm.AdminTasks.json

@@ -16,8 +16,9 @@ alert = function(message, params ){ //message,promptMessage,type,flash,prompts) 
         flash: params&&params.flash?params.flash:false,
     };
     var prompts = params&&params.prompts?params.prompts:[{label: $.i18n.prop("sspb.custom.page.default.affirm"), action:function(){}}];
+
     var note = new Notification(noteSpec);
-    if (prompts) {
+    if (prompts && !noteSpec.flash) {
         prompts.forEach( function(prompt) {
             note.addPromptAction( prompt.label, function() {
                 prompt.action();

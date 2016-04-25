@@ -1,5 +1,6 @@
 {
-   "dataSource": "S",
+   "codePost": "declare\r\n  lexists varchar(1);\r\nbegin\r\n  begin\r\n      select 'y' into lexists\r\n      from virtual_domain_role\r\n      where virtual_domain_id = :VIRTUAL_DOMAIN_ID and role_name = :ROLE_NAME;\r\n  exception\r\n      when NO_DATA_FOUND then\r\n          null;\r\n  end;\r\n  if lexists = 'y' then\r\n      raise_application_error(-20000,'An entry already exists for this virtual domain and role');\r\n  else\r\n\t  insert into virtual_domain_role\r\n\t\t  (id, version,allow_delete, allow_get, allow_post, allow_put, role_name,virtual_domain_id) \r\n\t  values\r\n\t\t  ( hibernate_sequence.nextval, 0, \r\n\t\t\tnvl(:ALLOW_DELETE,0),\r\n\t\t\tnvl(:ALLOW_GET,1),\r\n\t\t\tnvl(:ALLOW_POST,0),\r\n\t\t\tnvl(:ALLOW_PUT,0),\r\n\t\t\t:ROLE_NAME,\r\n\t\t\t:VIRTUAL_DOMAIN_ID\r\n\t\t  );\r\n   end if;\r\nend;",
+   "id": null,
    "virtualDomainRoles": [{
       "allowGet": true,
       "id": null,
@@ -15,15 +16,13 @@
       "version": null
    }],
    "codePut": "update virtual_domain_role\r\nset version=version+1,\r\nallow_delete=nvl(:ALLOW_DELETE,0),\r\nallow_get=nvl(:ALLOW_GET,1),\r\nallow_post=nvl(:ALLOW_POST,0),\r\nallow_put=nvl(:ALLOW_PUT,0),\r\nrole_name=:ROLE_NAME,\r\nvirtual_domain_id=:VIRTUAL_DOMAIN_ID\r\nwhere id=:id",
-   "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
    "lastUpdated": null,
-   "codeDelete": "delete from virtual_domain_role where id=:id",
-   "codeGet": "select \r\n  id \"id\",\r\n  to_char(allow_delete) allow_delete, /* cannot use int 0/1 for checkbox in AngularJS*/\r\n  to_char(allow_get) allow_get,\r\n  to_char(allow_post) allow_post,\r\n  to_char(allow_put) allow_put,\r\n  role_name,\r\n  virtual_domain_id\r\nfrom virtual_domain_role\r\nwhere id = nvl(:id,id)\r\n  and virtual_domain_id=nvl(:virtual_domain_id,virtual_domain_id)",
-   "version": null,
-   "serviceName": "pbadmVirtualDomainRoles",
-   "id": null,
-   "codePost": "insert into virtual_domain_role\r\n (id, version,allow_delete, allow_get, allow_post, allow_put, role_name,virtual_domain_id) \r\nvalues\r\n( hibernate_sequence.nextval, 0, \r\n   nvl(:ALLOW_DELETE,0),\r\n  nvl(:ALLOW_GET,1),\r\n  nvl(:ALLOW_POST,0),\r\n  nvl(:ALLOW_PUT,0),\r\n  :ROLE_NAME,\r\n  :VIRTUAL_DOMAIN_ID\r\n)",
+   "fileTimestamp": "2016-04-25T10:09:46Z",
    "dateCreated": null,
-   "fileTimestamp": "2013-12-10T11:40:21Z",
-   "typeOfCode": "S"
+   "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
+   "codeDelete": "delete from virtual_domain_role where id=:id",
+   "codeGet": "select \r\n  id \"id\",\r\n  allow_delete, \r\n  allow_get,\r\n  allow_post,\r\n  allow_put,\r\n  role_name,\r\n  virtual_domain_id\r\nfrom virtual_domain_role\r\nwhere id = nvl(:id,id)\r\n  and virtual_domain_id=nvl(:virtual_domain_id,virtual_domain_id)",
+   "typeOfCode": "S",
+   "serviceName": "pbadmVirtualDomainRoles",
+   "version": null
 }

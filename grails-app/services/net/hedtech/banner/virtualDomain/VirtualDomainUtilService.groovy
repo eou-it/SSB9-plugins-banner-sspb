@@ -67,13 +67,14 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
 
 
     //Import/Install Utility
-    void importAllFromDir(String path=pbConfig.locations.virtualDomain, mode=loadIfNew) {
+    int importAllFromDir(String path=pbConfig.locations.virtualDomain, mode=loadIfNew) {
         bootMsg "Importing updated or new virtual domains from $path."
         def count=0
         new File(path).eachFileMatch(~/.*.json/) {   file ->
             count+=loadFile(file, mode)
         }
         bootMsg "Finished importing updated or new virtual domains from $path. Virtual domains loaded: $count"
+        count
     }
 
     int loadStream(name, stream, mode) {

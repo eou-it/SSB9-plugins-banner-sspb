@@ -36,13 +36,13 @@ class PageExportServiceIntegrationSpec extends IntegrationSpec {
         given:
         def pageInstance = Page.findByConstantName("integrationTestPage")
         def params = [controller: "restfulApi", id: pageInstance.id, pluralizedResourceName: "pageexports"]
-        def content = [constantName: "integrationTestPage", exportPage: "1", id: pageInstance.id]
+        def content = [constantName: "integrationTestPage", exportPage: 1, id: pageInstance.id]
         when:
         def result = pageExportService.create(content, params)
         then:
         result!=null
         result.constantName == "integrationTestPage"
-        result.exportPage == "1"
+        result.exportPage == 1
         result.id!=null
     }
 
@@ -50,13 +50,13 @@ class PageExportServiceIntegrationSpec extends IntegrationSpec {
         given:
         def pageInstance = Page.findByConstantName("integrationTestPage")
         def params = [controller: "restfulApi", id: pageInstance.id, pluralizedResourceName: "pageexports"]
-        def content = [constantName: "integrationTestPage", exportPage: "1", id: pageInstance.id]
+        def content = [constantName: "integrationTestPage", exportPage: 1, id: pageInstance.id]
         when:
         def result = pageExportService.update(content, params)
         then:
         result!=null
         result.constantName == "integrationTestPage"
-        result.exportPage == "1"
+        result.exportPage == 1
         result.id!=null
     }
 

@@ -1,28 +1,40 @@
 {
-   "constantName": "pbadm.ExportPages",
    "extendsPage": null,
+   "pageRoles": [{
+      "allow": true,
+      "roleName": "WTAILORADMIN"
+   }],
+   "fileTimestamp": "2016-04-25T10:00:47Z",
    "modelView": {
+      "title": "Export Pages",
+      "scriptingLanguage": "JavaScript",
+      "name": "pbadmExportPages",
+      "documentation": "Export Pages",
+      "label": "Export Pages",
       "components": [
          {
-            "resource": "pageexports",
+            "staticData": [],
             "name": "pageResource",
-            "type": "resource",
-            "staticData": []
+            "resource": "pageexports",
+            "type": "resource"
          },
          {
+            "name": "SelectPageBlock",
+            "showInitially": true,
+            "label": "",
             "components": [
                {
-                  "readonly": false,
-                  "name": "pageFilter",
                   "model": "",
-                  "label": "Page Filter",
-                  "loadInitially": false,
+                  "validation": {},
                   "placeholder": "Filter...",
-                  "type": "text",
-                  "onUpdate": "$pageGrid.$load();",
+                  "name": "pageFilter",
+                  "label": "Page Filter",
                   "parameters": {},
+                  "type": "text",
                   "required": false,
-                  "validation": {}
+                  "onUpdate": "$pageGrid.$load();",
+                  "readonly": false,
+                  "loadInitially": false
                },
                {
                   "onClick": "$pageResource.$post(\n  {constantName:$pageFilter, exportPage:'1'},\n  null, /*params*/\n   function(response) {\n      alert('Exported filtered pages')\n   }, \n   function(response) {\n      alert('Failed exporting pages')\n   }\n);",
@@ -31,98 +43,86 @@
                   "type": "button"
                }
             ],
-            "name": "SelectPageBlock",
-            "showInitially": true,
-            "label": "",
             "type": "block"
          },
          {
+            "name": "ShowPages",
+            "nextButtonLabel": "",
+            "showInitially": true,
+            "label": "Filtered pages",
             "components": [
                {
                   "name": "Intro",
+                  "value": "The table below shows the Page Builder pages matching the Page Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button.",
                   "label": "",
-                  "type": "literal",
-                  "value": "The table below shows the Page Builder pages matching the Page Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button."
+                  "type": "literal"
                },
                {
+                  "model": "pageResource",
+                  "submit": "",
+                  "pageSize": 10,
+                  "label": "Pages to export",
+                  "type": "grid",
+                  "allowModify": true,
                   "allowDelete": false,
+                  "allowReload": true,
+                  "name": "pageGrid",
+                  "allowNew": false,
                   "components": [
                      {
-                        "asHtml": false,
-                        "name": "pageID",
                         "model": "constantName",
+                        "name": "pageID",
+                        "value": "",
                         "label": "Name",
-                        "loadInitially": true,
                         "type": "display",
-                        "value": ""
+                        "loadInitially": true,
+                        "asHtml": false
                      },
                      {
-                        "readonly": true,
-                        "name": "lastUpdated",
                         "model": "lastUpdated",
+                        "validation": {},
+                        "name": "lastUpdated",
                         "label": "Last update",
-                        "loadInitially": true,
-                        "type": "datetime",
                         "parameters": {},
+                        "type": "datetime",
                         "required": false,
-                        "validation": {}
-                     },
-                     {
                         "readonly": true,
-                        "name": "fileTimestamp",
-                        "model": "fileTimestamp",
-                        "label": "Timestamp File",
-                        "loadInitially": true,
-                        "type": "datetime",
-                        "parameters": {},
-                        "required": false,
-                        "validation": {}
+                        "loadInitially": true
                      },
                      {
-                        "readonly": false,
-                        "booleanTrueValue": "1",
-                        "booleanFalseValue": "0",
-                        "name": "export",
+                        "model": "fileTimestamp",
+                        "validation": {},
+                        "name": "fileTimestamp",
+                        "label": "Timestamp File",
+                        "parameters": {},
+                        "type": "datetime",
+                        "required": false,
+                        "readonly": true,
+                        "loadInitially": true
+                     },
+                     {
                         "model": "exportPage",
+                        "name": "export",
+                        "value": "1",
+                        "booleanTrueValue": "1",
                         "label": "Select for Export",
-                        "loadInitially": true,
                         "type": "boolean",
                         "onUpdate": "",
-                        "value": "1"
+                        "readonly": false,
+                        "loadInitially": true,
+                        "booleanFalseValue": "0"
                      }
                   ],
-                  "submit": "",
-                  "allowNew": false,
-                  "onSaveSuccess": "if (response.exportPage == \"1\") {\n  alert( \"Exported page: \" + response.constantName);\n}",
-                  "pageSize": 10,
-                  "saveDataLabel": "Export",
-                  "label": "Pages to export",
+                  "parameters": {"constantName": "$pageFilter"},
                   "loadInitially": false,
-                  "type": "grid",
-                  "name": "pageGrid",
-                  "allowModify": true,
-                  "model": "pageResource",
-                  "allowReload": true,
-                  "parameters": {"constantName": "$pageFilter"}
+                  "saveDataLabel": "Export",
+                  "onSaveSuccess": "if (response.exportPage == \"1\") {\n  alert( \"Exported page: \" + response.constantName, {flash: true});\n}"
                }
             ],
-            "nextButtonLabel": "",
-            "name": "ShowPages",
-            "showInitially": true,
-            "label": "Filtered pages",
             "type": "form"
          }
       ],
-      "documentation": "Export Pages",
-      "name": "pbadmExportPages",
-      "scriptingLanguage": "JavaScript",
-      "label": "Export Pages",
-      "title": "Export Pages",
       "type": "page"
    },
-   "fileTimestamp": "2016-01-08T13:22:33Z",
-   "pageRoles": [{
-      "allow": true,
-      "roleName": "WTAILORADMIN"
-   }]
+   "constantName": "pbadm.ExportPages"
 }

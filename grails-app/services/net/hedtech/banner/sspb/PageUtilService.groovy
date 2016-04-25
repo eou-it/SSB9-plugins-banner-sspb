@@ -179,7 +179,8 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         if (roles.equals(null)){  //have to use equals for JSONObject as it is not really null
             if (page.constantName.startsWith("pbadm.")){
                 //add a WTAILORADMIN role so the pages can be used
-                def role=new PageRole(roleName: "WTAILORADMIN")
+                def role = new PageRole(roleName: "WTAILORADMIN")
+                role.page=page
                 page.addToPageRoles(role)
             }
         } else {
@@ -187,6 +188,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 if ( newRole.roleName && !page.pageRoles.find{ it.roleName == newRole.roleName } ) {
                     try {
                         def role = new PageRole(newRole)
+                        role.page=page
                         role.validate()
                         page.addToPageRoles(role)
                     } catch(e) {
