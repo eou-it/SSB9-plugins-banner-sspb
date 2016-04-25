@@ -4,7 +4,7 @@
       "allow": true,
       "roleName": "WTAILORADMIN"
    }],
-   "fileTimestamp": "2016-04-25T10:00:47Z",
+   "fileTimestamp": "2016-04-25T12:04:29Z",
    "modelView": {
       "title": "Export Virtual Domains",
       "scriptingLanguage": "JavaScript",
@@ -50,7 +50,7 @@
                   "loadInitially": false
                },
                {
-                  "onClick": "$vdResource.$post({serviceName:$vdFilter, exportVirtualDomain:'1', pageLike: $vdPageFilter});console.log('Exorted all filtered Virtual Domains');",
+                  "onClick": "$vdResource.$post(\n  {serviceName:$vdFilter, exportVirtualDomain:1, pageLike: $vdPageFilter},\n  null, \n  function(response) {alert( \"Exported filtered virtual domains\", {flash: true})},\n  function(response) {alert( \"Failed exporting virtual domains \", {type:\"error\"})}\n);",
                   "name": "ApplyFiltered",
                   "label": "Export all filtered virtual domains",
                   "type": "button"

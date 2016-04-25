@@ -4,7 +4,7 @@
       "allow": true,
       "roleName": "WTAILORADMIN"
    }],
-   "fileTimestamp": "2016-04-25T10:00:47Z",
+   "fileTimestamp": "2016-04-25T12:04:29Z",
    "modelView": {
       "title": "Export Css files",
       "scriptingLanguage": "JavaScript",
@@ -50,7 +50,7 @@
                   "loadInitially": false
                },
                {
-                  "onClick": "$cssResource.$post({constantName:$cssFilter, exportCss:'1', pageLike: $cssPageFilter});console.log('Exported filtered css files');",
+                  "onClick": "$cssResource.$post(\n  {constantName:$cssFilter, exportCss:1, pageLike: $cssPageFilter},\n   null, \n   function(response) { alert('Exported filtered CSS', {flash: true}) }, \n   function(response) {alert( \"Failed exporting CSS\", {type:\"error\"})}\n);",
                   "name": "applyFiltered",
                   "label": "Export all filtered css files",
                   "type": "button"
@@ -71,16 +71,16 @@
                   "type": "literal"
                },
                {
-                  "allowReload": true,
                   "model": "cssResource",
                   "submit": "",
-                  "name": "cssGrid",
                   "pageSize": 10,
                   "label": "CSS files to export",
-                  "parameters": {
-                     "pageLike": "$cssPageFilter",
-                     "constantName": "$cssFilter"
-                  },
+                  "type": "grid",
+                  "allowModify": true,
+                  "allowDelete": false,
+                  "allowReload": true,
+                  "name": "cssGrid",
+                  "allowNew": false,
                   "components": [
                      {
                         "model": "constantName",
@@ -126,12 +126,13 @@
                         "booleanFalseValue": "0"
                      }
                   ],
-                  "allowNew": false,
-                  "type": "grid",
+                  "parameters": {
+                     "pageLike": "$cssPageFilter",
+                     "constantName": "$cssFilter"
+                  },
                   "loadInitially": false,
                   "saveDataLabel": "Export",
-                  "allowModify": true,
-                  "allowDelete": false
+                  "onSaveSuccess": "if (response.exportCss == 1) {\n  alert( \"Exported CSS: \" + response.constantName, {flash: true});\n}"
                }
             ],
             "type": "form"

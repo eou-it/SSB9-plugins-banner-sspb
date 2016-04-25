@@ -4,7 +4,7 @@
       "allow": true,
       "roleName": "WTAILORADMIN"
    }],
-   "fileTimestamp": "2016-04-25T10:00:47Z",
+   "fileTimestamp": "2016-04-25T12:04:29Z",
    "modelView": {
       "title": "Export Pages",
       "scriptingLanguage": "JavaScript",
@@ -37,7 +37,7 @@
                   "loadInitially": false
                },
                {
-                  "onClick": "$pageResource.$post(\n  {constantName:$pageFilter, exportPage:'1'},\n  null, /*params*/\n   function(response) {\n      alert('Exported filtered pages')\n   }, \n   function(response) {\n      alert('Failed exporting pages')\n   }\n);",
+                  "onClick": "$pageResource.$post(\n  {constantName:$pageFilter, exportPage:1},\n  null, /*params*/\n   function(response) { alert('Exported filtered pages', {flash: true}) }, \n   function(response) {alert( \"Failed exporting pages \", {type:\"error\"})}\n);",
                   "name": "ApplyFiltered",
                   "label": "Export all filtered pages",
                   "type": "button"
