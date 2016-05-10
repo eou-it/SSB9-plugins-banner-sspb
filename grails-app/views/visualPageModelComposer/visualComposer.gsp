@@ -683,7 +683,6 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                      //$scope.handlePageTreeChange();
                      $scope.pageCurName = $scope.pageName;
                      $scope.extendsPage = data.extendsPage;
-                     $scope.pageOneSource.name=$scope.toPageTreeName($scope.pageCurName);
                      $scope.statusHolder.isPageModified = false;
                      $scope.pagemodelform.$setUntouched();
                  } catch(ex) {
