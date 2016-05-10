@@ -1,8 +1,10 @@
 <%--
 Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 --%>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="net.hedtech.banner.sspb.PBUser;" contentType="text/html;charset=UTF-8" %>
 <%@ page import="net.hedtech.banner.tools.i18n.LocaleResource;" contentType="text/html;charset=UTF-8" %>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder" %>
 
 <!DOCTYPE html>
 <html ng-app="BannerOnAngular" lang="${message(code: 'default.language.locale')}" dir="${message(code:'default.language.direction')}">
@@ -30,8 +32,12 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         <meta name="keepAliveURL" content="${createLink(controller:'keepAlive')}"/>
         <meta name="ssbMepDesc" content="${!mep ? '' : mep}"/>
         <meta name="fullName" content="${g.fullName()}"/>
-        <meta name="menuEndPoint" content="${request.contextPath}/ssb/menu"/>
-        <meta name="menuBaseURL" content="${request.contextPath}/ssb"/>
+        <meta name="loginEndpoint" content="${session.getServletContext().loginEndpoint}"/>
+        <meta name="logoutEndpoint" content="${session.getServletContext().logoutEndpoint}"/>
+        <meta name="guestLoginEnabled" content="${session.getServletContext().guestLoginEnabled}"/>
+        <meta name="userLocale" content="${LocaleContextHolder.getLocale()}"/>
+        <meta name="menuEndPoint" content="${request.contextPath}/menu"/>
+        <meta name="menuBaseURL" content="${request.contextPath}"/>
 
         <meta name="headerAttributes" content=""/>
         <script type="text/javascript">
