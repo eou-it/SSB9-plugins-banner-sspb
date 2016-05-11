@@ -4,7 +4,7 @@
       "allow": true,
       "roleName": "WTAILORADMIN"
    }],
-   "fileTimestamp": "2016-04-25T10:00:47Z",
+   "fileTimestamp": "2016-05-11T15:21:30Z",
    "modelView": {
       "title": "Admin tasks",
       "scriptingLanguage": "JavaScript",
@@ -55,7 +55,7 @@
                   "loadInitially": true
                },
                {
-                  "onClick": "if ($pages || $virtualDomains) {\n\t$adminTaskResource.$post({\n\t\t\ttask : 'import',\n\t\t\tpages : $pages,\n\t\t\tvirtualDomains : $virtualDomains\n\t\t},\n\t\tnull, /*no params*/\n\t\tfunction (response) {\n\t\t\talert('Imported pages: '+response.importedPagesCount+ \n\t\t\t      '\\nImported virtualDomains:'+ response.importedVirtualDomainsCount,{flash : true});\n\t    },\n\t\tfunction (response) { alert('Failed importing artifacts');}\n\t);\n} else {\n\talert('No artifact type is selected for import', {flash : true,type : 'info'});\n}",
+                  "onClick": "if ($pages || $virtualDomains) {\n\t$adminTaskResource.$post({\n\t\t\ttask : 'import',\n\t\t\tpages : $pages,\n\t\t\tvirtualDomains : $virtualDomains\n\t\t},\n\t\tnull, /*no params*/\n\t\tfunction (response) {\n\t\t\talert('Imported pages: '+ nvl(response.importedPagesCount,0)+ \n\t\t\t      '<br>Imported virtualDomains: '+ nvl(response.importedVirtualDomainsCount,0),{flash : true});\n\t        },\n\t\tfunction (response) { alert('Failed importing artifacts');}\n\t);\n} else {\n\talert('No artifact type is selected for import', {flash : true,type : 'info'});\n}",
                   "valueStyle": "primary",
                   "name": "startImport",
                   "label": "Import",
