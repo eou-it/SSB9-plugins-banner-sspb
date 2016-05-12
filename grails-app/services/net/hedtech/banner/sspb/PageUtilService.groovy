@@ -81,11 +81,16 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         if (!deferred) {
             bootMsg "Importing updated or new pages from $path."
         }
-        new File(path).eachFileMatch(~/.*.json/) {  file ->
-            def loadResult = load( file, mode)
-            needDeferred |= (loadResult.statusCode == statusDeferLoad)
-            finalizeFileImport(file, loadResult)
-            count += loadResult.loaded
+        try {
+            new File(path).eachFileMatch(~/.*.json/) { file ->
+                def loadResult = load(file, mode)
+                needDeferred |= (loadResult.statusCode == statusDeferLoad)
+                finalizeFileImport(file, loadResult)
+                count += loadResult.loaded
+            }
+        }
+        catch (IOException e) {
+            log.error "Unable to access import directory $path"
         }
         if (!deferred){
             if ( count > 0 && needDeferred) {
@@ -150,7 +155,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 }
             }
             if (doLoad) {
-                // if the json has a modelView the json is a mashaled page, otherwise it is just the modelView
+                // if the json has a modelView the json is a marshaled page, otherwise it is just the modelView
                 page.modelView = json.has('modelView') ? json.modelView: jsonString
                 page.fileTimestamp = file?new Date(file.lastModified()):json2date(json.fileTimestamp)
                 associateRoles(page, json.pageRoles)
@@ -162,6 +167,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                         result.statusCode = statusDeferLoad //Try in a deferred load
                     }
                 }
+                page = saveObject(page)
 
                 if (result.statusCode == statusOk) {
                     result = pageService.compileAndSavePage(page.constantName, page.mergedModelText, page.extendsPage)
