@@ -96,7 +96,9 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             if ( count > 0 && needDeferred) {
                 // attempt import files that could not be loaded because of missing parent
                 // which might have been imported if count > 0
-                count += importAllFromDir(path, mode, true)
+                def i = importAllFromDir(path, mode, true)
+                bootMsg "Pages loaded deferred: $i"
+                count += i
             }
             bootMsg "Finished importing updated or new pages from $path. Pages loaded: $count"
         }
@@ -115,6 +117,15 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         }
     }
 
+    private def isDeferredLoad(page, File file) {
+        def result = page && page.extendsPage == null && page.fileTimestamp == null && page.compiledView == null
+        //If fileStamp is null this is probably a page needing deferred loading because extension did not exist
+        if (file) {
+            //To be sure check if .err file exists
+            result = result && new File(file.getCanonicalPath() + ".err").exists()
+        }
+        result
+    }
 
     //Load a page, save and compile it
     private def load(String name, InputStream stream, int mode) {
@@ -130,11 +141,15 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         def result = [page: null, statusCode: statusOk, statusMessage: "", loaded: 0]
         def jsonString
         def doLoad = true
-
-        if (file)
-            jsonString = loadFileMode (file, mode, page)
-        else if (stream && name )
+        if (isDeferredLoad(page, file)) {
+            mode = loadOverwriteExisting
+        }
+        if (file) {
+            jsonString = loadFileMode(file, mode, page)
+        }
+        else if (stream && name ) {
             jsonString = loadStreamMode(stream, mode, page)
+        }
         else {
             result.statusCode = statusError
             result.statusMessage = "Error, either file or stream and name is required, both cannot be null"
@@ -158,17 +173,18 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 // if the json has a modelView the json is a marshaled page, otherwise it is just the modelView
                 page.modelView = json.has('modelView') ? json.modelView: jsonString
                 page.fileTimestamp = file?new Date(file.lastModified()):json2date(json.fileTimestamp)
-                associateRoles(page, json.pageRoles)
                 //Check to see if parent page exists
                 if (json.has('extendsPage') && json.extendsPage && json.extendsPage.constantName) {
                     page.extendsPage = pageService.get(json.extendsPage.constantName)
                     if ( page.extendsPage == null ) { //extendsPage does not (yet) exist
                         result.statusMessage = "Error, referenced page does not exist: " + json.extendsPage.constantName
                         result.statusCode = statusDeferLoad //Try in a deferred load
+                        page.fileTimestamp = null //Set to null to allow deferred loading with loadIfNew
+
                     }
                 }
-                page = saveObject(page)
-
+                associateRoles(page, json.pageRoles)
+                page.merge()
                 if (result.statusCode == statusOk) {
                     result = pageService.compileAndSavePage(page.constantName, page.mergedModelText, page.extendsPage)
                     if (result.page) {

@@ -1,5 +1,5 @@
 {
-   "extendsPage": {"constantName": "testBasePage1"},
+   "extendsPage": {"constantName": "testZBasePage1"},
    "pageRoles": [{
       "allow": true,
       "roleName": "WTAILORADMIN"
@@ -56,5 +56,5 @@
          }}
       }
    }},
-   "constantName": "testExtPage1"
+   "constantName": "testAExtPage1"
 }

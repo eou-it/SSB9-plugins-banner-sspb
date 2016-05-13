@@ -49,7 +49,15 @@ class PageUtilServiceIntegrationSpec extends IntegrationSpec {
         Page.findByConstantName("testExtPage1") != null
         Page.findByConstantName("testExtPage2") != null
         Page.findByConstantName("testExtPage1").extendsPage == Page.findByConstantName("testBasePage1")
+        //Same as previous but with a reverse sorting by name - hopefully resulting in at least one test with deferred loading
+        Page.findByConstantName("testAExtPage1").extendsPage == Page.findByConstantName("testZBasePage1")
         Page.findByConstantName("testExtPage2").extendsPage == Page.findByConstantName("testBasePage2")
+
+        Page.findByConstantName("testBasePage1").pageRoles?.size() == 1
+        Page.findByConstantName("testZBasePage1").pageRoles?.size() == 1
+        Page.findByConstantName("testExtPage1").pageRoles?.size() == 1
+        Page.findByConstantName("testAExtPage1").pageRoles?.size() == 1
+
         println "import test complete"
     }
 
