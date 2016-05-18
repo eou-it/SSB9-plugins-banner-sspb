@@ -14,7 +14,7 @@
          "roleName": "WTAILORADMIN"
       }
    ],
-   "fileTimestamp": "2016-04-25T10:00:47Z",
+   "fileTimestamp": "2016-05-18T16:36:02Z",
    "modelView": {
       "title": "Welcome",
       "style": "",
@@ -223,18 +223,16 @@
                      "parameters": {},
                      "components": [
                         {
-                           "style": "more-option",
-                           "valueStyle": "",
+                           "style": "more-option ui-widget-hidden",
                            "name": "optionMenu",
                            "value": "<a href='#'><\/a>",
-                           "label": "",
                            "type": "literal"
                         },
                         {
                            "style": "edit-page",
                            "valueStyle": "",
                            "name": "EditPage",
-                           "value": "<a href='#'><\/a>",
+                           "value": "<a href='/banner-sspb-test-app/visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}'><\/a>",
                            "type": "literal"
                         },
                         {
@@ -288,7 +286,7 @@
                      "parameters": {},
                      "components": [
                         {
-                           "style": "more-option",
+                           "style": "more-option ui-widget-hidden",
                            "valueStyle": "",
                            "name": "optionMenu2",
                            "value": "<a href='#'><\/a>",
@@ -299,7 +297,7 @@
                            "style": "edit-page",
                            "valueStyle": "",
                            "name": "EditPage2",
-                           "value": "<a href='#'><\/a>",
+                           "value": "<a href='/banner-sspb-test-app/visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}'><\/a>",
                            "type": "literal"
                         },
                         {
