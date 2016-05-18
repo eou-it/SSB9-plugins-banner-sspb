@@ -199,13 +199,16 @@ label {
     /*border: none;*/
 /*}*/
 
-/*#reload-btn {*/
-    /*background: url(../images/Reload_icon.png) center 0 no-repeat;*/
-/*}*/
+#reload-btn {
+    background: url(../images/Reload_icon.png) no-repeat center center ;
+    width: 20px; height: 20px;
+    padding: 6px 6px 6px 0px;
+    border:0;
+}
 
-/*#preview-btn {*/
-    /*background: url(../images/Preview_icon.png) center 0 no-repeat;*/
-/*}*/
+#preview-btn {
+    background: url(../images/Preview_icon.png) center 0 no-repeat;
+}
 
 /*#export-btn {*/
     /*background: url(../images/Export_icon.png) center 0 no-repeat;*/
@@ -303,7 +306,7 @@ th.sortable a {
 }
 
 th:hover, tr:hover {
-	background: #E1F2B6;
+	background: #eeeeef;
 }
 
 textarea {

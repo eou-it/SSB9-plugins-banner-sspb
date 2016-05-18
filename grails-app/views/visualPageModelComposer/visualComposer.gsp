@@ -87,7 +87,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
         $scope.component_entry_style = ["componentEntry", "componentEntry_selected"];
 
-        $scope.pageName = "";
+        $scope.pageName = params.constantName?params.constantName:"";
         $scope.pageCurName = $scope.pageName;
         $scope.extendsPage = {};
         // top level page source container must be an array for tree view rendering consistency
@@ -110,6 +110,12 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         $scope.nextIndex = function () {
             $scope.index = $scope.index + 1;
             return $scope.index;
+        };
+
+        $scope.initialize = function(){
+            if ($scope.pageName) {
+                $scope.getPageSource();
+            }
         };
 
         // used to highlight the selected component in the component tree
@@ -636,7 +642,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
          // handle page model changes
          $scope.$watch('pageOneSource', function() {
              //console.log("-- changed --");
-             if (!$scope.statusHolder.noDirtyCheck)
+             if (!$scope.statusHolder.noDirtyCheck && $scope.pageOneSource.name )
                 $scope.statusHolder.isPageModified = true;
              else
                  $scope.statusHolder.noDirtyCheck = false; // we still want to check dirty state after the initial loading/new page
@@ -665,60 +671,67 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             }
         }, true);
 
-         $scope.getPageSource = function() {
-             //TODO prompt for unsaved data
-             if ($scope.isPageModified())   {
-                 var r=confirm("${message(code: 'sspb.page.visualbuilder.loadpage.unsaved.changes.message', encodeAs: 'JavaScript')}");
-                 if (!r)  {
-                     return;
-                 }
+
+         $scope.getPageSource = function(confirmed) {
+             var load = confirmed || !$scope.isPageModified();
+             if (!load) {
+                 $scope.confirmPageAction(
+                         "${message(code: 'sspb.page.visualbuilder.loadpage.unsaved.changes.message', encodeAs: 'JavaScript')}",
+                         function(){$scope.getPageSource(true);},
+                         function(){$scope.pageName = $scope.pageCurName;});
              }
-             $scope.pageCurName = $scope.pageName; //Avoid flashing Page Name save as field
-             Page.get({constantName:$scope.pageName}, function (data){
-                 try {
-                     $scope.statusHolder.noDirtyCheck = true;
-                     $scope.pageOneSource = JSON.parse(data.modelView);
-                     $scope.pageSource[0] = $scope.pageOneSource;
-                     $scope.resetSelected();
-                     //$scope.handlePageTreeChange();
-                     $scope.pageCurName = $scope.pageName;
-                     $scope.extendsPage = data.extendsPage;
-                     $scope.statusHolder.isPageModified = false;
-                     $scope.pagemodelform.$setUntouched();
-                 } catch(ex) {
-                     $scope.alertError( $scope.i18nGet("${message(code:'sspb.page.visualbuilder.parsing.error.message', encodeAs: 'JavaScript')}",[ex]));
-                 }
-             }, function(response) {
-                 var note={type: noteType.error, message: "${message(code: 'sspb.page.visualcomposer.page.load.failed.message', encodeAs: 'JavaScript')}"};
-                 if (response.data != undefined && response.data.errors!=undefined) {
-                     note.message = $scope.i18nGet(note.message, [response.data.errors[0].errorMessage]);
-                 } else {
-                     note.message = $scope.i18nGet(note.message, ['']);
-                 }
-                 $scope.alertNote( note);
-             });
+             if ( load || confirmed) {
+                 $scope.pageCurName = $scope.pageName; //Avoid flashing Page Name save as field
+                 Page.get({constantName: $scope.pageName}, function (data) {
+                     try {
+                         $scope.statusHolder.noDirtyCheck = true;
+                         $scope.pageOneSource = JSON.parse(data.modelView);
+                         $scope.pageSource[0] = $scope.pageOneSource;
+                         $scope.resetSelected();
+                         //$scope.handlePageTreeChange();
+                         $scope.pageCurName = $scope.pageName;
+                         $scope.extendsPage = data.extendsPage;
+                         $scope.statusHolder.isPageModified = false;
+                         $scope.pagemodelform.$setUntouched();
+                     } catch (ex) {
+                         $scope.alertError($scope.i18nGet("${message(code:'sspb.page.visualbuilder.parsing.error.message', encodeAs: 'JavaScript')}", [ex]));
+                     }
+                 }, function (response) {
+                     var note = {
+                         type: noteType.error,
+                         message: "${message(code: 'sspb.page.visualcomposer.page.load.failed.message', encodeAs: 'JavaScript')}"
+                     };
+                     if (response.data != undefined && response.data.errors != undefined) {
+                         note.message = $scope.i18nGet(note.message, [response.data.errors[0].errorMessage]);
+                     } else {
+                         note.message = $scope.i18nGet(note.message, ['']);
+                     }
+                     $scope.alertNote(note);
+                 });
+             };
 
          };
 
          /* page operations */
-          $scope.newPageSource = function() {
-              // TODO generate a unique page name
-              if ($scope.isPageModified())   {
-                var r=confirm("${message(code: 'sspb.page.visualbuilder.newpage.unsaved.changes.message', encodeAs: 'JavaScript')}");
-                if (!r)
-                    return;
+        $scope.newPageSource = function(confirmed) {
+            var create = confirmed || !$scope.isPageModified();
+            if (!create) {
+                $scope.confirmPageAction(
+                        "${message(code: 'sspb.page.visualbuilder.newpage.unsaved.changes.message', encodeAs: 'JavaScript')}",
+                        function(){$scope.newPageSource(true);});
             }
-
-            $scope.pageName= $scope.newPageName;
-            $scope.pageCurName = "";
-            $scope.extendsPage = {};
-            $scope.statusHolder.noDirtyCheck = true;
-            $scope.pageSource[0] = {"type": "page", "name": $scope.pageName};
-            $scope.pageOneSource =  $scope.pageSource[0];
-            $scope.resetSelected();
-            //$scope.handlePageTreeChange();
-            $scope.statusHolder.isPageModified = false;
-          };
+            if (create || confirmed) {
+                $scope.pageName = $scope.newPageName;
+                $scope.pageCurName = "";
+                $scope.extendsPage = {};
+                $scope.statusHolder.noDirtyCheck = true;
+                $scope.pageSource[0] = {"type": "page", "name": $scope.pageName};
+                $scope.pageOneSource = $scope.pageSource[0];
+                $scope.resetSelected();
+                //$scope.handlePageTreeChange();
+                $scope.statusHolder.isPageModified = false;
+            }
+        };
 
           //check if page name is changed, display confirmation msg.
           //this validation is not correct, disable for now
@@ -876,6 +889,9 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
              $scope.sourceEditEnabled = false;
          }
 
+        //run initialize when the controller is ready
+        $scope.initialize();
+
      }
 
     </script>
@@ -886,13 +902,13 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
 <div id="content" ng-controller="VisualPageComposerController" class="customPage container-fluid" ng-form="pagemodelform">
 
-    <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.load.label" /></label>
+    <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.load.label" /> </label>
     <select class="vpc-name-input" name="constantName"
             ng-options="page.constantName as page.constantName for page in pageList"
                 ng-model="pageName"
                 ng-change="getPageSource();saveAs=false;"></select>
 
-    <button ng-click='loadPageNames(); saveAs=false;'><g:message code="sspb.page.visualbuilder.reload.pages.label" /></button>
+    <button id="reload-btn" ng-click='loadPageNames(); saveAs=false;' title="${message( code:'sspb.page.visualbuilder.reload.pages.label')}" /> </i> </button>
     <button ng-click='newPageSource()'><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
     <button ng-click='saveAs=true;' ng-show="pageName && pageName!=newPageName"> <g:message code="sspb.page.visualbuilder.save.as.label" /></button>
     <span ng-hide="pageCurName == pageName && !saveAs">
@@ -919,7 +935,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
     <button ng-show="pageName && pageCurName && pageCurName != newPageName" ng-click='validateAndSubmitPageSource(); saveAs=false;'
             ng-disabled='sourceEditEnabled || !pagemodelform.$valid'><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
-    <button ng-show="pageName != newPageName" ng-click="getPageSource(); saveAs=false;" ><g:message code="sspb.page.visualbuilder.reload.label" /></button>
+    <button ng-show="pageName && pageName != newPageName" ng-click="getPageSource(); saveAs=false;" ><g:message code="sspb.page.visualbuilder.reload.label" /></button>
     <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click="previewPageSource()" ><g:message code="sspb.page.visualbuilder.preview.label" /></button>
     <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click='deletePageSource(); saveAs=false;'><g:message code="sspb.page.visualbuilder.delete.label" /></button>
     <table style="height:80%; min-width: 60em">
