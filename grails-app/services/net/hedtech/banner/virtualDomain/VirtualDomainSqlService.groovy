@@ -75,14 +75,19 @@ class VirtualDomainSqlService {
             //objectName is like SELFSERVICE-ALUMNI
             //role is BAN_DEFAULT_M
             //strip SELFSERVICE- this can be handled by spring security
-            def r = it.objectName.substring(it.objectName.indexOf("-") + 1)
-            vd.virtualDomainRoles.findAll {vr -> vr.roleName == r}.each {
-                result.get |= it.allowGet
-                result.put |= it.allowPut
-                result.post |= it.allowPost
-                result.delete |= it.allowDelete
+
+            def r
+            def i = it.objectName.indexOf("-")
+            r = i>-1? it.objectName.substring(i+1): it.objectName == 'SELFSERVICE'? '-': null
+            if (r) {
+                vd.virtualDomainRoles.findAll { vr -> vr.roleName == r }.each {
+                    result.get |= it.allowGet
+                    result.put |= it.allowPut
+                    result.post |= it.allowPost
+                    result.delete |= it.allowDelete
+                }
+                result.debug |= debugRoles.indexOf(it.objectName) > -1
             }
-            result.debug |= debugRoles.indexOf(it.objectName)>-1
         }
         result
     }

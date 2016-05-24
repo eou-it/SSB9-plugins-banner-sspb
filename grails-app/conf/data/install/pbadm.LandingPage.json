@@ -3,18 +3,18 @@
    "pageRoles": [
       {
          "allow": true,
+         "roleName": "ALLROLES"
+      },
+      {
+         "allow": true,
          "roleName": "GUEST"
       },
       {
          "allow": true,
-         "roleName": "WEBUSER"
-      },
-      {
-         "allow": true,
-         "roleName": "WTAILORADMIN"
+         "roleName": "-"
       }
    ],
-   "fileTimestamp": "2016-05-18T16:36:02Z",
+   "fileTimestamp": "2016-05-24T11:37:29Z",
    "modelView": {
       "title": "Welcome",
       "style": "",

@@ -28,21 +28,26 @@ class PBUser {
         if (userIn.class.name.endsWith('BannerUser')) {
             Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>()
             userIn.authorities.each {
-                authorities << it
+                authorities << [objectName: it.objectName, roleName: it.roleName ]
             }
-            // assume all authenticated users have WEBUSER role implicitly
-            authorities << BannerGrantedAuthority.create( "SELFSERVICE-WEBUSER", "BAN_DEFAULT_M", null )
             userCache = [authenticated:  true, pidm: userIn.pidm,gidm: userIn.gidm, loginName: userIn.username, fullName: userIn.fullName,
                     authorities: authorities]
 
-
         }  else { //create guest authorities
             Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>()
-            authorities << BannerGrantedAuthority.create( "SELFSERVICE-GUEST", "BAN_DEFAULT_M", null )
+            authorities << [objectName: "SELFSERVICE-GUEST", roleName: "BAN_DEFAULT_M"] //BannerGrantedAuthority.create( "SELFSERVICE-GUEST", "BAN_DEFAULT_M", null )
             userCache = [authenticated: false, pidm: null, gidm: null,  loginName: userIn.username,
                     fullName: localizer(code:"sspb.renderer.page.anonymous.full.name"),authorities: authorities]
         }
         userNameCache = userIn.username
         userCache
     }
+
+    //Dont include data that should not be exposed
+    static def getTrimmed() {
+        def user = PBUser.get()
+        [authenticated:  user.authenticated, pidm: user.pidm?0:user.pidm,
+         loginName: user.loginName, fullName: user.fullName, authorities: user.authorities]
+    }
+
 }

@@ -89,10 +89,15 @@ class PageSecurityService {
         try {
             for (role in page.pageRoles )  {
                 if (role.allow) {
-                    if (role.roleName == "GUEST") {
-                        configAttribute+=",IS_AUTHENTICATED_ANONYMOUSLY"
-                    } else {
-                        configAttribute+=",ROLE_SELFSERVICE-${role.roleName}_BAN_DEFAULT_M"
+                    switch (role.roleName) {
+                        case "GUEST":
+                            configAttribute+=",IS_AUTHENTICATED_ANONYMOUSLY"
+                            break
+                        case "-":
+                            configAttribute+=",ROLE_SELFSERVICE_BAN_DEFAULT_M"
+                            break
+                        default:
+                            configAttribute+=",ROLE_SELFSERVICE-${role.roleName}_BAN_DEFAULT_M"
                     }
                 }
             }

@@ -908,7 +908,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                 ng-model="pageName"
                 ng-change="getPageSource();saveAs=false;"></select>
 
-    <button id="reload-btn" ng-click='loadPageNames(); saveAs=false;' title="${message( code:'sspb.page.visualbuilder.reload.pages.label')}" /> </i> </button>
+    <button id="reload-btn" ng-click='loadPageNames(); saveAs=false;' title="${message( code:'sspb.page.visualbuilder.reload.pages.label')}" ng-show="false" /> </i> </button>
     <button ng-click='newPageSource()'><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
     <button ng-click='saveAs=true;' ng-show="pageName && pageName!=newPageName"> <g:message code="sspb.page.visualbuilder.save.as.label" /></button>
     <span ng-hide="pageCurName == pageName && !saveAs">
