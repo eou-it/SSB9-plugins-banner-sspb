@@ -41,9 +41,7 @@ class PBUser {
                          fullName: localizer(code:"sspb.renderer.page.anonymous.full.name"),authorities: authorities]
         }
         //give user guest role to be consistent with ability to view pages with IS_AUTHENTICATED_ANONYMOUSLY role
-        if (grails.util.Holders.config.guestAuthenticationEnabled ) { //create guest authorities
-            userCache.authorities << [objectName: "SELFSERVICE-GUEST", roleName: "BAN_DEFAULT_M"]
-        }
+        userCache.authorities << [objectName: "SELFSERVICE-GUEST", roleName: "BAN_DEFAULT_M"]
 
         userNameCache = userIn.username
         userCache
