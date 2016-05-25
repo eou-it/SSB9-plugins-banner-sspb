@@ -1,10 +1,11 @@
+/*******************************************************************************
+ * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ ******************************************************************************/
 package net.hedtech.banner.sspb
 
-import org.springframework.security.core.context.SecurityContextHolder
 import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
-
-import net.hedtech.banner.security.BannerGrantedAuthority
 import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
 import org.apache.commons.logging.LogFactory
 
 // Integration with Banner - class to get user object for page builder
@@ -24,21 +25,26 @@ class PBUser {
             return userCache
         }
         LogFactory.getLog(this).info "Getting new PB User $userIn"
+        Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>()
         //avoid direct dependency on BannerUser
         if (userIn.class.name.endsWith('BannerUser')) {
-            Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>()
             userIn.authorities.each {
-                authorities << [objectName: it.objectName, roleName: it.roleName ]
+                if (it.objectName.startsWith('SELFSERVICE')) {
+                    authorities << [objectName: it.objectName, roleName: it.roleName]
+                }
             }
             userCache = [authenticated:  true, pidm: userIn.pidm,gidm: userIn.gidm, loginName: userIn.username, fullName: userIn.fullName,
                     authorities: authorities]
 
-        }  else { //create guest authorities
-            Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>()
-            authorities << [objectName: "SELFSERVICE-GUEST", roleName: "BAN_DEFAULT_M"] //BannerGrantedAuthority.create( "SELFSERVICE-GUEST", "BAN_DEFAULT_M", null )
+        } else {
             userCache = [authenticated: false, pidm: null, gidm: null,  loginName: userIn.username,
-                    fullName: localizer(code:"sspb.renderer.page.anonymous.full.name"),authorities: authorities]
+                         fullName: localizer(code:"sspb.renderer.page.anonymous.full.name"),authorities: authorities]
         }
+        //give user guest role to be consistent with ability to view pages with IS_AUTHENTICATED_ANONYMOUSLY role
+        if (grails.util.Holders.config.guestAuthenticationEnabled ) { //create guest authorities
+            userCache.authorities << [objectName: "SELFSERVICE-GUEST", roleName: "BAN_DEFAULT_M"]
+        }
+
         userNameCache = userIn.username
         userCache
     }

@@ -1,6 +1,10 @@
+/*******************************************************************************
+ * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
 import groovy.sql.Sql
+import groovy.transform.*
 import groovy.util.logging.Log4j
 import net.hedtech.banner.exceptions.ApplicationException
 import net.hedtech.banner.sspb.PBUser
@@ -66,19 +70,22 @@ class VirtualDomainSqlService {
             }
         }
     }
+
     /* Check the user roles against the virtual domain roles
      */
+    @Memoized
     private def userAccessRights (vd, userRoles) {
         def result=[get: false, put: false, post: false, delete: false, debug: false ]
         String debugRoles = grailsApplication.config.pageBuilder.debugRoles?grailsApplication.config.pageBuilder.debugRoles:""
+        log.debug "Determining access right for ${vd.serviceName}"
         for (it in userRoles) {
             //objectName is like SELFSERVICE-ALUMNI
             //role is BAN_DEFAULT_M
-            //strip SELFSERVICE- this can be handled by spring security
+            //strip SELFSERVICE-
 
             def r
             def i = it.objectName.indexOf("-")
-            r = i>-1? it.objectName.substring(i+1): it.objectName == 'SELFSERVICE'? '-': null
+            r = i>-1?it.objectName.substring(i+1):null
             if (r) {
                 vd.virtualDomainRoles.findAll { vr -> vr.roleName == r }.each {
                     result.get |= it.allowGet

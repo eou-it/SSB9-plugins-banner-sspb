@@ -9,28 +9,17 @@ class CustomPageController {
     static defaultAction = "page"
     def groovyPagesTemplateEngine
     def compileService
-    def user = PBUser.get()
 
-    def page = {
+    def page() {
         if (params.id=="menu") {    //Work around aurora issue calling this 'page'. Todo: analyse and provide better fix
             render ""
             return
-        }
-        def page
-        def pageId = params.id
-        //support numeric ID or constantName
-        try {
-            Long id = pageId
-            page = Page.get(id)
-        }
-        catch (e) { //pageId is not a Long, find by name
-            page = Page.findByConstantName(pageId)
         }
         // render view page.gsp which will be including getHTML
         render  (view:"page", model:[id: params.id])
     }
 
-    private def invalidPage = { e ->
+    private def invalidPage(e) {
         render(status: 404, text: e)
     }
 
@@ -42,33 +31,17 @@ class CustomPageController {
     }
 
 
-    def getHTML = {
+    def getHTML() {
         def pageId = params.id
         def html
-        def allow=true
+        def page = Page.findByConstantName(pageId)
 
-
-        if (params.file == "true") { // render a file
-            html = new File("target/compiledPage/page${pageId}.html").getText()
-        } else {
-            def page
-            //support numeric ID or constantName
-            try {
-                Long id = pageId
-                page = Page.get(id)
-            }
-            catch (e) { //pageId is not a Long, find by name
-                page = Page.findByConstantName(pageId)
-            }
-
-            // maybe better to only store the assembled page?
-            if (page && page.compiledView && page.compiledController)
-                html = compileService.assembleFinalPage(page.compiledView, page.compiledController)
+        // maybe better to only store the assembled page?
+        if (page && page.compiledView && page.compiledController) {
+            html = compileService.assembleFinalPage(page.compiledView, page.compiledController)
         }
         if (html) {
             render renderGsp(html, "Page$pageId")
-        } else if (!allow) {
-            render(status: 401, message(code: "sspb.renderer.page.deny.access",  args:user.loginName))
         } else {
             invalidPage(message(code: "sspb.renderer.page.does.not.exist"))
         }

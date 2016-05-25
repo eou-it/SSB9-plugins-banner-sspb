@@ -8,13 +8,9 @@
       {
          "allow": true,
          "roleName": "GUEST"
-      },
-      {
-         "allow": true,
-         "roleName": "-"
       }
    ],
-   "fileTimestamp": "2016-05-24T11:37:29Z",
+   "fileTimestamp": "2016-05-25T11:37:29Z",
    "modelView": {
       "title": "Welcome",
       "style": "",
