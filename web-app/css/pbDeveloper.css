@@ -305,9 +305,11 @@ th.sortable a {
 	background: #ffffff;
 }
 
-th:hover, tr:hover {
-	background: #eeeeef;
+th:hover {
+	background: #f9f9ff;
 }
+
+
 
 textarea {
 	height: 150px;

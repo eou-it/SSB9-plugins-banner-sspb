@@ -734,21 +734,20 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         };
 
           //check if page name is changed, display confirmation msg.
-          //this validation is not correct, disable for now
           $scope.validateAndSubmitPageSource = function () {
-              //$scope.submitPageSource();
-              //return;
               if ($scope.pageCurName === $scope.newPageName || !$scope.pageCurName ) {
                   alert("Enter a new page name");
                   return;
               }
-              if( $scope.pageCurName != null && $scope.pageName != $scope.pageCurName && $scope.pageName != $scope.newPageName ) {
-                  var msg;
-                  if ($scope.pageList.findIndex(function(it) { return it.constantName == $scope.pageCurName ;}) >-1){
-                      msg =  "${message(code:'sspb.page.visualbuilder.page.name.edit.overwrite.existing', encodeAs: 'Javascript')}";
-                  } else {
-                      msg =  "${message(code:'sspb.page.visualbuilder.page.name.edit.check.message', encodeAs: 'Javascript')}";
+              var msg;
+              if( ($scope.pageCurName !== $scope.pageName)) {
+                  if ($scope.pageList.findIndex( function (it) { return it.constantName == $scope.pageCurName;  }) > -1) {
+                      msg = "${message(code:'sspb.page.visualbuilder.page.name.edit.overwrite.existing', encodeAs: 'Javascript')}";
+                  } else if ($scope.pageCurName !== $scope.newPageName) {
+                      msg = "${message(code:'sspb.page.visualbuilder.page.name.edit.check.message', encodeAs: 'Javascript')}";
                   }
+              }
+              if (msg) {
                   $scope.confirmPageAction(msg, $scope.submitPageSource);
               } else {
                   $scope.submitPageSource();

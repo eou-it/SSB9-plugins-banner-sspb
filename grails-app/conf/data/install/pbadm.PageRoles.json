@@ -4,7 +4,7 @@
       "allow": true,
       "roleName": "WTAILORADMIN"
    }],
-   "fileTimestamp": "2016-04-25T10:00:47Z",
+   "fileTimestamp": "2016-05-26T13:00:05Z",
    "modelView": {
       "title": "Associate Roles with a Page",
       "scriptingLanguage": "JavaScript",
@@ -35,6 +35,12 @@
             "type": "resource"
          },
          {
+            "staticData": [],
+            "name": "appliedPageRolesRes",
+            "resource": "virtualDomains.pbadmAppliedPageRoles",
+            "type": "resource"
+         },
+         {
             "name": "SelectPageBlock",
             "showInitially": true,
             "label": "",
@@ -49,7 +55,7 @@
                "label": "Page",
                "type": "select",
                "required": false,
-               "onUpdate": "$editPageRoles.$load();\n$EditRolesForm.$visible=$selectPage;\n$roleName.$populateSource();\n$ApplyRolesForm.$visible=$selectPage;",
+               "onUpdate": "$editPageRoles.$load();\n$EditRolesForm.$visible=$selectPage;\n$roleName.$populateSource();\n$ApplyRolesForm.$visible=$selectPage;\n$appliedPageRoles.$load();",
                "loadInitially": true
             }],
             "type": "block"
@@ -61,7 +67,7 @@
             "components": [{
                "model": "pageRoles",
                "onError": "var errorMessage =response.data.errors? response.data.errors.errorMessage: null;\nif (errorMessage&&errorMessage.indexOf(\"ORA-20000\") > -1) {\n  alert(\"An entry already exists for this page and role, cannot add a duplicate\", {type:\"error\"});\n} else {\n  alert(errorMessage?errorMessage:response.data, {type:\"error\"});\n}",
-               "submit": "gridsubmit",
+               "submit": "",
                "pageSize": 5,
                "onSave": "",
                "label": "Edit Roles for selected page",
@@ -110,7 +116,7 @@
                   }
                ],
                "loadInitially": false,
-               "onSaveSuccess": "var saveAction = \"saved\";\n\nif (response.hasOwnProperty(\"id\") && !_.findWhere($editPageRolesDS.data,     {ROLE_NAME: response.ROLE_NAME}))\n  {\n    saveAction = \"deleted\";\n  }\nalert( \"Page role \" + response.ROLE_NAME + \" \" + saveAction,{type:\"success\", flash:true});"
+               "onSaveSuccess": "var saveAction = \"saved\";\n\nif (response.hasOwnProperty(\"id\") && !_.findWhere($editPageRolesDS.data,     {ROLE_NAME: response.ROLE_NAME}))\n  {\n    saveAction = \"deleted\";\n  }\nalert( \"Page role \" + response.ROLE_NAME + \" \" + saveAction,{type:\"success\", flash:true});\n\n$applyRolesButton.$style=\"visible\";"
             }],
             "type": "form"
          },
@@ -120,12 +126,46 @@
             "nextButtonLabel": "",
             "submitLabel": "",
             "showInitially": false,
-            "components": [{
-               "onClick": "console.log('Apply pressed');\n$pagesecurity.$post({pageId:$selectPage});",
-               "name": "applyRolesButton",
-               "label": "Apply page roles",
-               "type": "button"
-            }],
+            "components": [
+               {
+                  "onClick": "console.log('Apply pressed');\n$pagesecurity.$post({pageId:$selectPage}, null, \n  function(){\n     alert('Roles applied', {type:\"success\", flash:true}); \n     $appliedPageRoles.$load({clearCache:true});\n     $applyRolesButton.$style='hidden';\n    }\n);",
+                  "style": "hidden",
+                  "name": "applyRolesButton",
+                  "label": "Apply page roles",
+                  "type": "button"
+               },
+               {
+                  "allowReload": false,
+                  "model": "appliedPageRolesRes",
+                  "name": "appliedPageRoles",
+                  "pageSize": 5,
+                  "label": "Applied Page roles",
+                  "parameters": {"selected_url": "$selectPage.$selected?$selectPage.$selected.CONSTANT_NAME:null"},
+                  "components": [
+                     {
+                        "model": "URL",
+                        "name": "url",
+                        "label": "URL",
+                        "type": "display",
+                        "loadInitially": true,
+                        "asHtml": false
+                     },
+                     {
+                        "model": "CONFIG_ATTRIBUTE",
+                        "name": "attributes",
+                        "label": "Spring Security Attributes",
+                        "type": "display",
+                        "loadInitially": true,
+                        "asHtml": false
+                     }
+                  ],
+                  "allowNew": false,
+                  "type": "detail",
+                  "loadInitially": false,
+                  "allowModify": false,
+                  "allowDelete": false
+               }
+            ],
             "type": "form"
          }
       ],

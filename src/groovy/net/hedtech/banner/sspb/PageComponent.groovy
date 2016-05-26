@@ -1396,7 +1396,7 @@ class PageComponent {
                 [from:  ".\$load"            , to:"DS.load"],
                 [from:  ".\$save"            , to:"DS.save"],
                 [from:  ".\$get"             , to:"DS.get" ],
-                // [from:  ".\$currentRecord"   , to:"DS.currentRecord" ],
+                [from:  ".\$selected"        , to:"DS.currentRecord" ],
                 [from:  ".\$selection"       , to:"DS.selectedRecords" ],
                 [from:  ".\$data"            , to:"DS.data" ],
                 [from:  ".\$dirty"           , to:"DS.dirty()" ]
