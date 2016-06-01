@@ -10,6 +10,7 @@ import org.codehaus.groovy.grails.web.context.ServletContextHolder
 import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
 import org.springframework.context.ApplicationContext
 import net.hedtech.banner.tools.i18n.SortedProperties
+import net.hedtech.banner.tools.i18n.PageMessageSource
 
 @Log4j
 class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
@@ -18,7 +19,10 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     def static final statusOk = 0
     def static final statusError = 1
     def static final statusDeferLoad = 2
+    def static final actionImportInitally = 1
     def static final bundleLocation = getBundleLocation()
+
+    def currentAction = null
 
     def static getBundleLocation() {
         if (bundleLocation) {//only need to determine location once
@@ -50,6 +54,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
 
     //Load pages required for Page Builder administration
     int importInitially(mode=loadIfNew, deferred = false) {
+        currentAction = actionImportInitally
         def fileNames = PageUtilService.class.classLoader.getResourceAsStream( "data/install/pages.txt" ).text
         def count=0
         def needDeferred = false
@@ -62,6 +67,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             def loadResult = load(pageName, stream, mode )
             needDeferred |= (loadResult.statusCode == statusDeferLoad)
             count += loadResult.loaded
+
         }
         if (!deferred){
             if ( count > 0 && needDeferred) {
@@ -71,6 +77,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             }
             bootMsg "Finished checking/loading system required page builder pages. Pages loaded: $count"
         }
+        currentAction = null
         count
     }
 
@@ -237,19 +244,36 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
 
     // Handler for Page properties
     void updateProperties( Map properties, String baseName){
-        def bundleLocation = "$bundleLocation/${baseName}.properties"
-        def bundle = new File(bundleLocation)
-        def temp = new SortedProperties()
-        if (bundle.exists()) {
-            new org.springframework.util.DefaultPropertiesPersister().load(temp, new InputStreamReader( new FileInputStream(bundle), "UTF-8"))
-        }  else {
-            // if a new file we need to add it to the base names
-            ApplicationContext applicationContext = (ApplicationContext) ServletContextHolder.getServletContext()
-                    .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT);
-            applicationContext.getBean("messageSource")?.pageMessageSource?.addPageResource(baseName)
+        ApplicationContext applicationContext = (ApplicationContext) ServletContextHolder.getServletContext()
+                .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT);
+        def messageSource = applicationContext.getBean("messageSource")
+        def isBaseline = false
+        if ( baseName.startsWith('pbadm') || baseName.startsWith(PageMessageSource.globalPropertiesName) || currentAction == actionImportInitally ) {
+            def props = messageSource.getRootProperties(baseName)
+            if (props) {
+                isBaseline = true // assume ok
+                //Check if all key/value pairs have a match in the properties
+                properties.keySet().each {
+                    isBaseline &= properties.get(it).equals(props.get(it))
+                }
+                if (!isBaseline){
+                    log.info "Creating external properties file $baseName for modified PageBuilder admin page."
+                }
+            }
         }
-        temp.putAll(properties)
-        new org.springframework.util.DefaultPropertiesPersister().store( temp, new OutputStreamWriter( new FileOutputStream(bundle),"UTF-8" ), "")
+        if (!isBaseline) {
+            def bundleLocation = "$bundleLocation/${baseName}.properties"
+            def bundle = new File(bundleLocation)
+            def temp = new SortedProperties()
+            if (bundle.exists()) {
+                new org.springframework.util.DefaultPropertiesPersister().load(temp, new InputStreamReader(new FileInputStream(bundle), "UTF-8"))
+            } else {
+                // if a new file we need to add it to the base names
+                messageSource?.pageMessageSource?.addPageResource(baseName)
+            }
+            temp.putAll(properties)
+            new org.springframework.util.DefaultPropertiesPersister().store(temp, new OutputStreamWriter(new FileOutputStream(bundle), "UTF-8"), "")
+        }
     }
 
     def reloadBundles = {

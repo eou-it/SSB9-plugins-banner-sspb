@@ -2,7 +2,7 @@ package net.hedtech.banner.tools.i18n
 
 import grails.util.Holders as CH
 import org.codehaus.groovy.grails.context.support.PluginAwareResourceBundleMessageSource
-import org.springframework.web.context.request.RequestContextHolder
+import org.codehaus.groovy.grails.context.support.ReloadableResourceBundleMessageSource.PropertiesHolder
 
 import java.text.MessageFormat
 
@@ -15,18 +15,23 @@ class BannerMessageSource extends PluginAwareResourceBundleMessageSource {
         super()
         if (pageMessageSource == null) {
             pageMessageSource = new PageMessageSource()
-            //pageMessageSource.clearCache()
         }
+    }
+
+    public def getRootProperties(baseName) {
+        PropertiesHolder propHolder
+        Locale locale = new Locale('qq') //A locale that does not exist, we want to retrieve the root props
+        def match = pluginBaseNames.find{ it.endsWith("/$baseName") && it.contains("banner-sspb")}
+        if (match) {
+            def fnames = calculateAllFilenames(match, locale)
+            def resource = fnames.find{it.bValue!=null}
+            propHolder = getProperties(resource.aValue,resource.bValue)
+        }
+        propHolder?.properties
     }
 
     @Override
     protected String resolveCodeWithoutArguments(String code, Locale locale) {
-
-
-        if( RequestContextHolder.getRequestAttributes()?.getSession()?.maintenanceMode &&
-                !code.startsWith("default")) {
-            return code
-        }
 
         String msg = pageMessageSource.resolveCodeWithoutArguments(code, locale)
         if(msg == null) {
@@ -39,11 +44,6 @@ class BannerMessageSource extends PluginAwareResourceBundleMessageSource {
 
     @Override
     protected MessageFormat resolveCode(String code, Locale locale) {
-
-        if( RequestContextHolder.getRequestAttributes()?.getSession()?.maintenanceMode &&
-                !code.startsWith("default")) {
-            return new MessageFormat(code, locale)
-        }
 
         MessageFormat mf = pageMessageSource.resolveCode(code, locale)
         if(mf == null) {

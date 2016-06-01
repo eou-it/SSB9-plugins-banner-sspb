@@ -1,15 +1,20 @@
-import net.hedtech.banner.sspb.PageModelValidator
+/*******************************************************************************
+ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ ****************************************************************************** */
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
+
+import org.springframework.core.io.ClassPathResource
 import org.springframework.core.io.ContextResource
-import org.apache.commons.lang.StringUtils
-//import net.hedtech.banner.tools.i18n.PageMessageSource
-import net.hedtech.banner.tools.i18n.BannerMessageSource
+import org.springframework.core.io.FileSystemResource
+import org.springframework.core.io.Resource
 import grails.util.Environment
+import org.codehaus.groovy.grails.commons.GrailsStringUtils
 import org.codehaus.groovy.grails.web.context.GrailsConfigUtils
 import org.codehaus.groovy.grails.web.pages.GroovyPagesTemplateEngine
-import net.hedtech.banner.sspb.PageUtilService
+import groovy.transform.CompileStatic
 import net.hedtech.banner.tools.PBPersistenceListener
+import net.hedtech.banner.tools.i18n.BannerMessageSource
 
 class BannerSspbGrailsPlugin {
     // the plugin version
@@ -22,32 +27,13 @@ class BannerSspbGrailsPlugin {
     ]
 
     // TODO Fill in these fields
-    def title = "Banner Sspb Plugin" // Headline display name of the plugin
-    def author = "Your name"
+    def title = "Banner Self Service Page Builder Plugin" // Headline display name of the plugin
+    def author = "ellucian"
     def authorEmail = ""
-    def description = '''\
-Brief summary/description of the plugin.
-'''
+    def description = '''This plugin adds the PageBuilder features to an application.'''
 
     // URL to the plugin's documentation
-    def documentation = "http://grails.org/plugin/banner-sspb"
-
-    // Extra (optional) plugin metadata
-
-    // License: one of 'APACHE', 'GPL2', 'GPL3'
-//    def license = "APACHE"
-
-    // Details of company behind the plugin (if there is one)
-//    def organization = [ name: "My Company", url: "http://www.my-company.com/" ]
-
-    // Any additional developers beyond the author specified above.
-//    def developers = [ [ name: "Joe Bloggs", email: "joe@bloggs.net" ]]
-
-    // Location of the plugin's issue tracker.
-//    def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPMYPLUGIN" ]
-
-    // Online location of the plugin's browseable source code.
-//    def scm = [ url: "http://svn.codehaus.org/grails-plugins/" ]
+    def documentation = ""
 
     String baseDir = "grails-app/i18n"
     String watchedResources = "file:./${baseDir}/**/*.properties".toString()
@@ -56,10 +42,10 @@ Brief summary/description of the plugin.
         // TODO Implement additions to web.xml (optional), this event occurs before
     }
 
+    // From  I18nGrailsPlugin.groovy 2.5.4
     def doWithSpring = {
-        //  from ssh://git@devgit1/banner/plugins/banner_tools.git   mostly
+        // find i18n resource bundles and resolve basenames
         Set baseNames = []
-
         def messageResources
         if (application.warDeployed) {
             messageResources = parentCtx?.getResources("**/WEB-INF/${baseDir}/**/*.properties")?.toList()
@@ -67,40 +53,11 @@ Brief summary/description of the plugin.
         else {
             messageResources = plugin.watchedResources
         }
+        calculateBaseNamesFromMessageSources(messageResources, baseNames)
 
-        if (messageResources) {
-            for (resource in messageResources) {
-                // Extract the file path of the file's parent directory
-                // that comes after "grails-app/i18n".
-                String path
-                if (resource instanceof ContextResource) {
-                    path = StringUtils.substringAfter(resource.pathWithinContext, baseDir)
-                }
-                else {
-                    path = StringUtils.substringAfter(resource.path, baseDir)
-                }
-
-                // look for an underscore in the file name (not the full path)
-                String fileName = resource.filename
-                int firstUnderscore = fileName.indexOf('_')
-
-                if (firstUnderscore > 0) {
-                    // grab everyting up to but not including
-                    // the first underscore in the file name
-                    int numberOfCharsToRemove = fileName.length() - firstUnderscore
-                    int lastCharacterToRetain = -1 * (numberOfCharsToRemove + 1)
-                    path = path[0..lastCharacterToRetain]
-                }
-                else {
-                    // Lop off the extension - the "basenames" property in the
-                    // message source cannot have entries with an extension.
-                    path -= ".properties"
-                }
-                baseNames << "WEB-INF/" + baseDir + path
-            }
+        if (Environment.isWarDeployed()) {
+            servletContextResourceResolver(ServletContextResourcePatternResolver, ref('servletContext'))
         }
-
-        LOG.debug "Creating messageSource with basenames: $baseNames"
 
         messageSource(BannerMessageSource) {
             basenames = baseNames.toArray()
@@ -108,10 +65,54 @@ Brief summary/description of the plugin.
             pluginManager = manager
             if (Environment.current.isReloadEnabled() || GrailsConfigUtils.isConfigTrue(application, GroovyPagesTemplateEngine.CONFIG_PROPERTY_GSP_ENABLE_RELOAD)) {
                 def cacheSecondsSetting = application?.flatConfig?.get('grails.i18n.cache.seconds')
-                if(cacheSecondsSetting != null) {
-                    cacheSeconds = cacheSecondsSetting as Integer
-                } else {
-                    cacheSeconds = 5
+                cacheSeconds = cacheSecondsSetting == null ? 5 : cacheSecondsSetting as Integer
+                def fileCacheSecondsSetting = application?.flatConfig?.get('grails.i18n.filecache.seconds')
+                fileCacheSeconds = fileCacheSecondsSetting == null ? 5 : fileCacheSecondsSetting as Integer
+            }
+            if (Environment.isWarDeployed()) {
+                resourceResolver = ref('servletContextResourceResolver')
+            }
+        }
+
+    }
+
+    // From  I18nGrailsPlugin.groovy 2.5.4
+    @CompileStatic
+    protected void calculateBaseNamesFromMessageSources(messageResources, Set baseNames) {
+        if (messageResources) {
+            for (mr in messageResources) {
+                Resource resource = (Resource)mr
+                String path
+                // Extract the file path of the file's parent directory
+                // that comes after "grails-app/i18n".
+                if (resource instanceof ContextResource) {
+                    path = GrailsStringUtils.substringAfter(resource.getPathWithinContext(), baseDir)
+                } else if (resource instanceof FileSystemResource) {
+                    path = GrailsStringUtils.substringAfter(resource.getPath(), baseDir)
+                }
+                else if (resource instanceof ClassPathResource) {
+                    path = GrailsStringUtils.substringAfter(resource.getPath(), baseDir)
+                }
+
+                if (path) {
+
+                    // look for an underscore in the file name (not the full path)
+                    String fileName = resource.filename
+                    int firstUnderscore = fileName.indexOf('_')
+
+                    if (firstUnderscore > 0) {
+                        // grab everything up to but not including
+                        // the first underscore in the file name
+                        int numberOfCharsToRemove = fileName.length() - firstUnderscore
+                        int lastCharacterToRetain = -1 * (numberOfCharsToRemove + 1)
+                        fileName = fileName[0..lastCharacterToRetain]
+                    } else {
+                        // Lop off the extension - the "basenames" property in the
+                        // message source cannot have entries with an extension.
+                        fileName -= ".properties"
+                    }
+
+                    baseNames << "WEB-INF/$baseDir/$fileName".toString()
                 }
             }
         }

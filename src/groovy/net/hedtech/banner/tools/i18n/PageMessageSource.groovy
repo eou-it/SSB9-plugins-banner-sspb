@@ -1,3 +1,6 @@
+/*******************************************************************************
+ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ *******************************************************************************/
 package net.hedtech.banner.tools.i18n
 
 import net.hedtech.banner.exceptions.ApplicationException
@@ -22,28 +25,12 @@ class PageMessageSource extends ReloadableResourceBundleMessageSource {
 
     @Override
     protected String resolveCodeWithoutArguments(String code, Locale locale) {
-
-        /* this was for extensibility
-        if( RequestContextHolder.getRequestAttributes()?.getSession()?."i18n-enable" &&
-                !code.startsWith("default")) {
-            return code
-        }
-        */
-
-        return super.resolveCodeWithoutArguments(code, getLocale(locale))    //To change body of overridden methods use File | Settings | File Templates.
-
+        return super.resolveCodeWithoutArguments(code, getLocale(locale))
     }
 
     @Override
     protected MessageFormat resolveCode(String code, Locale locale) {
-
-        if( RequestContextHolder.getRequestAttributes()?.getSession()?."i18n-enable" &&
-                !code.startsWith("default")) {
-            return new MessageFormat(code, locale)
-        }
-
-        return super.resolveCode(code, getLocale(locale))    //To change body of overridden methods use File | Settings | File Templates.
-
+        return super.resolveCode(code, getLocale(locale))
     }
 
     private getLocale(locale) {
@@ -100,7 +87,6 @@ class PageMessageSource extends ReloadableResourceBundleMessageSource {
             }
 
             setBasenames((String []) pageResources)
-            //logger.debug("Added to page resources: " + baseName)
            logger.debug "Added to page resources: " + baseName
         } catch (ApplicationException ex) {
             logger.error "Exception while adding page resource $baseName in PageMessageSource:\n${ex.getMessage()}"

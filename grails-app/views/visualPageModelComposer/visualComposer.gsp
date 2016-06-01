@@ -480,11 +480,12 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
 
         $scope.selectData = function(data, index, parent) {
-            //alert("scope = " + $scope.$id + ", data = " + data.type);
+            //console.log(" selectData - scope = " + $scope.$id + ", data = " + data.type);
             $scope.dataHolder.selectedComponent = data;
             $scope.statusHolder.selectedIndex = index;
             $scope.dataHolder.selectedContext = parent;
             $scope.dataHolder.selectedType = data.type;
+            $scope.statusHolder.noDirtyCheck=true; //Next statements may make the tree dirty without a need to save
             // set the components types that are valid for the selected component's parent
             // used when component type is changed
             if (parent != undefined) {
@@ -494,7 +495,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                 $scope.dataHolder.selectedCompatibleTypes = ["page"];
             // update the current selected component's property list
             $scope.findAllAttrs(data.type);
-
+            setTimeout(function(){ $scope.statusHolder.noDirtyCheck=false; } , 100); //Give some time to digest and enable the dirty checking
         };
 
         // handle type switch for a component
@@ -743,7 +744,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
               if( ($scope.pageCurName !== $scope.pageName)) {
                   if ($scope.pageList.findIndex( function (it) { return it.constantName == $scope.pageCurName;  }) > -1) {
                       msg = "${message(code:'sspb.page.visualbuilder.page.name.edit.overwrite.existing', encodeAs: 'Javascript')}";
-                  } else if ($scope.pageCurName !== $scope.newPageName) {
+                  } else if ($scope.pageCurName !== $scope.newPageName && $scope.pageName !== $scope.newPageName ) {
                       msg = "${message(code:'sspb.page.visualbuilder.page.name.edit.check.message', encodeAs: 'Javascript')}";
                   }
               }
