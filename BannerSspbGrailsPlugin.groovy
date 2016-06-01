@@ -15,6 +15,7 @@ import org.codehaus.groovy.grails.web.pages.GroovyPagesTemplateEngine
 import groovy.transform.CompileStatic
 import net.hedtech.banner.tools.PBPersistenceListener
 import net.hedtech.banner.tools.i18n.BannerMessageSource
+import org.springframework.web.context.support.ServletContextResourcePatternResolver
 
 class BannerSspbGrailsPlugin {
     // the plugin version
