@@ -103,7 +103,7 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             if (file)
                 css.fileTimestamp = new Date(file.lastModified())
             css = saveObject(css)
-            if (file && !css.hasErrors()) {
+            if (file && css && !css.hasErrors()) {
                 file.renameTo(file.getCanonicalPath() + '.' + nowAsIsoInFileName() + ".imp")
                 result ++
                 log.info "Created/Updated Css $cssName"
