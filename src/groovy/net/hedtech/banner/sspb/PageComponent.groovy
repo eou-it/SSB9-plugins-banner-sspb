@@ -1297,8 +1297,6 @@ class PageComponent {
 
         def dataSetName = "${name}DS"
         def optionalParams=""
-        if  (COMP_ITEM_TYPES.contains(type) && !COMP_DATASET_DISPLAY_TYPES.contains(type)) //items don't support arrays, use the get TODO: need to different for Radio and Select
-            optionalParams+=",useGet: true"
         if ( false == COMP_DATASET_DISPLAY_TYPES.contains(type)) {
             optionalParams += ",pageSize: $pageSize"
         }
