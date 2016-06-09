@@ -191,11 +191,12 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                     }
                 }
                 associateRoles(page, json.pageRoles)
-                page.merge()
+                page=page.merge()
                 if (result.statusCode == statusOk) {
                     result = pageService.compileAndSavePage(page.constantName, page.mergedModelText, page.extendsPage)
-                    if (result.page) {
-                        result.loaded = 1
+                    result.loaded = result.page?1:0
+                    if (page && !result.loaded) { //clean up if page did not compile
+                        page.delete()
                     }
                 }
             }
