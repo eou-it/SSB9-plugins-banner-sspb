@@ -102,6 +102,12 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         <g:layoutHead />
 
 
+        <!-- !!TODO convert to taglib -->
+        <g:set var="themeConfig" value="${grails.util.Holders.config.banner.theme}"/>
+        <meta name="theme" content="${themeConfig.name}">
+        <g:if test="${themeConfig.url}">
+            <link rel="stylesheet" type="text/css" href="${themeConfig.url}/getTheme?name=${!mep ? themeConfig.name : mep}&template=${themeConfig.template}&mepCode=${mep}">
+        </g:if>
     </head>
     <body>
     <div id="splash"></div>
