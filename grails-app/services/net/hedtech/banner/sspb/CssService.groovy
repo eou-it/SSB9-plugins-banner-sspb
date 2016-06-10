@@ -8,8 +8,8 @@ import grails.validation.ValidationException
 import org.codehaus.groovy.grails.web.util.WebUtils
 import org.hibernate.StaleObjectStateException
 import net.hedtech.banner.exceptions.ApplicationException
-import org.springframework.dao.OptimisticLockingFailureException
-import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException
+//import org.springframework.dao.OptimisticLockingFailureException
+//import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException
 
 import java.security.MessageDigest
 import net.hedtech.banner.css.Css
@@ -54,9 +54,10 @@ class CssService {
         log.trace "CssService.show invoked"
         def result
         def showResult
-        result = Css.find{constantName==params.id}
+        //result = Css.find{constantName==params.id}
+        result = Css.findByConstantName(params.id)
         if (result) {
-            supplementCss( result )
+            //supplementCss( result )
             log.trace "CssService.show returning ${result}"
             showResult = [constantName : result.constantName, id: result.id, version: result.version, css: result.css, description: result.description]
         }
@@ -89,7 +90,7 @@ class CssService {
     def update(/*def id,*/ Map content) {
         log.trace "CssService.update invoked"
 
-        checkForExceptionRequest()
+        //checkForExceptionRequest()
 
         def result
         Css.withTransaction {
@@ -139,24 +140,25 @@ class CssService {
 
 
 
-    public def checkOptimisticLock( domainObject, content ) {
+//    public def checkOptimisticLock( domainObject, content ) {
+//
+//        if (domainObject.hasProperty( 'version' )) {
+//            if (!content?.version) {
+//                domainObject.errors.reject( 'version', "net.hedtech.restfulapi.Css.missingVersion")
+//                throw new ValidationException( "Missing version field", domainObject.errors )
+//            }
+//            int ver = content.version instanceof String ? content.version.toInteger() : content.version
+//            if (ver != domainObject.version) {
+//                throw exceptionForOptimisticLock( domainObject, content )
+//            }
+//        }
+//    }
+//
+//
+//    private def exceptionForOptimisticLock( domainObject, ignore ) {
+//        new HibernateOptimisticLockingFailureException( new StaleObjectStateException( domainObject.class.getName(), domainObject.id ) )
+//    }
 
-        if (domainObject.hasProperty( 'version' )) {
-            if (!content?.version) {
-                domainObject.errors.reject( 'version', "net.hedtech.restfulapi.Css.missingVersion")
-                throw new ValidationException( "Missing version field", domainObject.errors )
-            }
-            int ver = content.version instanceof String ? content.version.toInteger() : content.version
-            if (ver != domainObject.version) {
-                throw exceptionForOptimisticLock( domainObject, content )
-            }
-        }
-    }
-
-
-    private def exceptionForOptimisticLock( domainObject, ignore ) {
-        new HibernateOptimisticLockingFailureException( new StaleObjectStateException( domainObject.class.getName(), domainObject.id ) )
-    }
 
 
     /**
@@ -165,22 +167,23 @@ class CssService {
      * This is a method to support testing of the plugin, and should not be taken
      * as an example of good service construction.
      **/
-    private void checkForExceptionRequest() {
-        def params = WebUtils.retrieveGrailsWebRequest().getParameterMap()
-        if (params.throwOptimisticLock == 'y') {
-            throw new OptimisticLockingFailureException( "requested optimistic lock for testing" )
-        }
-        /*if (params.throwApplicationException == 'y') {
-           //throw new DummyApplicationException( params.appStatusCode, params.appMsgCode, params.appErrorType )
-        }*/
-    }
 
-
-    private void supplementCss( Css css ) {
-        MessageDigest digest = MessageDigest.getInstance("SHA1")
-        digest.update("constantName:${css.getConstantName()}".getBytes("UTF-8"))
-
-        def properties = [sha1:new BigInteger(1,digest.digest()).toString(16).padLeft(40,'0')]
-        css.metaClass.getSupplementalRestProperties << {-> properties }
-    }
+//    private void checkForExceptionRequest() {
+//        def params = WebUtils.retrieveGrailsWebRequest().getParameterMap()
+//        if (params.throwOptimisticLock == 'y') {
+//            throw new OptimisticLockingFailureException( "requested optimistic lock for testing" )
+//        }
+//        /*if (params.throwApplicationException == 'y') {
+//           //throw new DummyApplicationException( params.appStatusCode, params.appMsgCode, params.appErrorType )
+//        }*/
+//    }
+//
+//
+//    private void supplementCss( Css css ) {
+//        MessageDigest digest = MessageDigest.getInstance("SHA1")
+//        digest.update("constantName:${css.getConstantName()}".getBytes("UTF-8"))
+//
+//        def properties = [sha1:new BigInteger(1,digest.digest()).toString(16).padLeft(40,'0')]
+//        css.metaClass.getSupplementalRestProperties << {-> properties }
+//    }
 }
