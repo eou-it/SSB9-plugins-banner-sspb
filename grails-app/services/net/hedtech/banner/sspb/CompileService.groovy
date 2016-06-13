@@ -4,7 +4,6 @@
 
 package net.hedtech.banner.sspb
 
-import grails.util.Holders as CH
 import groovy.util.logging.Log4j
 import net.hedtech.banner.exceptions.ApplicationException
 import net.hedtech.banner.tools.i18n.PageMessageSource

@@ -4,9 +4,7 @@
 
 package net.hedtech.banner.tools.i18n
 
-
 import grails.test.spock.IntegrationSpec
-import org.springframework.web.context.request.RequestContextHolder
 
 class LocaleResourceSpec extends IntegrationSpec {
 

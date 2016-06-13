@@ -6,7 +6,6 @@ package net.hedtech.banner.tools
 
 import groovy.util.logging.Log4j
 import org.hibernate.HibernateException
-
 import java.text.ParseException
 
 @Log4j

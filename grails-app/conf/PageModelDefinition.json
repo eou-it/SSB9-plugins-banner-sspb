@@ -1,7 +1,7 @@
 {
     "name":"ellucian Page Builder Model",
-    "date":"2015-09-25",
-    "version":"0.2",
+    "date":"2016-06-30",
+    "version":"0.3",
     "definitions": {
         "componentTypeDefinition": [
             {

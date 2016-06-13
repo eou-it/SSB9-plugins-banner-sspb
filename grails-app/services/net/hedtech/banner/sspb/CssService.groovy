@@ -4,15 +4,9 @@
 
 package net.hedtech.banner.sspb
 
-import grails.validation.ValidationException
-import org.codehaus.groovy.grails.web.util.WebUtils
-import org.hibernate.StaleObjectStateException
-import net.hedtech.banner.exceptions.ApplicationException
-//import org.springframework.dao.OptimisticLockingFailureException
-//import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException
-
-import java.security.MessageDigest
 import net.hedtech.banner.css.Css
+import net.hedtech.banner.exceptions.ApplicationException
+import org.codehaus.groovy.grails.web.util.WebUtils
 
 class CssService {
 

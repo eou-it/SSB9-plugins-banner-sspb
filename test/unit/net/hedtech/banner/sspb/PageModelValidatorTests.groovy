@@ -1,16 +1,11 @@
+/******************************************************************************
+ *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ ******************************************************************************/
 package net.hedtech.banner.sspb
 
 import grails.test.mixin.TestFor
 import grails.test.GrailsUnitTestCase
 import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
-
-/**
- * Created by IntelliJ IDEA.
- * User: jzhong
- * Date: 4/1/13
- * Time: 3:43 PM
- * To change this template use File | Settings | File Templates.
- */
 
 class PageModelValidatorTests extends GrailsUnitTestCase   {
     def pageModelValidator

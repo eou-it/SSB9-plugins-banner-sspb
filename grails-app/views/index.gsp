@@ -1,9 +1,5 @@
 <%--
-  Created by IntelliJ IDEA.
-  User: jzhong
-  Date: 4/4/13
-  Time: 6:54 AM
-  To change this template use File | Settings | File Templates.
+Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page import="net.hedtech.banner.sspb.Page" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
