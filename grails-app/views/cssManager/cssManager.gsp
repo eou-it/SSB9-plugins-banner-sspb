@@ -56,7 +56,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             $scope.cssStatus = {};
 
             // declare the Css resource
-            var Css = $resource(rootWebApp+'internal/csses/:constantName',{},{
+            var Css = $resource(resourceBase+'csses/:constantName',{},{
                 save:{
                     method:"POST",
                     isArray:false,

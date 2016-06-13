@@ -572,7 +572,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
           };
 
          // declare the virtual domain lookup resource  and functions for loading the resourse combo box
-         var VDList = $resource(rootWebApp+'internal/virtualDomains.pbadmVirtualDomainLookup',{},{
+         var VDList = $resource(resourceBase+'virtualDomains.pbadmVirtualDomainLookup',{},{
              list: {
                  method:"GET",
                  isArray:true,
@@ -597,7 +597,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
 
          // declare the Page resource
-         var Page = $resource(rootWebApp+'internal/pages/:constantName',{},{
+         var Page = $resource(resourceBase+'pages/:constantName',{},{
              save:{
                  method:"POST",
                  isArray:false,

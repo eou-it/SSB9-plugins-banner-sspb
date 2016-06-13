@@ -180,10 +180,10 @@ grails.plugin.springsecurity.interceptUrlMap = [
         '/api/virtualDomains.*/**'    : ['IS_AUTHENTICATED_ANONYMOUSLY','ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'], // not sure if this is overriding or complementing the filterChain
         '/api/pages/**'               : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
         '/api/csses/**'               : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
-        '/internal/pagesecurity/**'     : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
-        '/internal/pageexports/**'      : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
-        '/internal/virtualdomainexports/**'  : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
-        '/internal/cssexports/**'       : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
+        '/internalPb/pagesecurity/**'     : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
+        '/internalPb/pageexports/**'      : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
+        '/internalPb/virtualdomainexports/**'  : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
+        '/internalPb/cssexports/**'       : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
         '/virtualDomainComposer/**'   : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
         '/visualPageModelComposer/**' : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M','ROLE_SCADETL_BAN_DEFAULT_M'],
         '/cssManager/**'              : ['IS_AUTHENTICATED_ANONYMOUSLY'],
@@ -244,7 +244,7 @@ restfulApi.page.max    = 'max'
 restfulApi.page.offset = 'offset'
 
 // API path component to construct the REST API URL
-sspb.apiPath = 'internal'
+sspb.apiPath = 'internalPb'
 
 // ******************************************************************************
 //                       RESTful API Endpoint Configuration

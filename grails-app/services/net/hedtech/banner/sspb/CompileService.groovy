@@ -179,9 +179,7 @@ class CompileService {
     private def static buildCode(resource) {
         def functions = []
         if (resource.binding == PageComponent.BINDING_REST && resource.resource) {
-            def apiPath = CH.config.sspb.apiPath;
-            def url = "rootWebApp+'$apiPath/${ resource.resource }'"
-            functions << """\$scope.${ resource.name } = pbResource($url);"""
+            functions << """\$scope.${ resource.name } = pbResource('${ resource.resource }');"""
         }
 
         // generate all scope variables / arrays for each component that uses the model

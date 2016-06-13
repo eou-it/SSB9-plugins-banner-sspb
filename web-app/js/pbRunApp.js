@@ -160,8 +160,11 @@ appModule.factory('pbAddCommon', function() {
 
 //Factory for resources
 appModule.factory('pbResource', function($resource ) {
-    function PBResource(resourceURL )  {
-        this.resourceURL=resourceURL
+    function PBResource(resourceName )  {
+        //Expecting a resource name exposed at resourceBase+resourceName
+        //For backwards compatibility, replace the location used in the alpha release with resourceBase
+        this.resourceURL=resourceName.startsWith("/")?
+                         resourceName.replace(rootWebApp+'internal/', resourceBase):resourceBase+resourceName;
         this.Resource=null;
 
         //get a new resource from the factory

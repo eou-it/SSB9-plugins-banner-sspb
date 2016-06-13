@@ -83,7 +83,8 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
 
         <script type="text/javascript">
-            var rootWebApp = ${createLink(uri: '/')};  //use in controller restful interface
+            var rootWebApp = "${createLink(uri: '/')}";
+            var resourceBase = "${createLink(uri: '/') + grails.util.Holders.config.sspb.apiPath +'/' }";
             var templatesLocation = "<g:resource plugin="banner-sspb" dir="template" />";
             var user = ${PBUser.getTrimmed()?.encodeAsJSON()};
             var gridLocale = '${localeBrowserFull.toLowerCase()}';
