@@ -1,5 +1,6 @@
-<!--Copyright 2013-2016 Ellucian Company L.P. and its affiliates.-->
-<span> <!--TODO referencing $parent.i18nGet, should not have this dependency-->
+<span>
+    <!--Copyright 2013-2016 Ellucian Company L.P. and its affiliates.-->
+    <!--TODO referencing $parent.i18nGet, should not have this dependency-->
     <button ng-click="openUploadModal()"><g:message code="sspb.css.cssManager.upload.label" /></button>
 
     <!-- map editing modal body-->
@@ -34,7 +35,4 @@
             <button class="btn btn-success ok" ng-click="closeUploadModal()"><g:message code="pb.template.upload.ok.label" /></button>
         </div>
     </div>
-
-
-
 </span>

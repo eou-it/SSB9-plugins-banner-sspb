@@ -143,8 +143,8 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                 ngPagerPrevTitle:          '${message(code: 'nggrid.ngPagerPrevTitle'         , encodeAs: 'JavaScript')}',
                 ngPagerLastTitle:          '${message(code: 'nggrid.ngPagerLastTitle'         , encodeAs: 'JavaScript')}',
                 direction:                 '${message(code:'default.language.direction')}',
-                styleLeft:                 '${message(code:'style.left')}',
-                styleRight:                '${message(code:'style.right')}',
+                styleLeft:                 '${message(code:'default.language.direction')=='ltr'?'left':'right'}',
+                styleRight:                '${message(code:'default.language.direction')=='ltr'?'right':'left'}',
                 maxPageLabel:              '${message(code:'nggrid.maxPageLabel'             , encodeAs: 'JavaScript')}',
                 pageLabel:                 '${message(code:'nggrid.pageLabel'                , encodeAs: 'JavaScript')}'
             };
