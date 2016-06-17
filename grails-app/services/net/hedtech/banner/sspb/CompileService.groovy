@@ -101,12 +101,12 @@ class CompileService {
         // inject common code into controller
         def common = CompileService.class.classLoader.getResourceAsStream('data/sspbCommon.js').text
 
-        //  Removed Dependencies: $http,$resource,$cacheFactory,$parse (now in pbDataSet )
         result = """
                |function (\$scope ,\$locale,\$templateCache,pbDataSet,pbResource,pbAddCommon) {
                |    // copy global var to scope
                |    \$scope._user = user;
                |    \$scope._params = params;
+               |    \$scope._contextRoot = rootWebApp;
                |    // page specific code
                |    $result
                |    $common

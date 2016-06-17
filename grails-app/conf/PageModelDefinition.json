@@ -13,7 +13,8 @@
             {
                 "componentType":["page"],
                 "requiredAttributes":[],
-                "optionalAttributes":["title", "scriptingLanguage", "label", "style", "importCSS", "spareComponents"],
+                "optionalAttributes":["title", "label", "style", "importCSS", "spareComponents"],
+                "ignoredAttributes":["scriptingLanguage"],
                 "requiredChildren":[],
                 "optionalChildren":["flow", "form", "block", "grid", "htable", "detail", "select", "radio", "list", "data", "resource", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button"]
             },
@@ -34,21 +35,24 @@
             {
                 "componentType":["grid"],
                 "requiredAttributes":["model"],
-                "optionalAttributes":["label", "style", "parameters", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize","onClick", "onLoad", "onSave", "onSaveSuccess","onError", "loadInitially", "newRecordLabel","deleteRecordLabel","saveDataLabel","refreshDataLabel"],
+                "optionalAttributes":["label", "style", "parameters", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize","onClick", "onLoad", "onSave", "onSaveSuccess","onError", "loadInitially", "newRecordLabel","deleteRecordLabel","saveDataLabel","refreshDataLabel"],
+                "ignoredAttributes":["submit"],
                 "requiredChildren":[],
                 "optionalChildren":["select", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "literal","hidden" ]
             },
             {
                 "componentType":["htable"],
                 "requiredAttributes":["model"],
-                "optionalAttributes":["label", "style", "parameters", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize","onClick", "onLoad", "onSave", "onSaveSuccess", "onError", "loadInitially", "newRecordLabel","deleteRecordLabel","saveDataLabel","refreshDataLabel"],
+                "optionalAttributes":["label", "style", "parameters", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize","onClick", "onLoad", "onSave", "onSaveSuccess", "onError", "loadInitially", "newRecordLabel","deleteRecordLabel","saveDataLabel","refreshDataLabel"],
+                "ignoredAttributes":["submit"],
                 "requiredChildren":[],
                 "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal","hidden" ]
             },
             {
                 "componentType":["detail"],
                 "requiredAttributes":["model"],
-                "optionalAttributes":["label", "style", "parameters", "submit", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize", "onLoad", "onSave", "onSaveSuccess", "onError", "loadInitially", "newRecordLabel","deleteRecordLabel","saveDataLabel","refreshDataLabel"],
+                "optionalAttributes":["label", "style", "parameters", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize", "onLoad", "onSave", "onSaveSuccess", "onError", "loadInitially", "newRecordLabel","deleteRecordLabel","saveDataLabel","refreshDataLabel"],
+                "ignoredAttributes":["submit"],
                 "requiredChildren":[],
                 "optionalChildren":["select", "radio", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean","literal","hidden"  ]
             },
@@ -67,7 +71,6 @@
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
-
             {
                 "componentType":[ "number"],
                 "requiredAttributes":[],
@@ -87,20 +90,21 @@
                 "componentType":["radio"],
                 "requiredAttributes":["sourceModel","labelKey", "valueKey" ],
                 "optionalAttributes":["label", "style", "labelStyle", "valueStyle", "sourceParameters", "model", "required", "value", "onUpdate", "onLoad", "onError", "loadInitially"],
+                "ignoredAttributes":["placeholder"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
             {
                 "componentType":["list"],
                 "requiredAttributes":["model", "value"],
-                "optionalAttributes":["label", "style", "labelStyle", "valueStyle", "allowReload", "parameters",  "required", "onClick", "pageSize", "onUpdate", "onLoad", "onError", "loadInitially"],
+                "optionalAttributes":["label", "style", "labelStyle", "valueStyle", "allowReload", "parameters",  "required","pageSize", "onClick",  "onUpdate", "onLoad", "onError", "loadInitially"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
             {
                 "componentType":["boolean"],
                 "requiredAttributes":[],
-                "optionalAttributes":["label", "style", "labelStyle", "valueStyle", "value", "booleanTrueValue", "booleanFalseValue", "readonly", "onUpdate", "model", "onLoad", "onError", "loadInitially"],
+                "optionalAttributes":["label", "style", "labelStyle", "valueStyle", "value", "model", "booleanTrueValue", "booleanFalseValue", "readonly", "onUpdate", "onLoad", "onError", "loadInitially"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },
@@ -187,7 +191,7 @@
         "dropdowns" : {
             "subType": ["text", "number", "email", "tel", "primary", "secondary"]
         },
-        "documentation":"TODO - specify validation for scriptingLanguage, binding as select, default value, hint, etc. Remove duplicate AttributeType type"
+        "documentation": "Obsoleted submit for grid and co. (using onSave instead). Obsoleted scriptingLanguage - still allow it in model but don't show it or add it"
     }
 
 }

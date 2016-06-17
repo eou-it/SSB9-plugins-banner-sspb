@@ -10,7 +10,7 @@
          "roleName": "GUEST"
       }
    ],
-   "fileTimestamp": "2016-05-25T11:37:29Z",
+   "fileTimestamp": "2016-06-17T00:00:00Z",
    "modelView": {
       "title": "Welcome",
       "style": "",
@@ -55,7 +55,7 @@
                            "labelStyle": "",
                            "label": "",
                            "type": "link",
-                           "url": "/banner-sspb-test-app/virtualDomainComposer/loadVirtualDomain",
+                           "url": "{{$$contextRoot}}virtualDomainComposer/loadVirtualDomain",
                            "replaceView": true
                         }],
                         "type": "block"
@@ -75,7 +75,7 @@
                                  "description": "Export Domains",
                                  "name": "GotoVDCExport",
                                  "type": "link",
-                                 "url": "/banner-sspb-test-app/customPage/page/pbadm.ExportVirtualDomains",
+                                 "url": "{{$$contextRoot}}customPage/page/pbadm.ExportVirtualDomains",
                                  "replaceView": true
                               }],
                               "type": "block"
@@ -89,7 +89,7 @@
                                  "description": "Virtual Domain Roles",
                                  "name": "GotoVDCRoles",
                                  "type": "link",
-                                 "url": "/banner-sspb-test-app/customPage/page/pbadm.VirtualDomainRoles",
+                                 "url": "{{$$contextRoot}}customPage/page/pbadm.VirtualDomainRoles",
                                  "replaceView": true
                               }],
                               "type": "block"
@@ -115,7 +115,7 @@
                            "description": "Visual Page Composer",
                            "name": "GotoVPC",
                            "type": "link",
-                           "url": "/banner-sspb-test-app/visualPageModelComposer/loadComposerPage",
+                           "url": "{{$$contextRoot}}visualPageModelComposer/loadComposerPage",
                            "replaceView": true
                         }],
                         "type": "block"
@@ -135,7 +135,7 @@
                                  "description": "Export Pages",
                                  "name": "GotoVPCExport",
                                  "type": "link",
-                                 "url": "/banner-sspb-test-app/customPage/page/pbadm.ExportPages",
+                                 "url": "{{$$contextRoot}}customPage/page/pbadm.ExportPages",
                                  "replaceView": true
                               }],
                               "type": "block"
@@ -149,7 +149,7 @@
                                  "description": "Page Roles",
                                  "name": "GotoVPCRoles",
                                  "type": "link",
-                                 "url": "/banner-sspb-test-app/customPage/page/pbadm.PageRoles",
+                                 "url": "{{$$contextRoot}}customPage/page/pbadm.PageRoles",
                                  "replaceView": true
                               }],
                               "type": "block"
@@ -175,7 +175,7 @@
                            "description": "CSS Manager",
                            "name": "GotoCSSManager",
                            "type": "link",
-                           "url": "/banner-sspb-test-app/cssManager/loadCssManagerPage",
+                           "url": "{{$$contextRoot}}cssManager/loadCssManagerPage",
                            "replaceView": true
                         }],
                         "type": "block"
@@ -189,7 +189,7 @@
                            "description": "Export CSS Stylesheets",
                            "name": "GotoCSSExport",
                            "type": "link",
-                           "url": "/banner-sspb-test-app/customPage/page/pbadm.ExportCss",
+                           "url": "{{$$contextRoot}}customPage/page/pbadm.ExportCss",
                            "replaceView": true
                         }],
                         "type": "block"
@@ -228,7 +228,7 @@
                            "style": "edit-page",
                            "valueStyle": "",
                            "name": "EditPage",
-                           "value": "<a href='/banner-sspb-test-app/visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}'><\/a>",
+                           "value": "<a href='{{$$contextRoot}}visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}'><\/a>",
                            "type": "literal"
                         },
                         {
@@ -236,7 +236,7 @@
                            "valueStyle": "",
                            "name": "RunPage",
                            "labelStyle": "",
-                           "value": "<a href='/banner-sspb-test-app/customPage/page/{{$item.CONSTANT_NAME}}'><\/a>",
+                           "value": "<a href='{{$$contextRoot}}customPage/page/{{$item.CONSTANT_NAME}}'><\/a>",
                            "label": "",
                            "type": "literal"
                         },
@@ -293,7 +293,7 @@
                            "style": "edit-page",
                            "valueStyle": "",
                            "name": "EditPage2",
-                           "value": "<a href='/banner-sspb-test-app/visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}'><\/a>",
+                           "value": "<a href='{{$$contextRoot}}visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}'><\/a>",
                            "type": "literal"
                         },
                         {
@@ -301,7 +301,7 @@
                            "valueStyle": "",
                            "name": "RunPage2",
                            "labelStyle": "",
-                           "value": "<a href='/banner-sspb-test-app/customPage/page/{{$item.CONSTANT_NAME}}'><\/a>",
+                           "value": "<a href='{{$$contextRoot}}customPage/page/{{$item.CONSTANT_NAME}}'><\/a>",
                            "label": "",
                            "type": "literal"
                         },
