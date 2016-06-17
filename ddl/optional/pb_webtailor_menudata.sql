@@ -4,7 +4,7 @@
 SET DEFINE ON VERI OFF;
 --This script creates a Self Service Menu for PageBuilder
 --The home page url defined below may need to be customized, depending on the deployment options.
-define pagebuilder_home='/banner-sspb-test-app/'
+define pagebuilder_home='/BannerExtensibility/'
 --This script can be executed as BANINST1
 
 delete
@@ -12,7 +12,7 @@ from twgrmenu
 where twgrmenu_name = 'bmenu.P_PBMainMnu'
 or twgrmenu_url = 'bmenu.P_PBMainMnu';
 
-delete 
+delete
 from twgrwmrl
 where TWGRWMRL_NAME = 'bmenu.P_PBMainMnu';
 
@@ -20,7 +20,7 @@ delete
 from twgbwmnu
 where twgbwmnu_name = 'bmenu.P_PBMainMnu';
 
-delete  
+delete
 from twtvmodu
 where TWTVMODU_CODE = 'PB';
 
@@ -29,7 +29,7 @@ Insert into TWTVMODU
    (TWTVMODU_CODE, TWTVMODU_DESC, TWTVMODU_HEADER_CAPS_ON, TWTVMODU_DISPLAY_EXIT_IND, TWTVMODU_ACTIVITY_DATE)
  Values
    ('PB', 'Page Builder', 'N', 'N', SYSDATE);
-   
+
 -- Create the menu page
 Insert into TWGBWMNU
    (TWGBWMNU_NAME, TWGBWMNU_DESC, TWGBWMNU_PAGE_TITLE, TWGBWMNU_HEADER, TWGBWMNU_TOP_RIGHT_IMAGE, TWGBWMNU_TOP_LEFT_IMAGE, TWGBWMNU_L_MARGIN_WIDTH, TWGBWMNU_R_MARGIN_WIDTH, TWGBWMNU_BACK_URL, TWGBWMNU_BACK_LINK, TWGBWMNU_BACK_MENU_IND, TWGBWMNU_MODULE, TWGBWMNU_ENABLED_IND, TWGBWMNU_INSECURE_ALLOWED_IND, TWGBWMNU_ACTIVITY_DATE, TWGBWMNU_CSS_URL, TWGBWMNU_CACHE_OVERRIDE, TWGBWMNU_SOURCE_IND, TWGBWMNU_ADM_ACCESS_IND)
@@ -48,7 +48,7 @@ Insert into TWGRMENU
  Values
    ('bmenu.P_MainMnu', (select (nvl(max(twgrmenu_sequence),0) + 1) from twgrmenu where twgrmenu_name = 'bmenu.P_MainMnu'), 'XE Page Builder', 'bmenu.P_PBMainMnu', 'XE Page Builder Menu', 'Y', 'Y', 'Y', SYSDATE, 'B');
 
-   
+
  Insert into TWGRMENU
    (TWGRMENU_NAME, TWGRMENU_SEQUENCE, TWGRMENU_URL_TEXT, TWGRMENU_URL, TWGRMENU_URL_DESC, TWGRMENU_ENABLED, TWGRMENU_DB_LINK_IND, TWGRMENU_SUBMENU_IND, TWGRMENU_ACTIVITY_DATE, TWGRMENU_SOURCE_IND)
  Values
