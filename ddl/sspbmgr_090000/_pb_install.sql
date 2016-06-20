@@ -144,3 +144,15 @@ prompt Grants
 -- Grant privileges on Banner objects needed to run PageBuilder
 connect baninst1/&&BANINST1_PASSWORD
 @@ _grants_banner.sql
+
+
+Prompt Creating Web Tailor Menu
+-- If a non default Menu exists for PageBuilder we skip installing to avoid overwriting customized menu's
+select
+  decode(cnt,0,'_run','_skip') selected
+from (
+  select count(*) cnt
+  from TWGRMENU where TWGRMENU_NAME = 'bmenu.P_PBMainMnu' and TWGRMENU_URL NOT LIKE '&pagebuilder_home.%'
+);
+
+@@_pb_webtailor_menudata.sql

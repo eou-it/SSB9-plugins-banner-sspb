@@ -3,9 +3,6 @@
 -- *****************************************************************************************
 SET DEFINE ON VERI OFF;
 --This script creates a Self Service Menu for PageBuilder
---The home page url defined below may need to be customized, depending on the deployment options.
-define pagebuilder_home='/BannerExtensibility/'
---This script can be executed as BANINST1
 
 delete
 from twgrmenu
@@ -52,37 +49,37 @@ Insert into TWGRMENU
  Insert into TWGRMENU
    (TWGRMENU_NAME, TWGRMENU_SEQUENCE, TWGRMENU_URL_TEXT, TWGRMENU_URL, TWGRMENU_URL_DESC, TWGRMENU_ENABLED, TWGRMENU_DB_LINK_IND, TWGRMENU_SUBMENU_IND, TWGRMENU_ACTIVITY_DATE, TWGRMENU_SOURCE_IND)
  Values
-   ('bmenu.P_PBMainMnu', 1, 'Page Builder Home Page', '&pagebuilder_home.', 'Got to home page on xe self-service page builder application', 'Y', 'N', 'N', SYSDATE, 'B');
+   ('bmenu.P_PBMainMnu', 1, 'Page Builder Home Page', '&&pagebuilder_home.', 'Got to home page on xe self-service page builder application', 'Y', 'N', 'N', SYSDATE, 'B');
 Insert into TWGRMENU
    (TWGRMENU_NAME, TWGRMENU_SEQUENCE, TWGRMENU_URL_TEXT, TWGRMENU_URL, TWGRMENU_URL_DESC, TWGRMENU_ENABLED, TWGRMENU_DB_LINK_IND, TWGRMENU_SUBMENU_IND, TWGRMENU_ACTIVITY_DATE, TWGRMENU_SOURCE_IND)
  Values
-   ('bmenu.P_PBMainMnu', 2, 'Virtual Domain Composer', '&pagebuilder_home.virtualDomainComposer/loadVirtualDomain', 'Create and maintain virtual domains', 'Y', 'N', 'N', SYSDATE, 'B');
+   ('bmenu.P_PBMainMnu', 2, 'Virtual Domain Composer', '&&pagebuilder_home.virtualDomainComposer/loadVirtualDomain', 'Create and maintain virtual domains', 'Y', 'N', 'N', SYSDATE, 'B');
 Insert into TWGRMENU
    (TWGRMENU_NAME, TWGRMENU_SEQUENCE, TWGRMENU_URL_TEXT, TWGRMENU_URL, TWGRMENU_URL_DESC, TWGRMENU_ENABLED, TWGRMENU_DB_LINK_IND, TWGRMENU_SUBMENU_IND, TWGRMENU_ACTIVITY_DATE, TWGRMENU_SOURCE_IND)
  Values
-   ('bmenu.P_PBMainMnu', 3, 'Visual Page Composer', '&pagebuilder_home.visualPageModelComposer/loadComposerPage', 'Create and maintain virtual pages', 'Y', 'N', 'N', SYSDATE, 'B');
+   ('bmenu.P_PBMainMnu', 3, 'Visual Page Composer', '&&pagebuilder_home.visualPageModelComposer/loadComposerPage', 'Create and maintain virtual pages', 'Y', 'N', 'N', SYSDATE, 'B');
 Insert into TWGRMENU
    (TWGRMENU_NAME, TWGRMENU_SEQUENCE, TWGRMENU_URL_TEXT, TWGRMENU_URL, TWGRMENU_URL_DESC, TWGRMENU_ENABLED, TWGRMENU_DB_LINK_IND, TWGRMENU_SUBMENU_IND, TWGRMENU_ACTIVITY_DATE, TWGRMENU_SOURCE_IND)
  Values
-   ('bmenu.P_PBMainMnu', 4, 'CSS Stylesheet Manager', '&pagebuilder_home.cssManager/loadCssManagerPage', 'Create and maintain css stylesheets', 'Y', 'N', 'N', SYSDATE, 'B');
+   ('bmenu.P_PBMainMnu', 4, 'CSS Stylesheet Manager', '&&pagebuilder_home.cssManager/loadCssManagerPage', 'Create and maintain css stylesheets', 'Y', 'N', 'N', SYSDATE, 'B');
 Insert into TWGRMENU
    (TWGRMENU_NAME, TWGRMENU_SEQUENCE, TWGRMENU_URL_TEXT, TWGRMENU_URL, TWGRMENU_URL_DESC, TWGRMENU_ENABLED, TWGRMENU_DB_LINK_IND, TWGRMENU_SUBMENU_IND, TWGRMENU_ACTIVITY_DATE, TWGRMENU_SOURCE_IND)
  Values
-   ('bmenu.P_PBMainMnu', 5, 'Page Roles', '&pagebuilder_home.customPage/page/pbadm.PageRoles', 'Maintain access to virtual pages', 'Y', 'N', 'N', SYSDATE, 'B');
+   ('bmenu.P_PBMainMnu', 5, 'Page Roles', '&&pagebuilder_home.customPage/page/pbadm.PageRoles', 'Maintain access to virtual pages', 'Y', 'N', 'N', SYSDATE, 'B');
 Insert into TWGRMENU
    (TWGRMENU_NAME, TWGRMENU_SEQUENCE, TWGRMENU_URL_TEXT, TWGRMENU_URL, TWGRMENU_URL_DESC, TWGRMENU_ENABLED, TWGRMENU_DB_LINK_IND, TWGRMENU_SUBMENU_IND, TWGRMENU_ACTIVITY_DATE, TWGRMENU_SOURCE_IND)
  Values
-   ('bmenu.P_PBMainMnu', 6, 'Virtual Domain Roles', '&pagebuilder_home.customPage/page/pbadm.VirtualDomainRoles', 'Maintain access to virtual domains', 'Y', 'N', 'N', SYSDATE, 'B');
+   ('bmenu.P_PBMainMnu', 6, 'Virtual Domain Roles', '&&pagebuilder_home.customPage/page/pbadm.VirtualDomainRoles', 'Maintain access to virtual domains', 'Y', 'N', 'N', SYSDATE, 'B');
 Insert into TWGRMENU
    (TWGRMENU_NAME, TWGRMENU_SEQUENCE, TWGRMENU_URL_TEXT, TWGRMENU_URL, TWGRMENU_URL_DESC, TWGRMENU_ENABLED, TWGRMENU_DB_LINK_IND, TWGRMENU_SUBMENU_IND, TWGRMENU_ACTIVITY_DATE, TWGRMENU_SOURCE_IND)
  Values
-   ('bmenu.P_PBMainMnu', 7, 'Export Pages', '&pagebuilder_home.customPage/page/pbadm.ExportPages', 'Export virtual page metadata to a file', 'Y', 'N', 'N', SYSDATE, 'B');
+   ('bmenu.P_PBMainMnu', 7, 'Export Pages', '&&pagebuilder_home.customPage/page/pbadm.ExportPages', 'Export virtual page metadata to a file', 'Y', 'N', 'N', SYSDATE, 'B');
 Insert into TWGRMENU
    (TWGRMENU_NAME, TWGRMENU_SEQUENCE, TWGRMENU_URL_TEXT, TWGRMENU_URL, TWGRMENU_URL_DESC, TWGRMENU_ENABLED, TWGRMENU_DB_LINK_IND, TWGRMENU_SUBMENU_IND, TWGRMENU_ACTIVITY_DATE, TWGRMENU_SOURCE_IND)
  Values
-   ('bmenu.P_PBMainMnu', 8, 'Export Virtual Domains', '&pagebuilder_home.customPage/page/pbadm.ExportVirtualDomains', 'Export virtual domain metadata to a file', 'Y', 'N', 'N', SYSDATE, 'B');
+   ('bmenu.P_PBMainMnu', 8, 'Export Virtual Domains', '&&pagebuilder_home.customPage/page/pbadm.ExportVirtualDomains', 'Export virtual domain metadata to a file', 'Y', 'N', 'N', SYSDATE, 'B');
 Insert into TWGRMENU
    (TWGRMENU_NAME, TWGRMENU_SEQUENCE, TWGRMENU_URL_TEXT, TWGRMENU_URL, TWGRMENU_URL_DESC, TWGRMENU_ENABLED, TWGRMENU_DB_LINK_IND, TWGRMENU_SUBMENU_IND, TWGRMENU_ACTIVITY_DATE, TWGRMENU_SOURCE_IND)
  Values
-   ('bmenu.P_PBMainMnu', 9, 'Export CSS Stylesheet', '&pagebuilder_home.customPage/page/pbadm.ExportCss', 'Export CSS Stylesheet metadata to a file', 'Y', 'N', 'N', SYSDATE, 'B');
+   ('bmenu.P_PBMainMnu', 9, 'Export CSS Stylesheet', '&&pagebuilder_home.customPage/page/pbadm.ExportCss', 'Export CSS Stylesheet metadata to a file', 'Y', 'N', 'N', SYSDATE, 'B');
 COMMIT;
