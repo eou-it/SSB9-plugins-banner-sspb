@@ -21,13 +21,13 @@ class PBUser {
 
     static def get() {
         def userIn = SecurityContextHolder?.context?.authentication?.principal
-        if (userIn.username.equals(userNameCache) ) {
+        if (userIn?.username.equals(userNameCache) ) {
             return userCache
         }
         LogFactory.getLog(this).info "Getting new PB User $userIn"
         Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>()
         //avoid direct dependency on BannerUser
-        if (userIn.class.name.endsWith('BannerUser')) {
+        if (userIn?.class.name.endsWith('BannerUser')) {
             userIn.authorities.each {
                 if (it.objectName.startsWith('SELFSERVICE')) {
                     authorities << [objectName: it.objectName, roleName: it.roleName]
@@ -37,7 +37,7 @@ class PBUser {
                     authorities: authorities]
 
         } else {
-            userCache = [authenticated: false, pidm: null, gidm: null,  loginName: userIn.username,
+            userCache = [authenticated: false, pidm: null, gidm: null,  loginName: userIn?userIn.username:"_anonymousUser",
                          fullName: localizer(code:"sspb.renderer.page.anonymous.full.name"),authorities: authorities]
         }
         //give user guest role to be consistent with ability to view pages with IS_AUTHENTICATED_ANONYMOUSLY role
