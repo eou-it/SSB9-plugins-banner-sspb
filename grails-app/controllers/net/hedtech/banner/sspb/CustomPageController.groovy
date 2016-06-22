@@ -32,18 +32,22 @@ class CustomPageController {
 
 
     def getHTML() {
-        def pageId = params.id
-        def html
-        def page = Page.findByConstantName(pageId)
+        try {
+            def pageId = params.id
+            def html
+            def page = Page.findByConstantName(pageId)
 
-        // maybe better to only store the assembled page?
-        if (page && page.compiledView && page.compiledController) {
-            html = compileService.assembleFinalPage(page.compiledView, page.compiledController)
-        }
-        if (html) {
-            render renderGsp(html, "Page$pageId")
-        } else {
-            invalidPage(message(code: "sspb.renderer.page.does.not.exist"))
+            // maybe better to only store the assembled page?
+            if (page && page.compiledView && page.compiledController) {
+                html = compileService.assembleFinalPage(page.compiledView, page.compiledController)
+            }
+            if (html) {
+                render renderGsp(html, "Page$pageId")
+            } else {
+                invalidPage(message(code: "sspb.renderer.page.does.not.exist"))
+            }
+        } catch ( RuntimeException ex ) {
+            invalidPage( message( code: "sspb.renderer.page.does.not.exist"))
         }
     }
 }
