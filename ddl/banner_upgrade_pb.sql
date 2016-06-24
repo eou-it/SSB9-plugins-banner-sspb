@@ -9,6 +9,8 @@ SET define ON veri OFF trimsp OFF HEAD OFF FEEDB 2
 --The home page url defined below may need to be customized, depending on the deployment options.
 define pagebuilder_home=/BannerExtensibility/
 
+prompt "The value entered for the SYS password will not display."
+accept sys_password char prompt "Enter the password for SYS: " hide
 
 -- Define sizing values to run table script directly in sqlplus
 

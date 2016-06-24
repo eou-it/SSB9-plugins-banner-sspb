@@ -12,9 +12,7 @@ col SELECTED for a40
 col SELECTED new_val SELECTION 
 col SELECTED for a40
 
-
-
-connect baninst1/&&BANINST1_PASSWORD
+connect sys/&&sys_password as sysdba
 
 -- Check if user SSPBMGR exists
 
