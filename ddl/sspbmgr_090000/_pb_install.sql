@@ -140,7 +140,7 @@ prompt Grants
 @@ _grants_pb.sql
 
 -- Grant privileges on Banner objects needed to run PageBuilder
-connect baninst1/&&BANINST1_PASSWORD
+connect sys/&&sys_password as sysdba
 @@ _grants_banner.sql
 
 
