@@ -15,6 +15,11 @@ class CustomPageController {
             render ""
             return
         }
+        if (params.id=="pbadm.ssoauth") {
+            if (params.url) {
+                redirect(uri: params.url)
+            }
+        }
         // render view page.gsp which will be including getHTML
         render  (view:"page", model:[id: params.id])
     }
