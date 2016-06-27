@@ -15,20 +15,20 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         <g:else>
             <r:require modules="pageBuilderLTR"/>
         </g:else>
+
         <g:set var="mep" value="${org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes()?.request?.session?.getAttribute('ssbMepDesc')}"/>
+        <g:set var="hideSSBHeaderComps" value="${session.hideSSBHeaderComps?session.hideSSBHeaderComps: params?.hideSSBHeaderComps? params.hideSSBHeaderComps:false} " scope="session" />
 
         <meta charset="${message(code: 'default.character.encoding')}"/>
         <meta name="dir" content="${message(code:'default.language.direction')}"/>
         <meta name="synchronizerToken" content="${org.codehaus.groovy.grails.web.servlet.mvc.SynchronizerTokensHolder.store( session ).generateToken(request.forwardURI)}"/>
-
+        <meta name="logLevel" content="${g.logLevel()}"/>
         <meta name="maxInactiveInterval" content="${session.maxInactiveInterval}"/>
         <meta name="transactionTimeout" content="${session.getServletContext().transactionTimeout}"/>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <%--
         <link rel="apple-touch-icon" href="images/applicationIcon.png" />
         <link rel="apple-touch-startup-image" href="images/applicationStartup.png">
-        --%>
         <meta name="keepAliveURL" content="${createLink(controller:'keepAlive')}"/>
         <meta name="ssbMepDesc" content="${!mep ? '' : mep}"/>
         <meta name="fullName" content="${g.fullName()}"/>
@@ -36,21 +36,22 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         <meta name="logoutEndpoint" content="${session.getServletContext().logoutEndpoint}"/>
         <meta name="guestLoginEnabled" content="${session.getServletContext().guestLoginEnabled}"/>
         <meta name="userLocale" content="${LocaleContextHolder.getLocale()}"/>
+        <meta name="footerFadeAwayTime" content="${grails.util.Holders.config.footerFadeAwayTime}"/>
+        <meta name="hideSSBHeaderComps" content="${session?.hideSSBHeaderComps?.trim()}"/>
         <meta name="menuEndPoint" content="${request.contextPath}/ssb/menu"/>
         <meta name="menuBaseURL" content="${request.contextPath}/ssb"/>
+
 
         <meta name="headerAttributes" content=""/>
         <script type="text/javascript">
         document.getElementsByName('headerAttributes')[0].content = JSON.stringify({
             "pageTitle": "<g:layoutTitle/>"
-             <%--  TODO add breadcrumbs --%>
           });
         </script>
 
         <title><g:layoutTitle default="Banner Page Builder"/></title>
 
-
-        <link rel="shortcut icon" href="${resource(plugin: 'banner-ui-ss', dir:'images',file:'favicon.ico')}" type="image/x-icon"/>
+        <link rel="shortcut icon" href="${resource(dir:'images',file:'favicon.ico')}" type="image/x-icon"/>
 
 
         <r:script>
@@ -102,7 +103,6 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         <!-- layout head contains angular module declaration and need to be placed before pbRunApp.js -->
         <g:layoutHead />
 
-
         <!-- !!TODO convert to taglib -->
         <g:set var="themeConfig" value="${grails.util.Holders.config.banner.theme}"/>
         <meta name="theme" content="${themeConfig.name}">
@@ -111,7 +111,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         </g:if>
     </head>
     <body>
-    <div id="splash"></div>
+        <div id="splash"></div>
         <div id="spinner" class="spinner spinner-img" style="display:none;">
 
         </div>
