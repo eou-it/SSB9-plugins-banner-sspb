@@ -9,6 +9,7 @@ class CustomPageController {
     static defaultAction = "page"
     def groovyPagesTemplateEngine
     def compileService
+    def grailsApplication
 
     def page() {
         if (params.id=="menu") {    //Work around aurora issue calling this 'page'. Todo: analyse and provide better fix
@@ -20,8 +21,12 @@ class CustomPageController {
                 redirect(uri: params.url)
             }
         }
-        // render view page.gsp which will be including getHTML
-        render  (view:"page", model:[id: params.id])
+        if (grailsApplication.config.pageBuilder?.enabled) {
+            // render view page.gsp which will be including getHTML
+            render(view: "page", model: [id: params.id])
+        } else {
+            redirect(uri: '/themeEditor')
+        }
     }
 
     private def invalidPage(e) {
