@@ -74,9 +74,8 @@ class PageMessageSource extends ReloadableResourceBundleMessageSource {
             this.setResourceLoader() // make sure that the super  class uses the resource loader above
             setBasenames( (String []) pageResources)
 
-        } catch (ex) {
-            logger.error "Exception while initializing page resources in PageMessageSource:\n${ex.getMessage()}"
-            throw ex
+        } catch (FileNotFoundException ex) {
+            logger.error "Unable to load external resources from configured location. Not found: ${ex.getMessage()}"
         }
     }
 
