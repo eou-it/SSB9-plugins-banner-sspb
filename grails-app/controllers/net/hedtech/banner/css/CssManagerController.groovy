@@ -26,10 +26,10 @@ class CssManagerController {
         //println "file name = $filename"
         //println "file content = $buf"
         // save CSS
-        def ret = cssService.create([cssName:params.cssName, source:buf, description:params.description], [:])
+        def ret = cssService.create([cssName: params.cssName, source: buf, description: params.description], [:])
 
-        def res =  [received:true, fileName: filename, fileSize: buf.length(), statusCode:ret.statusCode, statusMessage:ret.statusMessage]
-
+        def res = [received: true, fileName: filename, fileSize: buf.length(), statusCode: ret.statusCode, statusMessage: ret.statusMessage]
+        header 'X-Frame-Options' ,"SAMEORIGIN"
         render res as JSON
     }
 
