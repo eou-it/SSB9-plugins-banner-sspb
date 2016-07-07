@@ -1,23 +1,23 @@
 {
-   "constantName": "testBasePage2",
    "extendsPage": null,
+   "pageRoles": [],
+   "fileTimestamp": "2016-04-08T11:48:26Z",
    "modelView": {
+      "title": "Test Base Page 2",
+      "scriptingLanguage": "JavaScript",
+      "name": "basePage2",
       "components": [{
-         "readonly": false,
+         "validation": {},
+         "placeholder": "Enter some text",
          "name": "xeTextBox",
          "label": "xe Text",
-         "loadInitially": true,
-         "placeholder": "Enter some text",
-         "type": "text",
          "parameters": {},
+         "type": "text",
          "required": false,
-         "validation": {}
+         "readonly": false,
+         "loadInitially": true
       }],
-      "name": "basePage2",
-      "scriptingLanguage": "JavaScript",
-      "title": "Test Base Page 2",
       "type": "page"
    },
-   "fileTimestamp": "2016-03-10T11:12:36Z",
-   "pageRoles": []
+   "constantName": "testBasePage2"
 }

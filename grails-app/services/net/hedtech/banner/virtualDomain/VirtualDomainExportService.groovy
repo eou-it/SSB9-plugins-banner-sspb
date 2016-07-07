@@ -1,3 +1,7 @@
+/******************************************************************************
+ *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ ******************************************************************************/
+
 package net.hedtech.banner.virtualDomain
 
 import net.hedtech.banner.sspb.Page
@@ -81,7 +85,7 @@ class VirtualDomainExportService {
 
     def create(Map content, ignore) {
         def result
-        if (content.exportVirtualDomain == "1") {
+        if (content.exportVirtualDomain == 1) {
             def vdUtilService = new VirtualDomainUtilService()
             vdUtilService.exportToFile(content.serviceName, content.pageLike)
             result = content
@@ -90,9 +94,9 @@ class VirtualDomainExportService {
     }
 
     // handle export of single vd
-    def update(/*def id,*/ Map content, ignore) {
+    def update(Map content, ignore) {
         def result
-        if (content.exportVirtualDomain == "1") {
+        if (content.exportVirtualDomain == 1) {
             def vdUtilService = new VirtualDomainUtilService()
             vdUtilService.exportToFile(content.serviceName)
             result = content
@@ -110,8 +114,6 @@ class VirtualDomainExportService {
             def jsonPage = slurper.parseText(p.modelView)
             def pComponent = PageComponent.parseJSON(jsonPage)
             def vds = pComponent.findComponents([PageComponent.COMP_TYPE_RESOURCE])
-            //println pComponent.showHierarchy()
-
             vds.each { res ->
                 if ( res.resource?.startsWith(VirtualDomainService.vdPrefix)) {
                     vdSet << res.resource.substring(VirtualDomainService.vdPrefix.length())

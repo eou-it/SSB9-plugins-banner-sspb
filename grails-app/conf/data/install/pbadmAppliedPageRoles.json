@@ -1,0 +1,28 @@
+{
+   "codePost": null,
+   "id": null,
+   "virtualDomainRoles": [{
+      "allowGet": true,
+      "id": null,
+      "allowPost": false,
+      "allowPut": false,
+      "virtualDomain": {
+         "_ref": "../..",
+         "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+      },
+      "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
+      "roleName": "WTAILORADMIN",
+      "allowDelete": false,
+      "version": null
+   }],
+   "codePut": null,
+   "lastUpdated": null,
+   "fileTimestamp": "2016-05-26T13:01:04Z",
+   "dateCreated": null,
+   "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
+   "codeDelete": null,
+   "codeGet": "select * from requestmap\r\nwhere url like  '/customPage/page/'||:selected_url||'/**'",
+   "typeOfCode": "S",
+   "serviceName": "pbadmAppliedPageRoles",
+   "version": null
+}

@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ ******************************************************************************/
 package net.hedtech.banner.tools.i18n
 
 class SortedProperties extends Properties {

@@ -1,3 +1,7 @@
+/******************************************************************************
+ *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ ******************************************************************************/
+
 package net.hedtech.banner.sspb
 import net.hedtech.banner.css.Css
 
@@ -86,7 +90,7 @@ class CssExportService {
 
     def create(Map content, ignore) {
         def result
-        if (content.exportCss == "1") {
+        if (content.exportCss == 1) {
             def cssUtilService = new CssUtilService()
             cssUtilService.exportToFile(content.constantName, content.pageLike)
             result = content
@@ -95,9 +99,9 @@ class CssExportService {
     }
 
     // handle export of single css file
-    def update(/*def id,*/ Map content, ignore) {
+    def update(Map content, ignore) {
         def result
-        if (content.exportCss == "1") {
+        if (content.exportCss == 1) {
             def cssUtilService = new CssUtilService()
             cssUtilService.exportToFile(content.constantName)
             result = content

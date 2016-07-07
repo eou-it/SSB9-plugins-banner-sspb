@@ -1,7 +1,10 @@
 <%--
 Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 --%>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="net.hedtech.banner.sspb.PBUser;" contentType="text/html;charset=UTF-8" %>
+<%@ page import="net.hedtech.banner.tools.i18n.LocaleResource;" contentType="text/html;charset=UTF-8" %>
+<%@ page import="org.springframework.context.i18n.LocaleContextHolder" %>
 
 <!DOCTYPE html>
 <html ng-app="BannerOnAngular" lang="${message(code: 'default.language.locale')}" dir="${message(code:'default.language.direction')}">
@@ -12,12 +15,14 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         <g:else>
             <r:require modules="pageBuilderLTR"/>
         </g:else>
+
         <g:set var="mep" value="${org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes()?.request?.session?.getAttribute('ssbMepDesc')}"/>
+        <g:set var="hideSSBHeaderComps" value="${session.hideSSBHeaderComps?session.hideSSBHeaderComps: params?.hideSSBHeaderComps? params.hideSSBHeaderComps:false} " scope="session" />
 
         <meta charset="${message(code: 'default.character.encoding')}"/>
         <meta name="dir" content="${message(code:'default.language.direction')}"/>
         <meta name="synchronizerToken" content="${org.codehaus.groovy.grails.web.servlet.mvc.SynchronizerTokensHolder.store( session ).generateToken(request.forwardURI)}"/>
-
+        <meta name="logLevel" content="${g.logLevel()}"/>
         <meta name="maxInactiveInterval" content="${session.maxInactiveInterval}"/>
         <meta name="transactionTimeout" content="${session.getServletContext().transactionTimeout}"/>
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -27,20 +32,27 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         <meta name="keepAliveURL" content="${createLink(controller:'keepAlive')}"/>
         <meta name="ssbMepDesc" content="${!mep ? '' : mep}"/>
         <meta name="fullName" content="${g.fullName()}"/>
+        <meta name="loginEndpoint" content="${session.getServletContext().loginEndpoint}"/>
+        <meta name="logoutEndpoint" content="${session.getServletContext().logoutEndpoint}"/>
+        <meta name="guestLoginEnabled" content="${session.getServletContext().guestLoginEnabled}"/>
+        <meta name="userLocale" content="${LocaleContextHolder.getLocale()}"/>
+        <meta name="footerFadeAwayTime" content="${grails.util.Holders.config.footerFadeAwayTime}"/>
+        <meta name="hideSSBHeaderComps" content="${session?.hideSSBHeaderComps?.trim()}"/>
         <meta name="menuEndPoint" content="${request.contextPath}/ssb/menu"/>
         <meta name="menuBaseURL" content="${request.contextPath}/ssb"/>
+
 
         <meta name="headerAttributes" content=""/>
         <script type="text/javascript">
         document.getElementsByName('headerAttributes')[0].content = JSON.stringify({
             "pageTitle": "<g:layoutTitle/>"
-//            TODO add breadcrumbs
           });
         </script>
 
         <title><g:layoutTitle default="Banner Page Builder"/></title>
 
-        <link rel="shortcut icon" href="${resource(dir:'images',file:'favicon.ico')}" type="image/x-icon"/>
+        <link rel="shortcut icon" href="${resource(plugin: 'banner-ui-ss', dir:'images',file:'favicon.ico')}" type="image/x-icon"/>
+
 
         <r:script>
             <g:i18nJavaScript/>
@@ -69,24 +81,37 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         <g:set var="localeLanguage"    value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).language}" scope="page" />
         <g:set var="localeBrowserFull" value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).toString().replace('_','-')}" scope="page" />
 
+
+
         <script type="text/javascript">
-            var rootWebApp = ${createLink(uri: '/')};  //use in controller restful interface
+            var rootWebApp = "${createLink(uri: '/')}";
+            var resourceBase = "${createLink(uri: '/') + grails.util.Holders.config.sspb.apiPath +'/' }";
             var templatesLocation = "<g:resource plugin="banner-sspb" dir="template" />";
-            var user = ${PBUser.get()?.encodeAsJSON()};
+            var user = ${PBUser.getTrimmed()?.encodeAsJSON()};
             var gridLocale = '${localeBrowserFull.toLowerCase()}';
             var params = ${params?.encodeAsJSON()};
-            if (!window.console)
+            if (!window.console) {
                 console = {log: function() {}};
+            }
+            // inject services and controller modules to be registered with the global ng-app
+            var myCustomServices = ['ngResource','ngGrid','ui', 'pbrun.directives', 'ngSanitize', 'xe-ui-components'];
+            var pageControllers = {};
+
         </script>
 
         <g:customStylesheetIncludes/>
         <!-- layout head contains angular module declaration and need to be placed before pbRunApp.js -->
         <g:layoutHead />
 
-
+        <!-- !!TODO convert to taglib -->
+        <g:set var="themeConfig" value="${grails.util.Holders.config.banner.theme}"/>
+        <meta name="theme" content="${themeConfig.name}">
+        <g:if test="${themeConfig.url}">
+            <link rel="stylesheet" type="text/css" href="${themeConfig.url}/getTheme?name=${!mep ? themeConfig.name : mep}&template=${themeConfig.template}&mepCode=${mep}">
+        </g:if>
     </head>
     <body>
-    <div id="splash"></div>
+        <div id="splash"></div>
         <div id="spinner" class="spinner spinner-img" style="display:none;">
 
         </div>
@@ -96,38 +121,33 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
         <g:customJavaScriptIncludes/>
 
-
-    <g:if test="${localeLanguage!='en'}">
-        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery/i18n" file="jquery.ui.datepicker-${localeLanguage}.js" />"> </script>
-    </g:if>
-    <g:if test="${localeBrowserFull!='en-US' && localeBrowserFull != localeLanguage }">
-        <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/jquery/i18n" file="jquery.ui.datepicker-${localeBrowserFull}.js" />"> </script>
-    </g:if>
-    <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeLanguage}.js" />"> </script>
-    <script src="<g:resource plugin="banner-sspb" dir="BannerXE/lib/angular/i18n" file="angular-locale_${localeBrowserFull.toLowerCase()}.js" />"> </script>
+        ${LocaleResource.importExisting(plugin:'banner-sspb', dir: 'BannerXE/lib/jquery/i18n', file: 'jquery.ui.datepicker-{locale}.js',
+                                        locale: localeBrowserFull, html: '<script src="{resource}" ></script>' )}
+        ${LocaleResource.importExisting(plugin:'banner-sspb', dir: 'BannerXE/lib/angular/i18n', file: 'angular-locale_{locale}.js',
+                                        locale: localeBrowserFull.toLowerCase(), html: '<script src="{resource}" ></script>' )}
 
 
 
-    <script type="text/javascript">
-        window.ngGrid.i18n[gridLocale] = {
-            ngAggregateLabel:          '${message(code: 'nggrid.ngAggregateLabel'         , encodeAs: 'JavaScript')}',
-            ngGroupPanelDescription:   '${message(code: 'nggrid.ngGroupPanelDescription'  , encodeAs: 'JavaScript')}',
-            ngSearchPlaceHolder:       '${message(code: 'nggrid.ngSearchPlaceHolder'      , encodeAs: 'JavaScript')}',
-            ngMenuText:                '${message(code: 'nggrid.ngMenuText'               , encodeAs: 'JavaScript')}',
-            ngShowingItemsLabel:       '${message(code: 'nggrid.ngShowingItemsLabel'      , encodeAs: 'JavaScript')}',
-            ngTotalItemsLabel:         '${message(code: 'nggrid.ngTotalItemsLabel'        , encodeAs: 'JavaScript')}',
-            ngSelectedItemsLabel:      '${message(code: 'nggrid.ngSelectedItemsLabel'     , encodeAs: 'JavaScript')}',
-            ngPageSizeLabel:           '${message(code: 'nggrid.ngPageSizeLabel'          , encodeAs: 'JavaScript')}',
-            ngPagerFirstTitle:         '${message(code: 'nggrid.ngPagerFirstTitle'        , encodeAs: 'JavaScript')}',
-            ngPagerNextTitle:          '${message(code: 'nggrid.ngPagerNextTitle'         , encodeAs: 'JavaScript')}',
-            ngPagerPrevTitle:          '${message(code: 'nggrid.ngPagerPrevTitle'         , encodeAs: 'JavaScript')}',
-            ngPagerLastTitle:          '${message(code: 'nggrid.ngPagerLastTitle'         , encodeAs: 'JavaScript')}',
-            direction:                 '${message(code:'default.language.direction')}',
-            styleLeft:                 '${message(code:'style.left')}',
-            styleRight:                '${message(code:'style.right')}',
-            maxPageLabel:              '${message(code:'nggrid.maxPageLabel'             , encodeAs: 'JavaScript')}',
-            pageLabel:                 '${message(code:'nggrid.pageLabel'                , encodeAs: 'JavaScript')}'
-        };
-    </script>
+        <script type="text/javascript">
+            window.ngGrid.i18n[gridLocale] = {
+                ngAggregateLabel:          '${message(code: 'nggrid.ngAggregateLabel'         , encodeAs: 'JavaScript')}',
+                ngGroupPanelDescription:   '${message(code: 'nggrid.ngGroupPanelDescription'  , encodeAs: 'JavaScript')}',
+                ngSearchPlaceHolder:       '${message(code: 'nggrid.ngSearchPlaceHolder'      , encodeAs: 'JavaScript')}',
+                ngMenuText:                '${message(code: 'nggrid.ngMenuText'               , encodeAs: 'JavaScript')}',
+                ngShowingItemsLabel:       '${message(code: 'nggrid.ngShowingItemsLabel'      , encodeAs: 'JavaScript')}',
+                ngTotalItemsLabel:         '${message(code: 'nggrid.ngTotalItemsLabel'        , encodeAs: 'JavaScript')}',
+                ngSelectedItemsLabel:      '${message(code: 'nggrid.ngSelectedItemsLabel'     , encodeAs: 'JavaScript')}',
+                ngPageSizeLabel:           '${message(code: 'nggrid.ngPageSizeLabel'          , encodeAs: 'JavaScript')}',
+                ngPagerFirstTitle:         '${message(code: 'nggrid.ngPagerFirstTitle'        , encodeAs: 'JavaScript')}',
+                ngPagerNextTitle:          '${message(code: 'nggrid.ngPagerNextTitle'         , encodeAs: 'JavaScript')}',
+                ngPagerPrevTitle:          '${message(code: 'nggrid.ngPagerPrevTitle'         , encodeAs: 'JavaScript')}',
+                ngPagerLastTitle:          '${message(code: 'nggrid.ngPagerLastTitle'         , encodeAs: 'JavaScript')}',
+                direction:                 '${message(code:'default.language.direction')}',
+                styleLeft:                 '${message(code:'default.language.direction')=='ltr'?'left':'right'}',
+                styleRight:                '${message(code:'default.language.direction')=='ltr'?'right':'left'}',
+                maxPageLabel:              '${message(code:'nggrid.maxPageLabel'             , encodeAs: 'JavaScript')}',
+                pageLabel:                 '${message(code:'nggrid.pageLabel'                , encodeAs: 'JavaScript')}'
+            };
+        </script>
     </body>
 </html>

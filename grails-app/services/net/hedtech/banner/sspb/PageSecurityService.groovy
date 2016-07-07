@@ -89,15 +89,12 @@ class PageSecurityService {
         try {
             for (role in page.pageRoles )  {
                 if (role.allow) {
-                    if (role.roleName == "GUEST") {
-                        configAttribute+=",IS_AUTHENTICATED_ANONYMOUSLY"
-                    } else {
-                        configAttribute+=",ROLE_SELFSERVICE-${role.roleName}_BAN_DEFAULT_M"
-                    }
+                    configAttribute+=(role.roleName == "GUEST")?",IS_AUTHENTICATED_ANONYMOUSLY":",ROLE_SELFSERVICE-${role.roleName}_BAN_DEFAULT_M"
                 }
             }
-            if (configAttribute.length()>0)
-                configAttribute=configAttribute.substring(1) //strip first comma
+            if (configAttribute.length()>0) {
+                configAttribute = configAttribute.substring(1) //strip first comma
+            }
             rm=saveRequestmap(url, configAttribute)
         }
         catch(ApplicationException e) {

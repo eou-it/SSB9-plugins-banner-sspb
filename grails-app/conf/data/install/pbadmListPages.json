@@ -1,58 +1,44 @@
 {
-   "codePut": null,
+   "codePost": null,
+   "id": null,
    "virtualDomainRoles": [
       {
-         "allowDelete": false,
+         "allowGet": true,
+         "id": null,
          "allowPost": false,
          "allowPut": false,
-         "roleName": "WTAILORADMIN",
-         "id": null,
-         "allowGet": true,
          "virtualDomain": {
             "_ref": "../..",
             "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
          },
          "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
+         "roleName": "ALLROLES",
+         "allowDelete": false,
          "version": null
       },
       {
-         "allowDelete": false,
+         "allowGet": true,
+         "id": null,
          "allowPost": false,
          "allowPut": false,
-         "roleName": "WEBUSER",
-         "id": null,
-         "allowGet": true,
          "virtualDomain": {
             "_ref": "../..",
             "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
          },
          "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
-         "version": null
-      },
-      {
-         "allowDelete": false,
-         "allowPost": false,
-         "allowPut": false,
          "roleName": "GUEST",
-         "id": null,
-         "allowGet": true,
-         "virtualDomain": {
-            "_ref": "../..",
-            "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
-         },
-         "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
+         "allowDelete": false,
          "version": null
       }
    ],
-   "codeGet": "select id pid, constant_name, CAST(last_updated AS DATE), to_char(last_updated, 'Mon ddth, YYYY') last_updated from page\r\nwhere constant_name not like 'pbadm%'\r\norder by 3 desc",
-   "codePost": null,
-   "serviceName": "pbadmListPages",
-   "version": null,
-   "codeDelete": null,
+   "codePut": null,
    "lastUpdated": null,
+   "fileTimestamp": "2016-05-25T11:36:00Z",
    "dateCreated": null,
-   "id": null,
-   "fileTimestamp": "2016-01-08T13:22:33Z",
+   "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
+   "codeDelete": null,
+   "codeGet": "select id pid, constant_name, CAST(last_updated AS DATE), to_char(last_updated, 'Mon ddth, YYYY') last_updated from page\r\nwhere constant_name not like 'pbadm%'\r\norder by 3 desc",
    "typeOfCode": "S",
-   "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+   "serviceName": "pbadmListPages",
+   "version": null
 }

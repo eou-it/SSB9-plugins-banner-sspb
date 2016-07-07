@@ -199,13 +199,16 @@ label {
     /*border: none;*/
 /*}*/
 
-/*#reload-btn {*/
-    /*background: url(../images/Reload_icon.png) center 0 no-repeat;*/
-/*}*/
+#reload-btn {
+    background: url(../images/Reload_icon.png) no-repeat center center ;
+    width: 20px; height: 20px;
+    padding: 6px 6px 6px 0px;
+    border:0;
+}
 
-/*#preview-btn {*/
-    /*background: url(../images/Preview_icon.png) center 0 no-repeat;*/
-/*}*/
+#preview-btn {
+    background: url(../images/Preview_icon.png) center 0 no-repeat;
+}
 
 /*#export-btn {*/
     /*background: url(../images/Export_icon.png) center 0 no-repeat;*/
@@ -218,6 +221,17 @@ label {
 /*#pagerole-btn {*/
     /*background: url(../images/PageRoll_icon.png) center 0 no-repeat;*/
 /*}*/
+
+.vpc-name-input {
+    height: 2.2em;
+    margin-bottom: 2px;
+}
+
+.vpc-name-label {
+    width: 7em;
+    text-align: right;
+}
+
 /* End Visual Page Composer */
 
 /* Start Virtual Domain Composer (mainly moved from main.css) */
@@ -291,9 +305,11 @@ th.sortable a {
 	background: #ffffff;
 }
 
-th:hover, tr:hover {
-	background: #E1F2B6;
+th:hover {
+	background: #f9f9ff;
 }
+
+
 
 textarea {
 	height: 150px;

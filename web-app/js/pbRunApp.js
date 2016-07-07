@@ -1,3 +1,7 @@
+/******************************************************************************
+ *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ ******************************************************************************/
+
 /*
 Common Javascript functions used by pagebuilder applications
 */
@@ -12,8 +16,9 @@ alert = function(message, params ){ //message,promptMessage,type,flash,prompts) 
         flash: params&&params.flash?params.flash:false,
     };
     var prompts = params&&params.prompts?params.prompts:[{label: $.i18n.prop("sspb.custom.page.default.affirm"), action:function(){}}];
+
     var note = new Notification(noteSpec);
-    if (prompts) {
+    if (prompts && !noteSpec.flash) {
         prompts.forEach( function(prompt) {
             note.addPromptAction( prompt.label, function() {
                 prompt.action();
@@ -52,6 +57,14 @@ if (!('forEach' in Array.prototype)) {
     };
 }
 
+//Polyfill startsWith
+if (!String.prototype.startsWith) {
+    String.prototype.startsWith = function(searchString, position){
+        position = position || 0;
+        return this.substr(position, searchString.length) === searchString;
+    };
+}
+
 //function to avoid undefined
 function nvl(val,def){
     if ( (val == undefined) || (val == null ) ) {
@@ -67,24 +80,16 @@ if (undefined == myCustomServices) {
     var myCustomServices = [];
 }
 
-
 var appModule = appModule||angular.module('BannerOnAngular', myCustomServices);
 
-var CustomPageController = CustomPageController||undefined;
-if ( CustomPageController) {
-    appModule.controller("CustomPageController", CustomPageController);
+if (pageControllers) {
+    if (window["CustomPageController"]) { // backwards compatibel with alpha release
+        pageControllers["CustomPageController"] = window["CustomPageController"];
+    }
+    for (var pc in pageControllers) {
+        appModule.controller(pc, pageControllers[pc]);
+    }
 }
-
-var VisualPageComposerController = VisualPageComposerController||undefined;
-if (VisualPageComposerController) {
-    appModule.controller("VisualPageComposerController", VisualPageComposerController);
-}
-
-var CssManagerController = CssManagerController||undefined;
-if (CssManagerController) {
-    appModule.controller("CssManagerController", CssManagerController);
-}
-
 
 // below filter is used for pagination
 appModule.filter('startFrom', function() {
@@ -163,8 +168,11 @@ appModule.factory('pbAddCommon', function() {
 
 //Factory for resources
 appModule.factory('pbResource', function($resource ) {
-    function PBResource(resourceURL )  {
-        this.resourceURL=resourceURL
+    function PBResource(resourceName )  {
+        //Expecting a resource name exposed at resourceBase+resourceName
+        //For backwards compatibility, replace the location used in the alpha release with resourceBase
+        this.resourceURL=resourceName.startsWith("/")?
+                         resourceName.replace(rootWebApp+'internal/', resourceBase):resourceBase+resourceName;
         this.Resource=null;
 
         //get a new resource from the factory
@@ -251,7 +259,6 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
         this.queryParams=params.queryParams;
         this.selectValueKey=params.selectValueKey;
         this.selectInitialValue=params.selectInitialValue;
-        this.useGet=nvl(params.useGet,false);
         this.currentRecord=null;
         this.selectedRecords=[];
         this.sortInfo={fields:[], directions:[], columns:[]};
@@ -326,13 +333,10 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
                 }
             }
             console.log("Query Parameters:", params) ;
-            if (this.useGet)  {
-                this.data=[];
-                this.data[0] = this.Resource.get(params, post.go, post.error  );
-            }
-            else {
-                this.data = this.Resource.list(params, post.go, post.error  );
-            }
+            //If an id parameter exists use get
+            var res = (params.id === undefined) ? this.Resource.list(params, post.go, post.error) : this.Resource.get(params, post.go, post.error);
+            this.data = (Array.isArray(res))?res:[res];
+
         }
 
         this.loadAll = function() {

@@ -1,12 +1,8 @@
+/*******************************************************************************
+ * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ ******************************************************************************/
 package net.hedtech.banner.sspb
 
-/**
- * Created with IntelliJ IDEA.
- * User: hvthor
- * Date: 19/08/13
- * Time: 13:14
- * To change this template use File | Settings | File Templates.
- */
 class Requestmap {
 
     String url

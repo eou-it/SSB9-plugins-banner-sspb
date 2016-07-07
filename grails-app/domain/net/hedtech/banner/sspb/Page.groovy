@@ -12,6 +12,8 @@ class Page {
 
     static hasMany = [pageRoles: PageRole, extensions: Page] //Optional child page(s) (sub classes)
 
+    private static final String deltaVersionSave = "1.0"
+
     Page extendsPage     //Optional parent page (super class), see constraints
 
     String constantName
@@ -27,6 +29,8 @@ class Page {
     Date lastUpdated
 
     Date fileTimestamp
+
+    String deltaVersion
 
     static constraints = {
         constantName       nullable: false , unique: true, maxSize: 60
@@ -48,7 +52,7 @@ class Page {
         //compiledController type: "clob"
     }
 
-    static transients = ['mergedModelText', 'mergedModelMap', 'modelMap']
+    static transients = ['mergedModelText', 'mergedModelMap', 'modelMap', 'deltaVersion']
 
 
     boolean isEmptyInstance() {
@@ -83,7 +87,7 @@ class Page {
 
     //Keys map to avoid hardcoding the key strings multiple times
     final static Map KEYS = [page: null, deltas: null, meta: null, components: null, mergeInfo: null, noReference: null,
-                             idx: null, ext: null, spareComponents: null].collectEntries{ k, v -> [k,k] }
+                             idx: null, ext: null, spareComponents: null, _root: null].collectEntries{ k, v -> [k,k] }
     //Methods for merging models and getting deltas
 
     //Use a common static method to convert json model to map
@@ -96,6 +100,15 @@ class Page {
     //Use a common static method to convert map to json string
     static String modelToString(Map model) {
         return (model as JSON).toString(true)
+    }
+
+    //Static helper method to change a map key
+    static Map replaceKey(Map map, oldKey, newKey) {
+        if (oldKey && newKey && map[oldKey] != null ) {
+            map[newKey] = map[oldKey]
+            map.remove(oldKey)
+        }
+        map
     }
 
     //Member method to get the merged modelView as a JSON text
@@ -113,7 +126,8 @@ class Page {
             } else {
                 def diff = modelToMap(modelView)
                 if (diff.containsKey(KEYS.deltas)) {
-                    result = applyDiffs(diff.deltas, withInfo)
+                    this.deltaVersion = diff.deltaVersion?:"0.0"
+                    result = applyDiffs(diff, withInfo)
                     log.info "Merged page models"
                 } else {
                     result = modelToMap(modelView)
@@ -134,15 +148,10 @@ class Page {
         return modelToString(diffModelView(model))
     }
 
-    //Member method to retrieve the delta for a given full page model text in JSON text format
-    private Map diffModelView(model) {
-        def base = extendsPage.getMergedModelMap()
-        diffModelView(model, base)
-    }
-
-    // Static method to determine the difference  between the full page model and this.extendsPage
-    private static Map diffModelView(mergedModelView, base) {
+    //Member method to determine the difference  between the full page model and this.extendsPage
+    private Map diffModelView(mergedModelView) {
         def start = new Date()
+        def base = extendsPage.getMergedModelMap()
         def baseProps = propertyMap(base)
         def extProps = propertyMap(mergedModelView)
         def diff = [:]
@@ -161,6 +170,9 @@ class Page {
             }
         }
         diff = convertDiff(diff)
+        // replace the _root key with the base root element name
+        diff.deltas = replaceKey(diff.deltas, KEYS._root, base._name)
+        diff.baseRoot = base._name
         log.info "Determined diff in ${ new Date().getTime() - start.getTime() } ms. diff= $diff"
         diff
     }
@@ -231,7 +243,7 @@ class Page {
         result
     }
 
-    //Static helper method to convert the properties into the common delta format
+    //Member method to convert the properties into the common delta format
     private static Map convertDiff(propsDiff) {
         def result = [:]
         //convert the diff properties to a map
@@ -244,20 +256,23 @@ class Page {
             }
             result[name][prop] = v
         }
-        [deltas: result]
+        [ deltas: result, deltaVersion: deltaVersionSave]
     }
 
 
-    //Static helper method to convert a page model JSON string to a propertyMap (intermediate format used in diff determination)
-    private static Map propertyMap(String mergedModelString) {
+    //Member method to convert a page model JSON string to a propertyMap (intermediate format used in diff determination)
+    private Map propertyMap(String mergedModelString) {
         propertyMap(modelToMap(mergedModelString))
     }
 
-    //Static helper method to convert a page model Map to a propertyMap (intermediate format used in diff determination)
-    private static Map propertyMap(Map comp) {
+    //Member method to convert a page model Map to a propertyMap (intermediate format used in diff determination)
+    private Map propertyMap(Map comp) {
+        def decomposed = replaceKey(comp, "name", "_name")        //Normalize the name before determining the difference
+        decomposed.name = KEYS._root
         def props = [:]
-        def decomposed = decomposeComponents(comp).components
-        decomposed.each {
+        decomposed = decomposeComponents(decomposed)
+        //decomposed.components = replaceKey(decomposed.components, decomposed.root, KEYS._root)
+        decomposed.components.each{
             it.value.each { key, val ->
                 if (key != KEYS.components && key != KEYS.mergeInfo ) {
                     props[it.key + ':' + key] = val
@@ -269,10 +284,18 @@ class Page {
 
     //Member method to apply the differences to a decomposed page
     private Map applyDiffs(Map diffs, withInfo) {
-        def model = decomposeComponents(extendsPage.getMergedModelMap())
+
+        def model = extendsPage.getMergedModelMap()
+        if (deltaVersion >= "1.0") {
+            model=replaceKey(model, "name", "_name")
+            model.name = KEYS._root
+            diffs.deltas=replaceKey(diffs.deltas, diffs.baseRoot, KEYS._root)
+        }
+        model = decomposeComponents(model)
         model.added = [:]
         model.conflicts = []
-        diffs.each { name, diff ->
+
+        diffs.deltas.each { name, diff ->
             //println "Processing $name"
             def comp = model.components[name]
             if (comp && diff.name && diff.name.base && !diff.name.ext) { //this component is removed by the extension
@@ -304,7 +327,9 @@ class Page {
                 }
             }
         }
-        composeComponents(model, withInfo)
+
+        model = composeComponents(model, withInfo)
+        replaceKey(model, "_name", "name")
     }
 
     // Component exists, change props to match the extension
@@ -341,8 +366,8 @@ class Page {
         [comp: comp, model: model]
     }
 
-    //Static helper method to decompose a page model to a flat map, adding sibling and parent meta information
-    private static Map decomposeComponents(Map comp, int siblingIndex = 0, Map parent = null, Map next = null, Map result = [:]) {
+    //Member method to decompose a page model to a flat map, adding sibling and parent meta information
+    private Map decomposeComponents(Map comp, int siblingIndex = 0, Map parent = null, Map next = null, Map result = [:]) {
         if (comp.type == KEYS.page) {
             result = [root: comp.name, components: [:]]
         }
@@ -369,7 +394,9 @@ class Page {
                 }
             }
         }
-        result.components[comp.name] = clone
+        if (comp.name) {
+            result.components[comp.name] = clone
+        }
         result
     }
 
@@ -394,6 +421,9 @@ class Page {
     //Static helper method to compose the page model from a decomposed model
     private static Map composeComponents(Map decomposedModel, withInfo) {
         decomposedModel = resolveConflicts(decomposedModel)
+        if (decomposedModel.components == null) {
+            return [:]
+        }
         Map root = decomposedModel.components[decomposedModel.root]
         if (root.meta.firstChild) {
             //def child = decomposedModel.components[root.meta.firstChild]

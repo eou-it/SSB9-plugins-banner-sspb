@@ -35,21 +35,29 @@ class PageUtilServiceIntegrationSpec extends IntegrationSpec {
         println "Before import check that test pages do not exist"
 
         then:
-        Page.findByConstantName("testBasePage") == null
+        Page.findByConstantName("testBasePage1") == null
         Page.findByConstantName("testBasePage2") == null
         Page.findByConstantName("testExtPage1") == null
-        Page.findByConstantName("testAnExtPage2") == null
+        Page.findByConstantName("testExtPage2") == null
 
         when:
         pageUtilService.importAllFromDir(workPath)
 
         then: "test extended pages created"
-        Page.findByConstantName("testBasePage") != null
+        Page.findByConstantName("testBasePage1") != null
         Page.findByConstantName("testBasePage2") != null
         Page.findByConstantName("testExtPage1") != null
-        Page.findByConstantName("testAnExtPage2") != null
-        Page.findByConstantName("testExtPage1").extendsPage == Page.findByConstantName("testBasePage")
-        Page.findByConstantName("testAnExtPage2").extendsPage == Page.findByConstantName("testBasePage2")
+        Page.findByConstantName("testExtPage2") != null
+        Page.findByConstantName("testExtPage1").extendsPage == Page.findByConstantName("testBasePage1")
+        //Same as previous but with a reverse sorting by name - hopefully resulting in at least one test with deferred loading
+        Page.findByConstantName("testAExtPage1").extendsPage == Page.findByConstantName("testZBasePage1")
+        Page.findByConstantName("testExtPage2").extendsPage == Page.findByConstantName("testBasePage2")
+
+        Page.findByConstantName("testBasePage1").pageRoles?.size() == 1
+        Page.findByConstantName("testZBasePage1").pageRoles?.size() == 1
+        Page.findByConstantName("testExtPage1").pageRoles?.size() == 1
+        Page.findByConstantName("testAExtPage1").pageRoles?.size() == 1
+
         println "import test complete"
     }
 
@@ -64,7 +72,7 @@ class PageUtilServiceIntegrationSpec extends IntegrationSpec {
         pageUtilService.exportToFile( "testBasePage%", workPath, true)
 
         then: "test base pages exported"
-        new File(workPath, "testBasePage.json").exists()
+        new File(workPath, "testBasePage1.json").exists()
         new File(workPath, "testBasePage2.json").exists()
         println "All test base pages successfully exported"
 
@@ -73,18 +81,18 @@ class PageUtilServiceIntegrationSpec extends IntegrationSpec {
 
         then: "test extended pages exported"
         new File(workPath, "testExtPage1.json").exists()
-        new File(workPath, "testAnExtPage2.json").exists()
+        new File(workPath, "testExtPage2.json").exists()
         println "All test extended pages successfully exported"
 
         when:
-        File testBasePage = new File(workPath, "testBasePage.json")
+        File testBasePage1 = new File(workPath, "testBasePage1.json")
         def baseJson
         JSON.use("deep") {
-            baseJson = JSON.parse(testBasePage.text)
+            baseJson = JSON.parse(testBasePage1.text)
         }
 
         then: "test non extended file details exported"
-        baseJson.constantName == "testBasePage"
+        baseJson.constantName == "testBasePage1"
         baseJson.has("extendsPage")
         !baseJson.extendsPage  // extendsPage is null
         println "test base page 1 correctly exported"
@@ -100,7 +108,7 @@ class PageUtilServiceIntegrationSpec extends IntegrationSpec {
         ext1Json.constantName == "testExtPage1"
         ext1Json.has("extendsPage")
         ext1Json.extendsPage != null
-        ext1Json.extendsPage.constantName == "testBasePage"
+        ext1Json.extendsPage.constantName == "testBasePage1"
         println "test extended page 1 correctly exported"
 
         when:
@@ -117,14 +125,14 @@ class PageUtilServiceIntegrationSpec extends IntegrationSpec {
         println "test base page 2 correctly exported"
 
         when:
-        File textExt2File = new File(workPath, "testAnExtPage2.json")
+        File textExt2File = new File(workPath, "testExtPage2.json")
         def ext2Json
         JSON.use("deep") {
             ext2Json = JSON.parse(textExt2File.text)
         }
 
         then: "test extended file 2 details exported"
-        ext2Json.constantName == "testAnExtPage2"
+        ext2Json.constantName == "testExtPage2"
         ext2Json.has("extendsPage")
         ext2Json.extendsPage != null
         ext2Json.extendsPage.constantName == "testBasePage2"

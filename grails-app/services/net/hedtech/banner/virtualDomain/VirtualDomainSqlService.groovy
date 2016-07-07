@@ -1,6 +1,10 @@
+/*******************************************************************************
+ * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
 import groovy.sql.Sql
+import groovy.transform.*
 import groovy.util.logging.Log4j
 import net.hedtech.banner.exceptions.ApplicationException
 import net.hedtech.banner.sspb.PBUser
@@ -38,9 +42,11 @@ class VirtualDomainSqlService {
             def k=key
             def v=value
             if ( !["action","virtualDomain","controller","pluralizedResourceName"].contains(key) )  {
-                if (key=="id")
-                    v = urlPathDecode(value)
-                else {
+                if (key=="id") {
+                    if (params.url_encoding != 'plain') {
+                        v = urlPathDecode(value)
+                    }
+                } else {
                     k = k.toLowerCase()
                 }
                 // unmarshall null from JS - if it is undefined change to null
@@ -59,30 +65,38 @@ class VirtualDomainSqlService {
         def user = PBUser.get()
         user.each { k,v ->
             try {
-                params.put("user_" + k, v)
+                params.put("parm_user_" + k, v)
             }
             catch (ApplicationException e) {
                 log.error "Exception adding user:", e
             }
         }
     }
+
     /* Check the user roles against the virtual domain roles
      */
+    @Memoized
     private def userAccessRights (vd, userRoles) {
         def result=[get: false, put: false, post: false, delete: false, debug: false ]
         String debugRoles = grailsApplication.config.pageBuilder.debugRoles?grailsApplication.config.pageBuilder.debugRoles:""
+        log.debug "Determining access right for ${vd.serviceName}"
         for (it in userRoles) {
             //objectName is like SELFSERVICE-ALUMNI
             //role is BAN_DEFAULT_M
-            //strip SELFSERVICE- this can be handled by spring security
-            def r = it.objectName.substring(it.objectName.indexOf("-") + 1)
-            vd.virtualDomainRoles.findAll {vr -> vr.roleName == r}.each {
-                result.get |= it.allowGet
-                result.put |= it.allowPut
-                result.post |= it.allowPost
-                result.delete |= it.allowDelete
+            //strip SELFSERVICE-
+
+            def r
+            def i = it.objectName.indexOf("-")
+            r = i>-1?it.objectName.substring(i+1):null
+            if (r) {
+                vd.virtualDomainRoles.findAll { vr -> vr.roleName == r }.each {
+                    result.get |= it.allowGet
+                    result.put |= it.allowPut
+                    result.post |= it.allowPost
+                    result.delete |= it.allowDelete
+                }
+                result.debug |= debugRoles.indexOf(it.objectName) > -1
             }
-            result.debug |= debugRoles.indexOf(it.objectName)>-1
         }
         result
     }
@@ -144,9 +158,9 @@ class VirtualDomainSqlService {
         def parameters = getNormalized(params) // some tweaks and work arounds
         addUser(parameters)
         def logmsg=message(code:"sspb.virtualdomain.sqlservice.param", args:[vd.serviceName,parameters])
-        def privs=userAccessRights(vd, parameters.user_authorities)
+        def privs=userAccessRights(vd, parameters.parm_user_authorities)
         if (!privs.get) {
-            throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.user_loginName}"))
+            throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
         }
         def sql = getSql(vd.dataSource)
         def errorMessage = ""
@@ -190,9 +204,9 @@ class VirtualDomainSqlService {
         def parameters = getNormalized(params) // some tweaks and work arounds
         addUser(parameters)
         def logmsg=message(code:"sspb.virtualdomain.sqlservice.param.count", args:[vd.serviceName,parameters])
-        def privs=userAccessRights(vd, parameters.user_authorities)
+        def privs=userAccessRights(vd, parameters.parm_user_authorities)
         if (!privs.get) {
-            throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.user_loginName}"))
+            throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
         }
         def sql = getSql(vd.dataSource)
         def errorMessage = ""
@@ -219,9 +233,9 @@ class VirtualDomainSqlService {
         def parameters = params
         addUser(parameters)
         data = prepareData(data, parameters)
-        def privs=userAccessRights(vd, parameters.user_authorities)
+        def privs=userAccessRights(vd, parameters.parm_user_authorities)
         if (!privs.put) {
-            throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.user_loginName}"))
+            throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
         }
         def sql
         try {
@@ -250,9 +264,9 @@ class VirtualDomainSqlService {
         def parameters = params
         addUser(parameters)
         data = prepareData(data, parameters)
-        def privs=userAccessRights(vd, parameters.user_authorities)
+        def privs=userAccessRights(vd, parameters.parm_user_authorities)
         if (!privs.post){
-            throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.user_loginName}"))
+            throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
         }
         def sql
         try {
@@ -272,9 +286,9 @@ class VirtualDomainSqlService {
     def delete(vd, params) {
         def parameters = params
         addUser(parameters)
-        def privs=userAccessRights(vd, parameters.user_authorities)
+        def privs=userAccessRights(vd, parameters.parm_user_authorities)
         if (!privs.delete){
-            throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.user_loginName}"))
+            throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
         }
         parameters.id = urlPathDecode(parameters.id)
         def sql
@@ -331,7 +345,9 @@ class VirtualDomainSqlService {
             }
         }
         p.each { k,v ->
-            if (k.startsWith('user_') || k.equals('id')) {
+            if (k.startsWith('parm_user_')) {
+                d[k] = v
+            } else  if (k.equals('id')) {
                 d['parm_'+k] = v
             } else if (k.equals('pluralizedResourceName')) {
                 d['parm_resource'] = v

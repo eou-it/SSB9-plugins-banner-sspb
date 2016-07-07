@@ -1,143 +1,144 @@
 {
-   "constantName": "pbadm.ExportCss",
    "extendsPage": null,
+   "pageRoles": [{
+      "allow": true,
+      "roleName": "WTAILORADMIN"
+   }],
+   "fileTimestamp": "2016-04-25T12:04:29Z",
    "modelView": {
+      "title": "Export Css files",
+      "scriptingLanguage": "JavaScript",
+      "name": "pbadmExportCss",
+      "documentation": "Export Css",
+      "label": "Export Css files",
       "components": [
          {
-            "resource": "cssexports",
+            "staticData": [],
             "name": "cssResource",
-            "type": "resource",
-            "staticData": []
+            "resource": "cssexports",
+            "type": "resource"
          },
          {
+            "name": "SelectCssBlock",
+            "showInitially": true,
+            "label": "",
             "components": [
                {
-                  "readonly": false,
-                  "name": "cssFilter",
                   "model": "",
-                  "label": "CSS Filter",
-                  "loadInitially": false,
+                  "validation": {},
                   "placeholder": "Filter...",
+                  "name": "cssFilter",
+                  "label": "CSS Filter",
+                  "parameters": {},
                   "type": "text",
+                  "required": false,
                   "onUpdate": "$cssGrid.$load();",
-                  "parameters": {},
-                  "required": false,
-                  "validation": {}
-               },
-               {
                   "readonly": false,
-                  "name": "cssPageFilter",
-                  "model": "",
-                  "label": "Used by page like:",
-                  "loadInitially": false,
-                  "placeholder": "Page...",
-                  "type": "text",
-                  "onUpdate": "",
-                  "parameters": {},
-                  "required": false,
-                  "validation": {}
+                  "loadInitially": false
                },
                {
-                  "onClick": "$cssResource.$post({constantName:$cssFilter, exportCss:'1', pageLike: $cssPageFilter});console.log('Exported filtered css files');",
+                  "model": "",
+                  "validation": {},
+                  "placeholder": "Page...",
+                  "name": "cssPageFilter",
+                  "label": "Used by page like:",
+                  "parameters": {},
+                  "type": "text",
+                  "required": false,
+                  "onUpdate": "",
+                  "readonly": false,
+                  "loadInitially": false
+               },
+               {
+                  "onClick": "$cssResource.$post(\n  {constantName:$cssFilter, exportCss:1, pageLike: $cssPageFilter},\n   null, \n   function(response) { alert('Exported filtered CSS', {flash: true}) }, \n   function(response) {alert( \"Failed exporting CSS\", {type:\"error\"})}\n);",
                   "name": "applyFiltered",
                   "label": "Export all filtered css files",
                   "type": "button"
                }
             ],
-            "name": "SelectCssBlock",
-            "showInitially": true,
-            "label": "",
             "type": "block"
          },
          {
+            "name": "ShowPages",
+            "nextButtonLabel": "",
+            "showInitially": true,
+            "label": "Filtered css files",
             "components": [
                {
                   "name": "Intro",
+                  "value": "The table below shows the Page Builder css files matching the CSS Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button.",
                   "label": "",
-                  "type": "literal",
-                  "value": "The table below shows the Page Builder css files matching the CSS Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button."
+                  "type": "literal"
                },
                {
+                  "model": "cssResource",
+                  "submit": "",
+                  "pageSize": 10,
+                  "label": "CSS files to export",
+                  "type": "grid",
+                  "allowModify": true,
                   "allowDelete": false,
+                  "allowReload": true,
+                  "name": "cssGrid",
+                  "allowNew": false,
                   "components": [
                      {
-                        "asHtml": false,
-                        "name": "cssID",
                         "model": "constantName",
+                        "name": "cssID",
+                        "value": "",
                         "label": "Name",
-                        "loadInitially": true,
                         "type": "display",
-                        "value": ""
+                        "loadInitially": true,
+                        "asHtml": false
                      },
                      {
-                        "readonly": true,
-                        "name": "lastUpdated",
                         "model": "lastUpdated",
+                        "validation": {},
+                        "name": "lastUpdated",
                         "label": "Last update",
-                        "loadInitially": true,
-                        "type": "datetime",
                         "parameters": {},
+                        "type": "datetime",
                         "required": false,
-                        "validation": {}
-                     },
-                     {
                         "readonly": true,
-                        "name": "fileTimestamp",
-                        "model": "fileTimestamp",
-                        "label": "Timestamp File",
-                        "loadInitially": true,
-                        "type": "datetime",
-                        "parameters": {},
-                        "required": false,
-                        "validation": {}
+                        "loadInitially": true
                      },
                      {
-                        "readonly": false,
-                        "booleanTrueValue": "1",
-                        "booleanFalseValue": "0",
-                        "name": "export",
+                        "model": "fileTimestamp",
+                        "validation": {},
+                        "name": "fileTimestamp",
+                        "label": "Timestamp File",
+                        "parameters": {},
+                        "type": "datetime",
+                        "required": false,
+                        "readonly": true,
+                        "loadInitially": true
+                     },
+                     {
                         "model": "exportCss",
+                        "name": "export",
+                        "value": "1",
+                        "booleanTrueValue": "1",
                         "label": "Select for Export",
-                        "loadInitially": true,
                         "type": "boolean",
                         "onUpdate": "",
-                        "value": "1"
+                        "readonly": false,
+                        "loadInitially": true,
+                        "booleanFalseValue": "0"
                      }
                   ],
-                  "submit": "",
-                  "allowNew": false,
-                  "pageSize": 10,
-                  "saveDataLabel": "Export",
-                  "label": "CSS files to export",
-                  "loadInitially": false,
-                  "type": "grid",
-                  "name": "cssGrid",
-                  "allowModify": true,
-                  "model": "cssResource",
-                  "allowReload": true,
                   "parameters": {
                      "pageLike": "$cssPageFilter",
                      "constantName": "$cssFilter"
-                  }
+                  },
+                  "loadInitially": false,
+                  "saveDataLabel": "Export",
+                  "onSaveSuccess": "if (response.exportCss == 1) {\n  alert( \"Exported CSS: \" + response.constantName, {flash: true});\n}"
                }
             ],
-            "nextButtonLabel": "",
-            "name": "ShowPages",
-            "showInitially": true,
-            "label": "Filtered css files",
             "type": "form"
          }
       ],
-      "documentation": "Export Css",
-      "name": "pbadmExportCss",
-      "scriptingLanguage": "JavaScript",
-      "label": "Export Css files",
-      "title": "Export Css files",
       "type": "page"
    },
-   "fileTimestamp": "2016-01-08T13:22:33Z",
-   "pageRoles": [{
-      "allow": true,
-      "roleName": "WTAILORADMIN"
-   }]
+   "constantName": "pbadm.ExportCss"
 }

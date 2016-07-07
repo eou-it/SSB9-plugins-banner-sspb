@@ -1,3 +1,6 @@
+/******************************************************************************
+ *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ ******************************************************************************/
 package net.hedtech.banner.sspb
 
 class ParseTests extends GroovyTestCase  {
@@ -19,7 +22,7 @@ class ParseTests extends GroovyTestCase  {
             [in:"\$EmployeeData.\$data"            , out:"\$scope.EmployeeDataDS.data"    ],
             [in:"\$EmployeeData.\$save"            , out:"\$scope.EmployeeDataDS.save"    ],
             [in:"\$EmployeeData.\$load"            , out:"\$scope.EmployeeDataDS.load"    ],
-            //[in:"\$EmployeeData.\$currentRecord"   , out:"\$scope.EmployeeDataDS.currentRecord"    ],
+            [in:"\$EmployeeData.\$selected"        , out:"\$scope.EmployeeDataDS.currentRecord"    ],
             [in:"\$EmployeeData.\$selection"       , out:"\$scope.EmployeeDataDS.selectedRecords"    ],
             [where:"onLoad",in:"if (\$EmployeeData.JOB =='MANAGER') \$\$activateFlow('managerFlow'); else \$\$activateFlow('employeeFlow');",
                            out:"if (\$scope.EmployeeData.JOB =='MANAGER') \$scope._activateFlow('managerFlow'); else \$scope._activateFlow('employeeFlow');",

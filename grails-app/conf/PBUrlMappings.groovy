@@ -1,3 +1,6 @@
+/*******************************************************************************
+ * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ ******************************************************************************/
 class PBUrlMappings {
 
     static mappings = {
@@ -8,7 +11,8 @@ class PBUrlMappings {
             }
         }
 
-        "/api/$pluralizedResourceName/$id"(controller:'restfulApi') {
+        //PageBuilder restful resources
+        "/internalPb/$pluralizedResourceName/$id"(controller:'restfulApi') {
             action = [GET: "show", PUT: "update",
                     DELETE: "delete"]
             parseRequest = false
@@ -17,22 +21,7 @@ class PBUrlMappings {
                 // id matches: /\d+/
             }
         }
-        "/api/$pluralizedResourceName"(controller:'restfulApi') {
-            action = [GET: "list", POST: "create"]
-            parseRequest = false
-        }
-
-        //same mapping as for /api except it will have different spring security
-        "/internal/$pluralizedResourceName/$id"(controller:'restfulApi') {
-            action = [GET: "show", PUT: "update",
-                    DELETE: "delete"]
-            parseRequest = false
-            constraints {
-                // to constrain the id to numeric, uncomment the following:
-                // id matches: /\d+/
-            }
-        }
-        "/internal/$pluralizedResourceName"(controller:'restfulApi') {
+        "/internalPb/$pluralizedResourceName"(controller:'restfulApi') {
             action = [GET: "list", POST: "create"]
             parseRequest = false
         }

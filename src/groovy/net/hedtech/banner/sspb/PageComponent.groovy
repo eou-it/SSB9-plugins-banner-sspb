@@ -321,12 +321,29 @@ class PageComponent {
         return ""
     }
 
+    //Duck type determination if a string should be interpreted as a String and needs quoting in Angular
+    static Boolean isStringType(text) {
+        !text.isNumber() && !['true','false'].contains(text)
+    }
+
+    //If the value looks like a string quote it
+    static String htmlValue(value, quote="'"){
+        //If value is quoted already, remove quotes in order to make sure the right quotes are used
+        if (  (value.startsWith("'") && value.endsWith("'")  ) || (value.startsWith("\"") && value.endsWith("\"")  ) ) {
+            value = quote+value.substring(1,value.length()-1)+quote
+
+        } else if (isStringType(value) && !value.startsWith(quote) && !value.endsWith(quote) ) {
+            value = quote+value+quote
+        }
+        value
+    }
+
     String defaultValue() {
         def result = ""
         if (value && model ) {
             def  expr = compileDOMExpression(value)
-            if (value == expr) { //assume a literal value if not changed - not sure if we should do this
-                expr="'$expr'"
+            if (value ==  expr ) { //assume a literal value if not changed - not sure if we should do this
+                expr=htmlValue(expr,"'")
             }
             def parentRef = isDataSetEditControl(parent)?"$GRID_ITEM":"this"
             result = "ng-init=\"setDefault($parentRef,'$model',$expr)\""
@@ -349,17 +366,20 @@ class PageComponent {
     }
 
     def recordControlPanel()  {
+        def button = "button class=\"btn btn-sm\""
         def dataSet    =  "${name}DS"
         def result = """|
                    |<!-- pagination -->
                    |<span ${idAttribute('-pagination-container')} class="pb-pagination-control" ng-show='${dataSet}.totalCount > ${dataSet}.pagingOptions.pageSize'>
-                   |    <button ${idAttribute('-pagination-prev-button')} class="btn btn-sm" ng-disabled="${dataSet}.pagingOptions.currentPage == 1" ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1">
+                   |    <$button ${idAttribute('-pagination-prev-button')} ng-disabled="${dataSet}.pagingOptions.currentPage == 1"
+                   |            ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1">
                    |            ${tranGlobal("page.previous.label","Previous")}
                    |    </button>
                    |    <span ${idAttribute('-pagination-page-count')}>
                    |        {{${dataSet}.pagingOptions.currentPage}}/{{${dataSet}.numberOfPages()}}
                    |    </span>
-                   |    <button ${idAttribute('-pagination-next-button')} class="btn btn-sm" ng-disabled="${dataSet}.pagingOptions.currentPage >= ${dataSet}.totalCount/${dataSet}.pagingOptions.pageSize " ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1">
+                   |    <$button ${idAttribute('-pagination-next-button')} ng-disabled="${dataSet}.pagingOptions.currentPage >= ${dataSet}.totalCount/${dataSet}.pagingOptions.pageSize "
+                   |            ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1">
                    |            ${tranGlobal("page.next.label","Next")}
                    |    </button>
                    |</span>
@@ -368,18 +388,19 @@ class PageComponent {
         def btnLabel
         if (allowNew) {
             btnLabel=newRecordLabel?tran("newRecordLabel"):tranGlobal("newRecord.label","Add New")
-            changeData += """ <button ${idAttribute('-new-button')} ng-click="${dataSet}.add(${newRecordName()}())"> $btnLabel </button>"""
+            changeData += """ <$button ${idAttribute('-new-button')} ng-click="${dataSet}.add(${newRecordName()}())"> $btnLabel </button>"""
         }
         if (allowModify || allowDelete) {
             btnLabel=saveDataLabel?tran("saveDataLabel"):tranGlobal("save.label","Save")
-            changeData += """ <button ${idAttribute('-save-button')} ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()"> $btnLabel </button>"""
+            changeData += """ <$button ${idAttribute('-save-button')} ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()"> $btnLabel </button>"""
         }
         if (allowReload) {
             btnLabel=refreshDataLabel?tran("refreshDataLabel"):tranGlobal("refresh.label","Refresh")
-            changeData += """ <button ${idAttribute('-reload-button')} ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})"> $btnLabel </button> """
+            changeData += """ <$button ${idAttribute('-reload-button')} ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})"> $btnLabel </button> """
         }
-        if (changeData)
-            changeData =  "<span ${idAttribute('-change-data-container')} class=\"pb-change-data-control\" > $changeData </span>"
+        if (changeData) {
+            changeData = "<span ${idAttribute('-change-data-container')} class=\"pb-change-data-control\" > $changeData </span>"
+        }
         result += changeData
         result = " <div ${idAttribute('-record-control-container')} class=\"pb-record-control\"> $result </div>"
         return result
@@ -392,13 +413,12 @@ class PageComponent {
     String initNewRecordJS() {
         def initialValues=""
         components.each { child ->
-            if (child.value && child.modelOrigin) {
+            if (child.value  && child.type != COMP_TYPE_LITERAL /*&& child.modelOrigin*/) {
                 def  expr = compileCtrlFunction(child.value)
                 // this is a bit horrible with HTML - can't really distinguish number from string literals
-                if ([child.booleanFalseValue,child.booleanTrueValue].contains(child.value)
-                    && !["true","false"].contains(child.value) ) {
+                if ([child.booleanFalseValue, child.booleanTrueValue].contains(child.value)&& isStringType(child.value) ) {
                     // use quotes
-                    expr="\"$expr\""
+                    expr = htmlValue(expr, "\"")
                 }
                 initialValues+="${initialValues?",":""}${child.model}: $expr"
             }
@@ -564,7 +584,7 @@ class PageComponent {
             case COMP_TYPE_BOOLEAN:
                 typeAt = "type=\"checkbox\""
                 styleAt="style=\"background-color:transparent; border:0; width: 30%; height:{{rowHeight}}px\""
-                specialAt ="""${booleanTrueValue?"ng-true-value=\"\\'$booleanTrueValue\\'\"":""}  ${booleanFalseValue?"ng-false-value=\"\\'$booleanFalseValue\\'\"":""}  """
+                specialAt ="""${booleanTrueValue?"ng-true-value=\"${htmlValue(booleanTrueValue,"\\\'")}\"":""} ${booleanFalseValue?"ng-false-value=\"${htmlValue(booleanFalseValue,"\\\'")}\"":""}  """
                 break
             case COMP_TYPE_DISPLAY:
                 typeAt=""
@@ -806,7 +826,9 @@ class PageComponent {
                 result = "<span ${idAttribute(idTxtParam)}  $ngClick $autoStyleStr>" + tran(propertiesBaseKey()+".value",compileDOMDisplay(value) ) + "</span>\n"
                 break;
             case COMP_TYPE_DISPLAY: //migrated to use template engine
-                return "<span>*** ERROR This code should now be handled in template. Item=$name ***</span>"
+                if (type != COMP_TYPE_DATETIME) {
+                    return "<span>*** ERROR This code should now be handled in template. Item=$name ***</span>"
+                }
                 def modelTxt_unsafe = ""
                 def modelTxt_safe = ""
 
@@ -882,7 +904,7 @@ class PageComponent {
                 } else {
                     // TODO do we need a value field if ng-model is defined?  //added defaultValue
                     attributes += " ${readonly?"readonly":""}"
-                    result = """|<$tag $inputIdStr $typeString $autoStyleStr  name="${name?name:model}" ${value?"value=\"{{${compileDOMExpression(value)}}}\"":"" }
+                    result = """|<$tag $inputIdStr $typeString $autoStyleStr  name="${name?name:model}"
                                 |${defaultValue()} $ngChange $attributes
                                 |""".stripMargin()
                     if (model && !readonly) {
@@ -900,7 +922,7 @@ class PageComponent {
                 break;
             case COMP_TYPE_BOOLEAN:
                 result ="""<input ${idAttribute(idTxtParam)} $autoStyleStr  type="checkbox" name="${name?name:model}"
-                           ${booleanTrueValue?"ng-true-value=\"'$booleanTrueValue'\"":""}  ${booleanFalseValue?"ng-false-value=\"'$booleanFalseValue'\"'":""}
+                           ${booleanTrueValue?"ng-true-value=\"${htmlValue(booleanTrueValue,"'")}\"":""} ${booleanFalseValue?"ng-false-value=\"${htmlValue(booleanFalseValue,"'")}\"":""}
                            $ngChange $ngClick
                            """
                 // add change event handler for items in DataSet so the item can be marked dirty for save
@@ -909,7 +931,7 @@ class PageComponent {
                 }
                 else  {
                     // is value needed ever? Doesn't do anything if ng-model is used.
-                    result += """  ng-model="$model" ${readonly?"readonly":""} ${value?"value=\"{{$value}}\"":"" } ${defaultValue()}/> $labelTxt """
+                    result += """  ng-model="$model" ${readonly?"readonly":""}  ${defaultValue()}/> $labelTxt """
                 }
                 break;
             case COMP_TYPE_SUBMIT: //Is this ever used?
@@ -1053,33 +1075,23 @@ class PageComponent {
                 log.warn "Warning: Style sheet $css will not be imported as it does not exist."
             }
         }
+        def controllerName = "CustomPageController_${name}"
 
         """
         |<head>
         |<!-- sitemesh -->
         |<meta name="layout" content="bannerSelfServicePBPage"/>
-        |
         |<!-- import custom stylesheets -->
         |$cssImp
-        |<meta name="menuEndPoint" content="\${request.contextPath}/ssb/menu"/>
-        |<meta name="menuBaseURL" content="\${request.contextPath}/ssb"/>
-        |
         |<!--meta name="layout" content="simple"/-->
         |<title>${tran("title")}</title>
-        |<script>
-        |var pageID = "$name"
-        | // inject services and controller modules to be registered with the global ng-app
-        | var myCustomServices = ['ngResource','ngGrid','ui', 'pbrun.directives', 'ngSanitize', 'xe-ui-components'];
+        |<script type="text/javascript">
+        |  var pageID = "$name";
+        |  pageControllers["$controllerName"] = $CONTROLLER_PLACEHOLDER;
         |</script>
-        |<!-- inject global functions -->
-        | <script type="text/javascript">
-        |    // Inject controller code here
-        |    $CONTROLLER_PLACEHOLDER
-        |</script>
-        |
         |</head>
         |<body>
-        |   <div id="content" ng-controller="CustomPageController"  class="customPage container-fluid">
+        |   <div id="content" ng-controller="$controllerName"  class="customPage container-fluid">
         |   ${label?"<h1 ${idAttribute('label')}>${tran("label")}</h1>":""}
          """.stripMargin()
     }
@@ -1285,8 +1297,6 @@ class PageComponent {
 
         def dataSetName = "${name}DS"
         def optionalParams=""
-        if  (COMP_ITEM_TYPES.contains(type) && !COMP_DATASET_DISPLAY_TYPES.contains(type)) //items don't support arrays, use the get TODO: need to different for Radio and Select
-            optionalParams+=",useGet: true"
         if ( false == COMP_DATASET_DISPLAY_TYPES.contains(type)) {
             optionalParams += ",pageSize: $pageSize"
         }
@@ -1384,7 +1394,7 @@ class PageComponent {
                 [from:  ".\$load"            , to:"DS.load"],
                 [from:  ".\$save"            , to:"DS.save"],
                 [from:  ".\$get"             , to:"DS.get" ],
-                // [from:  ".\$currentRecord"   , to:"DS.currentRecord" ],
+                [from:  ".\$selected"        , to:"DS.currentRecord" ],
                 [from:  ".\$selection"       , to:"DS.selectedRecords" ],
                 [from:  ".\$data"            , to:"DS.data" ],
                 [from:  ".\$dirty"           , to:"DS.dirty()" ]

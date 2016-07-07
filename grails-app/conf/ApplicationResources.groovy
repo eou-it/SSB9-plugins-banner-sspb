@@ -102,54 +102,30 @@ modules = {
     }
 
     'min-bannerWebLTR' {
-        dependsOn "min-bannerWeb, min-auroraLTR"
+        dependsOn "min-bannerWeb, aurora"
         defaultBundle environment == "development" ? false : "bannerSelfServiceLTR"
 
         resource url:[plugin: 'banner-ui-ss', file: 'css/banner-ui-ss.css'],             attrs:[media:'screen, projection']
         resource url:[plugin: 'banner-ui-ss', file: 'css/notification-center.css'],      attrs:[media:'screen, projection']
         resource url:[plugin: 'banner-ui-ss', file: 'css/jquery/jquery.ui.tooltip.css'], attrs:[media:'screen, projection']
 
-        // used by Pagination options in PageBuilder Grid
+        // next resource used by Pagination options in PageBuilder Grid
         resource url:[plugin: 'banner-ui-ss', file: 'css/backbone.pagingcontrols.css'],  attrs:[media:'screen, projection']
     }
 
     'min-bannerWebRTL' {
-        dependsOn "min-bannerWeb, min-auroraRTL"
+        dependsOn "min-bannerWeb, auroraRTL"
         defaultBundle environment == "development" ? false : "bannerSelfServiceRTL"
 
         resource id: 'themeRTL', url:[plugin:'banner-ui-ss', dir:'css/themeroller/jquery-ui-1.8.13-lt.gry.ov/css/custom-theme', file:'jquery-ui-1.8.13.custom-rtl.css'], attrs:[media:'screen, projection']
         resource url:[plugin: 'banner-ui-ss', file: 'css/banner-ui-ss-rtl.css'],             attrs:[media:'screen, projection']
+        resource url:[plugin: 'banner-ui-ss', file: 'css/banner-ui-ss-rtl-patch.css'],       attrs:[media:'screen, projection']
         resource url:[plugin: 'banner-ui-ss', file: 'css/notification-center-rtl.css'],      attrs:[media:'screen, projection']
         resource url:[plugin: 'banner-ui-ss', file: 'css/jquery/jquery.ui.tooltip-rtl.css'], attrs:[media:'screen, projection']
-        resource url:[plugin: 'banner-ui-ss', file: 'css/banner-ui-ss-rtl-patch.css'],       attrs:[media:'screen, projection']
-        resource url:[plugin: 'i18n-core', file: 'css/multiCalendar-rtl-patch.css']
+        // next resource is used by Pagination options in PageBuilder Grid
+        resource url:[plugin: 'banner-ui-ss', file: 'css/backbone.pagingcontrols-rtl.css'],  attrs:[media:'screen, projection']
+        //resource url:[plugin: 'i18n-core', file: 'css/multiCalendar-rtl-patch.css']
     }
-
-    'min-auroraLTR' {
-        dependsOn "auroraCommon"
-        defaultBundle environment == "development" ? false : "aurora"
-
-        resource url:[plugin: 'sghe-aurora', file: 'css/common-controls.css'], attrs:[media:'screen, projection']
-//        resource url:[plugin: 'sghe-aurora', file: 'css/common-platform.css'], attrs:[media:'screen, projection']
-        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-header.css'], attrs:[media:'screen, projection']
-        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-breadcrumb.css'], attrs:[media:'screen, projection']
-        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-menu.css'], attrs:[media:'screen, projection']
-        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-tools.css'], attrs:[media:'screen, projection']
-        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-profile.css'], attrs:[media:'screen, projection']
-    }
-
-    'min-auroraRTL' {
-        dependsOn "auroraCommon"
-        resource url:[plugin: 'sghe-aurora', file: 'css/common-controls-rtl.css'], attrs:[media:'screen, projection']
-//        resource url:[plugin: 'sghe-aurora', file: 'css/common-platform-rtl.css'], attrs:[media:'screen, projection']
-        resource url:[plugin: 'sghe-aurora', file: 'css/rtl.css'],       attrs:[media:'screen, projection']
-        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-header-rtl.css'], attrs:[media:'screen, projection']
-        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-header-rtl-patch.css'], attrs:[media:'screen, projection']
-        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-menu-rtl.css'], attrs:[media:'screen, projection']
-        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-tools-rtl.css'], attrs:[media:'screen, projection']
-        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-profile-rtl.css'], attrs:[media:'screen, projection']
-        resource url:[plugin: 'sghe-aurora', file: 'css/aurora-breadcrumb-rtl.css'], attrs:[media:'screen, projection']
-     }
 
     application {
         resource url:'js/application.js'

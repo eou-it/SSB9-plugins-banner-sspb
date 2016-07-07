@@ -4,7 +4,6 @@
 
 package net.hedtech.banner.sspb
 
-import grails.util.Holders as CH
 import groovy.util.logging.Log4j
 import net.hedtech.banner.exceptions.ApplicationException
 import net.hedtech.banner.tools.i18n.PageMessageSource
@@ -102,16 +101,16 @@ class CompileService {
         // inject common code into controller
         def common = CompileService.class.classLoader.getResourceAsStream('data/sspbCommon.js').text
 
-        //  Removed Dependencies: $http,$resource,$cacheFactory,$parse (now in pbDataSet )
         result = """
-               |function CustomPageController(\$scope ,\$locale,\$templateCache,pbDataSet,pbResource,pbAddCommon) {
+               |function (\$scope ,\$locale,\$templateCache,pbDataSet,pbResource,pbAddCommon) {
                |    // copy global var to scope
                |    \$scope._user = user;
                |    \$scope._params = params;
+               |    \$scope._contextRoot = rootWebApp;
                |    // page specific code
                |    $result
                |    $common
-               |};// End Controller
+               |}/* End Controller */
                |""".stripMargin()
         return result
     }
@@ -179,9 +178,7 @@ class CompileService {
     private def static buildCode(resource) {
         def functions = []
         if (resource.binding == PageComponent.BINDING_REST && resource.resource) {
-            def apiPath = CH.config.sspb.apiPath;
-            def url = "rootWebApp+'$apiPath/${ resource.resource }'"
-            functions << """\$scope.${ resource.name } = pbResource($url);"""
+            functions << """\$scope.${ resource.name } = pbResource('${ resource.resource }');"""
         }
 
         // generate all scope variables / arrays for each component that uses the model

@@ -1,3 +1,6 @@
+/******************************************************************************
+ *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ ******************************************************************************/
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
@@ -60,8 +63,13 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     void importAllFromDir(String path=pbConfig.locations.css, mode=loadIfNew) {
         bootMsg "Importing updated or new css files from $path."
         def count=0
-        new File(path).eachFileMatch(~/.*.json/) { file ->
-            count+=loadFile(file, mode)
+        try {
+            new File(path).eachFileMatch(~/.*.json/) { file ->
+                count += loadFile(file, mode)
+            }
+        }
+        catch (IOException e) {
+            log.error "Unable to access import directory $path"
         }
         bootMsg "Finished importing updated or new css files from $path. Css files loaded: $count"
     }
@@ -98,7 +106,7 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             if (file)
                 css.fileTimestamp = new Date(file.lastModified())
             css = saveObject(css)
-            if (file && !css.hasErrors()) {
+            if (file && css && !css.hasErrors()) {
                 file.renameTo(file.getCanonicalPath() + '.' + nowAsIsoInFileName() + ".imp")
                 result ++
                 log.info "Created/Updated Css $cssName"

@@ -1,143 +1,144 @@
 {
-   "constantName": "pbadm.ExportVirtualDomains",
    "extendsPage": null,
+   "pageRoles": [{
+      "allow": true,
+      "roleName": "WTAILORADMIN"
+   }],
+   "fileTimestamp": "2016-04-25T12:04:29Z",
    "modelView": {
+      "title": "Export Virtual Domains",
+      "scriptingLanguage": "JavaScript",
+      "name": "pbadmExportVirtualDomains",
+      "documentation": "Export Virtual Domains",
+      "label": "Export Virtual Domains",
       "components": [
          {
-            "resource": "virtualdomainexports",
+            "staticData": [],
             "name": "vdResource",
-            "type": "resource",
-            "staticData": []
+            "resource": "virtualdomainexports",
+            "type": "resource"
          },
          {
+            "name": "SelectVDBlock",
+            "showInitially": true,
+            "label": "",
             "components": [
                {
-                  "readonly": false,
-                  "name": "vdFilter",
                   "model": "",
-                  "label": "Virtual Domain Filter",
-                  "loadInitially": false,
+                  "validation": {},
                   "placeholder": "Filter...",
+                  "name": "vdFilter",
+                  "label": "Virtual Domain Filter",
+                  "parameters": {},
                   "type": "text",
+                  "required": false,
                   "onUpdate": "$vdGrid.$load();",
-                  "parameters": {},
-                  "required": false,
-                  "validation": {}
-               },
-               {
                   "readonly": false,
-                  "name": "vdPageFilter",
-                  "model": "",
-                  "label": "Used by page like:",
-                  "loadInitially": false,
-                  "placeholder": "Page...",
-                  "type": "text",
-                  "onUpdate": "",
-                  "parameters": {},
-                  "required": false,
-                  "validation": {}
+                  "loadInitially": false
                },
                {
-                  "onClick": "$vdResource.$post({serviceName:$vdFilter, exportVirtualDomain:'1', pageLike: $vdPageFilter});console.log('Exorted all filtered Virtual Domains');",
+                  "model": "",
+                  "validation": {},
+                  "placeholder": "Page...",
+                  "name": "vdPageFilter",
+                  "label": "Used by page like:",
+                  "parameters": {},
+                  "type": "text",
+                  "required": false,
+                  "onUpdate": "",
+                  "readonly": false,
+                  "loadInitially": false
+               },
+               {
+                  "onClick": "$vdResource.$post(\n  {serviceName:$vdFilter, exportVirtualDomain:1, pageLike: $vdPageFilter},\n  null, \n  function(response) {alert( \"Exported filtered virtual domains\", {flash: true})},\n  function(response) {alert( \"Failed exporting virtual domains \", {type:\"error\"})}\n);",
                   "name": "ApplyFiltered",
                   "label": "Export all filtered virtual domains",
                   "type": "button"
                }
             ],
-            "name": "SelectVDBlock",
-            "showInitially": true,
-            "label": "",
             "type": "block"
          },
          {
+            "name": "ShowVD",
+            "nextButtonLabel": "",
+            "showInitially": true,
+            "label": "Filtered virtual domains",
             "components": [
                {
                   "name": "Intro",
+                  "value": "The table below shows the Page Builder virtual domains matching the Virtual domain Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button.",
                   "label": "",
-                  "type": "literal",
-                  "value": "The table below shows the Page Builder virtual domains matching the Virtual domain Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button."
+                  "type": "literal"
                },
                {
+                  "model": "vdResource",
+                  "submit": "",
+                  "pageSize": 10,
+                  "label": "Virtual domains to export",
+                  "type": "grid",
+                  "allowModify": true,
                   "allowDelete": false,
+                  "allowReload": true,
+                  "name": "vdGrid",
+                  "allowNew": false,
                   "components": [
                      {
-                        "asHtml": false,
-                        "name": "vdID",
                         "model": "serviceName",
+                        "name": "vdID",
+                        "value": "",
                         "label": "Name",
-                        "loadInitially": true,
                         "type": "display",
-                        "value": ""
+                        "loadInitially": true,
+                        "asHtml": false
                      },
                      {
-                        "readonly": true,
-                        "name": "lastUpdated",
                         "model": "lastUpdated",
+                        "validation": {},
+                        "name": "lastUpdated",
                         "label": "Last update",
-                        "loadInitially": true,
-                        "type": "datetime",
                         "parameters": {},
+                        "type": "datetime",
                         "required": false,
-                        "validation": {}
-                     },
-                     {
                         "readonly": true,
-                        "name": "fileTimestamp",
-                        "model": "fileTimestamp",
-                        "label": "Timestamp File",
-                        "loadInitially": true,
-                        "type": "datetime",
-                        "parameters": {},
-                        "required": false,
-                        "validation": {}
+                        "loadInitially": true
                      },
                      {
-                        "readonly": false,
-                        "booleanTrueValue": "1",
-                        "booleanFalseValue": "0",
-                        "name": "export",
+                        "model": "fileTimestamp",
+                        "validation": {},
+                        "name": "fileTimestamp",
+                        "label": "Timestamp File",
+                        "parameters": {},
+                        "type": "datetime",
+                        "required": false,
+                        "readonly": true,
+                        "loadInitially": true
+                     },
+                     {
                         "model": "exportVirtualDomain",
+                        "name": "export",
+                        "value": "1",
+                        "booleanTrueValue": "1",
                         "label": "Select for Export",
-                        "loadInitially": true,
                         "type": "boolean",
                         "onUpdate": "",
-                        "value": "1"
+                        "readonly": false,
+                        "loadInitially": true,
+                        "booleanFalseValue": "0"
                      }
                   ],
-                  "submit": "",
-                  "allowNew": false,
-                  "pageSize": 10,
-                  "saveDataLabel": "Export",
-                  "label": "Virtual domains to export",
-                  "loadInitially": false,
-                  "type": "grid",
-                  "name": "vdGrid",
-                  "allowModify": true,
-                  "model": "vdResource",
-                  "allowReload": true,
                   "parameters": {
                      "pageLike": "$vdPageFilter",
                      "serviceName": "$vdFilter"
-                  }
+                  },
+                  "loadInitially": false,
+                  "saveDataLabel": "Export",
+                  "onSaveSuccess": "if (response.exportVirtualDomain == \"1\") {\n  alert( \"Exported virtual domain: \" + response.serviceName, {flash: true});\n}"
                }
             ],
-            "nextButtonLabel": "",
-            "name": "ShowVD",
-            "showInitially": true,
-            "label": "Filtered virtual domains",
             "type": "form"
          }
       ],
-      "documentation": "Export Virtual Domains",
-      "name": "pbadmExportVirtualDomains",
-      "scriptingLanguage": "JavaScript",
-      "label": "Export Virtual Domains",
-      "title": "Export Virtual Domains",
       "type": "page"
    },
-   "fileTimestamp": "2016-01-08T13:22:33Z",
-   "pageRoles": [{
-      "allow": true,
-      "roleName": "WTAILORADMIN"
-   }]
+   "constantName": "pbadm.ExportVirtualDomains"
 }

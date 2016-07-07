@@ -1,29 +1,29 @@
+/******************************************************************************
+ *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ ******************************************************************************/
+
 package net.hedtech.banner.tools
 
 import groovy.util.logging.Log4j
 import org.hibernate.HibernateException
-
 import java.text.ParseException
 
 @Log4j
 class PBUtilServiceBase {
+
     def final static loadOverwriteExisting=0
     def final static loadSkipExisting=1
     def final static loadRenameExisting =2
     def final static loadIfNew=3
 
     def static pbConfig = grails.util.Holders.getConfig().pageBuilder
-    def nowAsIsoInFileName = {
+
+    def nowAsIsoInFileName() {
         new Date().format("yyyy-MM-dd_HH_mm_ss")
     }
 
-    def nowAsIsoTime = {
-        new Date().format("HH:mm:ss.SSS")
-    }
-
-    def bootMsg = { msg ->
-        def tempMsg = "***** ${nowAsIsoTime()} - Bootstrap: $msg "
-        //tempMsg=tempMsg.padRight(120,"*")
+    def bootMsg( msg ) {
+        def tempMsg = "***** - Admin/Bootstrap: $msg "
         log.info tempMsg
     }
 

@@ -1,28 +1,28 @@
 {
-   "codePut": "update page_role\r\nset version=version+1,\r\nallow=nvl(:ALLOW,0),\r\nrole_name=:ROLE_NAME\r\nwhere id=:id",
+   "codePost": "declare\r\n  lexists varchar(1);\r\nbegin\r\n    begin\r\n        select 1\r\n        into lexists\r\n        from dual\r\n        where exists (\r\n            select null\r\n            from page_role\r\n            where page_id = :PAGE_ID\r\n            and role_name = :ROLE_NAME\r\n        );\r\n    EXCEPTION\r\n        WHEN NO_DATA_FOUND THEN\r\n            null;\r\n    END;\r\n    if lexists IS NOT NULL then\r\n        raise_application_error(-20000,'An entry already exists for this page and role');\r\n   end if;\r\ninsert into page_role\r\n (id, version,allow, role_name,page_id) \r\nvalues\r\n( hibernate_sequence.nextval, 0, \r\n   nvl(:ALLOW,1),\r\n  :ROLE_NAME,\r\n  :PAGE_ID\r\n);\r\nend;",
+   "id": null,
    "virtualDomainRoles": [{
-      "allowDelete": true,
+      "allowGet": true,
+      "id": null,
       "allowPost": true,
       "allowPut": true,
-      "roleName": "WTAILORADMIN",
-      "id": null,
-      "allowGet": true,
       "virtualDomain": {
          "_ref": "../..",
          "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
       },
       "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
+      "roleName": "WTAILORADMIN",
+      "allowDelete": true,
       "version": null
    }],
-   "codeGet": "select \r\n  id \"id\",\r\n  to_char(allow) allow, /* cannot use int 0/1 for checkbox in AngularJS*/\r\n  role_name,\r\n  page_id\r\nfrom page_role\r\nwhere id = nvl(:id,id)\r\n  and page_id=nvl(:page_id,page_id)",
-   "codePost": "declare\r\n  lexists varchar(1);\r\nbegin\r\n    begin\r\n        select '1'\r\n        into lexists\r\n        from dual\r\n        where exists (\r\n            select null\r\n            from page_role\r\n            where page_id = :PAGE_ID\r\n            and role_name = :ROLE_NAME\r\n        );\r\n    EXCEPTION\r\n        WHEN NO_DATA_FOUND THEN\r\n            null;\r\n    END;\r\n    if lexists IS NOT NULL then\r\n        raise_application_error(-20000,'An entry already exists for this page and role');\r\n   end if;\r\ninsert into page_role\r\n (id, version,allow, role_name,page_id) \r\nvalues\r\n( hibernate_sequence.nextval, 0, \r\n   nvl(:ALLOW,1),\r\n  :ROLE_NAME,\r\n  :PAGE_ID\r\n);\r\nend;",
-   "serviceName": "pbadmPageRoles",
-   "version": null,
-   "codeDelete": "delete from page_role where id=:id",
+   "codePut": "update page_role\r\nset version=version+1,\r\nallow=nvl(:ALLOW,0),\r\nrole_name=:ROLE_NAME\r\nwhere id=:id",
    "lastUpdated": null,
+   "fileTimestamp": "2016-04-25T10:09:46Z",
    "dateCreated": null,
-   "id": null,
-   "fileTimestamp": "2013-12-10T11:40:21Z",
+   "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
+   "codeDelete": "delete from page_role where id=:id",
+   "codeGet": "select \r\n  id \"id\",\r\n  allow, \r\n  role_name,\r\n  page_id\r\nfrom page_role\r\nwhere id = nvl(:id,id)\r\n  and page_id=nvl(:page_id,page_id)",
    "typeOfCode": "S",
-   "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+   "serviceName": "pbadmPageRoles",
+   "version": null
 }

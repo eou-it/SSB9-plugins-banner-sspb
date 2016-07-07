@@ -14,6 +14,7 @@ input, textarea {
 
 input.hasDatepicker.pb-datetime{
     width: auto;
+    margin: 0;
 }
 
 div[ng-grid] {

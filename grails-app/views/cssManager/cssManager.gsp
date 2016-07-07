@@ -20,8 +20,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
     <script type="text/javascript">
         var myCustomServices = ['ngResource', 'ui.bootstrap', 'pagebuilder.directives', 'ngUpload'];
-
-        function CssManagerController( $scope, $http, $resource, $parse) {
+        pageControllers["CssManagerController"] = function ( $scope, $http, $resource, $parse) {
             // upload status callback
             $scope.foo = "Hello!";
             $scope.bar = function(content) {
@@ -41,7 +40,6 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
                 var res=tr[key];
                 if ( !res )  {
-
                     res=key;
                 }
                 if (args) {
@@ -58,7 +56,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             $scope.cssStatus = {};
 
             // declare the Css resource
-            var Css = $resource(rootWebApp+'internal/csses/:constantName',{},{
+            var Css = $resource(resourceBase+'csses/:constantName',{},{
                 save:{
                     method:"POST",
                     isArray:false,
