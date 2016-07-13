@@ -34,7 +34,7 @@ define MMEDINX_PCT_FREE          = 5
 
 --  The install begins
 connect baninst1/&&BANINST1_PASSWORD
-spool &&splpref/banner_upgrade_pb.lis
+spool &&splpref.banner_upgrade_pb.lis
 define pb_installdir = 'sspbmgr_090000'
 @@ &&pb_installdir/_pb_install.sql
 spool off
