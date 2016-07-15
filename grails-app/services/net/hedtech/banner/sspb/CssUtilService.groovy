@@ -101,15 +101,26 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             JSON.use("deep") {
                 json = JSON.parse(jsonString)
             }
-            css.properties['css','description' /*, 'fileTimestamp'*/] = json
-            css.fileTimestamp=json2date(json.fileTimestamp)
-            if (file)
-                css.fileTimestamp = new Date(file.lastModified())
-            css = saveObject(css)
-            if (file && css && !css.hasErrors()) {
-                file.renameTo(file.getCanonicalPath() + '.' + nowAsIsoInFileName() + ".imp")
-                result ++
-                log.info "Created/Updated Css $cssName"
+            def doLoad = true
+            // when loading from resources (stream), check the file time stamp in the Json
+            if ( stream && mode==loadIfNew ) {
+                def existingMaxTime = safeMaxTime(css?.fileTimestamp?.getTime(), css?.lastUpdated?.getTime())
+                def newTime = json.fileTimestamp ? json2date(json.fileTimestamp).getTime() : (new Date()).getTime()
+                if ( newTime && existingMaxTime && (existingMaxTime >= newTime) ) {
+                    doLoad = false
+                }
+            }
+            if (doLoad) {
+                css.properties['css', 'description' /*, 'fileTimestamp'*/] = json
+                css.fileTimestamp = json2date(json.fileTimestamp)
+                if (file)
+                    css.fileTimestamp = new Date(file.lastModified())
+                css = saveObject(css)
+                if (file && css && !css.hasErrors()) {
+                    file.renameTo(file.getCanonicalPath() + '.' + nowAsIsoInFileName() + ".imp")
+                    result++
+                    log.info "Created/Updated Css $cssName"
+                }
             }
         }
         result
