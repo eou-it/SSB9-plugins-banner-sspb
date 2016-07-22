@@ -26,6 +26,21 @@ class PBUrlMappings {
             parseRequest = false
         }
 
+        //PageBuilder restful resources
+        "/adminPb/$pluralizedResourceName/$id"(controller:'restfulApi') {
+            action = [GET: "show", PUT: "update",
+                      DELETE: "delete"]
+            parseRequest = false
+            constraints {
+                // to constrain the id to numeric, uncomment the following:
+                // id matches: /\d+/
+            }
+        }
+        "/adminPb/$pluralizedResourceName"(controller:'restfulApi') {
+            action = [GET: "list", POST: "create"]
+            parseRequest = false
+        }
+
         "500"(view:'/error')
 
     }

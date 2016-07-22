@@ -13,6 +13,7 @@ class PageSecurityService {
     static transactional = true
     static final datasource = 'sspb'
     def springSecurityService
+    def grailsApplication
 
     // For Restful interface
     def update(/*def id,*/ Map ignore, params)  {
@@ -62,6 +63,9 @@ class PageSecurityService {
                 def url=entry.key
                 def roles=entry.value
                 def configAttribute=""
+                if (roles[0].equals(grailsApplication.config.pbAdminRolesDefault) ) {
+                    roles[0] = grailsApplication.config.pageBuilder.adminRoles?:'denyAll'
+                }
                 for (role in roles )  {
                     configAttribute+=","+role
                 }

@@ -31,6 +31,8 @@ class PBUser {
             userIn.authorities.each {
                 if (it.objectName.startsWith('SELFSERVICE')) {
                     authorities << [objectName: it.objectName, roleName: it.roleName]
+                } else if ( grails.util.Holders.config.pageBuilder.adminRoles.contains(it.toString()) ) {
+                    authorities << [objectName: it.objectName, roleName: it.roleName]
                 }
             }
             userCache = [authenticated:  true, pidm: userIn.pidm,gidm: userIn.gidm, loginName: userIn.username, fullName: userIn.fullName,
