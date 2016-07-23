@@ -93,7 +93,7 @@ class PageSecurityService {
         try {
             for (role in page.pageRoles )  {
                 if (role.allow) {
-                    configAttribute+=(role.roleName == "GUEST")?",IS_AUTHENTICATED_ANONYMOUSLY":",ROLE_SELFSERVICE-${role.roleName}_BAN_DEFAULT_M"
+                    configAttribute += toConfigAttribute(role.roleName)
                 }
             }
             if (configAttribute.length()>0) {
@@ -110,6 +110,21 @@ class PageSecurityService {
         return rm
     }
 
+    private def toConfigAttribute(roleName) {
+        def result
+        final def admin = "ADMIN-"
+        if (roleName=="GUEST") {
+            result = ",IS_AUTHENTICATED_ANONYMOUSLY"
+        } else if ( roleName.startsWith(admin) ) {
+            def adminRoles = grails.util.Holders.config.pageBuilder.adminRoles.split(',')
+            def r = "ROLE_${roleName.minus(admin)}"
+            result = adminRoles.find { it.startsWith(r) }
+            result = result?",$result": ",${r}_BAN_DEFAULT_M" //Should we get guraobj_default_role here instead of BAN_DEFAULT_M
+        } else {
+            result = ",ROLE_SELFSERVICE-${roleName}_BAN_DEFAULT_M"
+        }
+        result
+    }
 
 
     private def saveRequestmap(String url, String configAttribute) {

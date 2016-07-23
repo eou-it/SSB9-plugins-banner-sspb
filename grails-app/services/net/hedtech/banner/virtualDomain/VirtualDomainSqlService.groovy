@@ -58,6 +58,7 @@ class VirtualDomainSqlService {
                 result.put(k,v)
             }
         }
+        result.put('parm_cfg_admin_roles',grails.util.Holders.config.pageBuilder.adminRoles?:"")
         result
     }
 
@@ -87,7 +88,7 @@ class VirtualDomainSqlService {
 
             def r
             def i = it.objectName.indexOf("-")
-            r = i>-1?it.objectName.substring(i+1):null
+            r = i>-1?it.objectName.substring(i+1):'ADMIN-'+it.objectName
             if (r) {
                 vd.virtualDomainRoles.findAll { vr -> vr.roleName == r }.each {
                     result.get |= it.allowGet

@@ -177,7 +177,7 @@ grails.plugin.springsecurity.interceptUrlMap = [
         '/plugins/**'  : ['IS_AUTHENTICATED_ANONYMOUSLY'],
         '/errors/**'   : ['IS_AUTHENTICATED_ANONYMOUSLY'],
         //Page Builder specific
-        '/api/virtualDomains.*/**'    : ['IS_AUTHENTICATED_ANONYMOUSLY','ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'], // not sure if this is overriding or complementing the filterChain
+        '/api/virtualDomains.*/**'    : ['IS_AUTHENTICATED_ANONYMOUSLY','ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
         '/api/pages/**'               : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
         '/api/csses/**'               : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
         '/internalPb/pagesecurity/**'     : ['ROLE_SELFSERVICE-WTAILORADMIN_BAN_DEFAULT_M'],
