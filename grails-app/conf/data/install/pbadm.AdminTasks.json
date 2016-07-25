@@ -2,9 +2,9 @@
    "extendsPage": null,
    "pageRoles": [{
       "allow": true,
-      "roleName": "WTAILORADMIN"
+      "roleName": "ADMIN-GPBADMN"
    }],
-   "fileTimestamp": "2016-05-11T15:21:30Z",
+   "fileTimestamp": "2016-07-25T12:27:05Z",
    "modelView": {
       "title": "Admin tasks",
       "scriptingLanguage": "JavaScript",

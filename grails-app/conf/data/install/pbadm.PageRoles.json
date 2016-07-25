@@ -2,9 +2,9 @@
    "extendsPage": null,
    "pageRoles": [{
       "allow": true,
-      "roleName": "WTAILORADMIN"
+      "roleName": "ADMIN-GPBADMN"
    }],
-   "fileTimestamp": "2016-07-23T13:29:51Z",
+   "fileTimestamp": "2016-07-25T12:27:05Z",
    "modelView": {
       "title": "Associate Roles with a Page",
       "scriptingLanguage": "JavaScript",
