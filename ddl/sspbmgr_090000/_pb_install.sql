@@ -143,6 +143,14 @@ prompt Grants
 connect sys/&&sys_password as sysdba
 @@ _grants_banner.sql
 
+-- Revoke dba and grant any required privileges to sspbmgr
+@@ _grants_sspbmgr.sql
+
+
+Prompt Installing developer security
+@@ _pb_security.sql
+
+
 
 Prompt Creating Web Tailor Menu
 -- If a non default Menu exists for PageBuilder we skip installing to avoid overwriting customized menu's

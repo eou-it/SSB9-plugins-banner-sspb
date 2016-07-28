@@ -63,9 +63,6 @@ class PageSecurityService {
                 def url=entry.key
                 def roles=entry.value
                 def configAttribute=""
-                if (roles[0].equals(grailsApplication.config.pbAdminRolesDefault) ) {
-                    roles[0] = grailsApplication.config.pageBuilder.adminRoles?:'denyAll'
-                }
                 for (role in roles )  {
                     configAttribute+=","+role
                 }
@@ -119,7 +116,7 @@ class PageSecurityService {
             def adminRoles = grails.util.Holders.config.pageBuilder.adminRoles.split(',')
             def r = "ROLE_${roleName.minus(admin)}"
             result = adminRoles.find { it.startsWith(r) }
-            result = result?",$result": ",${r}_BAN_DEFAULT_M" //Should we get guraobj_default_role here instead of BAN_DEFAULT_M
+            result = result?",$result": ",${r}_BAN_DEFAULT_M"
         } else {
             result = ",ROLE_SELFSERVICE-${roleName}_BAN_DEFAULT_M"
         }
