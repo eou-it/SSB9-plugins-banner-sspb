@@ -2,7 +2,8 @@
 -- * Copyright 2016 Ellucian Company L.P. and its affiliates.                              *
 -- *****************************************************************************************
 
--- This script gran
+-- This script grants minimum object privileges required to use PageBuilder Admin/Develop features.
+-- To develop and debug virtual domains for Banner, additional grants to Banner tables may be needed.
 
 set define on veri off
 define pb_role  = 'BAN_PAGEBUILDER_M'
