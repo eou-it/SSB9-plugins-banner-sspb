@@ -1,5 +1,6 @@
 {
-   "dataSource": "S",
+   "codePost": null,
+   "id": null,
    "virtualDomainRoles": [{
       "allowGet": true,
       "id": null,
@@ -10,20 +11,18 @@
          "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
       },
       "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
-      "roleName": "WTAILORADMIN",
+      "roleName": "ADMIN-GPBADMN",
       "allowDelete": true,
       "version": null
    }],
    "codePut": null,
-   "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
    "lastUpdated": null,
+   "fileTimestamp": "2016-07-25T12:26:40Z",
+   "dateCreated": null,
+   "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
    "codeDelete": null,
    "codeGet": "select id pid, constant_name from page\r\norder by 2",
-   "version": null,
+   "typeOfCode": "S",
    "serviceName": "pbadmPageLookup",
-   "id": null,
-   "codePost": null,
-   "dateCreated": null,
-   "fileTimestamp": "2013-12-04T17:43:42Z",
-   "typeOfCode": "S"
+   "version": null
 }

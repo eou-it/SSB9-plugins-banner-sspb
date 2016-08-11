@@ -11,13 +11,13 @@
          "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
       },
       "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
-      "roleName": "WTAILORADMIN",
+      "roleName": "ADMIN-GPBADMN",
       "allowDelete": true,
       "version": null
    }],
    "codePut": "update virtual_domain_role\r\nset version=version+1,\r\nallow_delete=nvl(:ALLOW_DELETE,0),\r\nallow_get=nvl(:ALLOW_GET,1),\r\nallow_post=nvl(:ALLOW_POST,0),\r\nallow_put=nvl(:ALLOW_PUT,0),\r\nrole_name=:ROLE_NAME,\r\nvirtual_domain_id=:VIRTUAL_DOMAIN_ID\r\nwhere id=:id",
    "lastUpdated": null,
-   "fileTimestamp": "2016-04-25T10:09:46Z",
+   "fileTimestamp": "2016-07-25T12:26:40Z",
    "dateCreated": null,
    "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
    "codeDelete": "delete from virtual_domain_role where id=:id",

@@ -2,9 +2,9 @@
    "extendsPage": null,
    "pageRoles": [{
       "allow": true,
-      "roleName": "WTAILORADMIN"
+      "roleName": "ADMIN-GPBADMN"
    }],
-   "fileTimestamp": "2016-05-26T13:00:05Z",
+   "fileTimestamp": "2016-07-25T12:27:05Z",
    "modelView": {
       "title": "Associate Roles with a Page",
       "scriptingLanguage": "JavaScript",
@@ -66,7 +66,7 @@
             "showInitially": false,
             "components": [{
                "model": "pageRoles",
-               "onError": "var errorMessage =response.data.errors? response.data.errors.errorMessage: null;\nif (errorMessage&&errorMessage.indexOf(\"ORA-20000\") > -1) {\n  alert(\"An entry already exists for this page and role, cannot add a duplicate\", {type:\"error\"});\n} else {\n  alert(errorMessage?errorMessage:response.data, {type:\"error\"});\n}",
+               "onError": "var errorMessage =response.data.errors? response.data.errors.errorMessage: null;\nif (errorMessage&&errorMessage.indexOf(\"ORA-20000\") > -1) {\n  alert(\"An entry already exists for this page and role, cannot add a duplicate\", {type:\"error\"});\n} else {\n  if (response.data.errors.errorMessage) {\n    alert(response.data.errors.errorMessage,{type:\"error\"});\n  }\n  else if (response.data.errors[0].errorMessage) {\n    alert(response.data.errors[0].errorMessage,{type:\"error\"});\n  } else {\n    alert(errorMessage?errorMessage:response.data, {type:\"error\"});\n  }\n}",
                "submit": "",
                "pageSize": 5,
                "onSave": "",

@@ -2,18 +2,13 @@
 -- * Copyright 2016 Ellucian Company L.P. and its affiliates.                              *
 -- *****************************************************************************************
 
-prompt CREATE USER &1 
-CREATE USER &1 IDENTIFIED BY &2;
+-- This script establishes privileges for SSPBMGR post install
 
-ALTER USER &1
-DEFAULT TABLESPACE "&&MMEDTAB_TABLESPACE_NAME"
-ACCOUNT UNLOCK ;
+REVOKE DBA FROM SSPBMGR;
 
--- ROLES
-GRANT CONNECT,DBA TO &1;
-ALTER USER &1 DEFAULT ROLE "CONNECT","DBA";
+ALTER USER SSPBMGR DEFAULT ROLE "CONNECT";
 
 -- SYSTEM PRIVILEGES
 
 -- QUOTAS
-ALTER USER &1 QUOTA UNLIMITED ON &&MMEDTAB_TABLESPACE_NAME;
+ALTER USER SSPBMGR QUOTA UNLIMITED ON &&MMEDTAB_TABLESPACE_NAME;

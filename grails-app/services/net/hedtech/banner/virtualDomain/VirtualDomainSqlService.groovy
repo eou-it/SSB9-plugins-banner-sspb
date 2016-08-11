@@ -58,6 +58,7 @@ class VirtualDomainSqlService {
                 result.put(k,v)
             }
         }
+        result.put('parm_cfg_admin_roles',grails.util.Holders.config.pageBuilder.adminRoles?:"")
         result
     }
 
@@ -78,7 +79,7 @@ class VirtualDomainSqlService {
     @Memoized
     private def userAccessRights (vd, userRoles) {
         def result=[get: false, put: false, post: false, delete: false, debug: false ]
-        String debugRoles = grailsApplication.config.pageBuilder.debugRoles?grailsApplication.config.pageBuilder.debugRoles:""
+        String debugRoles = grailsApplication.config.pageBuilder.adminRoles
         log.debug "Determining access right for ${vd.serviceName}"
         for (it in userRoles) {
             //objectName is like SELFSERVICE-ALUMNI
@@ -87,7 +88,7 @@ class VirtualDomainSqlService {
 
             def r
             def i = it.objectName.indexOf("-")
-            r = i>-1?it.objectName.substring(i+1):null
+            r = i>-1?it.objectName.substring(i+1):'ADMIN-'+it.objectName
             if (r) {
                 vd.virtualDomainRoles.findAll { vr -> vr.roleName == r }.each {
                     result.get |= it.allowGet
@@ -197,7 +198,7 @@ class VirtualDomainSqlService {
         }
         log.debug logmsg
 
-        return [error: errorMessage, rows:rows, totalCount: rows?.size()]
+        return [error: errorMessage, rows:rows, totalCount: rows?.size(), debug: parameters.debug]
     }
 
     def count(vd, params) {
@@ -226,7 +227,7 @@ class VirtualDomainSqlService {
             sql.close()
         }
         log.debug logmsg
-        return [error: errorMessage, totalCount:totalCount.longValue()]
+        return [error: errorMessage, totalCount:totalCount.longValue(),debug: parameters.debug]
     }
 
     def update(vd, params, data) {

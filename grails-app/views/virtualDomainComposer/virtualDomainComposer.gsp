@@ -119,7 +119,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         function testApi() {
             var param = \$("#vdTestParameters").val();
             param =  param.replace(/%/g,'%25');
-            \$.get("${createLink(uri: '/')}${grailsApplication.config.sspb.apiPath}/virtualDomains.${pageInstance?.vdServiceName}?debug=true&"+param, {},
+            \$.get("${createLink(uri: '/')}${grailsApplication.config.sspb.adminApiPath}/virtualDomains.${pageInstance?.vdServiceName}?debug=true&"+param, {},
                     function(data) {
                         \$('#testarea1').val(JSON.stringify(data));
                     });

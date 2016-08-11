@@ -4,24 +4,24 @@
    "virtualDomainRoles": [{
       "allowGet": true,
       "id": null,
-      "allowPost": true,
-      "allowPut": true,
+      "allowPost": false,
+      "allowPut": false,
       "virtualDomain": {
          "_ref": "../..",
          "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
       },
       "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
-      "roleName": "WTAILORADMIN",
-      "allowDelete": true,
+      "roleName": "ADMIN-GPBADMN",
+      "allowDelete": false,
       "version": null
    }],
    "codePut": null,
    "lastUpdated": null,
-   "fileTimestamp": "2016-05-25T10:49:18Z",
+   "fileTimestamp": "2016-07-25T12:26:40Z",
    "dateCreated": null,
    "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
    "codeDelete": null,
-   "codeGet": "select TWTVROLE_CODE code,  TWTVROLE_DESC description \r\nfrom twtvrole\r\nwhere\r\n (:virtual_domain_id is null or\r\n   TWTVROLE_CODE not in \r\n  (select role_name from virtual_domain_role where virtual_domain_id=:virtual_domain_id)\r\n)\r\nunion\r\nselect 'GUEST', '*Guest (no authentication)' from dual \r\nwhere :virtual_domain_id is null or\r\n   'GUEST' not in \r\n  (select role_name from virtual_domain_role where virtual_domain_id=:virtual_domain_id)\r\nunion\r\nselect 'ALLROLES', '*Authenticated Self Service user (with PIDM)' from dual\r\nwhere :virtual_domain_id is null or\r\n   'ALLROLES' not in \r\n  (select role_name from virtual_domain_role where virtual_domain_id=:virtual_domain_id)\r\norder by 2",
+   "codeGet": "select TWTVROLE_CODE code,  TWTVROLE_DESC description \r\nfrom twtvrole\r\nwhere\r\n (:virtual_domain_id is null or\r\n   TWTVROLE_CODE not in \r\n  (select role_name from virtual_domain_role where virtual_domain_id=:virtual_domain_id)\r\n)\r\nunion\r\nselect 'GUEST', '*Guest (no authentication)' from dual \r\nwhere :virtual_domain_id is null or\r\n   'GUEST' not in \r\n  (select role_name from virtual_domain_role where virtual_domain_id=:virtual_domain_id)\r\nunion\r\nselect 'ALLROLES', '*Authenticated Self Service user (with PIDM)' from dual\r\nwhere :virtual_domain_id is null or\r\n   'ALLROLES' not in \r\n  (select role_name from virtual_domain_role where virtual_domain_id=:virtual_domain_id)\r\nunion\r\nselect 'ADMIN-'||gubobjs_name, '*'||gubobjs_desc\r\nfrom gubobjs\r\nwhere (:virtual_domain_id is null or\r\n   gubobjs_name not in (select role_name from virtual_domain_role where virtual_domain_id=:virtual_domain_id)\r\n  ) \r\nand instr(:parm_cfg_admin_roles, 'ROLE_'||gubobjs_name)>0\r\norder by 2",
    "typeOfCode": "S",
    "serviceName": "pbadmWebTailorRoles",
    "version": null
