@@ -7,7 +7,7 @@ set define on veri off
 
 define object_name = 'GPBADMN'
 define object_desc = 'Page Builder Developer Tools'
-define pb_role  = 'BAN_PAGEBUILDER_M'
+define pb_role  = 'BAN_DEFAULT_PAGEBUILDER_M'
 define delete_option = 'y'
 define create_option = 'y'
 
