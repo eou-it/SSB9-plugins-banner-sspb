@@ -70,7 +70,7 @@ modules = {
 
     // A reduced set of dependencies compared to the resources in banner-ui-ss
     'min-bannerWeb' {
-        dependsOn "jquery, i18n-core"
+        dependsOn "jquery" //removed i18n-core as multi-calendar is not supported in PageBuilder layout gets messed up
 
         resource url:[plugin: 'banner-ui-ss', file: 'js/html5shim.js'],
                 disposition: 'head',
