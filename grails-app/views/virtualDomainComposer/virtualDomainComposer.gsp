@@ -57,7 +57,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 <br/>
 <g:form name="ComposeVDForm" action="saveVirtualDomain">
     <label><g:message code="sspb.page.virtualdomain.servicename.label" /></label>
-    <input maxlength="60"  pattern="^[a-zA-Z]+[a-zA-Z0-9\_-]*$" type="text" name="vdServiceName" value="${pageInstance?.vdServiceName}" required />
+    <input maxlength="60"  pattern="^[a-zA-Z]+[a-zA-Z0-9_-]*$" type="text" name="vdServiceName" value="${pageInstance?.vdServiceName}" required />
     <g:actionSubmit action="saveVirtualDomain" value="${message(code:"sspb.page.virtualdomain.save.label")}" />
     <g:actionSubmit action="deleteVirtualDomain" value="${message(code:"sspb.page.virtualdomain.delete.label")}" />
 <br/>
