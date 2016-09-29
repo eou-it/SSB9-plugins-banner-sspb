@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="99px" height="21px" viewBox="0 0 99 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 3.6.1 (26313) - http://www.bohemiancoding.com/sketch -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group">
+            <g id="checkbox-default" fill="#FFFFFF" stroke="#869FB1">
+                <g id="Page-1">
+                    <g id="Mobile-Portrait">
+                        <g id="Check-box-+-Checkbox-default-+-Checkbox-selected" transform="translate(0.000000, 0.500000)">
+                            <g id="Checkbox-default" transform="translate(0.977444, 0.000000)">
+                                <rect id="Rectangle-37" x="0" y="0" width="20" height="20" rx="4"></rect>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+            <g id="checkbox-disabled" transform="translate(26.000000, 0.000000)" fill="#E7EAED" stroke="#BECCD7">
+                <g id="Page-1">
+                    <g id="Mobile-Portrait">
+                        <g id="Check-box-+-Checkbox-default-+-Checkbox-selected" transform="translate(0.000000, 0.500000)">
+                            <g id="Checkbox-default-Copy" transform="translate(0.977444, 0.000000)">
+                                <rect id="Rectangle-37" x="0" y="0" width="20" height="20" rx="4"></rect>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+            <g id="checkbox-focus" transform="translate(52.000000, 0.000000)">
+                <g id="Page-1">
+                    <g id="Mobile-Portrait">
+                        <g id="Check-box-+-Checkbox-default-+-Checkbox-selected" transform="translate(0.000000, 0.500000)">
+                            <g id="Checkbox-selected" transform="translate(0.977444, 0.000000)">
+                                <g id="Rectangle-38-+-Shape-Copy">
+                                    <rect id="Rectangle-38" fill="#145F32" x="0" y="0" width="20" height="19.5555556" rx="4"></rect>
+                                    <path d="M8.78450136,12.1161388 L6.69612534,10.0889894 L6,10.7647059 L8.78450136,13.4675716 L14.75129,7.67571644 L14.0551646,7 L8.78450136,12.1161388 L8.78450136,12.1161388 Z" id="Shape" stroke="#FFFFFF" stroke-width="0.5" fill="#FFFFFF"></path>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+            <g id="checkbox-selected" transform="translate(78.000000, 1.000000)">
+                <g id="Page-1">
+                    <g id="Desktop-HD">
+                        <g id="Check-box-+-Checkbox-default-+-Checkbox-selected">
+                            <g id="Checkbox-selected" transform="translate(0.977444, 0.000000)">
+                                <g id="Rectangle-38-+-Shape">
+                                    <rect id="Rectangle-38" fill="#1C8445" x="0" y="0" width="20" height="19.5555556" rx="4"></rect>
+                                    <path d="M8.78450136,12.1161388 L6.69612534,10.0889894 L6,10.7647059 L8.78450136,13.4675716 L14.75129,7.67571644 L14.0551646,7 L8.78450136,12.1161388 L8.78450136,12.1161388 Z" id="Shape" stroke="#FFFFFF" stroke-width="0.5" fill="#FFFFFF"></path>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

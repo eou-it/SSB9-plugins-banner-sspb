@@ -3,6 +3,9 @@
 /target
 /*.iml
 *-rtl.css
+*-rtl.css.map
+*-rtl.min.*
+
 /**/selenium*
 grails-app/conf/SeleniumConfig.groovy
 .sonar
