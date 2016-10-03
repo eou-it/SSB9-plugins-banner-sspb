@@ -16,24 +16,32 @@
                 "optionalAttributes":["title", "label", "style", "importCSS", "spareComponents"],
                 "ignoredAttributes":["scriptingLanguage"],
                 "requiredChildren":[],
-                "optionalChildren":["flow", "form", "block", "grid", "htable", "detail", "select", "radio", "list", "data", "resource", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button"]
+                "optionalChildren":["flow", "form", "block", "grid", "htable", "detail", "dataTable", "select", "radio", "list", "data", "resource", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button"]
             },
             {
                 "componentType":["block"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "style", "showInitially"],
                 "requiredChildren":[],
-                "optionalChildren":["form", "block", "grid", "htable", "detail", "select", "radio", "list", "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
+                "optionalChildren":["form", "block", "grid", "htable", "detail", "dataTable", "select", "radio", "list", "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
             },
             {
                 "componentType":["form"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "style", "submit","submitLabel", "nextButtonLabel", "showInitially"],
                 "requiredChildren":[],
-                "optionalChildren":["block", "grid", "htable", "detail", "select", "radio", "list",  "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
+                "optionalChildren":["block", "grid", "htable", "detail", "dataTable", "select", "radio", "list",  "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
             },
             {
                 "componentType":["grid"],
+                "requiredAttributes":["model"],
+                "optionalAttributes":["label", "style", "parameters", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize","onClick", "onLoad", "onSave", "onSaveSuccess","onError", "loadInitially", "newRecordLabel","deleteRecordLabel","saveDataLabel","refreshDataLabel"],
+                "ignoredAttributes":["submit"],
+                "requiredChildren":[],
+                "optionalChildren":["select", "data", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "literal","hidden" ]
+            },
+            {
+                "componentType":["dataTable"],
                 "requiredAttributes":["model"],
                 "optionalAttributes":["label", "style", "parameters", "allowNew", "allowModify", "allowDelete", "allowReload", "pageSize","onClick", "onLoad", "onSave", "onSaveSuccess","onError", "loadInitially", "newRecordLabel","deleteRecordLabel","saveDataLabel","refreshDataLabel"],
                 "ignoredAttributes":["submit"],

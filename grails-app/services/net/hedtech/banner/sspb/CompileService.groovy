@@ -327,7 +327,7 @@ class CompileService {
                 def expr = pageComponent.compileCtrlFunction(pageComponent.onClick)
                 // if we are dealing with clicking on an item from a list or table then pass the current selection to the control function
                 def args = "";
-                if (pageComponent.type == PageComponent.COMP_TYPE_LIST || pageComponent.type == PageComponent.COMP_TYPE_GRID || pageComponent.type == PageComponent.COMP_TYPE_HTABLE) {
+                if (pageComponent.type == PageComponent.COMP_TYPE_LIST || pageComponent.type == PageComponent.COMP_TYPE_GRID || pageComponent.type == PageComponent.COMP_TYPE_HTABLE || pageComponent.type == PageComponent.COMP_TYPE_DATATABLE) {
                     args = "${PageComponent.CURRENT_ITEM}, field"
                 }
 
