@@ -25,8 +25,13 @@ from (
 
 @@ &selection SSPBMGR &&SSPBMGR_PASSWORD
 
+grant dba to SSPBMGR;
+
 prompt Connect SSPBMGR
 connect SSPBMGR/&&SSPBMGR_PASSWORD
+
+--Enable the dba role
+set role all;
 
 prompt
 prompt Table CSS
