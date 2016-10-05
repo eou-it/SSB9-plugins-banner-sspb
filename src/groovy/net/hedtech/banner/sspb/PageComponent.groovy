@@ -716,14 +716,16 @@ class PageComponent {
     def dataTableJS() {
         def dataSet = "${name}DS"
         def columns = ""
+        def draggableColumns = ""
         components.eachWithIndex { child, idx ->
             //get the child components
             def lbl = child.tran("label", ESC_JS)
             columns += """,{position: {desktop: $idx, mobile: $idx}, name: "$child.model", title: "$lbl", options: {visible: true, sortable:true}}\n"""
+            draggableColumns += ",'$child.model'"
         }
+        draggableColumns = "[${draggableColumns.substring(1)}]"
         columns = columns.substring(1)
         def code = """|    \$scope.${name}Config = {
-
                       |        columns: [$columns],
                       |        onDoubleClick: function(data,index) {
                       |                    console.log("data-->" , data,index);
@@ -735,13 +737,19 @@ class PageComponent {
                       |                    console.log('Refreshing grid data...');
                       |                },
                       |        fetch: function(query) {
-                      |                    console.log(query);
-                      |                    return null;
+                      |                      var deferred = \$q.defer();
+                      |                      setTimeout(function() {
+                      |                           console.log('Deferred call');
+                      |                           deferred.resolve(\$scope.gtvemalDS.data);
+                      |                           //deferred.reject(data);
+                      |                      }, 100);
+                      |                      console.log(query);
+                      |                      return deferred.promise;
                       |                },
                       |        postFetch: function(response, oldResult) {
                       |                    console.log('Post fetch handler', response);
                       |                },
-                      |        //draggableColumnNames: ['term', 'crn', 'subject', 'status'],
+                      |        draggableColumnNames: $draggableColumns,
                       |        //mobile: { term: 2,  crn: 2},
                       |        search: {
                       |                    id: '${name}Search',
@@ -785,11 +793,12 @@ class PageComponent {
             |  caption="Table Caption Optional"
             |  header="${cfg}.columns"
             |  content="${dataSet}.data"
-            |  toolbar="true" paginate="true"
+            |  toolbar="true" paginate="false"
             |  fetch="${cfg}.fetch(query)"
             |  continuous-scrolling="true"
             |  pagination-config="${cfg}.pagination"
             |  on-row-double-click="${cfg}.onDoubleClick(data,index)"
+            |  draggable-column-names="${cfg}.draggableColumnNames"
             |  no-data-msg="" empty-table-msg=""
             |  search-config="${cfg}.search"
             |  height="16em"

@@ -102,7 +102,7 @@ class CompileService {
         def common = CompileService.class.classLoader.getResourceAsStream('data/sspbCommon.js').text
 
         result = """
-               |function (\$scope ,\$locale,\$templateCache,pbDataSet,pbResource,pbAddCommon) {
+               |function (\$scope ,\$locale,\$q,\$templateCache,pbDataSet,pbResource,pbAddCommon) {
                |    // copy global var to scope
                |    \$scope._user = user;
                |    \$scope._params = params;
