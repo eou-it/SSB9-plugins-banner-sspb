@@ -737,14 +737,26 @@ class PageComponent {
                       |                    console.log('Refreshing grid data...');
                       |                },
                       |        fetch: function(query) {
-                      |                      var deferred = \$q.defer();
-                      |                      setTimeout(function() {
-                      |                           console.log('Deferred call');
-                      |                           deferred.resolve(\$scope.gtvemalDS.data);
-                      |                           //deferred.reject(data);
-                      |                      }, 100);
-                      |                      console.log(query);
-                      |                      return deferred.promise;
+                      |                 var deferred = \$q.defer();
+                      |                 var paging=false;
+                      |                 if (\$scope.${name}DS.pagingOptions.pageSize!=query.pageSize) {
+                      |                     \$scope.${name}DS.pagingOptions.pageSize = query.pageSize;
+                      |                     paging=true;
+                      |                 }
+                      |                 if (\$scope.${name}DS.pagingOptions.currentPage!=query.onPage) {
+                      |                     \$scope.${name}DS.pagingOptions.currentPage = query.onPage;
+                      |                     paging=true;
+                      |                 }
+                      |                 if (paging) {
+                      |                   \$scope.gtvemalDS.load({paging:paging});
+                      |                 }
+                      |                 setTimeout(function() {
+                      |                   deferred.resolve({result:\$scope.gtvemalDS.data,
+                      |                                     length:\$scope.gtvemalDS.totalCount});
+                      |                   //deferred.reject(data);
+                      |                 }, 100);
+                      |                 console.log(query);
+                      |                 return deferred.promise;
                       |                },
                       |        postFetch: function(response, oldResult) {
                       |                    console.log('Post fetch handler', response);
@@ -762,7 +774,7 @@ class PageComponent {
                       |                },
                       |        pagination: {
                       |                    pageLengths : [ 5, 10, 25, 50, 100],
-                      |                    offset : 10,
+                      |                    offset : \$scope.${name}DS.pagingOptions.pageSize,
                       |                    recordsFoundLabel : "Results found",
                       |                    pageTitle: "Go To Page (End)",
                       |                    pageLabel: "Page",
@@ -790,12 +802,12 @@ class PageComponent {
             |<div $styleStr ${idAttribute()} class="pb-$type-container">
             |<xe-table-grid
             |  table-id="dataTable-${name}"
-            |  caption="Table Caption Optional"
+            |  caption="${tran("label")}"
             |  header="${cfg}.columns"
             |  content="${dataSet}.data"
-            |  toolbar="true" paginate="false"
+            |  toolbar="true" paginate="true"
             |  fetch="${cfg}.fetch(query)"
-            |  continuous-scrolling="true"
+            |  continuous-scrolling="false"
             |  pagination-config="${cfg}.pagination"
             |  on-row-double-click="${cfg}.onDoubleClick(data,index)"
             |  draggable-column-names="${cfg}.draggableColumnNames"
@@ -811,7 +823,6 @@ class PageComponent {
         //|  pagination-config="${cfg}.pagination"
         //|  fetch="${cfg}.fetch(query)"
         //|  post-fetch="${cfg}.postFetch(response, oldResult)"
-        //|  draggable-column-names="${cfg}.draggableColumnNames"
         //|  mobile-layout="${cfg}.mobile"
 
 //                |  <xe-cell-markup heading-name="tick">
