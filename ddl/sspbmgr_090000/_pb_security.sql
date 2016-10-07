@@ -10,7 +10,7 @@ define object_desc = 'Page Builder Developer Tools'
 define pb_role  = 'BAN_DEFAULT_PAGEBUILDER_M'
 define pb_module = 'EXTZ'
 define pb_module_name = 'Extensibility'
-define pb_page = 'pageBuilder'
+define pb_page = 'GPBADMN'
 
 define delete_option = 'n'
 define create_option = 'y'
@@ -36,7 +36,7 @@ gubmodu_data_origin,
 gubmodu_plat_code
 )
 select '&&pb_module', '&&pb_module_name',
-'UPDATE ME TO http://<host_name>:<port_number>/<application_context_name>/ WHERE THE application_context_name = BannerExtensibility',
+'Not needed',
 0, user, sysdate, 'BASELINE', 'ADMZK'
 from dual
 where not exists (select 1 from gubmodu where gubmodu_code = '&&pb_module' and '&&create_option'='y');
