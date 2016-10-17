@@ -23,7 +23,7 @@ from dual where '&&delete_option' = 'y';
 delete from gubpage where gubpage_code='&&object_name' and '&&delete_option' = 'y';
 delete from gubmodu where gubmodu_code='&&pb_module' and '&&delete_option' = 'y';
 delete from gubobjs where gubobjs_name = '&&object_name' and '&&delete_option'='y';
----------------------------------------------------
+-------------------------------------------------
 prompt Create GUBMODU record for Module &&pb_module
 insert into gubmodu (
 gubmodu_code,
@@ -40,26 +40,7 @@ select '&&pb_module', '&&pb_module_name',
 0, user, sysdate, 'BASELINE', 'ADMZK'
 from dual
 where not exists (select 1 from gubmodu where gubmodu_code = '&&pb_module' and '&&create_option'='y');
-------------------------------------------------
-prompt Create GUBPAGE record for Page &&pb_page
-insert into gubpage(
-gubpage_code,
-gubpage_name,
-gubpage_gubmodu_code,
-gubpage_version,
-gubpage_user_id,
-gubpage_activity_date,
-gubpage_data_origin
-)
-select '&&object_name', '&&pb_page', '&&pb_module',
-0, user, sysdate, 'BASELINE'
-from dual
-where not exists (select 1 from gubpage where gubpage_code = '&&object_name' and '&&create_option'='y');
-
-
------------------------------------------------------------------------------------
-
-
+-------------------------------------------------
 prompt Create GUBOBJS object &&object_name
 insert into gubobjs (
 gubobjs_name     ,
@@ -76,7 +57,21 @@ select  '&&object_name', '&&object_desc',
    'FORM', 'G', User, Sysdate, 'N', 'D', 'Banner', 'C'
 from dual
 where not exists ( select 1 from gubobjs where gubobjs_name = '&&object_name' and '&&create_option'='y');
-
+-------------------------------------------------
+prompt Create GUBPAGE record for Page &&pb_page
+insert into gubpage(
+gubpage_code,
+gubpage_name,
+gubpage_gubmodu_code,
+gubpage_version,
+gubpage_user_id,
+gubpage_activity_date,
+gubpage_data_origin
+)
+select '&&object_name', '&&pb_page', '&&pb_module',
+0, user, sysdate, 'BASELINE'
+from dual
+where not exists (select 1 from gubpage where gubpage_code = '&&object_name' and '&&create_option'='y');
 commit;
 
 connect bansecr/&&BANSECR_PASSWORD
