@@ -527,7 +527,6 @@ class PageComponent {
             """\$scope.\$watch('${dataSet}.selectedRecords[0]', function(newVal, oldVal) {
                 if (newVal !== oldVal ) {
                     \$scope.${dataSet}.setCurrentRecord(newVal);
-                    //$onClickCode
                 }
             });
             """
@@ -1277,6 +1276,8 @@ class PageComponent {
             dataSource = "resource: \$scope.${dataComponent.name}"
             // transform parameters to angular $scope variable
             resourceParams = resourceParameters()
+            autoPopulate = loadInitially?"true":"false"
+
         } else if (dataComponent.staticData){
             def data
             if ( COMP_DATASET_DISPLAY_TYPES.contains(type)  ){
@@ -1397,7 +1398,9 @@ class PageComponent {
                 [from:  ".\$selected"        , to:"DS.currentRecord" ],
                 [from:  ".\$selection"       , to:"DS.selectedRecords" ],
                 [from:  ".\$data"            , to:"DS.data" ],
-                [from:  ".\$dirty"           , to:"DS.dirty()" ]
+                [from:  ".\$dirty"           , to:"DS.dirty()" ],
+                [from:  ".\$setModified"     , to:"DS.setModified" ]
+
         ]
         final def resourceReplacements = [
                 [from:  ".\$post"            , to:".post"],

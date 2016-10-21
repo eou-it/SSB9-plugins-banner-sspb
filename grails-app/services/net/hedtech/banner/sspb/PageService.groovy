@@ -62,11 +62,14 @@ class PageService {
 
     def show(Map params) {
         log.trace "PageService.show invoked"
-        def page= Page.find{constantName==params.id}
+        def page = Page.find { constantName == params.id }
         log.trace "PageService.show returning ${page}"
-        String model = page.getMergedModelText(true) //Get the merged model with merge Info
-        def showResult = [constantName : page.constantName, id: page.id, extendsPage: page.extendsPage, version: page.version, modelView: model]
-        showResult
+        def result = null
+        if (page) {
+            String model = page.getMergedModelText(true) //Get the merged model with merge Info
+            result = [constantName: page.constantName, id: page.id, extendsPage: page.extendsPage, version: page.version, modelView: model]
+        }
+        result
     }
 
 

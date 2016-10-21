@@ -52,3 +52,8 @@ div[ng-grid] {
     min-height: 0;
     border-bottom: none;
 }
+
+.ngGrid input[type="checkbox"] {
+    -webkit-transform:scale(0.6);
+    -moz-transform: scale(1.4);
+}

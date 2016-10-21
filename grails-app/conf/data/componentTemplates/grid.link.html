@@ -1,0 +1,13 @@
+<%
+    def autoStyleAt = """class="pb-${thiz.parent.type} pb-$thiz.type pb-item $thiz.valueStyle"  """
+    def targetAt = thiz.replaceView?"":'target="_blank"'
+    def urlAt = thiz.compileDOMDisplay(thiz.url?:"") //if null set to empty string
+    def onClickAt = thiz.onClick?" ng-click=\"${thiz.name}_onClick(row.entity);\" ":""
+%>
+<a name="$name" class="pb-${thiz.parent.type} pb-$type" ng-class="${name}_${thiz.STYLE_ATTR}" $onClickAt
+   $targetAt ng-href="$urlAt">
+    <span $autoStyleAt> ${thiz.description?:urlAt} </span></a>
+    $content
+</a>
+
+

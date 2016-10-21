@@ -27,6 +27,15 @@ class PageExportService {
         result
     }
 
+    def show(params) {
+        def pageExport
+        def page = Page.findByConstantName(params.id?:params.constantName)
+        if (page) {
+            pageExport = new PageExport(page)
+        }
+        pageExport
+    }
+
     def list( params) {
         def max = Math.min( params.max ? params.max.toInteger() : 10000,  10000)
         def offset = params.offset ?: 0

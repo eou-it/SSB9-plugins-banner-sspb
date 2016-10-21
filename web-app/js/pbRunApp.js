@@ -224,7 +224,8 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
         this.go = function(it, response) {
             var instance=instanceIn;
             var uf=userPostQuery;
-            console.log("Executing Post Load for DataSet="+instance.componentId+" size="+it.length) ;
+            var size = Array.isArray(it)?it.length:1;
+            console.log("Executing Post Load for DataSet="+instance.componentId+" size="+size);
             instance.currentRecord=instance.data[0];  //set the current record
             instance.setInitialRecord();
             instance.totalCount=parseInt(response("X-hedtech-totalCount")) ;

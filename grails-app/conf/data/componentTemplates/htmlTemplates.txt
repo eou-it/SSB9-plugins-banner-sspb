@@ -1,5 +1,6 @@
 display.html
 grid.display.html
+grid.link.html
 tab.html
 tabset.html
 component.html

@@ -329,6 +329,8 @@ class CompileService {
                 def args = "";
                 if (pageComponent.type == PageComponent.COMP_TYPE_LIST || pageComponent.type == PageComponent.COMP_TYPE_GRID || pageComponent.type == PageComponent.COMP_TYPE_HTABLE) {
                     args = "${PageComponent.CURRENT_ITEM}, field"
+                } else if (pageComponent.type == PageComponent.COMP_TYPE_LINK){
+                    args = PageComponent.GRID_ITEM // only provided when used in a grid
                 }
 
                 code += """    \$scope.${ pageComponent.name }_onClick = function($args) {\n    $expr\n    };\n"""

@@ -20,8 +20,8 @@ class ComponentTemplateEngine {
     static final def jsStartTag = "<%JavaScript"
     static final def jsEndTag = "%>"
     static final def timeout = 10 * 1000 //ms i.e. 10 s
+    static def timeLoaded = new Date(0L)
     static def templates
-    static def timeLoaded = null
     static def nashornEngine = null
     static def gStringEngine = null
 
@@ -69,10 +69,14 @@ class ComponentTemplateEngine {
     }
 
     static def getGStringTemplate(text) {
-        if (!gStringEngine) {
-            gStringEngine = new groovy.text.GStringTemplateEngine()
+        try {
+            if (!gStringEngine) {
+                gStringEngine = new groovy.text.GStringTemplateEngine()
+            }
+            return [template: gStringEngine.createTemplate(text)]
+        } catch (e){
+            throw new RuntimeException("Error in getGStringTemplate for text = $text\n$e")
         }
-        [template: gStringEngine.createTemplate(text) ]
     }
 
     static def supports(templateName) {
@@ -84,7 +88,11 @@ class ComponentTemplateEngine {
         loadTemplates() // Make sure the templates are loaded when we need them
         if (component.templateName && templates[component.templateName] ) {
             if (templates[component.templateName].template) {
-                templates[component.templateName].template.make(component)
+                try {
+                    templates[component.templateName].template.make(component)
+                } catch (e) {
+                    log.error("Error rendering component ${component.name} using template ${component.templateName} \n$e")
+                }
             } else {
                 executeJavaScriptEngine(templates[component.templateName], component)
             }

@@ -5,3 +5,4 @@ pbadm.ExportPages.json
 pbadm.ExportVirtualDomains.json
 pbadm.LandingPage.json
 pbadm.AdminTasks.json
+pbadm.ExportPagesExt.json
