@@ -20,7 +20,9 @@ class PageExportService {
                 s=(String) s.tr(" ',.<>?;:|+=!/&*(){}[]`~@#\$%\"^-", " ")
                 if (s) {
                     def tokens=s.split() //split sortby on whitespace
-                    result +=[field: tokens[0], direction: tokens[1] ]
+                    if (Page.declaredFields.find{ f -> tokens[0] == f.name }) {
+                        result += [field: tokens[0], direction: tokens[1]]
+                    }
                 }
             }
         }
@@ -29,7 +31,12 @@ class PageExportService {
 
     def show(params) {
         def pageExport
-        def page = Page.findByConstantName(params.id?:params.constantName)
+        def page
+        if (params.id && params.id.matches("[0-9]+")) {
+            page = Page.get(params.id )
+        } else {
+            page = Page.findByConstantName(params.id?:params.constantName)
+        }
         if (page) {
             pageExport = new PageExport(page)
         }
@@ -50,7 +57,7 @@ class PageExportService {
             }
             if (sortBy[0]) {
                 sortBy.each {
-                    order(it.field,it.direction)
+                    order(it.field, it.direction)
                 }
             }
             else {

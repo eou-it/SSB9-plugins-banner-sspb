@@ -8,6 +8,8 @@ import grails.test.spock.IntegrationSpec
 class PageExportServiceIntegrationSpec extends IntegrationSpec {
     def pageExportService
     def pageService
+
+    def testPage
     def setup() {
         Map pageMap = [pageName: "integrationTestPage",
                            source: '''{
@@ -18,11 +20,32 @@ class PageExportServiceIntegrationSpec extends IntegrationSpec {
                                      "components": null
                                      }''']
 
-        def result = pageService.create(pageMap,[:])
-        assert result.statusCode == 0
+        testPage = pageService.create(pageMap,[:])
+        assert testPage.statusCode == 0
     }
 
     def cleanup() {
+    }
+
+    void "test show"() {
+        given:
+        def params1 = [constantName: "integrationTestPage", controller: "restfulApi" ,pluralizedResourceName: "pageexports"]
+        def params2 = [id: "integrationTestPage",  controller: "restfulApi" ,pluralizedResourceName: "pageexports"]
+        def params3 = [id: testPage.page.id.toString(), controller: "restfulApi" ,pluralizedResourceName: "pageexports"]
+        def params4 = [constantName: "NotExistingPageName",  controller: "restfulApi" ,pluralizedResourceName: "pageexports"]
+        when:
+        def result1 =pageExportService.show(params1)
+        def result2 =pageExportService.show(params2)
+        def result3 =pageExportService.show(params3)
+        def result4 =pageExportService.show(params4)
+        then:
+        result1 != null
+        result1.constantName == "integrationTestPage"
+        result2 != null
+        result2.constantName == "integrationTestPage"
+        result3 != null
+        result3.constantName == "integrationTestPage"
+        result4 == null
     }
 
     void "test list"() {
