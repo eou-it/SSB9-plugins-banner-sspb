@@ -6,6 +6,7 @@ package net.hedtech.banner.virtualDomain
 
 import net.hedtech.banner.sspb.Page
 import net.hedtech.banner.sspb.PageComponent
+import org.hibernate.criterion.CriteriaSpecification
 
 class VirtualDomainExportService {
     static transactional = false //Getting error connection closed without this
@@ -24,13 +25,33 @@ class VirtualDomainExportService {
                 s = (String) s.tr(" ',.<>?;:|+=!/&*(){}[]`~@#\$%\"^-", " ")
                 if (s) {
                     def tokens = s.split() //split sortby on whitespace
-                    result += [field: tokens[0], direction: tokens[1]]
+                    if (VirtualDomain.declaredFields.find{ f -> tokens[0] == f.name }) {
+                        result += [field: tokens[0], direction: tokens[1]]
+                    }
                 }
             }
         }
         result
     }
 
+    def show(params) {
+        def vd
+        if (params.id && params.id.matches("[0-9]+")) {
+            vd = VirtualDomain.get(params.id )
+        } else {
+            vd = VirtualDomain.findByServiceName(params.id?:params.constantName)
+        }
+
+        def vdExport = [:]
+        def vdRoles = []
+        vd.virtualDomainRoles.each{
+            vdRoles << it.properties["allowDelete", "allowGet", "allowPost", "allowPut","roleName"]
+        }
+        vdExport = vd.properties['serviceName', 'typeOfCode', 'dataSource',
+                'codeGet', 'codePost', 'codePut', 'codeDelete', 'fileTimestamp']
+        vdExport.virtualDomainRoles = vdRoles
+        vdExport
+    }
 
     def list(params) {
         def max = Math.min(params.max ? params.max.toInteger() : 10000, 10000)
@@ -47,7 +68,7 @@ class VirtualDomainExportService {
                 vdSet << "~"
         }
         def cr = VirtualDomain.createCriteria()
-        def result = cr.list(offset: offset, max: max, paginationEnabledList: false) {
+        def result = cr.list(offset: offset, max: max, paginationEnabledList: true) {
             if (params.serviceName) {
                 like("serviceName", params.serviceName)
             }
@@ -61,28 +82,19 @@ class VirtualDomainExportService {
             } else {
                 order("serviceName", "asc")
             }
+            resultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP)
+            projections {
+                property("id","id")
+                property("serviceName","serviceName")
+                property("lastUpdated","lastUpdated")
+                property("fileTimestamp","fileTimestamp")
+                property("version","version")
+            }
         }
-        def listResult = []
-        result.each {
-            // trim the object since we only need to return the serviceName properties for listing
-            listResult << [serviceName: it.serviceName, id: it.id, lastUpdated: it.lastUpdated,
-                    fileTimestamp: it.fileTimestamp, version: it.version]
-        }
-
-        listResult
+        result
     }
 
-    //Todo: add pageLike criteria
-    def count(Map params) {
-        def result
-        if (params.serviceName) {
-            result = VirtualDomain.countByServiceNameLike(params.serviceName)
-        } else {
-            result = VirtualDomain.count()
-        }
-        return result
-    }
-
+    //Todo: evaluate if this can be obsoleted
     def create(Map content, ignore) {
         def result
         if (content.exportVirtualDomain == 1) {
@@ -106,12 +118,11 @@ class VirtualDomainExportService {
 
     // return a list of referenced virtual domains
     def vdForPages(pageNameLike) {
-        def slurper = new groovy.json.JsonSlurper()
         Set vdSet = new HashSet()
         def pages = Page.findAllByConstantNameLike(pageNameLike)
         //this is gonna be pretty expensive probably
         pages.each{ p ->
-            def jsonPage = slurper.parseText(p.modelView)
+            def jsonPage =  p.getMergedModelMap(false)
             def pComponent = PageComponent.parseJSON(jsonPage)
             def vds = pComponent.findComponents([PageComponent.COMP_TYPE_RESOURCE])
             vds.each { res ->

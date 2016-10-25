@@ -24,6 +24,7 @@ class ParseTests extends GroovyTestCase  {
             [in:"\$EmployeeData.\$load"            , out:"\$scope.EmployeeDataDS.load"    ],
             [in:"\$EmployeeData.\$selected"        , out:"\$scope.EmployeeDataDS.currentRecord"    ],
             [in:"\$EmployeeData.\$selection"       , out:"\$scope.EmployeeDataDS.selectedRecords"    ],
+            [in:"\$EmployeeData.\$setModified"     , out:"\$scope.EmployeeDataDS.setModifieds"    ],
             [where:"onLoad",in:"if (\$EmployeeData.JOB =='MANAGER') \$\$activateFlow('managerFlow'); else \$\$activateFlow('employeeFlow');",
                            out:"if (\$scope.EmployeeData.JOB =='MANAGER') \$scope._activateFlow('managerFlow'); else \$scope._activateFlow('employeeFlow');",
             ],

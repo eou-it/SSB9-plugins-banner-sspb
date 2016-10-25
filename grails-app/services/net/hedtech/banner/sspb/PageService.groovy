@@ -108,7 +108,11 @@ class PageService {
             } else {
                 pageInstance = new Page([constantName:pageName, extendsPage:extendsPage])
             }
-            pageInstance.modelView=pageSource
+            pageInstance.modelView = pageSource
+            //remove merge Info if page is not extended
+            if (!pageInstance.extendsPage){
+                pageInstance.modelView = Page.modelToString(Page.cleanModelMap(pageInstance.getMergedModelMap()))
+            }
             ret = compilePage(pageInstance)
 
             if (ret.statusCode == 0) {
