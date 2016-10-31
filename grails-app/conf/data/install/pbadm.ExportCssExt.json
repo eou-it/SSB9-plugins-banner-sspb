@@ -31,8 +31,8 @@
          },
          "exportGrid": {
             "onSave": {
-               "ext": "var exportDone = false; // return false use the default save handler\nif ($exportTarget == 'C')  {\n\tvar count = 0;\n\tfunction getOne(data, index) {\n\t\tif (data.exportCss) {\n\t\t\t$exportId=data.constantName;\n\t\t\t$getExport.$get();\n\t\t\tcount++;\n\t\t}\n\t}\n\t$exportGrid.$data.forEach( getOne);\n\tconsole.log(\"Started download of\",count,\" files.\");\n\texportDone = true; // well, it is kicked off - the download is started asynch\n}\nreturn exportDone;",
-               "patch": "--- original\n+++ revised\n@@ -3,6 +3,6 @@\n \tvar count = 0;\n \tfunction getOne(data, index) {\n-\t\tif (data.exportobject) {\n-\t\t\t$exportId=data.serviceName;\n+\t\tif (data.exportCss) {\n+\t\t\t$exportId=data.constantName;\n \t\t\t$getExport.$get();\n \t\t\tcount++;",
+               "ext": "var exportDone = false; // return false use the default save handler\nif ($exportTarget == 'C')  {\n\tvar count = 0;\n\tfunction getOne(data, index) {\n\t\tif (data.exportCss) {\n\t\t\t$exportId=data.constantName;\n\t\t\t$getExport.$get();\n\t\t\tcount++;\n\t\t}\n\t}\n\t$exportGrid.$data.forEach( getOne);\n\tconsole.log(\"Started download of\",count,\" files.\");\n\texportDone = true; // well, it is kicked off - the download is started asynch\n} \nreturn exportDone;",
+               "patch": "--- original\n+++ revised\n@@ -3,6 +3,6 @@\n \tvar count = 0;\n \tfunction getOne(data, index) {\n-\t\tif (data.exportobject) {\n-\t\t\t$exportId=data.serviceName;\n+\t\tif (data.exportCss) {\n+\t\t\t$exportId=data.constantName;\n \t\t\t$getExport.$get();\n \t\t\tcount++;\n@@ -12,4 +12,4 @@\n \tconsole.log(\"Started download of\",count,\" files.\");\n \texportDone = true; // well, it is kicked off - the download is started asynch\n-}\n+} \n return exportDone;",
                "base": "var exportDone = false; // return false use the default save handler\nif ($exportTarget == 'C')  {\n\tvar count = 0;\n\tfunction getOne(data, index) {\n\t\tif (data.exportobject) {\n\t\t\t$exportId=data.serviceName;\n\t\t\t$getExport.$get();\n\t\t\tcount++;\n\t\t}\n\t}\n\t$exportGrid.$data.forEach( getOne);\n\tconsole.log(\"Started download of\",count,\" files.\");\n\texportDone = true; // well, it is kicked off - the download is started asynch\n}\nreturn exportDone;"
             },
             "onSaveSuccess": {
@@ -97,7 +97,7 @@
          }}
       }
    },
-   "fileTimestamp": "2016-10-31T14:17:25Z",
+   "fileTimestamp": "2016-10-31T17:32:20Z",
    "pageRoles": [{
       "allow": true,
       "roleName": "ADMIN-GPBADMN"

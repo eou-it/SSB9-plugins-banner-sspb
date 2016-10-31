@@ -162,6 +162,7 @@
                   "refreshDataLabel": "Clear Selection",
                   "name": "exportGrid",
                   "allowModify": true,
+                  "onLoad": "//Clear internal array to bypass default behavior\n$exportGridDS.modified.removeAll();",
                   "model": "exportResource",
                   "allowReload": true,
                   "parameters": {
@@ -185,6 +186,6 @@
       "type": "page",
       "importCSS": "xeStyle"
    },
-   "fileTimestamp": "2016-10-25T12:53:26Z",
+   "fileTimestamp": "2016-10-31T17:32:20Z",
    "pageRoles": []
 }

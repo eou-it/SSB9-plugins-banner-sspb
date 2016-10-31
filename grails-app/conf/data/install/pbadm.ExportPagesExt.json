@@ -24,7 +24,7 @@
                "ext": "http://localhost:8080/BannerExtensibility/internalPb/pages/pbadm.ExportPages",
                "base": ""
             },
-            "onLoad": {"ext": "$ShowPages.$visible = true;\n// ($pageGrid.$data && $pageGrid.$data.length>0);"},
+            "onLoad": {"ext": "//Clear internal array to bypass default behavior\n$pageGridDS.modified.removeAll();"},
             "pageSize": {
                "ext": 5,
                "base": 10
@@ -104,7 +104,7 @@
                }
             },
             "onUpdate": {
-               "ext": "var cnt = 1000;\nif ($pageGridDS.pageSize!=cnt) {\n  $pageGridDS.pageSize=cnt;\n  $pageGridDS.pagingOptions.pageSizes[0]=cnt;\n  $pageGridDS.pagingOptions.pageSize=cnt;\n  $pageGridDS.pagingOptions.currentPage=1;\n}\n\n$pageGrid.$load();",
+               "ext": "var cnt = 1000;\nif ($pageGridDS.pageSize!=cnt) {\n  $pageGridDS.pageSize=cnt;\n  $pageGridDS.pagingOptions.pageSizes[0]=cnt;\n  $pageGridDS.pagingOptions.pageSize=cnt;\n  $pageGridDS.pagingOptions.currentPage=1;\n}\n$pageGrid.$load();",
                "base": "$pageGrid.$load();"
             },
             "value": {"ext": ""}
@@ -146,7 +146,7 @@
          }}
       }
    },
-   "fileTimestamp": "2016-10-21T16:28:18Z",
+   "fileTimestamp": "2016-10-31T17:32:20Z",
    "pageRoles": [{
       "allow": true,
       "roleName": "ADMIN-GPBADMN"
