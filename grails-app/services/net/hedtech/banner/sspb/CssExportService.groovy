@@ -4,6 +4,7 @@
 
 package net.hedtech.banner.sspb
 import net.hedtech.banner.css.Css
+import org.hibernate.criterion.CriteriaSpecification
 
 
 class CssExportService {
@@ -23,11 +24,25 @@ class CssExportService {
                 s=(String) s.tr(" ',.<>?;:|+=!/&*(){}[]`~@#\$%\"^-", " ")
                 if (s) {
                     def tokens=s.split() //split sortby on whitespace
-                    result +=[field: tokens[0], direction: tokens[1] ]
+                    if (Css.declaredFields.find{ f -> tokens[0] == f.name }) {
+                        result += [field: tokens[0], direction: tokens[1]]
+                    }
                 }
             }
         }
         result
+    }
+
+    def show(params) {
+        def css
+        if (params.id && params.id.matches("[0-9]+")) {
+            css = Css.get(params.id )
+        } else {
+            css = Css.findByConstantName(params.id?:params.constantName)
+        }
+        def cssExport = [:]
+        cssExport = css.properties['constantName', 'css', 'description', 'fileTimestamp']
+        cssExport
     }
 
     def list( params) {
@@ -60,34 +75,19 @@ class CssExportService {
             else {
                 order ("constantName", "asc")
             }
-            /* want to reduce the data in result set but doesn't seem to work like this
+            resultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP)
             projections {
-                property('id', 'id')
-                property('lastUpdated', 'lastUpdated')
-                property('constantName', 'constantName')
+                property("id","id")
+                property("constantName","constantName")
+                property("lastUpdated","lastUpdated")
+                property("fileTimestamp","fileTimestamp")
+                property("version","version")
             }
-            */
         }
-        def listResult = []
-        result.each {
-            // trim the object since we only need to return the constantName properties for listing
-            listResult << [constantName : it.constantName, id: it.id, lastUpdated: it.lastUpdated,
-                    fileTimestamp: it.fileTimestamp, version: it.version]
-        }
-        listResult
+        result
     }
 
-    //Todo: add pageLike criteria
-    def count(Map params) {
-        def result
-        if (params.constantName) {
-            result = Css.countByConstantNameLike(params.constantName)
-        } else {
-            result = Css.count()
-        }
-        return result
-    }
-
+    //Todo: evaluate if this can be obsoleted
     def create(Map content, ignore) {
         def result
         if (content.exportCss == 1) {
@@ -115,7 +115,7 @@ class CssExportService {
         Set cssSet = new HashSet()
         def pages = Page.findAllByConstantNameLike(pageNameLike)
         pages.each{ p ->
-            def jsonPage = slurper.parseText(p.modelView)
+            def jsonPage = p.getMergedModelMap(false)
             def css = jsonPage.importCSS
             if (css) {
                 def list = css?.tokenize(',')
