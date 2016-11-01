@@ -15,7 +15,7 @@
             "staticData": [
                {
                   "code": "S",
-                  "description": "Server FS"
+                  "description": "Server File System"
                },
                {
                   "code": "C",
@@ -90,7 +90,7 @@
                },
                {
                   "valueStyle": "primary",
-                  "onClick": "$exportGrid.$data.forEach(\n   function (data, index) {\n      data.exportobject = 1;\n       $exportGrid.$setModified(data); // Using undocumented method\n   }\n);",
+                  "onClick": "$exportGrid.$data.forEach(\n   function (data, index) {\n      data.export = 1;\n       $exportGrid.$setModified(data); // Using undocumented method\n   }\n);",
                   "name": "markAll",
                   "label": "Select all for export",
                   "type": "button"
@@ -134,7 +134,7 @@
                         "booleanTrueValue": "1",
                         "booleanFalseValue": "0",
                         "name": "export",
-                        "model": "exportobject",
+                        "model": "export",
                         "label": "Select for Export",
                         "loadInitially": true,
                         "type": "boolean",
@@ -142,7 +142,7 @@
                         "value": "1"
                      },
                      {
-                        "onClick": "console.log('Downloading', item.serviceName);\n$exportId=item.serviceName;\n$getExport.$get();",
+                        "onClick": "$exportId=item.serviceName;\n$getExport.$get();",
                         "name": "downloadLink",
                         "description": "Click to download this virtual domain",
                         "label": "Download",
@@ -150,10 +150,10 @@
                         "replaceView": true
                      }
                   ],
-                  "onSave": "var exportDone = false; // return false use the default save handler\nif ($exportTarget == 'C')  {\n\tvar count = 0;\n\tfunction getOne(data, index) {\n\t\tif (data.exportobject) {\n\t\t\t$exportId=data.serviceName;\n\t\t\t$getExport.$get();\n\t\t\tcount++;\n\t\t}\n\t}\n\t$exportGrid.$data.forEach( getOne);\n\tconsole.log(\"Started download of\",count,\" files.\");\n\texportDone = true; // well, it is kicked off - the download is started asynch\n}\nreturn exportDone;",
+                  "onSave": "var exportDone = false; // return false use the default save handler\nif ($exportTarget == 'C')  {\n\tvar count = 0;\n\tfunction getOne(data, index) {\n\t\tif (data.export) {\n\t\t\t$exportId=data.serviceName;\n\t\t\t$getExport.$get();\n\t\t\tcount++;\n\t\t}\n\t}\n\t$exportGrid.$data.forEach( getOne);\n\tconsole.log(\"Started download of\",count,\" files.\");\n\texportDone = true; // well, it is kicked off - the download is started asynch\n}\nreturn exportDone;",
                   "submit": "",
                   "allowNew": false,
-                  "onSaveSuccess": "if (response.exportobject == \"1\") {\n  alert( \"Exported virtual domain: \" + response.serviceName, {flash: true});\n}",
+                  "onSaveSuccess": "if (response.export == \"1\") {\n  alert( \"Exported virtual domain: \" + response.serviceName, {flash: true});\n}",
                   "pageSize": 5,
                   "saveDataLabel": "Export",
                   "label": "Objects to export",
@@ -186,6 +186,6 @@
       "type": "page",
       "importCSS": "xeStyle"
    },
-   "fileTimestamp": "2016-11-01T12:00:00Z",
+   "fileTimestamp": "2016-11-01T17:50:34Z",
    "pageRoles": []
 }

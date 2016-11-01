@@ -3,6 +3,8 @@
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
+import org.hibernate.criterion.CriteriaSpecification
+
 class PageExportService {
     static transactional = false  //Getting error connection closed without this
 
@@ -63,39 +65,21 @@ class PageExportService {
             else {
                 order ("constantName", "asc")
             }
-        }
-        def listResult = []
-        result.each {
-            // trim the object since we only need to return the constantName properties for listing
-            listResult << [constantName : it.constantName, id: it.id, lastUpdated: it.lastUpdated,
-                           fileTimestamp: it.fileTimestamp, version: it.version]
-        }
-        listResult
-    }
-
-    def count(Map params) {
-        def result
-        if (params.constantName) {
-            result = Page.countByConstantNameLike(params.constantName)
-        } else {
-            result = Page.count()
-        }
-        return result
-    }
-
-    def create(Map content, ignore) {
-        def result
-        if (content.exportPage == 1) {
-            def pageUtilService = new PageUtilService()
-            pageUtilService.exportToFile(content.constantName)
-            result = content
+            resultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP)
+            projections {
+                property("id","id")
+                property("constantName","constantName")
+                property("lastUpdated","lastUpdated")
+                property("fileTimestamp","fileTimestamp")
+                property("version","version")
+            }
         }
         result
     }
 
     def update(Map content, ignore) {
         def result
-        if (content.exportPage == 1) {
+        if (content.export == 1) {
             def pageUtilService = new PageUtilService()
             pageUtilService.exportToFile(content.constantName)
             result = content

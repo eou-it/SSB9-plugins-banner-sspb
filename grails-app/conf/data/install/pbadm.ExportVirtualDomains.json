@@ -9,27 +9,10 @@
             "ext": "Filtered Virtual Domains",
             "base": "Filtered Objects"
          }},
-         "markAll": {"onClick": {
-            "ext": "$exportGrid.$data.forEach(\n   function (data, index) {\n      data.exportVirtualDomain = 1;\n       $exportGrid.$setModified(data); // Using undocumented method\n   }\n);",
-            "patch": "--- original\n+++ revised\n@@ -1,5 +1,5 @@\n $exportGrid.$data.forEach(\n    function (data, index) {\n-      data.exportobject = 1;\n+      data.exportVirtualDomain = 1;\n        $exportGrid.$setModified(data); // Using undocumented method\n    }",
-            "base": "$exportGrid.$data.forEach(\n   function (data, index) {\n      data.exportobject = 1;\n       $exportGrid.$setModified(data); // Using undocumented method\n   }\n);"
+         "exportGrid": {"label": {
+            "ext": "Virtual domains to export",
+            "base": "Objects to export"
          }},
-         "exportGrid": {
-            "onSave": {
-               "ext": "var exportDone = false; // return false use the default save handler\nif ($exportTarget == 'C')  {\n\tvar count = 0;\n\tfunction getOne(data, index) {\n\t\tif (data.exportVirtualDomain) {\n\t\t\t$exportId=data.serviceName;\n\t\t\t$getExport.$get();\n\t\t\tcount++;\n\t\t}\n\t}\n\t$exportGrid.$data.forEach( getOne);\n\tconsole.log(\"Started download of\",count,\" files.\");\n\texportDone = true; // well, it is kicked off - the download is started asynch\n}\nreturn exportDone;",
-               "patch": "--- original\n+++ revised\n@@ -3,5 +3,5 @@\n \tvar count = 0;\n \tfunction getOne(data, index) {\n-\t\tif (data.exportobject) {\n+\t\tif (data.exportVirtualDomain) {\n \t\t\t$exportId=data.serviceName;\n \t\t\t$getExport.$get();",
-               "base": "var exportDone = false; // return false use the default save handler\nif ($exportTarget == 'C')  {\n\tvar count = 0;\n\tfunction getOne(data, index) {\n\t\tif (data.exportobject) {\n\t\t\t$exportId=data.serviceName;\n\t\t\t$getExport.$get();\n\t\t\tcount++;\n\t\t}\n\t}\n\t$exportGrid.$data.forEach( getOne);\n\tconsole.log(\"Started download of\",count,\" files.\");\n\texportDone = true; // well, it is kicked off - the download is started asynch\n}\nreturn exportDone;"
-            },
-            "onSaveSuccess": {
-               "ext": "if (response.exportVirtualDomain == \"1\") {\n  alert( \"Exported virtual domain: \" + response.serviceName, {flash: true});\n}",
-               "patch": "--- original\n+++ revised\n@@ -1,3 +1,3 @@\n-if (response.exportobject == \"1\") {\n+if (response.exportVirtualDomain == \"1\") {\n   alert( \"Exported virtual domain: \" + response.serviceName, {flash: true});\n }",
-               "base": "if (response.exportobject == \"1\") {\n  alert( \"Exported virtual domain: \" + response.serviceName, {flash: true});\n}"
-            },
-            "label": {
-               "ext": "Virtual domains to export",
-               "base": "Objects to export"
-            }
-         },
          "exportResource": {"resource": {
             "ext": "virtualdomainexports",
             "base": "objectexports"
@@ -56,14 +39,10 @@
                "ext": "Export Virtual Domains",
                "base": "Export artifacts basepage"
             }
-         },
-         "export": {"model": {
-            "ext": "exportVirtualDomain",
-            "base": "exportobject"
-         }}
+         }
       }
    },
-   "fileTimestamp": "2016-11-01T12:00:00Z",
+   "fileTimestamp": "2016-11-01T17:50:34Z",
    "pageRoles": [{
       "allow": true,
       "roleName": "ADMIN-GPBADMN"

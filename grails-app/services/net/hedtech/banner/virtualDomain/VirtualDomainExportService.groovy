@@ -94,21 +94,10 @@ class VirtualDomainExportService {
         result
     }
 
-    //Todo: evaluate if this can be obsoleted
-    def create(Map content, ignore) {
-        def result
-        if (content.exportVirtualDomain == 1) {
-            def vdUtilService = new VirtualDomainUtilService()
-            vdUtilService.exportToFile(content.serviceName, content.pageLike)
-            result = content
-        }
-        result
-    }
-
     // handle export of single vd
     def update(Map content, ignore) {
         def result
-        if (content.exportVirtualDomain == 1) {
+        if (content.export == 1) {
             def vdUtilService = new VirtualDomainUtilService()
             vdUtilService.exportToFile(content.serviceName)
             result = content

@@ -38,27 +38,13 @@ class CssExportServiceIntegrationSpec extends IntegrationSpec {
         given:
         def cssInstance = Css.findAllByConstantNameLike("testExportCss")
         def params = [controller: "restfulApi", id: cssInstance.id, pluralizedResourceName: "cssexports"]
-        def content = [constantName: "testExportCss", exportCss: 1, id: cssInstance.id]
+        def content = [constantName: "testExportCss", export: 1, id: cssInstance.id]
         when:
         def result = cssExportService.update(content, params)
         then:
         result.size() == 3
         result.constantName == 'testExportCss'
-        result.exportCss == 1
-        result.id != null
-    }
-
-    void "test CSS export create"() {
-        given:
-        def cssInstance = Css.findAllByConstantNameLike("testExportCss")
-        def params = [controller: "restfulApi", id: cssInstance.id, pluralizedResourceName: "cssexports"]
-        def content = [constantName: "testExportCss", exportCss: 1, id: cssInstance.id]
-        when:
-        def result = cssExportService.create(content, params)
-        then:
-        result.size() == 3
-        result.constantName == 'testExportCss'
-        result.exportCss == 1
+        result.export == 1
         result.id != null
     }
 }
