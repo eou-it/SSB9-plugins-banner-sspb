@@ -1,128 +1,130 @@
 {
-   "extendsPage": null,
+   "constantName": "pbadm.ExportPages",
+   "extendsPage": {"constantName": "pbadm.ExportBase"},
+   "modelView": {
+      "baseRoot": "pbadmExportBase",
+      "deltaVersion": "1.0",
+      "deltas": {
+         "ShowForm": {"label": {
+            "ext": "Filtered pages",
+            "base": "Filtered Objects"
+         }},
+         "markAll": {"onClick": {
+            "ext": "$exportGrid.$data.forEach(\n   function (data, index) {\n      data.exportPage = 1;\n       $exportGrid.$setModified(data); // Using undocumented method\n   }\n);",
+            "patch": "--- original\n+++ revised\n@@ -1,5 +1,5 @@\n $exportGrid.$data.forEach(\n    function (data, index) {\n-      data.exportobject = 1;\n+      data.exportPage = 1;\n        $exportGrid.$setModified(data); // Using undocumented method\n    }",
+            "base": "$exportGrid.$data.forEach(\n   function (data, index) {\n      data.exportobject = 1;\n       $exportGrid.$setModified(data); // Using undocumented method\n   }\n);"
+         }},
+         "Intro": {"value": {
+            "ext": "The table below shows the Page Builder pages matching the Page Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button.",
+            "base": "The table below shows the Page Builder virtual domains matching the Virtual domain Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button."
+         }},
+         "downloadLink": {
+            "onClick": {
+               "ext": "console.log(item);\nconsole.log(\"from link\");\n$exportId=item.constantName;\n$getExport.$get();",
+               "patch": "--- original\n+++ revised\n@@ -1,3 +1,4 @@\n-console.log('Downloading', item.serviceName);\n-$exportId=item.serviceName;\n+console.log(item);\n+console.log(\"from link\");\n+$exportId=item.constantName;\n $getExport.$get();",
+               "base": "console.log('Downloading', item.serviceName);\n$exportId=item.serviceName;\n$getExport.$get();"
+            },
+            "description": {
+               "ext": "Click to download this page",
+               "base": "Click to download this virtual domain"
+            },
+            "url": {"ext": ""}
+         },
+         "exportGrid": {
+            "onSave": {
+               "ext": "var exportDone = false; // return false use the default save handler\nif ($exportTarget == 'C')  {\n\tvar count = 0;\n\tfunction getOne(data, index) {\n\t\tif (data.exportPage) {\n\t\t\t$exportId=data.constantName;\n\t\t\t$getExport.$get();\n\t\t\tcount++;\n\t\t}\n\t}\n\t$exportGrid.$data.forEach( getOne);\n\tconsole.log(\"Started download of\",count,\" files.\");\n\texportDone = true; // well, it is kicked off - the download is started asynch\n}\nreturn exportDone;",
+               "patch": "--- original\n+++ revised\n@@ -3,6 +3,6 @@\n \tvar count = 0;\n \tfunction getOne(data, index) {\n-\t\tif (data.exportobject) {\n-\t\t\t$exportId=data.serviceName;\n+\t\tif (data.exportPage) {\n+\t\t\t$exportId=data.constantName;\n \t\t\t$getExport.$get();\n \t\t\tcount++;",
+               "base": "var exportDone = false; // return false use the default save handler\nif ($exportTarget == 'C')  {\n\tvar count = 0;\n\tfunction getOne(data, index) {\n\t\tif (data.exportobject) {\n\t\t\t$exportId=data.serviceName;\n\t\t\t$getExport.$get();\n\t\t\tcount++;\n\t\t}\n\t}\n\t$exportGrid.$data.forEach( getOne);\n\tconsole.log(\"Started download of\",count,\" files.\");\n\texportDone = true; // well, it is kicked off - the download is started asynch\n}\nreturn exportDone;"
+            },
+            "documentation": {"ext": "http://localhost:8080/BannerExtensibility/internalPb/pages/pbadm.ExportPages"},
+            "onSaveSuccess": {
+               "ext": "if (response.exportPage == \"1\") {\n  alert( \"Exported page: \" + response.constantName, {flash: true});\n}",
+               "patch": "--- original\n+++ revised\n@@ -1,3 +1,3 @@\n-if (response.exportobject == \"1\") {\n-  alert( \"Exported virtual domain: \" + response.serviceName, {flash: true});\n+if (response.exportPage == \"1\") {\n+  alert( \"Exported page: \" + response.constantName, {flash: true});\n }",
+               "base": "if (response.exportobject == \"1\") {\n  alert( \"Exported virtual domain: \" + response.serviceName, {flash: true});\n}"
+            },
+            "label": {
+               "ext": "Pages to export",
+               "base": "Objects to export"
+            },
+            "parameters": {
+               "ext": {"constantName": "$nameFilter"},
+               "base": {
+                  "pageLike": "$pageFilter",
+                  "serviceName": "$nameFilter"
+               }
+            }
+         },
+         "exportResource": {"resource": {
+            "ext": "pageexports",
+            "base": "objectexports"
+         }},
+         "getExport": {
+            "onLoad": {
+               "ext": "function download(p){\n    if(!p) return;\n    var theAnchor = $('<a />')\n        .attr('href', p.header+p.data)\n        .attr('download', p.fileName)\n        // Firefox does not fires click if the link is outside\n        // the DOM\n        .appendTo('body');\n    \n    theAnchor[0].click(); \n    theAnchor.remove();\n}\n\n//Define keys to remove using + to avoid replacement with PB variables\nvar keys={};\nkeys[ \"$\"+\"resolved\"]= true;\nkeys[\"$\"+\"$\"+\"hashKey\"]= true;\nkeys[\"$\"+\"promise\"]=true;\n\n// remove additional properties added by Angular resource when pretty print page source\nfunction jsonFilter(key, value) {\n    return keys[key]?undefined:value;\n}\n\n\nif (data && data.constantName){\n    var params = {\n          fileName: 'pages.'+data.constantName+'.json',\n          header: 'data:text/csv;charset=utf8,',\n          data: encodeURIComponent(JSON.stringify(data,jsonFilter,3))\n    };\n    download(params);\n} else {\n    alert('Unable to save data - unexpected format.');\n}",
+               "patch": "--- original\n+++ revised\n@@ -18,5 +18,5 @@\n keys[\"$\"+\"promise\"]=true;\n \n-// remove additional properties added by Angular resource when pretty print source\n+// remove additional properties added by Angular resource when pretty print page source\n function jsonFilter(key, value) {\n     return keys[key]?undefined:value;\n@@ -24,13 +24,12 @@\n \n \n-if (data && data.serviceName){\n+if (data && data.constantName){\n     var params = {\n-          fileName: 'objects.'+data.serviceName+'.json',\n+          fileName: 'pages.'+data.constantName+'.json',\n           header: 'data:text/csv;charset=utf8,',\n           data: encodeURIComponent(JSON.stringify(data,jsonFilter,3))\n     };\n     download(params);\n-    alert(\"Exported virtual domain: \"+ data.serviceName,{flash: true});\n } else {\n-    alert('Unable to save data - unexpected format.', {type:\"error\"});   \n+    alert('Unable to save data - unexpected format.');\n }",
+               "base": "function download(p){\n    if(!p) return;\n    var theAnchor = $('<a />')\n        .attr('href', p.header+p.data)\n        .attr('download', p.fileName)\n        // Firefox does not fires click if the link is outside\n        // the DOM\n        .appendTo('body');\n    \n    theAnchor[0].click(); \n    theAnchor.remove();\n}\n\n//Define keys to remove using + to avoid replacement with PB variables\nvar keys={};\nkeys[ \"$\"+\"resolved\"]= true;\nkeys[\"$\"+\"$\"+\"hashKey\"]= true;\nkeys[\"$\"+\"promise\"]=true;\n\n// remove additional properties added by Angular resource when pretty print source\nfunction jsonFilter(key, value) {\n    return keys[key]?undefined:value;\n}\n\n\nif (data && data.serviceName){\n    var params = {\n          fileName: 'objects.'+data.serviceName+'.json',\n          header: 'data:text/csv;charset=utf8,',\n          data: encodeURIComponent(JSON.stringify(data,jsonFilter,3))\n    };\n    download(params);\n    alert(\"Exported virtual domain: \"+ data.serviceName,{flash: true});\n} else {\n    alert('Unable to save data - unexpected format.', {type:\"error\"});   \n}"
+            },
+            "model": {
+               "ext": "exportResource.modelView",
+               "base": "exportResource.serviceName"
+            }
+         },
+         "id": {"model": {
+            "ext": "constantName",
+            "base": "serviceName"
+         }},
+         "nameFilter": {
+            "meta": {
+               "ext": {"parent": "SelectBlock"},
+               "base": {
+                  "parent": "SelectBlock",
+                  "nextSibling": "pageFilter"
+               }
+            },
+            "value": {"ext": ""}
+         },
+         "pageFilter": {
+            "label": {"base": "Used by page like"},
+            "loadInitially": {"base": false},
+            "type": {"base": "text"},
+            "required": {"base": false},
+            "readonly": {"base": false},
+            "meta": {"base": {"parent": "SelectBlock"}},
+            "name": {"base": "pageFilter"},
+            "model": {"base": ""},
+            "placeholder": {"base": "Page..."},
+            "onUpdate": {"base": "var cnt = 1000;\nif ($exportGridDS.pageSize!=cnt) {\n  $exportGridDS.pageSize=cnt;\n  $exportGridDS.pagingOptions.pageSizes[0]=cnt;\n  $exportGridDS.pagingOptions.pageSize=cnt;\n  $exportGridDS.pagingOptions.currentPage=1;\n}\n$exportGrid.$load();"},
+            "parameters": {"base": {}},
+            "value": {"base": ""},
+            "validation": {"base": {}}
+         },
+         "pbadmExportBase": {
+            "_name": {
+               "ext": "pbadmExportPages",
+               "base": "pbadmExportBase"
+            },
+            "documentation": {
+               "ext": "Export Pages",
+               "base": "This page is the base for a number of export pages and contains common definitions"
+            },
+            "label": {
+               "ext": "Export Pages",
+               "base": "Export artifacts basepage"
+            },
+            "title": {
+               "ext": "Export Pages",
+               "base": "Export artifacts basepage"
+            }
+         },
+         "export": {"model": {
+            "ext": "exportPage",
+            "base": "exportobject"
+         }}
+      }
+   },
+   "fileTimestamp": "2016-11-01T12:00:00Z",
    "pageRoles": [{
       "allow": true,
       "roleName": "ADMIN-GPBADMN"
-   }],
-   "fileTimestamp": "2016-07-25T12:27:05Z",
-   "modelView": {
-      "title": "Export Pages",
-      "scriptingLanguage": "JavaScript",
-      "name": "pbadmExportPages",
-      "documentation": "Export Pages",
-      "label": "Export Pages",
-      "components": [
-         {
-            "staticData": [],
-            "name": "pageResource",
-            "resource": "pageexports",
-            "type": "resource"
-         },
-         {
-            "name": "SelectPageBlock",
-            "showInitially": true,
-            "label": "",
-            "components": [
-               {
-                  "model": "",
-                  "validation": {},
-                  "placeholder": "Filter...",
-                  "name": "pageFilter",
-                  "label": "Page Filter",
-                  "parameters": {},
-                  "type": "text",
-                  "required": false,
-                  "onUpdate": "$pageGrid.$load();",
-                  "readonly": false,
-                  "loadInitially": false
-               },
-               {
-                  "onClick": "$pageResource.$post(\n  {constantName:$pageFilter, exportPage:1},\n  null, /*params*/\n   function(response) { alert('Exported filtered pages', {flash: true}) }, \n   function(response) {alert( \"Failed exporting pages \", {type:\"error\"})}\n);",
-                  "name": "ApplyFiltered",
-                  "label": "Export all filtered pages",
-                  "type": "button"
-               }
-            ],
-            "type": "block"
-         },
-         {
-            "name": "ShowPages",
-            "nextButtonLabel": "",
-            "showInitially": true,
-            "label": "Filtered pages",
-            "components": [
-               {
-                  "name": "Intro",
-                  "value": "The table below shows the Page Builder pages matching the Page Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button.",
-                  "label": "",
-                  "type": "literal"
-               },
-               {
-                  "model": "pageResource",
-                  "submit": "",
-                  "pageSize": 10,
-                  "label": "Pages to export",
-                  "type": "grid",
-                  "allowModify": true,
-                  "allowDelete": false,
-                  "allowReload": true,
-                  "name": "pageGrid",
-                  "allowNew": false,
-                  "components": [
-                     {
-                        "model": "constantName",
-                        "name": "pageID",
-                        "value": "",
-                        "label": "Name",
-                        "type": "display",
-                        "loadInitially": true,
-                        "asHtml": false
-                     },
-                     {
-                        "model": "lastUpdated",
-                        "validation": {},
-                        "name": "lastUpdated",
-                        "label": "Last update",
-                        "parameters": {},
-                        "type": "datetime",
-                        "required": false,
-                        "readonly": true,
-                        "loadInitially": true
-                     },
-                     {
-                        "model": "fileTimestamp",
-                        "validation": {},
-                        "name": "fileTimestamp",
-                        "label": "Timestamp File",
-                        "parameters": {},
-                        "type": "datetime",
-                        "required": false,
-                        "readonly": true,
-                        "loadInitially": true
-                     },
-                     {
-                        "model": "exportPage",
-                        "name": "export",
-                        "value": "1",
-                        "booleanTrueValue": "1",
-                        "label": "Select for Export",
-                        "type": "boolean",
-                        "onUpdate": "",
-                        "readonly": false,
-                        "loadInitially": true,
-                        "booleanFalseValue": "0"
-                     }
-                  ],
-                  "parameters": {"constantName": "$pageFilter"},
-                  "loadInitially": false,
-                  "saveDataLabel": "Export",
-                  "onSaveSuccess": "if (response.exportPage == \"1\") {\n  alert( \"Exported page: \" + response.constantName, {flash: true});\n}"
-               }
-            ],
-            "type": "form"
-         }
-      ],
-      "type": "page"
-   },
-   "constantName": "pbadm.ExportPages"
+   }]
 }

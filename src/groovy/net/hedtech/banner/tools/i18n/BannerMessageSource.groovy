@@ -28,7 +28,7 @@ class BannerMessageSource extends PluginAwareResourceBundleMessageSource {
         if (match) {
             def fnames = calculateAllFilenames(match, locale)
             def resource = fnames.find{it.bValue!=null}
-            propHolder = getProperties(resource.aValue,resource.bValue)
+            propHolder = resource?getProperties(resource.aValue,resource.bValue):null
         }
         propHolder?.properties
     }
