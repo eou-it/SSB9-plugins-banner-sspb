@@ -33,7 +33,7 @@ class ParseTests extends GroovyTestCase  {
             ],
             [where:"param"  , in:"\$selectEmployee", out:"\$scope.selectEmployee"],
             [where:"globals", in:"\$\$user"        , out:"\$scope._user"],
-
+            [where:"globals", in:"\$\$now"        , out:"\$scope._now"],
             [where:"value", in:"Complete \$EmployeeData.JOB forms for \$EmployeeData.ENAME",
                            out:"Complete \$scope.EmployeeData.JOB forms for \$scope.EmployeeData.ENAME",
             ],

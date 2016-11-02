@@ -338,11 +338,11 @@ class PageComponent {
         value
     }
 
-    String defaultValue() {
+    String defaultValue(acceptLiteral=true) {
         def result = ""
         if (value && model ) {
             def  expr = compileDOMExpression(value)
-            if (value ==  expr ) { //assume a literal value if not changed - not sure if we should do this
+            if (acceptLiteral && value ==  expr) { //assume a literal value if not changed - not sure if we should do this
                 expr=htmlValue(expr,"'")
             }
             def parentRef = isDataSetEditControl(parent)?"$GRID_ITEM":"this"
@@ -840,15 +840,14 @@ class PageComponent {
                         modelTxt_safe = "{{ $GRID_ITEM.${ model } }}"
                     }
                 } else {
-                    if (type == COMP_TYPE_DATETIME) {
-                        modelTxt_safe = "{{value|date:'medium'}}"
-                    } else if (asHtml) {
-                        modelTxt_unsafe = "ng-bind-html='${ compileDOMExpression(value) } | to_trusted' "
+                    if (model) {
+                        modelTxt_safe = "{{ ${model}|date:'medium' }}"
+                        //modelTxt_unsafe = "ng-bind-html=\"${compileDOMExpression(value)} | date:'medium'\" "
                     } else {
-                            modelTxt_safe = "${ compileDOMDisplay(value) }"
+                        return "<span>*** ERROR model is expected to be populated Item=$name ***</span>"
                     }
                 }
-                result = """<span ${idAttribute(idTxtParam)} $ngClick $autoStyleStr $modelTxt_unsafe> $modelTxt_safe </span>""";
+                result = """<span ${idAttribute(idTxtParam)} $ngClick ${defaultValue(false)} $autoStyleStr $modelTxt_unsafe> $modelTxt_safe </span>""";
                 break;
         // TODO handle value in details for display
         // TODO consolidate value and sourceModel?
