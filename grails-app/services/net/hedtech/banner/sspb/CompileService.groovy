@@ -103,7 +103,7 @@ class CompileService {
 
         result = """
                |function (\$scope ,\$locale,\$templateCache,pbDataSet,pbResource,pbAddCommon) {
-               |    // copy global var to scope
+               |    \$scope._controllerId = controllerId;
                |    \$scope._user = user;
                |    \$scope._params = params;
                |    \$scope._contextRoot = rootWebApp;

@@ -15,16 +15,51 @@ class PBUtilServiceBase {
     def final static loadSkipExisting=1
     def final static loadRenameExisting =2
     def final static loadIfNew=3
-
     def static pbConfig = grails.util.Holders.getConfig().pageBuilder
+    def static locationsValidated = locationsValidated?:configLocations()
+
+    def static testWrite(location) {
+        def existsAndWritable = true
+        try {
+            def f = File.createTempFile('pbTempTestFile', '.tst', new File(location))
+            f.text = "x"
+            f.delete()
+        } catch (IOException e) {
+            bootMsg "Configured location $location does not exist or is not writable"
+            existsAndWritable = false
+        }
+        existsAndWritable
+    }
+
+    def static configLocations() {
+        if (locationsValidated) {
+            return true
+        }
+        pbConfig.locations.each { name , location ->
+            if (!testWrite(location)){
+                //def dir = File.createTempDir(name, "")
+                //dir.deleteOnExit()
+                def dir = new File(System.getProperty("java.io.tmpdir")+'/pbTemp.'+name)
+                if (!dir.exists()) {
+                    dir.mkdir()
+                }
+                dir.deleteOnExit()
+                pbConfig.locations[name] = dir.getPath()
+                //Need to change to use a logger that works in a static context
+                bootMsg "Created temporary directory ${pbConfig.locations[name]} for location $name"
+            }
+        }
+        locationsValidated = true
+    }
+
+    static def bootMsg( msg ) {
+        def tempMsg = "***** - Admin/Bootstrap: $msg "
+        org.apache.commons.logging.LogFactory.getLog(this)
+                .info tempMsg
+    }
 
     def nowAsIsoInFileName() {
         new Date().format("yyyy-MM-dd_HH_mm_ss")
-    }
-
-    def bootMsg( msg ) {
-        def tempMsg = "***** - Admin/Bootstrap: $msg "
-        log.info tempMsg
     }
 
     def safeMaxTime = { i,j ->

@@ -45,6 +45,7 @@ class BannerSspbGrailsPlugin {
 
     // From  I18nGrailsPlugin.groovy 2.5.4
     def doWithSpring = {
+        net.hedtech.banner.sspb.PageUtilService.configLocations() //Make sure locations are set up before creating the message bean
         // find i18n resource bundles and resolve basenames
         Set baseNames = []
         def messageResources

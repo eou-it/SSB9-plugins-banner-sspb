@@ -482,7 +482,7 @@ class PageComponent {
             enableCellSelection: true,
             enableColumnResize: true,
             enablePaging: true,
-            footerTemplate: \$templateCache.get('gridFooter.html').replace('#gridControlPanel#',${name}GridControlPanel),
+            footerTemplate: \$templateCache.get('gridFooter.html').replace('#gridControlPanel#',${name}GridControlPanel).replace('#gridName#','${name}'),
             footerRowHeight: 55,
             jqueryUIDraggable:true,
             multiSelect:false,
@@ -1084,8 +1084,9 @@ class PageComponent {
         |<!--meta name="layout" content="simple"/-->
         |<title>${tran("title")}</title>
         |<script type="text/javascript">
-        |  var pageID = "$name";
-        |  pageControllers["$controllerName"] = $CONTROLLER_PLACEHOLDER;
+        |  var pageId = "$name";
+        |  var controllerId = "$controllerName"
+        |  pageControllers[controllerId] = $CONTROLLER_PLACEHOLDER;
         |</script>
         |</head>
         |<body>
@@ -1408,6 +1409,23 @@ class PageComponent {
         final def pbProperties = ["visible", "style"]
         final def pbFunctions = ["eval"] //to be called with $$function
 
+        // Handle escaped dollar signs \$ to allow using a literal dollar in expressions
+        def escDollar = '#escDollar#'
+        def escapeDollar = { expr ->
+            if (expr.contains(escDollar)) {
+                escDollar = '@escDollar@' // if the expression contains escDollar use a different escape text
+                if (expr.contains(escDollar)) {
+                    throw new RuntimeException("Expression contains unhandled text combination #escDollar# and @escDollar@")
+                }
+            }
+            expr = expr.replaceAll('\\\\\\$', escDollar)
+            expr
+        }
+
+        def unescapeDollar = { expr ->
+            expr = expr.replaceAll(escDollar,'\\$')
+        }
+
         def componentReplace = { result->
             dataSetReplacements.each {pattern ->
                 dataSets.each { pcId ->
@@ -1436,12 +1454,13 @@ class PageComponent {
                 pbFunctions.each {
                     result=result.replace("#scope._$it","#scope.\$$it")
                 }
-                if (target == ExpressionTarget.CtrlFunction)
+                if (target == ExpressionTarget.CtrlFunction) {
                     result = result.replace('#scope.', '$scope.')
-                else {
+                } else {
                     result = result.replace('#scope.', '')
                 }
             }
+            result
         }
         def literalReplace = { result ->
             result = componentReplace(result)
@@ -1459,9 +1478,10 @@ class PageComponent {
         }
         def result = expression
         log.debug "Compile Expression: $expression"
-        if (target in [ExpressionTarget.CtrlFunction, ExpressionTarget.DOMExpression] )
+        result = escapeDollar(result)
+        if (target in [ExpressionTarget.CtrlFunction, ExpressionTarget.DOMExpression] ) {
             result = expressionReplace(result)
-        else {
+        } else {
             def parts = splitAngularBrackets(result)
             if (parts.size()==1 && !parts[0].expression) { // expression doesn't have {{... }}
                 result = literalReplace(result) // do original literal processing
@@ -1477,6 +1497,7 @@ class PageComponent {
                 }
             }
         }
+        result = unescapeDollar(result)
         log.debug "-> $result"
         result
     }

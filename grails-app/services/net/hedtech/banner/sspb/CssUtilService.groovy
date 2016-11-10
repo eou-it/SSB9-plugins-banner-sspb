@@ -60,7 +60,7 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     //Import/Install Utility
-    void importAllFromDir(String path=pbConfig.locations.css, mode=loadIfNew) {
+    int importAllFromDir(String path=pbConfig.locations.css, mode=loadIfNew) {
         bootMsg "Importing updated or new css files from $path."
         def count=0
         try {
@@ -72,6 +72,7 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             log.error "Unable to access import directory $path"
         }
         bootMsg "Finished importing updated or new css files from $path. Css files loaded: $count"
+        count
     }
 
     int loadStream(name, stream, mode) {

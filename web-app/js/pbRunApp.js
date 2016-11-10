@@ -73,6 +73,12 @@ function nvl(val,def){
     return val;
 }
 
+function getControllerScopeById(id) {
+    var rootScope = angular.element(document.querySelector('[ng-app]')).injector().get('$rootScope');
+    var scope = rootScope.$$childHead;
+    return scope;
+}
+
 
 /* App Module */
 
@@ -81,6 +87,12 @@ if (undefined == myCustomServices) {
 }
 
 var appModule = appModule||angular.module('BannerOnAngular', myCustomServices);
+
+/* disables debug: */
+appModule.config(['$compileProvider', function ($compileProvider) {
+    $compileProvider.debugInfoEnabled(false);
+}]);
+/**/
 
 if (pageControllers) {
     if (window["CustomPageController"]) { // backwards compatibel with alpha release
@@ -110,7 +122,7 @@ appModule.run( function($templateCache )  {
     console.log("App module.run started" );
     $templateCache.put('gridFooter.html',
         "<div ng-show=\"showFooter\" class=\"ngFooterPanel\" ng-class=\"{'ui-widget-content': jqueryUITheme, 'ui-corner-bottom': jqueryUITheme}\" ng-style=\"footerStyle()\">" +
-        "    <div class=\"paging-container \" ng-show=\"enablePaging\" >" +
+        "    <div id=\"paging-container-#gridName#\" class=\"paging-container \" ng-show=\"enablePaging\" >" +
         "        <div class=\"paging-control first {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageToFirst()\"></div>"+
         "        <div class=\"paging-control previous {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageBackward()\"></div>"+
         "        <span class=\"paging-text page\"> {{i18n.pageLabel}}</span>"+

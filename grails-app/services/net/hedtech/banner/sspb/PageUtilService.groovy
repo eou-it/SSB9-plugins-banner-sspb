@@ -20,13 +20,17 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     def static final statusError = 1
     def static final statusDeferLoad = 2
     def static final actionImportInitally = 1
-    def static final bundleLocation = getBundleLocation()
+    def static final bundleLocation = bundleLocation?:getBundleLocation()
 
     def currentAction = null
 
     def static getBundleLocation() {
         if (bundleLocation) {//only need to determine location once
             return bundleLocation
+        }
+        if (!locationsValidated) {
+            //Should not be needed  - is already in base class
+            locationsValidated = locationsValidated?:configLocations()
         }
         pbConfig.locations.bundle?pbConfig.locations.bundle:System.getProperty("java.io.tmpdir")
     }
@@ -241,6 +245,24 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             log.info result
         }
         errors
+    }
+
+    def compileMissingProperties() {
+        def messageSource = ServletContextHolder.getServletContext()
+                .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT).getBean("messageSource")
+        def pageMessageSource = messageSource.pageMessageSource
+        // Check if properties files exist, if not we will compile pages if non-baseline pages exist
+        if (pageMessageSource.pageResources.size()==0){ // 1 file exists: pageGlobal
+            log.debug "No Page Resources found"
+            // Check if custom pages exist
+            def totalPages = Page.count()
+            def pbPages = Page.countByConstantNameLike('pbadm%')
+            if (totalPages>pbPages) {
+                log.info "Total #pages: $totalPages > # pbadm pages: $pbPages - Recompiling pages to create missing resources."
+                compileAll()
+                log.info "Pages recompiled: $totalPages"
+            }
+        }
     }
 
     // Handler for Page properties

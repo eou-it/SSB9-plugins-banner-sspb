@@ -68,8 +68,10 @@ class PageMessageSource extends ReloadableResourceBundleMessageSource {
                 pageResources.add(fileName)
                 logger.debug "added page resource ${file.name}"
             }
+            /*
             if (!pageResources.contains(globalPropertiesName))
                 pageResources.add(globalPropertiesName)
+            */
 
             this.setResourceLoader() // make sure that the super  class uses the resource loader above
             setBasenames( (String []) pageResources)
