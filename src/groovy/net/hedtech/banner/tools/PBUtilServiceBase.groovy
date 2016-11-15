@@ -17,6 +17,7 @@ class PBUtilServiceBase {
     def final static loadIfNew=3
     def static pbConfig = grails.util.Holders.getConfig().pageBuilder
     def static locationsValidated = locationsValidated?:configLocations()
+    def jsonExt = ~/.*\.json/
 
     def static testWrite(location) {
         def existsAndWritable = true

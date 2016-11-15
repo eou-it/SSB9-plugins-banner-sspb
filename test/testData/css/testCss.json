@@ -1,0 +1,11 @@
+{
+   "lastUpdated": null,
+   "css": "#paging-container-artifacts {\n  visibility: hidden;\n}",
+   "dateCreated": null,
+   "constantName": "testCss",
+   "description": "CSS for testing AdminTaskService",
+   "id": null,
+   "fileTimestamp": "2016-11-10T14:52:33Z",
+   "class": "net.hedtech.banner.css.Css",
+   "version": null
+}

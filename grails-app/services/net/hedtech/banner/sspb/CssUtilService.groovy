@@ -60,12 +60,14 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     //Import/Install Utility
-    int importAllFromDir(String path=pbConfig.locations.css, mode=loadIfNew) {
+    int importAllFromDir(String path=pbConfig.locations.css, mode=loadIfNew, ArrayList names = null) {
         bootMsg "Importing updated or new css files from $path."
         def count=0
         try {
-            new File(path).eachFileMatch(~/.*.json/) { file ->
-                count += loadFile(file, mode)
+            new File(path).eachFileMatch(jsonExt) { file ->
+                if (!names || names.contains(file.name.take(file.name.lastIndexOf('.')))) {
+                    count += loadFile(file, mode)
+                }
             }
         }
         catch (IOException e) {

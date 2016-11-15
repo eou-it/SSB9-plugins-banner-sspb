@@ -35,8 +35,6 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         pbConfig.locations.bundle?pbConfig.locations.bundle:System.getProperty("java.io.tmpdir")
     }
 
-
-
     //Export one or more pages to the configured directory
     void exportToFile(String pageName, String path=pbConfig.locations.page, Boolean skipDuplicates=false ) {
         Page.findAllByConstantNameLike(pageName).each { page ->
@@ -86,18 +84,24 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     //Import/Install Utility
-    int importAllFromDir(String path=pbConfig.locations.page, mode=loadIfNew, deferred = false) {
+    int importAllFromDir(String path=pbConfig.locations.page, mode=loadIfNew, ArrayList names = null) {
+        importAllFromDir(path, mode, false, names)
+    }
+
+    int importAllFromDir(String path, mode, boolean deferred, ArrayList names) {
         def count=0
         def needDeferred = false
         if (!deferred) {
             bootMsg "Importing updated or new pages from $path."
         }
         try {
-            new File(path).eachFileMatch(~/.*.json/) { file ->
-                def loadResult = load(file, mode)
-                needDeferred |= (loadResult.statusCode == statusDeferLoad)
-                finalizeFileImport(file, loadResult)
-                count += loadResult.loaded
+            new File(path).eachFileMatch(jsonExt) { file ->
+                if (!names || names.contains(file.name.take(file.name.lastIndexOf('.')))) {
+                    def loadResult = load(file, mode)
+                    needDeferred |= (loadResult.statusCode == statusDeferLoad)
+                    finalizeFileImport(file, loadResult)
+                    count += loadResult.loaded
+                }
             }
         }
         catch (IOException e) {
@@ -107,7 +111,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             if ( count > 0 && needDeferred) {
                 // attempt import files that could not be loaded because of missing parent
                 // which might have been imported if count > 0
-                def i = importAllFromDir(path, mode, true)
+                def i = importAllFromDir(path, mode, true, names)
                 bootMsg "Pages loaded deferred: $i"
                 count += i
             }
@@ -213,7 +217,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         if (roles.equals(null)){  //have to use equals for JSONObject as it is not really null
             if (page.constantName.startsWith("pbadm.")){
                 //add a WTAILORADMIN role so the pages can be used
-                def role = new PageRole(roleName: "WTAILORADMIN")
+                def role = new PageRole(roleName: "ADMIN-GPBADMN")
                 role.page=page
                 page.addToPageRoles(role)
             }
@@ -252,7 +256,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT).getBean("messageSource")
         def pageMessageSource = messageSource.pageMessageSource
         // Check if properties files exist, if not we will compile pages if non-baseline pages exist
-        if (pageMessageSource.pageResources.size()==0){ // 1 file exists: pageGlobal
+        if (pageMessageSource.pageResources.size()==0){
             log.debug "No Page Resources found"
             // Check if custom pages exist
             def totalPages = Page.count()

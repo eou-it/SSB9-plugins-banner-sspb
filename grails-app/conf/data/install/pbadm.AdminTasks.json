@@ -16,6 +16,12 @@
             "staticData": []
          },
          {
+            "resource": "cssexports",
+            "name": "cssResource",
+            "type": "resource",
+            "staticData": []
+         },
+         {
             "resource": "admintasks",
             "name": "adminTaskResource",
             "type": "resource",
@@ -28,6 +34,11 @@
          },
          {
             "components": [
+               {
+                  "name": "helpText",
+                  "type": "literal",
+                  "value": "Select files from local directories for import"
+               },
                {
                   "name": "uploadFileSelect",
                   "type": "literal",
@@ -86,15 +97,15 @@
                },
                {
                   "valueStyle": "primary",
-                  "onClick": "$artifacts.$data.forEach(function (a) {\n\tvar task = {\n\t\ttask: 'import',\n\t\tartifact: {\n\t\t\tfileName: a.name,\n\t\t\tdomain: a.domain,\n\t\t\tindex: a.index,\n\t\t\tcount: a.count,\n\t\t\tsize: a.size\n\t\t}\n\t};\n\t$adminTaskResource.$post(\n\t\ttask,\n\t\tnull, /*no params*/\n\t\tfunction (response) {\n\t\t\tif (response.imported == 1) {\n\t\t\t\talert('Uploaded ' + response.name + ' type: ' + response.type, {\n\t\t\t\t\tflash : true\n\t\t\t\t});\n\t\t\t}\n\t\t},\n\t\tfunction (response) {\n\t\t\tvar msg = \"Failed uploading artifacts.\\n\";  \n\t\t\tif (response.data.errors.errorMessage) {\n\t\t\t  msg += response.data.errors.errorMessage;\n\t\t\t} else if (response.data.errors[0].errorMessage) {\n\t\t\t  msg += response.data.errors[0].errorMessage;\n\t\t\t} else {\n\t\t\t  msg += response.statusText;\n\t\t\t}\n\t\t\tif (msg) {\n\t\t\t  alert(msg,{type:\"error\"});\n\t\t\t}\n\t\t}\n\t);\n});",
+                  "onClick": "$artifacts.$data.forEach(function (a) {\n\tvar task = {\n\t\ttask: 'import',\n\t\tartifact: {\n\t\t\tfileName: a.name,\n\t\t\tdomain: a.domain,\n\t\t\tindex: a.index,\n\t\t\tcount: a.count,\n\t\t\tsize: a.size\n\t\t}\n\t};\n\t$adminTaskResource.$post(\n\t\ttask,\n\t\tnull, /*no params*/\n\t\tfunction (response) {\n\t\t\tif (response.imported == 1) {\n\t\t\t\talert('Imported ' + response.name + ' type: ' + response.type, {\n\t\t\t\t\tflash : true\n\t\t\t\t});\n\t\t\t}\n\t\t},\n\t\tfunction (response) {\n\t\t\tvar msg = \"Failed uploading artifacts.\\n\";  \n\t\t\tif (response.data.errors.errorMessage) {\n\t\t\t  msg += response.data.errors.errorMessage;\n\t\t\t} else if (response.data.errors[0].errorMessage) {\n\t\t\t  msg += response.data.errors[0].errorMessage;\n\t\t\t} else {\n\t\t\t  msg += response.statusText;\n\t\t\t}\n\t\t\tif (msg) {\n\t\t\t  alert(msg,{type:\"error\"});\n\t\t\t}\n\t\t}\n\t);\n});",
                   "name": "startUpload",
-                  "label": "Upload",
+                  "label": "Import",
                   "type": "button"
                }
             ],
             "name": "UploadSources",
             "showInitially": true,
-            "label": "Upload PageBuilder exported files to server file system",
+            "label": "Import Page Builder artifacts from local directory",
             "type": "block"
          },
          {
@@ -135,162 +146,247 @@
             ],
             "name": "ImportSources",
             "showInitially": true,
-            "label": "Import artifacts from server file system",
+            "label": "Import Page Builder artifacts from server file system",
             "type": "block"
          },
          {
             "components": [
                {
                   "readonly": false,
-                  "name": "pageFilter",
-                  "model": "",
-                  "label": "",
-                  "loadInitially": false,
-                  "placeholder": "Filter pages by name...",
-                  "type": "text",
-                  "onUpdate": "$pageGrid.$load();",
-                  "parameters": {},
-                  "value": "",
-                  "required": false,
-                  "validation": {}
-               },
-               {
-                  "allowDelete": false,
-                  "components": [
-                     {
-                        "asHtml": false,
-                        "name": "pageID",
-                        "model": "constantName",
-                        "label": "Name",
-                        "loadInitially": true,
-                        "type": "display",
-                        "value": ""
-                     },
-                     {
-                        "readonly": true,
-                        "name": "lastUpdated",
-                        "model": "lastUpdated",
-                        "label": "Last update",
-                        "loadInitially": true,
-                        "type": "datetime",
-                        "parameters": {},
-                        "required": false,
-                        "validation": {}
-                     },
-                     {
-                        "readonly": true,
-                        "name": "fileTimestamp",
-                        "model": "fileTimestamp",
-                        "label": "Timestamp File",
-                        "loadInitially": true,
-                        "type": "datetime",
-                        "parameters": {},
-                        "required": false,
-                        "validation": {}
-                     }
-                  ],
-                  "submit": "",
-                  "allowNew": false,
-                  "onSaveSuccess": "",
-                  "pageSize": 5,
-                  "saveDataLabel": "",
-                  "label": "Pages",
-                  "loadInitially": false,
-                  "type": "htable",
-                  "name": "pageGrid",
-                  "allowModify": false,
-                  "model": "pageResource",
-                  "style": "table table-striped table-bordered",
-                  "allowReload": true,
-                  "parameters": {"constantName": "\"%\"+nvl( $pageFilter,\"\")+\"%\""}
-               }
-            ],
-            "nextButtonLabel": "",
-            "name": "ShowPages",
-            "showInitially": true,
-            "label": "View pages",
-            "type": "form"
-         },
-         {
-            "components": [
-               {
-                  "readonly": false,
-                  "name": "vdFilter",
+                  "name": "viewArtifacts",
+                  "label": "More...",
                   "loadInitially": true,
-                  "placeholder": "Filter virtual domains by name...",
-                  "type": "text",
-                  "onUpdate": "$virtualDomainGrid.$load();",
-                  "parameters": {},
-                  "required": false,
-                  "validation": {}
+                  "type": "boolean",
+                  "onUpdate": "$ShowPages.$visible=$viewArtifacts;\n$ShowVirtualDomains.$visible=$viewArtifacts;\n$ShowCss.$visible=$viewArtifacts;"
                },
                {
-                  "allowDelete": false,
                   "components": [
                      {
-                        "asHtml": false,
-                        "name": "vdID",
-                        "model": "serviceName",
-                        "label": "Name",
-                        "loadInitially": true,
-                        "type": "display",
-                        "value": ""
-                     },
-                     {
-                        "readonly": true,
-                        "name": "vdLastUpdated",
-                        "model": "lastUpdated",
-                        "label": "Last update",
-                        "loadInitially": true,
-                        "type": "datetime",
+                        "readonly": false,
+                        "name": "pageFilter",
+                        "model": "",
+                        "label": "",
+                        "loadInitially": false,
+                        "placeholder": "Filter pages by name...",
+                        "type": "text",
+                        "onUpdate": "$pageGrid.$load();",
                         "parameters": {},
+                        "value": "",
                         "required": false,
                         "validation": {}
                      },
                      {
-                        "readonly": true,
-                        "name": "vdFileTimestamp",
-                        "model": "fileTimestamp",
-                        "label": "Timestamp File",
-                        "loadInitially": true,
-                        "type": "datetime",
-                        "parameters": {},
-                        "required": false,
-                        "validation": {}
+                        "allowDelete": false,
+                        "components": [
+                           {
+                              "asHtml": false,
+                              "name": "pageID",
+                              "model": "constantName",
+                              "label": "Name",
+                              "loadInitially": true,
+                              "type": "display",
+                              "value": ""
+                           },
+                           {
+                              "readonly": true,
+                              "name": "lastUpdated",
+                              "model": "lastUpdated",
+                              "label": "Last update",
+                              "loadInitially": true,
+                              "type": "datetime",
+                              "parameters": {},
+                              "required": false,
+                              "validation": {}
+                           },
+                           {
+                              "readonly": true,
+                              "name": "fileTimestamp",
+                              "model": "fileTimestamp",
+                              "label": "Timestamp File",
+                              "loadInitially": true,
+                              "type": "datetime",
+                              "parameters": {},
+                              "required": false,
+                              "validation": {}
+                           }
+                        ],
+                        "submit": "",
+                        "allowNew": false,
+                        "onSaveSuccess": "",
+                        "pageSize": 5,
+                        "saveDataLabel": "",
+                        "label": "Pages",
+                        "loadInitially": false,
+                        "type": "htable",
+                        "name": "pageGrid",
+                        "allowModify": false,
+                        "model": "pageResource",
+                        "style": "table table-striped table-bordered",
+                        "allowReload": true,
+                        "parameters": {"constantName": "\"%\"+nvl( $pageFilter,\"\")+\"%\""}
                      }
                   ],
-                  "submit": "",
-                  "allowNew": false,
-                  "onSaveSuccess": "",
-                  "pageSize": 5,
-                  "saveDataLabel": "",
-                  "label": "Virtual domains",
-                  "loadInitially": false,
-                  "type": "htable",
-                  "name": "virtualDomainGrid",
-                  "allowModify": false,
-                  "model": "vdResource",
-                  "style": "table table-striped table-bordered",
-                  "allowReload": true,
-                  "parameters": {"serviceName": "\"%\"+nvl( $vdFilter,\"\")+\"%\""}
+                  "nextButtonLabel": "",
+                  "name": "ShowPages",
+                  "showInitially": false,
+                  "label": "View pages",
+                  "type": "form"
+               },
+               {
+                  "components": [
+                     {
+                        "readonly": false,
+                        "name": "vdFilter",
+                        "loadInitially": true,
+                        "placeholder": "Filter virtual domains by name...",
+                        "type": "text",
+                        "onUpdate": "$virtualDomainGrid.$load();",
+                        "parameters": {},
+                        "required": false,
+                        "validation": {}
+                     },
+                     {
+                        "allowDelete": false,
+                        "components": [
+                           {
+                              "asHtml": false,
+                              "name": "vdID",
+                              "model": "serviceName",
+                              "label": "Name",
+                              "loadInitially": true,
+                              "type": "display",
+                              "value": ""
+                           },
+                           {
+                              "readonly": true,
+                              "name": "vdLastUpdated",
+                              "model": "lastUpdated",
+                              "label": "Last update",
+                              "loadInitially": true,
+                              "type": "datetime",
+                              "parameters": {},
+                              "required": false,
+                              "validation": {}
+                           },
+                           {
+                              "readonly": true,
+                              "name": "vdFileTimestamp",
+                              "model": "fileTimestamp",
+                              "label": "Timestamp File",
+                              "loadInitially": true,
+                              "type": "datetime",
+                              "parameters": {},
+                              "required": false,
+                              "validation": {}
+                           }
+                        ],
+                        "submit": "",
+                        "allowNew": false,
+                        "onSaveSuccess": "",
+                        "pageSize": 5,
+                        "saveDataLabel": "",
+                        "label": "Virtual domains",
+                        "loadInitially": false,
+                        "type": "htable",
+                        "name": "virtualDomainGrid",
+                        "allowModify": false,
+                        "model": "vdResource",
+                        "style": "table table-striped table-bordered",
+                        "allowReload": true,
+                        "parameters": {"serviceName": "\"%\"+nvl( $vdFilter,\"\")+\"%\""}
+                     }
+                  ],
+                  "nextButtonLabel": "Next",
+                  "name": "ShowVirtualDomains",
+                  "showInitially": false,
+                  "label": "View virtual domains",
+                  "type": "form"
+               },
+               {
+                  "components": [
+                     {
+                        "readonly": false,
+                        "name": "cssFilter",
+                        "loadInitially": true,
+                        "placeholder": "Filter CSS by name...",
+                        "type": "text",
+                        "onUpdate": "$cssGrid.$load();",
+                        "parameters": {},
+                        "required": false,
+                        "validation": {}
+                     },
+                     {
+                        "allowDelete": false,
+                        "components": [
+                           {
+                              "asHtml": false,
+                              "name": "cssID",
+                              "model": "constantName",
+                              "label": "Name",
+                              "loadInitially": true,
+                              "type": "display",
+                              "value": ""
+                           },
+                           {
+                              "readonly": true,
+                              "name": "cssLastUpdated",
+                              "model": "lastUpdated",
+                              "label": "Last update",
+                              "loadInitially": true,
+                              "type": "datetime",
+                              "parameters": {},
+                              "required": false,
+                              "validation": {}
+                           },
+                           {
+                              "readonly": true,
+                              "name": "cssFileTimestamp",
+                              "model": "fileTimestamp",
+                              "label": "Timestamp File",
+                              "loadInitially": true,
+                              "type": "datetime",
+                              "parameters": {},
+                              "required": false,
+                              "validation": {}
+                           }
+                        ],
+                        "submit": "",
+                        "allowNew": false,
+                        "onSaveSuccess": "",
+                        "pageSize": 5,
+                        "saveDataLabel": "",
+                        "label": "CSS",
+                        "loadInitially": false,
+                        "type": "htable",
+                        "name": "cssGrid",
+                        "allowModify": false,
+                        "model": "cssResource",
+                        "style": "table table-striped table-bordered",
+                        "allowReload": true,
+                        "parameters": {"constantName": "\"%\"+nvl( $cssFilter,\"\")+\"%\""}
+                     }
+                  ],
+                  "nextButtonLabel": "Next",
+                  "name": "ShowCss",
+                  "showInitially": false,
+                  "label": "View CSS",
+                  "type": "form"
                }
             ],
-            "nextButtonLabel": "Next",
-            "name": "ShowVirtualDomains",
+            "name": "viewArifactsSection",
             "showInitially": true,
-            "label": "View virtual domains",
-            "type": "form"
+            "type": "block"
          }
       ],
       "documentation": "Miscellaneous tasks",
       "name": "pbadmAdminTasks",
       "scriptingLanguage": "JavaScript",
-      "label": "Admin tasks",
+      "label": "",
       "title": "Admin tasks",
       "type": "page",
       "importCSS": "xeStyle,pbadm.adminTasksCss"
    },
-   "fileTimestamp": "2016-11-10T15:08:52Z",
+   "fileTimestamp": "2016-11-15T16:06:48Z",
    "pageRoles": [{
       "allow": true,
       "roleName": "ADMIN-GPBADMN"
