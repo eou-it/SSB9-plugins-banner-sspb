@@ -42,7 +42,7 @@
                {
                   "name": "uploadFileSelect",
                   "type": "literal",
-                  "value": "<input type=\"file\" id=\"filesElem\" name=\"files[]\" multiple accept=\".json\"/>\n<script>\n\n  function handleFileSelect(evt) {\n  \tvar files = evt.target.files;\n        var scope = getControllerScopeById(controllerId);\n        var count = files.length;\n        //scope.artifactsGrid.enablePaging = false;\n        scope.artifactsDS.data.removeAll();\n  \t\n\tfunction addFile(event, file) {\n  \t\tconsole.log(event.target.result);\n  \t\tfile.domain = event.target.result;\n  \t\tscope.artifactsDS.data.push(file);\n  \t\tscope.\\$apply(); //Update the UI\t\n\t}\n\tfor (var i = 0, f; f = files[i]; i++) {\n                f.index = i;\n                f.count = count;\n  \t\tvar reader = new FileReader();\n\t\treader.onloadend = (function(file) {\n\t\t  return function(evt) {\n\t\t\taddFile(evt, file);\n\t\t  };\n\t\t})(f);\t\t\n  \t\treader.readAsText(f);\n  \t}\n  }\n  document.getElementById('filesElem').addEventListener('change', handleFileSelect, false);\n<\/script>"
+                  "value": "<input type=\"file\" id=\"filesElem\" name=\"files[]\" multiple accept=\".json\"/>\n<script>\n  function handleFileSelect(evt) {\n  \tvar files = evt.target.files;\n        var scope = getControllerScopeById(controllerId);\n        var count = files.length;\n        //scope.artifactsGrid.enablePaging = false;\n               \n        scope.artifactsDS.data.removeAll();\n        scope.\\$apply();\n  \t\n\tfunction addFile(event, file) {\n  \t\tfile.domain = event.target.result;\n  \t\tscope.artifactsDS.data.push(file);\n  \t\tscope.\\$apply(); //Update the UI\t\n\t}\n\tfor (var i = 0, f; f = files[i]; i++) {\n                f.index = i;\n                f.count = count;\n  \t\tvar reader = new FileReader();\n\t\treader.onloadend = (function(file) {\n\t\t  return function(evt) {\n\t\t\taddFile(evt, file);\n\t\t  };\n\t\t})(f);\t\t\n  \t\treader.readAsText(f);\n  \t}\n  }\n  document.getElementById('filesElem').addEventListener('change', handleFileSelect, false);\n<\/script>"
                },
                {
                   "allowDelete": false,
@@ -105,7 +105,7 @@
             ],
             "name": "UploadSources",
             "showInitially": true,
-            "label": "Import Page Builder artifacts from local directory",
+            "label": "Import Page Builder Artifacts from local directory",
             "type": "block"
          },
          {
@@ -146,7 +146,7 @@
             ],
             "name": "ImportSources",
             "showInitially": true,
-            "label": "Import Page Builder artifacts from server file system",
+            "label": "Import Page Builder Artifacts from server file system",
             "type": "block"
          },
          {
@@ -154,7 +154,7 @@
                {
                   "readonly": false,
                   "name": "viewArtifacts",
-                  "label": "More...",
+                  "label": "View Existing Page Builder Artifacts (% wildcard can be used in the filter)",
                   "loadInitially": true,
                   "type": "boolean",
                   "onUpdate": "$ShowPages.$visible=$viewArtifacts;\n$ShowVirtualDomains.$visible=$viewArtifacts;\n$ShowCss.$visible=$viewArtifacts;"
@@ -386,7 +386,7 @@
       "type": "page",
       "importCSS": "xeStyle,pbadm.adminTasksCss"
    },
-   "fileTimestamp": "2016-11-15T16:06:48Z",
+   "fileTimestamp": "2016-11-16T13:23:38Z",
    "pageRoles": [{
       "allow": true,
       "roleName": "ADMIN-GPBADMN"

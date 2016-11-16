@@ -56,7 +56,7 @@
                            {
                               "components": [{
                                  "name": "GotoVDCRoles",
-                                 "description": "Virtual Domain Roles",
+                                 "description": "Domain Roles",
                                  "type": "link",
                                  "replaceView": true,
                                  "url": "{{$$contextRoot}}customPage/page/pbadm.VirtualDomainRoles"
@@ -77,7 +77,7 @@
                   ],
                   "name": "VirtualDomainBlock",
                   "showInitially": true,
-                  "style": "admin-menu-section col-lg-4",
+                  "style": "admin-menu-section col-lg-3",
                   "label": "",
                   "type": "block"
                },
@@ -137,7 +137,7 @@
                   ],
                   "name": "VisualPageBlock",
                   "showInitially": true,
-                  "style": "admin-menu-section col-lg-4",
+                  "style": "admin-menu-section col-lg-3",
                   "label": "",
                   "type": "block"
                },
@@ -174,7 +174,41 @@
                   ],
                   "name": "CssManagerBlock",
                   "showInitially": true,
-                  "style": "admin-menu-section col-lg-4",
+                  "style": "admin-menu-section col-lg-3",
+                  "label": "",
+                  "type": "block"
+               },
+               {
+                  "components": [
+                     {
+                        "components": [{
+                           "valueStyle": "",
+                           "labelStyle": "",
+                           "name": "GotoImport",
+                           "description": "Import",
+                           "style": "",
+                           "label": "",
+                           "type": "link",
+                           "replaceView": true,
+                           "url": "{{$$contextRoot}}customPage/page/pbadm.AdminTasks"
+                        }],
+                        "name": "adminMainBlock",
+                        "showInitially": true,
+                        "style": "admin-menu-section-main col-lg-12 col-md-12",
+                        "type": "block"
+                     },
+                     {
+                        "components": [],
+                        "name": "dummyBlock",
+                        "showInitially": true,
+                        "style": "admin-menu-section-sub col-lg-12 col-md-12",
+                        "label": "",
+                        "type": "block"
+                     }
+                  ],
+                  "name": "AdminExtraBlock",
+                  "showInitially": true,
+                  "style": "admin-menu-section col-lg-3",
                   "label": "",
                   "type": "block"
                }
@@ -183,24 +217,6 @@
             "showInitially": true,
             "style": "admin-menu",
             "label": "",
-            "type": "block"
-         },
-         {
-            "components": [{
-               "valueStyle": "",
-               "labelStyle": "",
-               "name": "GotoAdmin",
-               "description": "Import",
-               "style": "",
-               "label": "",
-               "type": "link",
-               "replaceView": true,
-               "url": "{{$$contextRoot}}customPage/page/pbadm.AdminTasks"
-            }],
-            "name": "AdminExtraBlock",
-            "showInitially": true,
-            "style": "admin-menu-section",
-            "label": "...",
             "type": "block"
          },
          {
@@ -272,67 +288,81 @@
                   "type": "block"
                },
                {
-                  "components": [{
-                     "allowDelete": false,
-                     "components": [
-                        {
-                           "valueStyle": "",
-                           "name": "optionMenu2",
-                           "style": "more-option ui-widget-hidden",
-                           "label": "",
-                           "type": "literal",
-                           "value": "<a href='#'><\/a>"
-                        },
-                        {
-                           "valueStyle": "",
-                           "name": "EditPage2",
-                           "style": "edit-page",
-                           "type": "literal",
-                           "value": "<a href='{{$$contextRoot}}visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}'><\/a>"
-                        },
-                        {
-                           "valueStyle": "",
-                           "labelStyle": "",
-                           "name": "RunPage2",
-                           "style": "run-page",
-                           "label": "",
-                           "type": "literal",
-                           "value": "<a href='{{$$contextRoot}}customPage/page/{{$item.CONSTANT_NAME}}'><\/a>"
-                        },
-                        {
-                           "asHtml": false,
-                           "valueStyle": "",
-                           "labelStyle": "",
-                           "name": "CONSTANT_NAME2",
-                           "model": "CONSTANT_NAME",
-                           "style": "page-id",
-                           "loadInitially": true,
-                           "type": "display"
-                        },
-                        {
-                           "readonly": true,
-                           "name": "LAST_UPDATED2",
-                           "model": "LAST_UPDATED",
-                           "label": "Last Updated:",
-                           "loadInitially": true,
-                           "type": "datetime",
-                           "parameters": {},
-                           "required": false,
-                           "validation": {}
-                        }
-                     ],
-                     "allowNew": false,
-                     "pageSize": 6,
-                     "label": "Search Pages",
-                     "loadInitially": true,
-                     "type": "detail",
-                     "name": "PageListDetail2",
-                     "allowModify": false,
-                     "model": "ListPages2",
-                     "style": "app-list-container",
-                     "allowReload": false,
-                     "parameters": {}
-                  }],
+                  "components": [
+                     {
+                        "readonly": false,
+                        "name": "pageFilter",
+                        "label": "",
+                        "loadInitially": true,
+                        "placeholder": "All application pages",
+                        "type": "text",
+                        "onUpdate": "$PageListDetail2.$load()",
+                        "parameters": {},
+                        "required": false,
+                        "validation": {}
+                     },
+                     {
+                        "allowDelete": false,
+                        "components": [
+                           {
+                              "valueStyle": "",
+                              "name": "optionMenu2",
+                              "style": "more-option ui-widget-hidden",
+                              "label": "",
+                              "type": "literal",
+                              "value": "<a href='#'><\/a>"
+                           },
+                           {
+                              "valueStyle": "",
+                              "name": "EditPage2",
+                              "style": "edit-page",
+                              "type": "literal",
+                              "value": "<a href='{{$$contextRoot}}visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}'><\/a>"
+                           },
+                           {
+                              "valueStyle": "",
+                              "labelStyle": "",
+                              "name": "RunPage2",
+                              "style": "run-page",
+                              "label": "",
+                              "type": "literal",
+                              "value": "<a href='{{$$contextRoot}}customPage/page/{{$item.CONSTANT_NAME}}'><\/a>"
+                           },
+                           {
+                              "asHtml": false,
+                              "valueStyle": "",
+                              "labelStyle": "",
+                              "name": "CONSTANT_NAME2",
+                              "model": "CONSTANT_NAME",
+                              "style": "page-id",
+                              "loadInitially": true,
+                              "type": "display"
+                           },
+                           {
+                              "readonly": true,
+                              "name": "LAST_UPDATED2",
+                              "model": "LAST_UPDATED",
+                              "label": "Last Updated:",
+                              "loadInitially": true,
+                              "type": "datetime",
+                              "parameters": {},
+                              "required": false,
+                              "validation": {}
+                           }
+                        ],
+                        "allowNew": false,
+                        "pageSize": 6,
+                        "label": "Search Pages",
+                        "loadInitially": true,
+                        "type": "detail",
+                        "name": "PageListDetail2",
+                        "allowModify": false,
+                        "model": "ListPages2",
+                        "style": "app-list-container",
+                        "allowReload": false,
+                        "parameters": {"filter": "$pageFilter?\"%\"+$pageFilter+\"%\":\"\""}
+                     }
+                  ],
                   "name": "PageListBlock2",
                   "showInitially": true,
                   "style": "col-lg-6",
@@ -352,7 +382,7 @@
       "type": "page",
       "importCSS": "landingPage"
    },
-   "fileTimestamp": "2016-11-14T11:59:02Z",
+   "fileTimestamp": "2016-11-16T13:23:38Z",
    "pageRoles": [
       {
          "allow": true,
