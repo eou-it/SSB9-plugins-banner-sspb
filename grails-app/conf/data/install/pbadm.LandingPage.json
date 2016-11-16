@@ -200,7 +200,7 @@
                      {
                         "components": [],
                         "name": "dummyBlock",
-                        "showInitially": true,
+                        "showInitially": false,
                         "style": "admin-menu-section-sub col-lg-12 col-md-12",
                         "label": "",
                         "type": "block"
@@ -382,7 +382,7 @@
       "type": "page",
       "importCSS": "landingPage"
    },
-   "fileTimestamp": "2016-11-16T13:23:38Z",
+   "fileTimestamp": "2016-11-16T16:58:07Z",
    "pageRoles": [
       {
          "allow": true,
