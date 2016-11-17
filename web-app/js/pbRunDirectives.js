@@ -18,6 +18,7 @@ pbRunModule.directive('pbNumber', function($filter, $locale) {
         link: function(scope, element, attr, ngModel) {
             var decN = scope.$eval(attr.fractionDigits); // this is the fraction-digits attribute
             // http://stackoverflow.com/questions/10454518/javascript-how-to-retrieve-the-number-of-decimals-of-a-string-number
+            //noinspection JSUnusedLocalSymbols
             function theDecimalPlaces(num) {
                 var match = (''+num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
                 if (!match) { return 0; }

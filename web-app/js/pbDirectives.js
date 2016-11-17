@@ -35,7 +35,7 @@ pagebuilderModule.directive('pbArrayofmap', function() {
                         }
                         $scope.hasKeys = true;
                     }
-                }
+                };
 
                 $scope.getKeys();
                 //console.log("keys = " + $scope.keys);
@@ -72,7 +72,7 @@ pagebuilderModule.directive('pbArrayofmap', function() {
 
                 $scope.cancelArrayOfMapEditModal = function() {
                     $scope.arrayOfMapEditShouldBeOpen = false;
-                }
+                };
 
                 $scope.arrayOfMapEditModalOpts = {
                     backdropFade: true,
@@ -103,12 +103,14 @@ pagebuilderModule.directive('pbMap', function() {
 
                 $scope.getType = function(obj) {
                     return typeof obj;
-                }
+                };
                 $scope.buildIndex = function() {
                     $scope.index = [];
-                    for (var pName in $scope.map)
-                        $scope.index.push(pName);
-
+                    for (var pName in $scope.map) {
+                        if ($scope.map.hasOwnProperty(pName)) {
+                            $scope.index.push(pName);
+                        }
+                    }
                 };
 
                 $scope.add = function(key, value) {
@@ -144,7 +146,7 @@ pagebuilderModule.directive('pbMap', function() {
 
                 $scope.cancelMapEditModal = function() {
                     $scope.mapEditShouldBeOpen = false;
-                }
+                };
 
                 $scope.mapEditModalOpts = {
                     backdropFade: true,
@@ -183,7 +185,7 @@ pagebuilderModule.directive('pbTextarea', function() {
 
                     $scope.pbChange();
                     //console.log("value = " + $scope.value) ;
-                }
+                };
 
                 // modal dialog functions
                 $scope.openTextareaModal = function () {
@@ -199,7 +201,7 @@ pagebuilderModule.directive('pbTextarea', function() {
 
                 $scope.cancelTextareaModal = function() {
                     $scope.textareaShouldBeOpen = false;
-                }
+                };
 
                 $scope.textareaModalOpts = {
                     backdropFade: true,

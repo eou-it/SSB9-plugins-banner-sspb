@@ -13,7 +13,7 @@ alert = function(message, params ){ //message,promptMessage,type,flash,prompts) 
         message: message,
         type: params&&params.type?params.type:"success",
         promptMessage: params&&params.promptMessage?params.promptMessage:"",
-        flash: params&&params.flash?params.flash:false,
+        flash: params&&params.flash?params.flash:false
     };
     var prompts = params&&params.prompts?params.prompts:[{label: $.i18n.prop("sspb.custom.page.default.affirm"), action:function(){}}];
 
@@ -27,7 +27,7 @@ alert = function(message, params ){ //message,promptMessage,type,flash,prompts) 
         })
     }
     notifications.addNotification(note);
-}
+};
 
 //Temporary fix for framework issue. ToDo remove when not needed any more.
 $(function() {
@@ -76,6 +76,8 @@ function nvl(val,def){
 function getControllerScopeById(id) {
     var rootScope = angular.element(document.querySelector('[ng-app]')).injector().get('$rootScope');
     var scope = rootScope.$$childHead;
+    //traverse children of root scope to find the id matching _controllerId
+    for (; scope && scope._controllerId !== id; scope = scope.$$nextSibling){}
     return scope;
 }
 
@@ -86,20 +88,22 @@ if (undefined == myCustomServices) {
     var myCustomServices = [];
 }
 
+//noinspection JSUnusedAssignment
 var appModule = appModule||angular.module('BannerOnAngular', myCustomServices);
 
-/* disables debug: */
+/* disable debug: */
 appModule.config(['$compileProvider', function ($compileProvider) {
     $compileProvider.debugInfoEnabled(false);
 }]);
-/**/
 
 if (pageControllers) {
     if (window["CustomPageController"]) { // backwards compatibel with alpha release
         pageControllers["CustomPageController"] = window["CustomPageController"];
     }
     for (var pc in pageControllers) {
-        appModule.controller(pc, pageControllers[pc]);
+        if (pageControllers.hasOwnProperty(pc)) {
+            appModule.controller(pc, pageControllers[pc]);
+        }
     }
 }
 
@@ -159,13 +163,13 @@ appModule.factory('pbAddCommon', function() {
             } else {
                 console.log ("***setDefault - unhandled case. parent="+parent +" model="+model);
             }
-        }
+        };
         scopeIn.log = function(txt) {
             console.log(txt);
-        }
+        };
         scopeIn.alert = function(txt) {
             alert(txt);
-        }
+        };
 
         //function to avoid undefined
         scopeIn.nvl = function (val,def){
@@ -173,8 +177,8 @@ appModule.factory('pbAddCommon', function() {
                 return def;
             }
             return val;
-        }
-    };
+        };
+    }
     return factory;
 });
 
@@ -196,7 +200,7 @@ appModule.factory('pbResource', function($resource ) {
                     list: {method:'GET',cache: cache, isArray:true}
                 }
             );
-        }
+        };
 
         //post (create) a new record immediately
         this.post = function (item, params, success, error) {
@@ -205,7 +209,7 @@ appModule.factory('pbResource', function($resource ) {
             }
             var newItem = new this.Resource(item);
             newItem.$save(params, success, error);
-        }
+        };
 
         //put (update) a record immediately
         this.put = function (item, params, success, error) {
@@ -215,12 +219,11 @@ appModule.factory('pbResource', function($resource ) {
             var newItem = new this.Resource(item);
             newItem.$update(params, success, error);
         }
-    };
+    }
 
     function PBResourceFactory(resourceURL) {
-        var result = new PBResource(resourceURL)
-        return result;
-    };
+        return new PBResource(resourceURL);
+    }
 
     return PBResourceFactory;
 });
@@ -292,7 +295,7 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
 
         this.numberOfPages = function () {
             return this.pageSize === 0? 1 : Math.max(1,Math.ceil(this.totalCount/this.pagingOptions.pageSize));
-        }
+        };
 
         this.init = function() {
             this.currentRecord=null;
@@ -304,18 +307,18 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
             if (this.pageSize>0) {
                 this.pagingOptions.currentPage = 1;
             }
-        }
+        };
 
         var post = new CreatePostEventHandlers(this,params.postQuery, params.onError);
 
         this.get = function() {
             this.init();
-            var params;
+            var params = "";
             eval("params="+this.queryParams+";");
             console.log("Query Parameters:", params) ;
             this.data=[];
             this.data[0] = this.Resource.get(params, post.go, post.error);
-        }
+        };
 
         this.load = function(p) {
             if (p && p.clearCache)
@@ -350,11 +353,11 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
             var res = (params.id === undefined) ? this.Resource.list(params, post.go, post.error) : this.Resource.get(params, post.go, post.error);
             this.data = (Array.isArray(res))?res:[res];
 
-        }
+        };
 
         this.loadAll = function() {
             this.load({all:true});
-        }
+        };
 
         this.setInitialRecord = function () {
             var model = $parse(this.componentId);
@@ -373,14 +376,14 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
                 }
                 console.log("Set initial record ");
             }
-        }
+        };
         this.setCurrentRecord = function ( item )   {
             var model = $parse(this.componentId);
             //a grid has model.name noop and cannot be assigned a value
             if (model.name != "noop")  {
                 this.currentRecord = null;
                 if (item === undefined )   {
-                    ; //do nothing
+                    //do nothing
                 } else {
                     if ( (typeof(item) == "string" || typeof(item) == "number" || item === null) && this.selectValueKey ) {
                         // assume item is a selected string and we are in the DataSet for a select item
@@ -405,12 +408,12 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
                 }
                 console.log("Set current record:", this.currentRecord);
             }
-        }
+        };
 
         this.setModified = function(item) {
             if (this.modified.indexOf(item) == -1 && this.added.indexOf(item) == -1)
                 this.modified.push(item);
-        }
+        };
 
         this.add = function(item) {
             var newItem = new this.Resource(item);
@@ -418,27 +421,30 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
             // add the new item to the beginning of the array so they show up on the top of the table
             this.data.unshift(newItem);
             // TODO - clear the add control content
-        }
+        };
 
         //delete selected record(s)
         this.deleteRecords = function(items) {
             if (this.data.remove(items) ) {
                 // we got a single record
-                if (this.deleted.indexOf(items) == -1)
+                if (this.deleted.indexOf(items) == -1) {
                     this.deleted.push(items);
-                this.selectedRecords.remove(item);
+                }
+                if (this.selectedRecords) {
+                    this.selectedRecords.remove(items);
+                }
             } else {
                 // we got an array of records to delete
-                for (ix in items){
-                    var item=items[ix];
+                items.forEach(function(item) {
                     if (this.data.remove(item) )  {
-                        if (this.deleted.indexOf(item) == -1)
+                        if (this.deleted.indexOf(item) == -1) {
                             this.deleted.push(item);
+                        }
                         this.selectedRecords.remove(item);
                     }
-                }
+                }, this);
             }
-        }
+        };
 
 
 
@@ -469,11 +475,11 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
             });
             this.deleted = [];
             this.cache.removeAll();
-        }
+        };
 
         this.dirty = function() {
             return this.added.length + this.modified.length + this.deleted.length>0
-        }
+        };
 
         this.onUpdate=params.onUpdate;
 
@@ -486,13 +492,12 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
         }
 
         return this;
-    } ;
+    }
 
     function PBDataSetFactory(scopeIn, params) {
         $scope = scopeIn;
-        var result = new PBDataSet(params);
-        return result;
-    };
+        return new PBDataSet(params);
+    }
 
     return PBDataSetFactory;
 });
