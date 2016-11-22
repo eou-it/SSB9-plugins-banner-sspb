@@ -373,7 +373,7 @@
                   "type": "form"
                }
             ],
-            "name": "viewArifactsSection",
+            "name": "viewArtifactsSection",
             "showInitially": true,
             "type": "block"
          }
@@ -386,7 +386,7 @@
       "type": "page",
       "importCSS": "xeStyle,pbadm.adminTasksCss"
    },
-   "fileTimestamp": "2016-11-16T13:23:38Z",
+   "fileTimestamp": "2016-11-22T11:55:02Z",
    "pageRoles": [{
       "allow": true,
       "roleName": "ADMIN-GPBADMN"
