@@ -34,68 +34,81 @@ class PageSecurityService {
     // Called from application bootstrap
     def init () {
         log.trace "************  Initializing Request map **********"
-        //def session = grails.util.Holders.grailsApplication.mainContext.sessionFactory.currentSession
-        //Next delete introduces hibernate errors (that don't seem to matter)
-        //def tx = session.beginTransaction();
-        //Requestmap.executeUpdate("delete Requestmap"); //delete all records to make sure we have a clean start
-        //Requestmap.where { (url!='%') }.updateAll(configAttribute:"ROLE_ADMIN") //give role that users won't have
-        //session.flush()
-        //session.clear()
-        //tx.commit()
-        Requestmap.findAll().each {
-            it.configAttribute="denyAll"
+        def requestMapIndex = getRequestMapIndex()
+        ConfigObject co = SpringSecurityUtils.getSecurityConfig()
+        if (co.securityConfigType.toString() == "Requestmap") {
+            requestMapIndex = mergeInterceptUrlMap(co.interceptUrlMap, requestMapIndex)
+            requestMapIndex = mergePages(requestMapIndex)
+            applyRequestMapIndex(requestMapIndex)
+            //Clear cache after changing the Requestmap.
+            springSecurityService.clearCachedRequestmaps()
         }
-
-
-       ConfigObject co = SpringSecurityUtils.getSecurityConfig()
-       if (co.securityConfigType.toString() == "Requestmap") {
-           mergeInterceptUrlMap(co.interceptUrlMap)
-           mergePages()
-           //Clear cache after changing the Requestmap.
-           springSecurityService.clearCachedRequestmaps()
-       }
     }
 
-    private def mergeInterceptUrlMap( map) {
+    //Get a map from the requestmap domain with url as key
+    private def getRequestMapIndex() {
+        def index = [:]
+        Requestmap.getAll().each{ it ->
+            index[it.url] = [domain: it, referenced: false, configAttribute: ""]
+        }
+        index
+    }
+
+    private def applyRequestMapIndex(map) {
+        map.each { url, it ->
+            saveRequestmap(url, it.configAttribute, it.domain, false)
+        }
+    }
+
+    private def mergeInterceptUrlMap( map, requestMapIndex) {
         //parse the interceptUrlMap and merge into the Requestmap
-        for (entry in map) {
-            try {
-                def url=entry.key
-                def roles=entry.value
-                def configAttribute=""
-                for (role in roles )  {
-                    configAttribute+=","+role
-                }
-                if (configAttribute.length()>0)
-                    configAttribute=configAttribute.substring(1) //strip first comma
-                saveRequestmap(url, configAttribute)
+        map.each { url, roles ->
+            def match = requestMapIndex[url]
+            if (!match) {
+                match = [domain: null]
+                requestMapIndex[url] = match
             }
-            catch(ApplicationException e) {
-                log.error "Exception merging $entry: \n $e"
-            }
+            match.configAttribute = getConfigAttribute(roles)
         }
+        requestMapIndex
     }
 
-    def mergePages() {
+    def mergePages(requestMapIndex) {
         def pages = Page.getAll()
         for (page in pages) {
-            mergePage(page, false)
+            def url = pageUrl(page.constantName)
+            def match = requestMapIndex[url]
+            if (!match) {
+                match = [domain: null]
+                requestMapIndex[url] = match
+            }
+            match.configAttribute = getPageConfigAttribute(page)
+            match.referenced = true
         }
+        requestMapIndex
+    }
+
+    private def pageUrl(name) {
+        "/customPage/page/${name}/**"
+    }
+
+    private def getConfigAttribute(roles) {
+        def configAttribute=""
+        if (roles) {
+            for (role in roles )  {
+                configAttribute += ","+role
+            }
+            configAttribute = configAttribute.startsWith(',')?configAttribute.substring(1):configAttribute
+        }
+        configAttribute
     }
 
     def mergePage(Page page, clearCache=true) {
-        def url = "/customPage/page/${page.constantName}/**"
+        def url = pageUrl(page.constantName)
         def configAttribute=""
         def rm
         try {
-            for (role in page.pageRoles )  {
-                if (role.allow) {
-                    configAttribute += toConfigAttribute(role.roleName)
-                }
-            }
-            if (configAttribute.length()>0) {
-                configAttribute = configAttribute.substring(1) //strip first comma
-            }
+            configAttribute = getPageConfigAttribute(page)
             rm=saveRequestmap(url, configAttribute)
         }
         catch(ApplicationException e) {
@@ -105,6 +118,16 @@ class PageSecurityService {
             springSecurityService.clearCachedRequestmaps()
         }
         return rm
+    }
+
+    private def getPageConfigAttribute(page) {
+        def configAttribute=""
+        for (role in page.pageRoles)  {
+            if (role.allow) {
+                configAttribute += toConfigAttribute(role.roleName)
+            }
+        }
+        configAttribute = configAttribute.startsWith(',')?configAttribute.substring(1):configAttribute
     }
 
     private def toConfigAttribute(roleName) {
@@ -123,9 +146,10 @@ class PageSecurityService {
         result
     }
 
-
-    private def saveRequestmap(String url, String configAttribute) {
-        def rm=Requestmap.findByUrl(url)
+    private def saveRequestmap(String url, String configAttribute,  rm = null, doFind = true) {
+        if (!rm && doFind) {
+            rm = Requestmap.findByUrl(url)
+        }
 
         if ( rm ) {
             if ( ( rm.configAttribute.compareTo(configAttribute) != 0) || !configAttribute)  {

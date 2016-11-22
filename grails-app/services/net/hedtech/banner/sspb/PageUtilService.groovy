@@ -15,6 +15,7 @@ import net.hedtech.banner.tools.i18n.PageMessageSource
 @Log4j
 class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     def pageService
+    def pageSecurityService
 
     def static final statusOk = 0
     def static final statusError = 1
@@ -235,6 +236,8 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 }
             }
         }
+        // Create the requestmap record to allow access
+        pageSecurityService.mergePage(page)
     }
 
     def compileAll(String pattern) {
