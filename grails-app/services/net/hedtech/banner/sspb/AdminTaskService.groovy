@@ -7,7 +7,6 @@ import grails.converters.JSON
 import net.hedtech.banner.tools.PBUtilServiceBase
 
 class AdminTaskService {
-    //static transactional = false
 
     def pageUtilService
     def virtualDomainUtilService
@@ -21,10 +20,6 @@ class AdminTaskService {
     def create(Map content, ignore) {
         def result = [:]
         if (content.task == 'import') {
-            if (content.pages) {
-                def count = pageUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.page, PBUtilServiceBase.loadOverwriteExisting)
-                result << [importedPagesCount: count]
-            }
             if (content.virtualDomains) {
                 def count = virtualDomainUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.virtualDomain, PBUtilServiceBase.loadOverwriteExisting)
                 result << [importedVirtualDomainsCount: count]
@@ -32,6 +27,10 @@ class AdminTaskService {
             if (content.css) {
                 def count = cssUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.css, PBUtilServiceBase.loadOverwriteExisting)
                 result << [importedCssCount: count]
+            }
+            if (content.pages) {
+                def count = pageUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.page, PBUtilServiceBase.loadOverwriteExisting, null, true)
+                result << [importedPagesCount: count]
             }
             if (content.artifact) {
                 if (content.artifact.domain instanceof String) {
@@ -74,11 +73,9 @@ class AdminTaskService {
     // This method checks if all artifacts have been submitted. If so, the import is started.
     private def pushArtifactForImport(type, name, content) {
         def importCount = 0
-        if ( (new Date()).getTime() - listsStartedMilis > listTimeout) {
+        if ( listCount ==0 || ( (new Date()).getTime() - listsStartedMilis > listTimeout) ) {
             nameLists = [:] // Reset the namesAssume data are from a failed previous upload
             listCount = 0
-        }
-        if (listCount == 0 ) {
             listsStartedMilis = (new Date()).getTime()
         }
         if (nameLists[type]) {
@@ -87,20 +84,21 @@ class AdminTaskService {
             nameLists[type]= [name]
         }
         listCount++
+        log.info "* $listCount of ${content.artifact.count}"
         if (listCount >= content.artifact.count ) {
+            log.info "* All artifacts are uploaded, start importing"
+            listCount = 0 //Clear to start a new set of artifacts
             def mode = PBUtilServiceBase.loadOverwriteExisting
             // copied all artifacts
             if (nameLists.css?.size() > 0){
                 importCount += cssUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.css, mode, nameLists.css)
             }
             if (nameLists.page?.size() > 0) {
-                importCount += pageUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.page, mode, nameLists.page)
+                importCount += pageUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.page, mode, nameLists.page, true)
             }
             if (nameLists.virtualDomain?.size() > 0) {
                 importCount += virtualDomainUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.virtualDomain, mode, nameLists.virtualDomain)
             }
-            listCount = 0
-            listsStartedMilis = 0
         }
         importCount
     }

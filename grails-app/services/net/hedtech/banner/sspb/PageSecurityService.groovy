@@ -11,9 +11,8 @@ import org.omg.CORBA.portable.ApplicationException
 @Log4j
 class PageSecurityService {
     static transactional = true
-    static final datasource = 'sspb'
+    //static final datasource = 'sspb'
     def springSecurityService
-    def grailsApplication
 
     // For Restful interface
     def update(/*def id,*/ Map ignore, params)  {
@@ -95,7 +94,7 @@ class PageSecurityService {
     private def getConfigAttribute(roles) {
         def configAttribute=""
         if (roles) {
-            for (role in roles )  {
+            for (role in roles.sort(false) )  {
                 configAttribute += ","+role
             }
             configAttribute = configAttribute.startsWith(',')?configAttribute.substring(1):configAttribute
@@ -105,13 +104,13 @@ class PageSecurityService {
 
     def mergePage(Page page, clearCache=true) {
         def url = pageUrl(page.constantName)
-        def configAttribute=""
+        def configAttribute = ""
         def rm
         try {
             configAttribute = getPageConfigAttribute(page)
-            rm=saveRequestmap(url, configAttribute)
+            rm = saveRequestmap(url, configAttribute)
         }
-        catch(ApplicationException e) {
+        catch (ApplicationException e) {
             log.error "Exception merging $url - $configAttribute: \n $e"
         }
         if (clearCache) {
@@ -121,27 +120,27 @@ class PageSecurityService {
     }
 
     private def getPageConfigAttribute(page) {
-        def configAttribute=""
-        for (role in page.pageRoles)  {
-            if (role.allow) {
-                configAttribute += toConfigAttribute(role.roleName)
+        def roles = []
+        page.pageRoles.each {
+            if (it.allow) {
+                roles << toConfigAttribute(it.roleName)
             }
         }
-        configAttribute = configAttribute.startsWith(',')?configAttribute.substring(1):configAttribute
+        getConfigAttribute(roles)
     }
 
     private def toConfigAttribute(roleName) {
         def result
         final def admin = "ADMIN-"
         if (roleName=="GUEST") {
-            result = ",IS_AUTHENTICATED_ANONYMOUSLY"
+            result = "IS_AUTHENTICATED_ANONYMOUSLY"
         } else if ( roleName.startsWith(admin) ) {
             def adminRoles = grails.util.Holders.config.pageBuilder.adminRoles.split(',')
             def r = "ROLE_${roleName.minus(admin)}"
             result = adminRoles.find { it.startsWith(r) }
-            result = result?",$result": ",${r}_BAN_DEFAULT_M"
+            result = result?"$result": "${r}_BAN_DEFAULT_M"
         } else {
-            result = ",ROLE_SELFSERVICE-${roleName}_BAN_DEFAULT_M"
+            result = "ROLE_SELFSERVICE-${roleName}_BAN_DEFAULT_M"
         }
         result
     }

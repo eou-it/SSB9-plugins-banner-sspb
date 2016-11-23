@@ -67,7 +67,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         fileNames.eachLine {  fileName ->
             def pageName = fileName.substring(0,fileName.lastIndexOf(".json"))
             InputStream stream = PageUtilService.class.classLoader.getResourceAsStream( "data/install/$fileName" )
-            def loadResult = load(pageName, stream, mode )
+            def loadResult = load(pageName, stream, mode, false )
             needDeferred |= (loadResult.statusCode == statusDeferLoad)
             count += loadResult.loaded
 
@@ -85,11 +85,11 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     //Import/Install Utility
-    int importAllFromDir(String path=pbConfig.locations.page, mode=loadIfNew, ArrayList names = null) {
-        importAllFromDir(path, mode, false, names)
+    int importAllFromDir(String path=pbConfig.locations.page, mode=loadIfNew, ArrayList names = null, boolean updateSecurity = false) {
+        importAllFromDir(path, mode, false, names, updateSecurity)
     }
 
-    int importAllFromDir(String path, mode, boolean deferred, ArrayList names) {
+    int importAllFromDir(String path, mode, boolean deferred, ArrayList names, boolean updateSecurity) {
         def count=0
         def needDeferred = false
         if (!deferred) {
@@ -98,7 +98,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         try {
             new File(path).eachFileMatch(jsonExt) { file ->
                 if (!names || names.contains(file.name.take(file.name.lastIndexOf('.')))) {
-                    def loadResult = load(file, mode)
+                    def loadResult = load(file, mode, updateSecurity)
                     needDeferred |= (loadResult.statusCode == statusDeferLoad)
                     finalizeFileImport(file, loadResult)
                     count += loadResult.loaded
@@ -112,7 +112,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             if ( count > 0 && needDeferred) {
                 // attempt import files that could not be loaded because of missing parent
                 // which might have been imported if count > 0
-                def i = importAllFromDir(path, mode, true, names)
+                def i = importAllFromDir(path, mode, true, names, updateSecurity)
                 bootMsg "Pages loaded deferred: $i"
                 count += i
             }
@@ -144,13 +144,13 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     //Load a page, save and compile it
-    private def load(String name, InputStream stream, int mode) {
-        load(name,stream, null, mode)
+    private def load(String name, InputStream stream, int mode, boolean updateSecurity) {
+        load(name,stream, null, mode, updateSecurity)
     }
-    private def load(File file, int mode) {
-        load(null, null, file, mode)
+    private def load(File file, int mode, boolean updateSecurity) {
+        load(null, null, file, mode, updateSecurity)
     }
-    private def load( String name, InputStream stream, File file, int mode ) {
+    private def load( String name, InputStream stream, File file, int mode, boolean updateSecurity ) {
         // either name + stream is needed or file
         def pageName = name?name:file.name.substring(0,file.name.lastIndexOf(".json"))
         def page = pageService.get(pageName)
@@ -204,8 +204,15 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 if (result.statusCode == statusOk) {
                     result = pageService.compileAndSavePage(page.constantName, page.mergedModelText, page.extendsPage)
                     result.loaded = result.page?1:0
-                    if (page && !result.loaded) { //clean up if page did not compile
-                        page.delete()
+                    if (page) {
+                        if (result.loaded) {
+                            // Create the requestmap record to allow access]
+                            if (updateSecurity) {
+                                pageSecurityService.mergePage(result.page)
+                            }
+                        } else {
+                            page.delete() //clean up if page did not compile
+                        }
                     }
                 }
             }
@@ -236,8 +243,6 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 }
             }
         }
-        // Create the requestmap record to allow access
-        pageSecurityService.mergePage(page)
     }
 
     def compileAll(String pattern) {
