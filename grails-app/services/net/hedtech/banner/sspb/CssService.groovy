@@ -102,7 +102,10 @@ class CssService {
         def cssInstance  = Css.findByConstantName(cssName)
         def ret
 
-        if (cssSource)  {
+        if (!validateInput([constantName: cssName, description: description])) {
+            ret = [statusCode: 1, statusMessage: message(code: "sspb.css.cssManager.cssSource.invalid.name.message")]
+        }
+        else if (cssSource)  {
             // TODO CSS validation
             def validateResult =  [valid: true]
             if (validateResult.valid) {
@@ -132,52 +135,13 @@ class CssService {
         }
     }
 
+    private def validateInput(params) {
+        def name = params?.constantName
+        def valid = (name.size() <= 60)
+        valid &= name ==~ /[a-zA-Z]+[a-zA-Z0-9_\-]*/
+        def description = params?.description
+        valid &=  (description.size() <= 255)
+        valid
+    }
 
-
-//    public def checkOptimisticLock( domainObject, content ) {
-//
-//        if (domainObject.hasProperty( 'version' )) {
-//            if (!content?.version) {
-//                domainObject.errors.reject( 'version', "net.hedtech.restfulapi.Css.missingVersion")
-//                throw new ValidationException( "Missing version field", domainObject.errors )
-//            }
-//            int ver = content.version instanceof String ? content.version.toInteger() : content.version
-//            if (ver != domainObject.version) {
-//                throw exceptionForOptimisticLock( domainObject, content )
-//            }
-//        }
-//    }
-//
-//
-//    private def exceptionForOptimisticLock( domainObject, ignore ) {
-//        new HibernateOptimisticLockingFailureException( new StaleObjectStateException( domainObject.class.getName(), domainObject.id ) )
-//    }
-
-
-
-    /**
-     * Checks the request for a flag asking for a specific exception to be thrown
-     * so error handling can be tested.
-     * This is a method to support testing of the plugin, and should not be taken
-     * as an example of good service construction.
-     **/
-
-//    private void checkForExceptionRequest() {
-//        def params = WebUtils.retrieveGrailsWebRequest().getParameterMap()
-//        if (params.throwOptimisticLock == 'y') {
-//            throw new OptimisticLockingFailureException( "requested optimistic lock for testing" )
-//        }
-//        /*if (params.throwApplicationException == 'y') {
-//           //throw new DummyApplicationException( params.appStatusCode, params.appMsgCode, params.appErrorType )
-//        }*/
-//    }
-//
-//
-//    private void supplementCss( Css css ) {
-//        MessageDigest digest = MessageDigest.getInstance("SHA1")
-//        digest.update("constantName:${css.getConstantName()}".getBytes("UTF-8"))
-//
-//        def properties = [sha1:new BigInteger(1,digest.digest()).toString(16).padLeft(40,'0')]
-//        css.metaClass.getSupplementalRestProperties << {-> properties }
-//    }
 }

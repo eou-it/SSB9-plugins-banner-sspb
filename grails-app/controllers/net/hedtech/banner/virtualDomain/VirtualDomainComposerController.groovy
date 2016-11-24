@@ -15,14 +15,19 @@ class VirtualDomainComposerController {
     def saveVirtualDomain = {
         def pageInstance = params
         if (pageInstance.vdServiceName)  {
-            def saveResult =  virtualDomainService.saveVirtualDomain(pageInstance.vdServiceName,
-                    pageInstance.vdQueryView, pageInstance.vdPostView, pageInstance.vdPutView, pageInstance.vdDeleteView)
-            pageInstance.saveSuccess = saveResult.success
-            pageInstance.updated = saveResult.updated
-            pageInstance.error = saveResult.error
-            pageInstance.id = saveResult.id
-            pageInstance.version = saveResult.version
-            pageInstance.submitted = true
+            if ( validateInput(params)) {
+                def saveResult = virtualDomainService.saveVirtualDomain(pageInstance.vdServiceName,
+                        pageInstance.vdQueryView, pageInstance.vdPostView, pageInstance.vdPutView, pageInstance.vdDeleteView)
+                pageInstance.saveSuccess = saveResult.success
+                pageInstance.updated = saveResult.updated
+                pageInstance.error = saveResult.error
+                pageInstance.id = saveResult.id
+                pageInstance.version = saveResult.version
+                pageInstance.submitted = true
+            } else {
+                pageInstance.error = message(code:"sspb.virtualdomain.invalid.service.message", args:[pageInstance.vdServiceName])
+                render (status: 400, text:  pageInstance.error)
+            }
         }
         render (view:"virtualDomainComposer", model: [pageInstance: pageInstance])
     }
@@ -55,5 +60,10 @@ class VirtualDomainComposerController {
         render (view:"virtualDomainComposer", model: [pageInstance: null])
     }
 
-
+    private def validateInput(params) {
+        def name = params?.vdServiceName
+        def valid = (name.size() <= 60)
+        valid &= name ==~ /[a-zA-Z]+[a-zA-Z0-9_\-]*/
+        valid
+    }
 }

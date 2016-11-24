@@ -19,7 +19,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
     <r:require modules="pageBuilderDev"/>
 
     <script type="text/javascript">
-        var myCustomServices = ['ngResource', 'ui.bootstrap', 'pagebuilder.directives', 'ngUpload'];
+        var myCustomServices = ['ngResource', 'ui.bootstrap', 'pagebuilder.directives', 'ngUpload', 'ngMessages'];
         pageControllers["CssManagerController"] = function ( $scope, $http, $resource, $parse) {
             // upload status callback
             $scope.foo = "Hello!";
@@ -215,17 +215,21 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         <button ng-click='deleteCssSource()'><g:message code="sspb.css.cssManager.delete.label" /></button>
 
         </div>
-        <div class="form-horizontal">
+        <div class="form-horizontal" ng-form="cssform">
             <div class="control-group">
                 <label class="col-sm-3 control-label"  for='cssName'><g:message code="sspb.css.cssManager.cssName.label" /></label>
                 <div class="col-sm-9">
-                    <input name="cssName" id='cssName' class="form-control" ng-model='cssName'/>
+                    <input name="cssName" id='cssName' class="form-control" ng-model='cssName' required maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/" />
+                    <span ng-messages="cssform.cssName.$error" role="alert" class="fieldValidationMessage">
+                        <span ng-message="pattern" ><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" /></span>
+                        <span ng-message="required" > <g:message code="sspb.page.visualbuilder.name.required.message" /></span>
+                    </span>
                 </div>
             </div>
             <div class="control-group">
                 <label class="col-sm-3 control-label"  for='desc'><g:message code="sspb.css.cssManager.description.label" /></label>
                 <div class="col-sm-9">
-                    <input name="description" id='desc' class="form-control" ng-model='description'/>
+                    <input name="description" id='desc' class="form-control" ng-model='description' maxlength="255"/>
                 </div>
             </div>
 
