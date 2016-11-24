@@ -329,7 +329,7 @@ class CompileService {
                 // if we are dealing with clicking on an item from a list or table then pass the current selection to the control function
                 def args = "";
                 if (pageComponent.type == PageComponent.COMP_TYPE_LIST || pageComponent.type == PageComponent.COMP_TYPE_GRID || pageComponent.type == PageComponent.COMP_TYPE_HTABLE) {
-                    args = "${PageComponent.CURRENT_ITEM}, field"
+                    args = "${PageComponent.CURRENT_ITEM}, context"
                 } else if (pageComponent.type == PageComponent.COMP_TYPE_LINK){
                     args = PageComponent.GRID_ITEM // only provided when used in a grid
                 }

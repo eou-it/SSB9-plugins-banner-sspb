@@ -381,6 +381,9 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
             var model = $parse(this.componentId);
             //a grid has model.name noop and cannot be assigned a value
             if (model.name != "noop")  {
+                if (this.currentRecord === item) {
+                    return; // This has already fired
+                }
                 this.currentRecord = null;
                 if (item === undefined )   {
                     //do nothing

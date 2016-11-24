@@ -520,13 +520,15 @@ class PageComponent {
 
         //currentRecord is also set with a click handler. Cannot remove below setting because click does not capture keyboard
         //navigation
-        def onClickCode=onClick?"\$scope.${name}_onClick(newVal);":""
-        //TODO: this is not really on click but onSelectionChanged.
+        // As a work around until we change the model, we fire the onClick event handler if it contains "selectionChanged"
+        def onClickCode=onClick && onClick.contains("\"selectionChanged\"")?"\$scope.${name}_onClick(newVal, \"selectionChanged\");":""
+        //Todo: implement onSelectionChanged event handler
 
          code+=
             """\$scope.\$watch('${dataSet}.selectedRecords[0]', function(newVal, oldVal) {
                 if (newVal !== oldVal ) {
                     \$scope.${dataSet}.setCurrentRecord(newVal);
+                     $onClickCode
                 }
             });
             """
