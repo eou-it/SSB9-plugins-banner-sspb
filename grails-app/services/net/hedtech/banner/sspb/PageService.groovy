@@ -96,7 +96,9 @@ class PageService {
         log.trace "in compileAndSavePage: pageName=$pageName"
         def pageInstance  = Page.findByConstantName(pageName)
         def ret
-        if (pageSource)  {
+        if ( !validateInput([constantName:pageName])) {
+            ret = [statusCode: 1, statusMessage: message(code: "sspb.page.visualcomposer.invalid.name.message")]
+        } else if (pageSource)  {
 
             if (!(extendsPage instanceof Page)) {
                 // Maps and Json Objects don't compare directly with nulls
@@ -183,6 +185,13 @@ class PageService {
                 page.delete(failOnError:true)
             }
         }
+    }
+
+    private def validateInput(params) {
+        def name = params?.constantName
+        def valid = (name?.size() <= 60)
+        valid &= name ==~ /[a-zA-Z]+[a-zA-Z0-9_\-\.]*/
+        valid
     }
 
  }

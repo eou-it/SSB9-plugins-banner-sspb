@@ -62,7 +62,7 @@ class VirtualDomainComposerController {
 
     private def validateInput(params) {
         def name = params?.vdServiceName
-        def valid = (name.size() <= 60)
+        def valid = (name?.size() <= 60)
         valid &= name ==~ /[a-zA-Z]+[a-zA-Z0-9_\-]*/
         valid
     }

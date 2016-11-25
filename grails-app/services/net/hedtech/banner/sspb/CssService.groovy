@@ -97,8 +97,7 @@ class CssService {
     def compileCss( cssName, cssSource, description) {
         log.trace "in compileCss: \ncssSource=$cssSource"
 
-        if (description==null)
-            description = '';
+        description = description?:""
         def cssInstance  = Css.findByConstantName(cssName)
         def ret
 
@@ -137,8 +136,8 @@ class CssService {
 
     private def validateInput(params) {
         def name = params?.constantName
-        def valid = (name.size() <= 60)
-        valid &= name ==~ /[a-zA-Z]+[a-zA-Z0-9_\-]*/
+        def valid = (name?.size() <= 60)
+        valid &= name ==~ /[a-zA-Z]+[a-zA-Z0-9_\-\.]*/
         def description = params?.description
         valid &=  (description.size() <= 255)
         valid

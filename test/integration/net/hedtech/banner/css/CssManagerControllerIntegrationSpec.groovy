@@ -29,7 +29,7 @@ class CssManagerControllerIntegrationSpec extends IntegrationSpec {
                 contentStream)
         cssManagerController.request.addFile(file)
         when: "Upload CSS file"
-        cssManagerController.params.name = "test"
+        cssManagerController.params.cssName = "test"
         cssManagerController.params.description = "test desc"
         cssManagerController.params.file =  new File(cssDirPath + "/testCss.json")
         cssManagerController.uploadCss()
