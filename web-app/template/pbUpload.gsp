@@ -10,19 +10,24 @@
         </div>
         <div class="modal-body">
             <!-- css file upload form TODO put in a modal dialog -->
-            <form id="upload" ng-upload method="POST" action="{{rootWebApp + 'uploadCss?delay=yes'}}">
+            <form id="upload" name="uploadform" ng-upload method="POST" action="{{rootWebApp + 'uploadCss?delay=yes'}}">
                 <div>
                     <label><g:message code="sspb.css.cssManager.cssName.label" /></label>
-                    <input name="cssName" ng-model='cssName'/>
+                    <input name="cssName" ng-model='cssName'
+                           required maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/"/>
+                    <div ng-messages="uploadform.cssName.$error" role="alert" class="fieldValidationMessage">
+                        <span ng-message="pattern" ><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" /></span>
+                        <span ng-message="required" > <g:message code="sspb.page.visualbuilder.name.required.message" /></span>
+                    </div>
                 </div>
                 <div>
                     <label><g:message code="sspb.css.cssManager.description.label" /></label>
-                    <input name="description" ng-model='description'/>
+                    <input name="description" ng-model='description' maxlength="255"/>
                 </div>
 
                 <div>
                     <label><g:message code="sspb.css.cssManager.upload.file.label" />
-                    <input type="file" name="file" />
+                    <input type="file" name="file" accept=".css" />
                 </div>
                 <div>
                     <input upload-submit="complete(content, completed)" type="submit" class="btn btn-primary" value="Submit" />
