@@ -6,11 +6,9 @@ package net.hedtech.banner.virtualDomain
 import groovy.sql.Sql
 import groovy.transform.*
 import groovy.util.logging.Log4j
-import net.hedtech.banner.exceptions.ApplicationException
 import net.hedtech.banner.sspb.PBUser
-
 import java.sql.SQLException
-import java.text.ParseException
+
 
 @Log4j
 class VirtualDomainSqlService {
@@ -41,7 +39,7 @@ class VirtualDomainSqlService {
         params.each { key, value ->
             def k=key
             def v=value
-            if ( !["action","virtualDomain","controller","pluralizedResourceName"].contains(key) )  {
+            if ( !["action","virtualDomain","controller","pluralizedResourceName"].contains(key) && isValidName(key) )  {
                 if (key=="id") {
                     if (params.url_encoding != 'plain') {
                         v = urlPathDecode(value)
@@ -68,7 +66,7 @@ class VirtualDomainSqlService {
             try {
                 params.put("parm_user_" + k, v)
             }
-            catch (ApplicationException e) {
+            catch (RuntimeException e) {
                 log.error "Exception adding user:", e
             }
         }
@@ -79,7 +77,7 @@ class VirtualDomainSqlService {
     @Memoized
     private def userAccessRights (vd, userRoles) {
         def result=[get: false, put: false, post: false, delete: false, debug: false ]
-        String debugRoles = grailsApplication.config.pageBuilder.adminRoles
+        String debugRoles = grailsApplication.config.pageBuilder.debugRoles?:""
         log.debug "Determining access right for ${vd.serviceName}"
         for (it in userRoles) {
             //objectName is like SELFSERVICE-ALUMNI
@@ -96,7 +94,7 @@ class VirtualDomainSqlService {
                     result.post |= it.allowPost
                     result.delete |= it.allowDelete
                 }
-                result.debug |= debugRoles.indexOf(it.objectName) > -1
+                result.debug |= debugRoles.indexOf("ROLE_${it.objectName}_${it.roleName}") > -1
             }
         }
         result
@@ -128,9 +126,12 @@ class VirtualDomainSqlService {
             def index=0
             for (s in orderByList) {
                 //replace operator and special characters to avoid sql injection
-                s=(String) s.tr(" ',.<>?;:|+=!/&*(){}[]`~@#\$%\"^-", " ")
+                s=(String) s.tr(" ',.<>?;:|+=!/&*(){}[]`~@#\$%\"^-\n\t\r", " ")
                 if (s) {
                     def tokens=s.split() //split sortby on whitespace
+                    if ( !(tokens.size() == 2 && isValidName(tokens[0],30) && ['asc','desc'].contains(tokens[1])) ) {
+                        throw new RuntimeException(message(code:"sspb.virtualdomain.sqlservice.sortby.message", args:[]))
+                    }
                     if (tokens[0].toLowerCase()==tokens[0]) {
                         //if sortby column is lowercase, Oracle wants a case sensitive column
                         //so add double quotes around column
@@ -171,13 +172,14 @@ class VirtualDomainSqlService {
             logmsg += message(code:"sspb.virtualdomain.sqlservice.numbercolumns", args:[meta.columnCount])
         }
         def rows
+        if (parameters.sortby) {
+            statement=replaceOrderBy(statement, parameters.sortby)
+        }
         try {
             //make sure paging params are valid numbers (and avoid sql injection and errors in oracle)
             parameters.max=parameters.max?parameters.max.toInteger():parameters.debug?5.toInteger():10000.toInteger()
             parameters.offset = parameters.offset?parameters.offset.toLong():0.toLong()
-            if (parameters.sortby) {
-                statement=replaceOrderBy(statement, parameters.sortby)
-            }
+
             //modify query for sql pagination (should be fast if an index exists on columns in order by clause)
             statement="""select /*+first_rows(${parameters.max})*/ *
                          from (select rownum row_number, a.*
@@ -190,7 +192,7 @@ class VirtualDomainSqlService {
             rows = handleClobRows(rows)
             logmsg += " "+message(code:"sspb.virtualdomain.sqlservice.numberrows", args:[rows?.size(),parameters.offset])
 
-        } catch(e) {
+        } catch(SQLException e) {
             logmsg += message(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
             errorMessage=privs.debug?logmsg :"Unable to get resources."
         } finally {
@@ -220,7 +222,7 @@ class VirtualDomainSqlService {
             // determine the total count
             rows = sql.rows(statement,parameters)
             totalCount = rows[0].COUNT
-        } catch(e) {
+        } catch(SQLException e) {
             logmsg += message(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
             errorMessage=privs.debug?logmsg : "Unable to get resource count."
         } finally {
@@ -243,7 +245,7 @@ class VirtualDomainSqlService {
             sql = getSql(vd.dataSource)
             sql.execute(vd.codePut, data)
         }
-        catch(ApplicationException e) {
+        catch(SQLException e) {
             log.error "Exception in update statement", e
             throw new VirtualDomainException( privs.debug?e.getLocalizedMessage():"Unable to update resource.")
         }
@@ -319,29 +321,22 @@ class VirtualDomainSqlService {
                 try {
                     def p1 = javax.xml.bind.DatatypeConverter.parseDateTime(convertDateString)
                     it.value=new java.sql.Timestamp(p1.getTime().time)
-                } catch (ParseException e) {
-                    //do nothing it is not a date so it should be ok
-                    log.error "Exception in parsing date", e
-                }
-            }  else if (  (it.value instanceof String)  && it.value.endsWith('Z')) {
-                //not really needed to use a regular expression - as parseDateTime should raise exception
-                // if a date is returned from datepicker it appends "Z" at the end
-                try {
-                    // date string is 1981-06-10T04:00:00.000Z, adjusted for GMT by browser
-                    // HvT: remove this.
-                        // convert to 1981-06-10T04:00:00+00:00
-                        // date/time stored on server is assumed to be GMT
-                        // it.value = it.value.substring(0, 19)
-                        // it.value += "+00:00"
-                    def date = javax.xml.bind.DatatypeConverter.parseDateTime(it.value)
-                    it.value=new java.sql.Timestamp(date.getTime().time)
-                    log.debug "java.sql.Timestamp value: ${it.value}  Milliseconds past 1970 ${it.value.getTime()} date milli: ${date.getTimeInMillis()}"
-                } catch (ApplicationException e) {
+                } catch (IllegalArgumentException e) {
                     //do nothing it is not a date so it should be ok
                     log.error "Exception in Date conversion:", e
                 }
-            }
-            if (it.value.getClass().toString().endsWith("JSONObject\$Null") ) {
+            } else if ( (it.value instanceof String) && it.value.find('\\d{4}-\\d{2}-\\d{2}T') && it.value.endsWith('Z')) {
+                // if a date is returned from datepicker it appends "Z" at the end
+                try {
+                    // date string is 1981-06-10T04:00:00.000Z, adjusted for GMT by browser
+                    def date = javax.xml.bind.DatatypeConverter.parseDateTime(it.value)
+                    it.value=new java.sql.Timestamp(date.getTime().time)
+                    log.debug "java.sql.Timestamp value: ${it.value}  Milliseconds past 1970 ${it.value.getTime()} date milli: ${date.getTimeInMillis()}"
+                } catch (IllegalArgumentException e) {
+                    //do nothing it is not a date so it should be ok
+                    log.error "Exception in Date conversion:", e
+                }
+            } else if (it.value.getClass().toString().endsWith("JSONObject\$Null") ) {
                 it.value=""
             }
         }
@@ -418,6 +413,14 @@ class VirtualDomainSqlService {
         else {
             return "";
         }
+    }
+
+    private def isValidName(name, maxLength = 0) {
+        def valid = name ==~ /[a-zA-Z]+[a-zA-Z0-9_]*/
+        if (maxLength) {
+            valid &= name.size()<=30
+        }
+        valid
     }
 
 }

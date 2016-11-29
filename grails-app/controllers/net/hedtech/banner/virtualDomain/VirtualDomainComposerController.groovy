@@ -8,16 +8,16 @@ class VirtualDomainComposerController {
     def virtualDomainService
 
     def composeVirtualDomain = {
-        def pageInstance = params
+        def pageInstance = filter(params)
         render (view:"virtualDomainComposer", model: [pageInstance: pageInstance])
     }
 
     def saveVirtualDomain = {
-        def pageInstance = params
-        if (pageInstance.vdServiceName)  {
+        def pageInstance = filter(params)
+        if (params.vdServiceName)  {
             if ( validateInput(params)) {
-                def saveResult = virtualDomainService.saveVirtualDomain(pageInstance.vdServiceName,
-                        pageInstance.vdQueryView, pageInstance.vdPostView, pageInstance.vdPutView, pageInstance.vdDeleteView)
+                def saveResult = virtualDomainService.saveVirtualDomain(params.vdServiceName,
+                        params.vdQueryView, params.vdPostView, params.vdPutView, params.vdDeleteView)
                 pageInstance.saveSuccess = saveResult.success
                 pageInstance.updated = saveResult.updated
                 pageInstance.error = saveResult.error
@@ -33,20 +33,24 @@ class VirtualDomainComposerController {
     }
 
     def loadVirtualDomain = {
-        def pageInstance = params
-        if (pageInstance.vdServiceName)  {
-            def loadResult =  virtualDomainService.loadVirtualDomain(pageInstance.vdServiceName)
-            pageInstance.loadSuccess = loadResult.success
-            pageInstance.error = loadResult.error
-            pageInstance.loadSubmitted = true
-            if (loadResult.success) {
-                pageInstance.vdQueryView  = loadResult.virtualDomain.codeGet
-                pageInstance.vdPostView   = loadResult.virtualDomain.codePost
-                pageInstance.vdPutView   = loadResult.virtualDomain.codePut
-                pageInstance.vdDeleteView = loadResult.virtualDomain.codeDelete
-            }
+        def pageInstance = filter(params)
+        if (pageInstance.vdServiceName) {
+           if (validateInput(params)) {
+               def loadResult = virtualDomainService.loadVirtualDomain(pageInstance.vdServiceName)
+               pageInstance.loadSuccess = loadResult.success
+               pageInstance.error = loadResult.error
+               pageInstance.loadSubmitted = true
+               if (loadResult.success) {
+                   pageInstance.vdQueryView = loadResult.virtualDomain.codeGet
+                   pageInstance.vdPostView = loadResult.virtualDomain.codePost
+                   pageInstance.vdPutView = loadResult.virtualDomain.codePut
+                   pageInstance.vdDeleteView = loadResult.virtualDomain.codeDelete
+               }
+           } else {
+               pageInstance.error = message(code:"sspb.virtualdomain.invalid.service.message", args:[pageInstance.vdServiceName])
+               render (status: 400, text:  pageInstance.error)
+           }
         }
-
         render (view:"virtualDomainComposer", model: [pageInstance: pageInstance])
     }
 
@@ -58,6 +62,17 @@ class VirtualDomainComposerController {
             }
         }
         render (view:"virtualDomainComposer", model: [pageInstance: null])
+    }
+
+    private def filter(params) {
+        def vo = [:]
+        vo.vdServiceName = params.vdServiceName
+        vo.vdQueryView   = params.vdQueryView
+        vo.vdPostView    = params.vdPostView
+        vo.vdPutView     = params.vdPutView
+        vo.vdDeleteView  = params.vdDeleteView
+        vo.id            = params.id
+        vo
     }
 
     private def validateInput(params) {
