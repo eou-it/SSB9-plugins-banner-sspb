@@ -7,12 +7,38 @@
 
 SET define ON
 
+-- bind a substitution variable BANSECR_REVOKE to a SQL column
+col SELECTED1 new_val BANSECR_REVOKE 
+col SELECTED1 for a40
+
 col SELECTED for a40
 -- bind a substitution variable SELECTION to a SQL column
 col SELECTED new_val SELECTION 
 col SELECTED for a40
 
+
+
 connect sys/&&sys_password as sysdba
+
+select
+  decode(cnt,0,'REVOKE DBA FROM BANSECR','') selected1
+from (
+  select count(*) cnt
+  from DBA_ROLE_PRIVS
+  where grantee = 'BANSECR'
+  and granted_role = 'DBA'
+);
+
+begin
+  if '&&BANSECR_REVOKE' is not null then
+    execute immediate 'grant dba to bansecr';
+  end if;
+end;
+/
+
+select 'Granted DBA to bansecr temporarily'
+from dual
+where '&&BANSECR_REVOKE' is not NULL;
 
 -- Check if user SSPBMGR exists
 
@@ -155,7 +181,17 @@ connect sys/&&sys_password as sysdba
 Prompt Installing developer security
 @@ _pb_security.sql
 
+SET define ON
+begin
+  if '&&BANSECR_REVOKE' is not null then
+    execute immediate '&&BANSECR_REVOKE';
+  end if;
+end;
+/
 
+select 'Executed: &&BANSECR_REVOKE'
+from dual
+where '&&BANSECR_REVOKE' is not NULL;
 
 Prompt Creating Web Tailor Menu
 -- If a non default Menu exists for PageBuilder we skip installing to avoid overwriting customized menu's

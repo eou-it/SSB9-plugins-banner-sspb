@@ -76,6 +76,9 @@ commit;
 
 connect bansecr/&&BANSECR_PASSWORD
 
+--Enable the dba role
+set role dba;
+
 Prompt Delete record for Page Builder V 9.0 in GURAOBJ.
 
 delete from Guraobj where guraobj_object = '&&object_name' and Guraobj_Current_Version = '9.0';
