@@ -278,26 +278,26 @@ class PageComponent {
         result
     }
 
-    def tranMsg(key, List args=[], esc = ESC_H) {
+    def tranMsg(key, List args=[], esc = ESC_H, q = "'") {
         def encodingFlag=""
         def argsString=""
         if (!args.empty)
-            argsString=",args: $args"
+            argsString=",args:$args"
         switch(esc) {
           //case ESC_H  : encodingFlag = ", encodeAs: 'HTML'"; break    // this is default so no need to specify
-            case ESC_JS : encodingFlag = ", encodeAs: 'JavaScript'"; break
+            case ESC_JS : encodingFlag = ",encodeAs:${q}JavaScript$q"; break
         }
-        def result =  "message(code: '$key' $argsString $encodingFlag)"
+        def result =  "message(code:$q$key$q$argsString$encodingFlag)"
         return "\${${result}}"
     }
 
-    def tran(String prop, esc = ESC_H ) {
+    def tran(String prop, esc = ESC_H, q = "'" ) {
         def defTranslation = this[prop]
         if (defTranslation && translatableAttributes.contains(prop))  {
             defTranslation=compileDOMDisplay(defTranslation)
             def key ="${propertiesBaseKey()}.$prop"
             root.rootProperties[key] = defTranslation
-            return tranMsg(key,[] as List, esc)
+            return tranMsg(key,[] as List, esc, q)
         }
         return ""
     }
@@ -537,9 +537,9 @@ class PageComponent {
 
     //this returns a html template string as a javascript string - escape strings
     String gridChildHTML( int depth=0) {
-        def templateResult = compileComponentTemplate(depth)
+        def templateResult = compileComponentTemplate(depth, ESC_JS)
         if ( templateResult.compiled) {
-            return StringEscapeUtils.escapeJavaScript(templateResult.code.toString())  //OK, supported by a template, return the result
+            return templateResult.code  //OK, supported by a template, return the result
         }
         // No supported by a template, go with the old method
         def ro= readonly || COMP_DISPLAY_TYPES.contains(type)
@@ -1098,7 +1098,7 @@ class PageComponent {
     }
 
 
-    def compileComponentTemplate(  int depth = 0) {
+    def compileComponentTemplate(  int depth = 0, esc = ESC_H) {
         // First see if a template exists for parent type and type
         templateName = ComponentTemplateEngine.supports("${parent?.type}.$type")?"${parent?.type}.$type":""
         // Next see if a template exists for type only
@@ -1111,13 +1111,17 @@ class PageComponent {
                 content = it.compileComponent(content, depth +1)
             }
             def bindings = this.properties
+            def q = esc==ESC_H?"'":"#q#" // Custom escape to bypass apostrophe escape in message
             translatableAttributes.each{
                 if (bindings[it]) {
-                    bindings[it]=tran(it) //This is tricky, we don't really know if it ends up in html or JavaScript
+                    bindings[it]=tran(it, esc, q)
                 }
             }
             bindings.thiz = this
-            result = [compiled: true, code: ComponentTemplateEngine.render(bindings)]
+            result = [compiled: true, code: ComponentTemplateEngine.render(bindings).toString()]
+            if (esc==ESC_JS) {
+                result.code = StringEscapeUtils.escapeJavaScript(result.code).replace(q,"'")
+            }
         }
         return result
     }

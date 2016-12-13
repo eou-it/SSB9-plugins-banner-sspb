@@ -121,9 +121,9 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 css = saveObject(css)
                 if (file && css && !css.hasErrors()) {
                     file.renameTo(file.getCanonicalPath() + '.' + nowAsIsoInFileName() + ".imp")
-                    result++
-                    log.info "Created/Updated Css $cssName"
                 }
+                log.info "Created/Updated Css $cssName"
+                result++
             }
         }
         result
