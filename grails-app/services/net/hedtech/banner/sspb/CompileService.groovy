@@ -102,7 +102,7 @@ class CompileService {
         def common = CompileService.class.classLoader.getResourceAsStream('data/sspbCommon.js').text
 
         result = """
-               |function (\$scope ,\$locale,\$templateCache,pbDataSet,pbResource,pbAddCommon) {
+               |function (\$scope ,\$locale,\$q,\$templateCache,pbDataSet,pbResource,pbAddCommon) {
                |    \$scope._controllerId = controllerId;
                |    \$scope._user = user;
                |    \$scope._params = params;
@@ -328,7 +328,7 @@ class CompileService {
                 def expr = pageComponent.compileCtrlFunction(pageComponent.onClick)
                 // if we are dealing with clicking on an item from a list or table then pass the current selection to the control function
                 def args = "";
-                if (pageComponent.type == PageComponent.COMP_TYPE_LIST || pageComponent.type == PageComponent.COMP_TYPE_GRID || pageComponent.type == PageComponent.COMP_TYPE_HTABLE) {
+                if (pageComponent.type == PageComponent.COMP_TYPE_LIST || pageComponent.type == PageComponent.COMP_TYPE_GRID || pageComponent.type == PageComponent.COMP_TYPE_HTABLE || pageComponent.type == PageComponent.COMP_TYPE_DATATABLE) {
                     args = "${PageComponent.CURRENT_ITEM}, context"
                 } else if (pageComponent.type == PageComponent.COMP_TYPE_LINK){
                     args = PageComponent.GRID_ITEM // only provided when used in a grid
