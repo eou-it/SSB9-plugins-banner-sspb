@@ -7,7 +7,7 @@ import groovy.util.logging.Log4j
 import org.hibernate.HibernateException
 
 @Log4j
-class VirtualDomainService {
+class VirtualDomainResourceService {
 
     def virtualDomainSqlService
 
@@ -103,7 +103,7 @@ class VirtualDomainService {
 
     def saveVirtualDomain(vdServiceName, vdQuery, vdPost, vdPut, vdDelete) {
 
-        log.info "---------- Save $vdServiceName (VirtualDomainService)-------------"
+        log.info "---------- Save $vdServiceName (VirtualDomainResourceService)-------------"
         def updateVD = true
         def success = false
         def error = ""
@@ -133,7 +133,7 @@ class VirtualDomainService {
 
     def loadVirtualDomain(vdServiceName) {
 
-        log.info "---------- load $vdServiceName (VirtualDomainService)-------------"
+        log.info "---------- load $vdServiceName (VirtualDomainResourceService)-------------"
         def success = false
         def error = message(code:"sspb.virtualdomain.invalid.service.message", args:[vdServiceName])
         def vd = null

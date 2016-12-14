@@ -256,7 +256,7 @@ restfulApiConfig = {
     // generic resource for virtual domains
 
     anyResource {
-        serviceName = 'virtualDomainService'
+        serviceName = 'virtualDomainResourceService'
         representation {
             mediaTypes = ["application/json"]
             marshallers {
