@@ -3,44 +3,45 @@
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
-import grails.transaction.Transactional
+import org.hibernate.criterion.CriteriaSpecification
 
-@Transactional
 class VirtualDomainService {
+
+    static transactional = false //Getting error connection closed without this
 
     def list(Map params) {
         log.trace "VirtualDomainService.list invoked with params $params"
-        def result
         def max = Math.min( params.max ? params.max.toInteger() : 10000,  10000)
         def offset = params.offset ?: 0
-        def qp= [offset: offset, max: max, sort: 'serviceName']
-        if  (params.serviceName) {
-            result = VirtualDomain.findAllByServiceNameLike(params.serviceName, qp)
-        } else {
-            result = VirtualDomain.list( qp )
+        def cr = VirtualDomain.createCriteria()
+        def result = cr.list(offset: offset, max: max, paginationEnabledList: true) {
+            if (params.serviceName) {
+                like("serviceName", params.serviceName)
+            }
+            order("serviceName", "asc")
+            resultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP)
+            projections {
+                property("id","id")
+                property("serviceName","serviceName")
+                property("lastUpdated","lastUpdated")
+                property("fileTimestamp","fileTimestamp")
+                property("version","version")
+            }
         }
-        def listResult = []
-        result.each {
-            listResult << [serviceName : it.serviceName, id: it.id, version: it.version]
-        }
-        log.trace "VirtualDomainService.list is returning a ${result.getClass().simpleName} containing ${result.size()} style sheets"
-        listResult
-    }
-
-
-    def count(Map params) {
-        log.trace "PageService.count invoked"
-        if (params.constantName) {
-            VirtualDomain.countByServiceNameLike(params.serviceName)
-        } else {
-            VirtualDomain.count()
-        }
+        log.trace "VirtualDomainService.list is returning a ${result.getClass().simpleName} containing ${result.size()} rows"
+        result
     }
 
     def show(Map params) {
         log.trace "VirtualDomainService.show invoked"
         def result
-        result = VirtualDomain.findByServiceName(params.id)
+        if (params.serviceName) {
+            result = VirtualDomain.findByServiceName(params.serviceName)
+        } else if (validateInput([serviceName: params.id])) {
+            result = VirtualDomain.findByServiceName(params.id)
+        } else {
+            result = VirtualDomain.get(params.id)
+        }
         if (result) {
             log.trace "VirtualDomainService.show returning Service: ${result.serviceName}, id: ${result.id}"
         }
