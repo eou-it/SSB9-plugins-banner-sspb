@@ -19,13 +19,15 @@ class VirtualDomainService {
                 like("serviceName", params.serviceName)
             }
             order("serviceName", "asc")
-            resultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP)
-            projections {
-                property("id","id")
-                property("serviceName","serviceName")
-                property("lastUpdated","lastUpdated")
-                property("fileTimestamp","fileTimestamp")
-                property("version","version")
+            if (params.noData=="TRUE") {
+                resultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP)
+                projections {
+                    property("id", "id")
+                    property("serviceName", "serviceName")
+                    property("lastUpdated", "lastUpdated")
+                    property("fileTimestamp", "fileTimestamp")
+                    property("version", "version")
+                }
             }
         }
         log.trace "VirtualDomainService.list is returning a ${result.getClass().simpleName} containing ${result.size()} rows"
