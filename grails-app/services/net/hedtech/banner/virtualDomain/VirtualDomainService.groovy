@@ -65,11 +65,18 @@ class VirtualDomainService {
             throw new RuntimeException(message(code:"sspb.virtualdomain.invalid.service.message", args:[content.serviceName]))
         }
         def result = VirtualDomain.get(params.id?:content.id)
+        result.serviceName = content.serviceName
         result.codeGet = content.codeGet
         result.codePost = content.codePost
         result.codePut = content.codePut
         result.codeDelete = content.codeDelete
         result.save(flush:true, failOnError: true)
+    }
+
+    def delete(Map content, params) {
+        log.trace "VirtualDomainService.delete invoked"
+        def result = VirtualDomain.get(params.id?:content.id)
+        result.delete(flush:true, failOnError: true)
     }
 
     private def validateInput(content) {

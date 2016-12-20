@@ -1,0 +1,11 @@
+{
+   "lastUpdated": null,
+   "css": "textarea.pb-detail.pb-textArea, textarea.pb-item.pb-textArea{\n\twidth: 100%;\n\theight: 10em;\n\tborder: 3px solid #cccccc;\n\tpadding: 5px;\n       font-family: monospace;\n        resize: vertical;\n}\n\n#pbid-generator {\n   margin-top: 1.4em;\n}\n\n#content{\n\tpadding-right: 15px;\n\tpadding-left: 15px;\n}",
+   "dateCreated": null,
+   "constantName": "pbadmVirtualDomainComposerCss",
+   "description": null,
+   "id": null,
+   "fileTimestamp": "2016-12-20T17:58:27Z",
+   "class": "net.hedtech.banner.css.Css",
+   "version": null
+}

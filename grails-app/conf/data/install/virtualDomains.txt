@@ -6,3 +6,5 @@ pbadmWebTailorRoles.json
 pbadmNonAdmPages.json
 pbadmListPages.json
 pbadmAppliedPageRoles.json
+pbadmSdeTables.json
+pbadmSdeToolCode.json

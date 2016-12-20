@@ -1454,7 +1454,7 @@ class PageComponent {
             optionalParams += "\n,onSave: function(){\n${compileCtrlFunction(onSave)}\n}"
         }
         if (onSaveSuccess) {
-            optionalParams += "\n,onSaveSuccess: function(response){\n${compileCtrlFunction(onSaveSuccess)}\n}"
+            optionalParams += "\n,onSaveSuccess: function(response,action){\n${compileCtrlFunction(onSaveSuccess)}\n}"
         }
 
         result = """
@@ -1545,7 +1545,8 @@ class PageComponent {
                 [from:  ".\$selection"       , to:"DS.selectedRecords" ],
                 [from:  ".\$data"            , to:"DS.data" ],
                 [from:  ".\$dirty"           , to:"DS.dirty()" ],
-                [from:  ".\$setModified"     , to:"DS.setModified" ]
+                [from:  ".\$setModified"     , to:"DS.setModified" ],
+                [from:  ".\$setResource"     , to:"DS.setResource" ]
 
         ]
         final def resourceReplacements = [

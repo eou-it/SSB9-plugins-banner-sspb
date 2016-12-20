@@ -265,13 +265,19 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
     // Common function to create a new DataSet
     // The DataSet should encapsulate all the model functions query, create, update, delete
     function PBDataSet(params)  {
+
+        this.setResource = function(resource){
+            if (resource) {
+                if (!this.cache) {
+                    this.cache = $cacheFactory(this.componentId);
+                }
+                this.Resource = resource.getResource(this.cache);
+            }
+        };
         this.componentId=params.componentId;
         this.data=params.data;
-        if (params.resource) {
-            this.cache = $cacheFactory(this.componentId);
-            this.Resource=params.resource.getResource(this.cache);
-        }
 
+        this.setResource(params.resource);
         this.queryParams=params.queryParams;
         this.selectValueKey=params.selectValueKey;
         this.selectInitialValue=params.selectInitialValue;
@@ -284,7 +290,6 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
         if (this.data === undefined)  {
             this.data = [];
         }
-
         this.pageSize=params.pageSize;
         if (this.pageSize>0){
             this.pagingOptions = {  pageSizes: [this.pageSize, this.pageSize*2, this.pageSize*4],
@@ -292,10 +297,11 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
                 currentPage: null
             };
         }
-
         this.numberOfPages = function () {
             return this.pageSize === 0? 1 : Math.max(1,Math.ceil(this.totalCount/this.pagingOptions.pageSize));
         };
+
+
 
         this.init = function() {
             this.currentRecord=null;
@@ -452,11 +458,15 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
 
 
         this.save = function() {
-            var success = function (response) {
-                       if (params.onSaveSuccess) {
-                           params.onSaveSuccess(response);
-                       }
-                   };
+
+            function successHandler(action) {
+                return function (response) {
+                    if (params.onSaveSuccess) {
+                        params.onSaveSuccess(response, action);
+                    }
+                };
+            }
+
             var replaces = false;
             if (params.onSave) {
                 replaces = params.onSave();
@@ -466,15 +476,15 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
             }
 
             this.added.forEach( function(item)  {
-                item.$save({},success, post.error);
+                item.$save({},successHandler('C'), post.error);
             });
             this.added = [];
             this.modified.forEach( function(item)  {
-                item.$update({}, success, post.error);
+                item.$update({}, successHandler('U'), post.error);
             });
             this.modified = [];
             this.deleted.forEach( function(item)  {
-                item.$delete({id:item.id}, success, post.error);
+                item.$delete({id:item.id}, successHandler('D'), post.error);
             });
             this.deleted = [];
             this.cache.removeAll();
