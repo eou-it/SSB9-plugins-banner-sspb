@@ -1,20 +1,23 @@
 /*******************************************************************************
- Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ Copyright 2013-2017 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 package net.hedtech.banner.tools.i18n
 
-import net.hedtech.banner.exceptions.ApplicationException
-import net.hedtech.banner.sspb.PageUtilService
 import grails.util.Holders as CH
+import net.hedtech.banner.exceptions.ApplicationException
+import net.hedtech.banner.i18n.TextManagerService
+import net.hedtech.banner.sspb.PageUtilService
 
+import org.codehaus.groovy.grails.web.context.ServletContextHolder
+import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
 import org.springframework.context.support.ReloadableResourceBundleMessageSource
 import org.springframework.core.io.DefaultResourceLoader
 import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.Resource
 import org.springframework.core.io.ResourceLoader
-import org.springframework.web.context.request.RequestContextHolder
 
 import java.text.MessageFormat
+
 // from ssh://git@devgit1/banner/plugins/banner_tools.git
 class PageMessageSource extends ReloadableResourceBundleMessageSource {
 
@@ -22,9 +25,19 @@ class PageMessageSource extends ReloadableResourceBundleMessageSource {
 
     static final def globalPropertiesName = "pageGlobal"
     def pageResources = [] // will go into basenames in superclass, since that cannot be accessed, we keep a copy
+    TextManagerService textManagerService
 
     @Override
     protected String resolveCodeWithoutArguments(String code, Locale locale) {
+       if (!textManagerService) {
+           textManagerService = ServletContextHolder.getServletContext()
+                    .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT)
+                    .getBean("textManagerService")
+        }
+        def dbMsg = textManagerService.findMessage(code,getLocale(locale.toString()))
+        if (dbMsg) {
+            return dbMsg
+        }
         return super.resolveCodeWithoutArguments(code, getLocale(locale))
     }
 
