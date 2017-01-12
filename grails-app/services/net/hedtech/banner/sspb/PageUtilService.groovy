@@ -10,18 +10,17 @@ import org.codehaus.groovy.grails.web.context.ServletContextHolder
 import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
 import org.springframework.context.ApplicationContext
 import net.hedtech.banner.tools.i18n.SortedProperties
-import net.hedtech.banner.tools.i18n.PageMessageSource
 
 @Log4j
 class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     def pageService
-    def pageSecurityService
 
     def static final statusOk = 0
     def static final statusError = 1
     def static final statusDeferLoad = 2
     def static final actionImportInitally = 1
-    def static final bundleLocation = bundleLocation?:getBundleLocation()
+    def static final bundleLocation = getBundleLocation()
+    def static final bundleName = "pageBuilder"
 
     def currentAction = null
 
@@ -283,8 +282,8 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT);
         def messageSource = applicationContext.getBean("messageSource")
         def isBaseline = false
-        if ( baseName.startsWith('pbadm') || baseName.startsWith(PageMessageSource.globalPropertiesName) || currentAction == actionImportInitally ) {
-            def props = messageSource.getRootProperties(baseName)
+        if ( baseName.startsWith('pbadm') || baseName.startsWith(PageComponent.globalPropertiesName) || currentAction == actionImportInitally ) {
+            def props = messageSource.getPropertiesByNormalizedName("plugins/banner-sspb/$baseName", new Locale("root"))
             if (props) {
                 isBaseline = true // assume ok
                 //Check if all key/value pairs have a match in the properties
@@ -304,7 +303,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 new org.springframework.util.DefaultPropertiesPersister().load(temp, new InputStreamReader(new FileInputStream(bundle), "UTF-8"))
             } else {
                 // if a new file we need to add it to the base names
-                messageSource?.pageMessageSource?.addPageResource(baseName)
+                messageSource?.externalMessageSource?.addBasename(baseName)
             }
             temp.putAll(properties)
             new org.springframework.util.DefaultPropertiesPersister().store(temp, new OutputStreamWriter(new FileOutputStream(bundle), "UTF-8"), "")
@@ -313,10 +312,10 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
 
     def reloadBundles = {
         ApplicationContext applicationContext = (ApplicationContext) ServletContextHolder.getServletContext()
-                                                .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT);
+                .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT);
         def messageSource = applicationContext.getBean("messageSource")
         messageSource.clearCache()
-        messageSource.pageMessageSource?.clearCache()
+        messageSource.externalMessageSource?.clearCache()
     }
 
 }
