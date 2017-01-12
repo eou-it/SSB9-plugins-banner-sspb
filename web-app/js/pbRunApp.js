@@ -187,8 +187,10 @@ appModule.factory('pbResource', function($resource ) {
     function PBResource(resourceName )  {
         //Expecting a resource name exposed at resourceBase+resourceName
         //For backwards compatibility, replace the location used in the alpha release with resourceBase
-        this.resourceURL=resourceName.startsWith("/")?
-                         resourceName.replace(rootWebApp+'internal/', resourceBase):resourceBase+resourceName;
+        this.resourceURL=resourceName.startsWith("$$contextRoot/")?
+            resourceName.replace("$$contextRoot/",rootWebApp):
+            resourceName.startsWith("/")?
+            resourceName.replace(rootWebApp+'internal/', resourceBase):resourceBase+resourceName;
         this.Resource=null;
 
         //get a new resource from the factory
