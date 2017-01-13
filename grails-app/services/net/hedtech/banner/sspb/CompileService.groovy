@@ -6,7 +6,6 @@ package net.hedtech.banner.sspb
 
 import groovy.util.logging.Log4j
 import net.hedtech.banner.exceptions.ApplicationException
-import net.hedtech.banner.tools.i18n.PageMessageSource
 
 @Log4j
 class CompileService {
@@ -146,7 +145,7 @@ class CompileService {
     def static updateProperties(pageComponent) {
         def pageUtilService = new PageUtilService()
         pageUtilService.updateProperties(pageComponent.rootProperties, propertiesFileName(pageComponent.name))
-        pageUtilService.updateProperties(pageComponent.globalProperties, PageMessageSource.globalPropertiesName)
+        pageUtilService.updateProperties(pageComponent.globalProperties, PageComponent.globalPropertiesName)
         pageUtilService.reloadBundles()
     }
 

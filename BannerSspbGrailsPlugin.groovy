@@ -3,9 +3,10 @@
  ****************************************************************************** */
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
+import net.hedtech.banner.i18n.ExternalMessageSource
 
 import net.hedtech.banner.tools.PBPersistenceListener
-import net.hedtech.banner.tools.i18n.ExternalMessageSource
+
 import net.hedtech.banner.sspb.PageUtilService
 import org.springframework.web.context.support.ServletContextResourcePatternResolver
 
