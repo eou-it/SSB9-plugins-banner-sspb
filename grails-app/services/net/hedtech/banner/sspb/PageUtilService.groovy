@@ -14,6 +14,7 @@ import net.hedtech.banner.tools.i18n.SortedProperties
 @Log4j
 class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     def pageService
+    def pageSecurityService
 
     def static final statusOk = 0
     def static final statusError = 1

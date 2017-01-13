@@ -14,6 +14,7 @@ import java.util.regex.Pattern
 @Log4j
 class PageComponent {
 
+    final static def globalPropertiesName = "pageGlobal" //Properties file name with internal props in pages
     // Context for parsing expressions
     static enum ExpressionTarget{
         CtrlFunction,  // Controller function (need to use $scope)
