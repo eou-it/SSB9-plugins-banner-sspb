@@ -1,0 +1,239 @@
+{
+   "extendsPage": null,
+   "pageRoles": [{
+      "allow": true,
+      "roleName": "ADMIN-GPBADMN"
+   }],
+   "fileTimestamp": "2016-09-21T13:25:34Z",
+   "modelView": {
+      "title": "Enable Resource Text Edit",
+      "name": "resourceBundleAdmin",
+      "label": "Enable Resource Text Edit",
+      "importCSS": "xeStyle,resourceBundleAdminCss",
+      "components": [
+         {
+            "staticData": [],
+            "name": "resourceBundlesRes",
+            "resource": "$$contextRoot/admin/i18n",
+            "type": "resource"
+         },
+         {
+            "staticData": [
+               {
+                  "enabled": true,
+                  "description": "English (US)",
+                  "code": "en_US"
+               },
+               {
+                  "enabled": false,
+                  "description": "English (GB)",
+                  "code": "en_GB"
+               },
+               {
+                  "enabled": false,
+                  "description": "French (France)",
+                  "code": "fr_FR"
+               },
+               {
+                  "enabled": false,
+                  "description": "French (Canada)",
+                  "code": "fr_CA"
+               },
+               {
+                  "enabled": false,
+                  "description": "Spanish (Latin America)",
+                  "code": "es_MX"
+               },
+               {
+                  "enabled": false,
+                  "description": "Portuguese (Brazil)",
+                  "code": "pt_BR"
+               }
+            ],
+            "name": "locales",
+            "type": "resource"
+         },
+         {
+            "name": "information",
+            "value": "Resources bundles need to be uploaded to the Text Edit database to enable resource text edit.",
+            "type": "literal"
+         },
+         {
+            "name": "localeSelection",
+            "showInitially": true,
+            "label": "Locales",
+            "components": [
+               {
+                  "sourceModel": "locales",
+                  "valueKey": "code",
+                  "placeholder": "Choose a Primary Locale",
+                  "sourceParameters": {},
+                  "name": "sourceLocale",
+                  "labelKey": "description",
+                  "value": "",
+                  "label": "Primary Locale (saved as root)",
+                  "type": "select",
+                  "required": false,
+                  "onUpdate": "$enabledLocales.$data = []; \n$enabledLocales.$style=\"hidden\";\n$uploadControl.$visible=false;\n$sourceLocale.$data.forEach(\n  function (item) {\n     if (item.code == $sourceLocale){\n         $enabledLocales.$style=\"\";\n         $uploadControl.$visible=true;\n     } else {\n// copy the data to enabledLocales when not sourceLocale\n          $enabledLocales.$data.push( item);\n     }\n  }\n);",
+                  "loadInitially": true
+               },
+               {
+                  "allowReload": false,
+                  "model": "locales",
+                  "style": "hidden",
+                  "name": "enabledLocales",
+                  "pageSize": 5,
+                  "label": "Other Locales to be uploaded",
+                  "parameters": {},
+                  "components": [{
+                     "model": "enabled",
+                     "style": "",
+                     "name": "enabled",
+                     "label": "$item.description",
+                     "type": "boolean",
+                     "onUpdate": "",
+                     "readonly": false,
+                     "loadInitially": true
+                  }],
+                  "allowNew": false,
+                  "type": "detail",
+                  "loadInitially": false,
+                  "allowModify": false,
+                  "allowDelete": false
+               }
+            ],
+            "type": "block"
+         },
+         {
+            "name": "uploadControl",
+            "showInitially": false,
+            "label": "Upload Control",
+            "components": [
+               {
+                  "name": "processing",
+                  "showInitially": true,
+                  "components": [
+                     {
+                        "onClick": "$resourceBundles.$data.forEach(\n  function (item) {\n     item.enableTranslation=true;\n     $resourceBundlesDS.setModified(item); //Warning - using internal only function\n     item.locales=$enabledLocales.$data\n  }\n);\n$loadedFilesCount = 0;\n$totalResourcesCount = 0;\n$resourceBundles.$save();",
+                        "style": "",
+                        "valueStyle": "primary",
+                        "name": "loadToDB",
+                        "label": "Upload all application resources to database",
+                        "type": "button"
+                     },
+                     {
+                        "fractionDigits": 0,
+                        "validation": {},
+                        "name": "loadedFilesCount",
+                        "value": "0",
+                        "label": "Files Saved",
+                        "parameters": {},
+                        "type": "number",
+                        "required": false,
+                        "readonly": false,
+                        "loadInitially": true
+                     },
+                     {
+                        "model": "",
+                        "fractionDigits": 0,
+                        "validation": {},
+                        "name": "totalFilesCount",
+                        "value": "0",
+                        "label": "Total Files",
+                        "parameters": {},
+                        "type": "number",
+                        "required": false,
+                        "readonly": false,
+                        "loadInitially": true
+                     },
+                     {
+                        "fractionDigits": 0,
+                        "validation": {},
+                        "name": "totalResourcesCount",
+                        "value": "0",
+                        "label": "Number of resource texts saved",
+                        "parameters": {},
+                        "type": "number",
+                        "required": false,
+                        "readonly": false,
+                        "loadInitially": true
+                     }
+                  ],
+                  "type": "block"
+               },
+               {
+                  "name": "viewDetails",
+                  "value": "false",
+                  "label": "Advanced",
+                  "type": "boolean",
+                  "onUpdate": "$table_wrapper.$visible=$viewDetails;",
+                  "readonly": false,
+                  "loadInitially": true
+               },
+               {
+                  "name": "table_wrapper",
+                  "showInitially": false,
+                  "components": [{
+                     "name": "table_scroll",
+                     "showInitially": true,
+                     "components": [{
+                        "model": "resourceBundlesRes",
+                        "onLoad": "$totalFilesCount = data.length;",
+                        "pageSize": 10,
+                        "onSave": "$loadedFilesCount=0;\ntotalResourcesCount=0;\n$resourceBundles.$data.forEach(\n  function (item) {\n     item.locales=$enabledLocales.$data;\n     item.sourceLocale=$sourceLocale;\n     item.count=0;\n  }\n);",
+                        "label": "Resources",
+                        "type": "htable",
+                        "allowModify": true,
+                        "allowDelete": false,
+                        "allowReload": true,
+                        "name": "resourceBundles",
+                        "parameters": {},
+                        "allowNew": false,
+                        "components": [
+                           {
+                              "model": "enableTranslation",
+                              "name": "enableTranslation",
+                              "label": "Include",
+                              "type": "boolean",
+                              "readonly": false,
+                              "loadInitially": true
+                           },
+                           {
+                              "model": "basename",
+                              "name": "basename",
+                              "label": "Path",
+                              "type": "display",
+                              "loadInitially": true,
+                              "asHtml": false
+                           },
+                           {
+                              "name": "link",
+                              "value": "<a href=\"{{$$contextRoot}}admin/i18n?locale=root&name={{$item.basename}}\" target=\"_blank\">View in other window<\/a>",
+                              "label": "link to view",
+                              "type": "literal"
+                           },
+                           {
+                              "model": "count",
+                              "name": "count",
+                              "label": "Loaded texts",
+                              "type": "display",
+                              "loadInitially": true,
+                              "asHtml": false
+                           }
+                        ],
+                        "refreshDataLabel": "Reset",
+                        "loadInitially": true,
+                        "onSaveSuccess": "$loadedFilesCount++;\n$totalResourcesCount+=response.count;"
+                     }],
+                     "type": "block"
+                  }],
+                  "type": "block"
+               }
+            ],
+            "type": "block"
+         }
+      ],
+      "type": "page"
+   },
+   "constantName": "resourceBundleAdmin"
+}

@@ -6,4 +6,5 @@ pbadm.ExportPages.json
 pbadm.ExportVirtualDomains.json
 pbadm.LandingPage.json
 pbadm.AdminTasks.json
+resourceBundleAdmin.json
 pbadm.VirtualDomainComposer.json
