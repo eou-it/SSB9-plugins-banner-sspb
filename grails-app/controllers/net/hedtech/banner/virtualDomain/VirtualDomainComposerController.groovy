@@ -5,7 +5,7 @@ package net.hedtech.banner.virtualDomain
 
 class VirtualDomainComposerController {
     static defaultAction = "loadVirtualDomain"
-    def virtualDomainService
+    def virtualDomainResourceService
 
     def composeVirtualDomain = {
         def pageInstance = filter(params)
@@ -16,7 +16,7 @@ class VirtualDomainComposerController {
         def pageInstance = filter(params)
         if (params.vdServiceName)  {
             if ( validateInput(params)) {
-                def saveResult = virtualDomainService.saveVirtualDomain(params.vdServiceName,
+                def saveResult = virtualDomainResourceService.saveVirtualDomain(params.vdServiceName,
                         params.vdQueryView, params.vdPostView, params.vdPutView, params.vdDeleteView)
                 pageInstance.saveSuccess = saveResult.success
                 pageInstance.updated = saveResult.updated
@@ -36,7 +36,7 @@ class VirtualDomainComposerController {
         def pageInstance = filter(params)
         if (pageInstance.vdServiceName) {
            if (validateInput(params)) {
-               def loadResult = virtualDomainService.loadVirtualDomain(pageInstance.vdServiceName)
+               def loadResult = virtualDomainResourceService.loadVirtualDomain(pageInstance.vdServiceName)
                pageInstance.loadSuccess = loadResult.success
                pageInstance.error = loadResult.error
                pageInstance.loadSubmitted = true

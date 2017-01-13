@@ -1,0 +1,28 @@
+{
+   "codePut": null,
+   "virtualDomainRoles": [{
+      "allowDelete": true,
+      "allowPost": true,
+      "allowPut": true,
+      "roleName": "ADMIN-GPBADMN",
+      "id": null,
+      "allowGet": true,
+      "virtualDomain": {
+         "_ref": "../..",
+         "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+      },
+      "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
+      "version": null
+   }],
+   "codeGet": "select \r\ngobsdct_name\r\n,gobsdct_desc\r\n,:table_name\r\n,gp_goksden.f_get_view(gobsdct_name,:table_name) sql_statement\r\nfrom  gobsdct where gobsdct_name in ('V4.1', 'V4.2', 'V4.3', 'V4.4')\r\norder by gobsdct_name",
+   "codePost": null,
+   "serviceName": "pbadmSdeToolCode",
+   "version": null,
+   "codeDelete": null,
+   "lastUpdated": null,
+   "dateCreated": null,
+   "id": null,
+   "fileTimestamp": "2016-12-20T17:57:06Z",
+   "typeOfCode": "S",
+   "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+}

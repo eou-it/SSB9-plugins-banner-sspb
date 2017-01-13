@@ -14,6 +14,7 @@ import java.util.regex.Pattern
 @Log4j
 class PageComponent {
 
+    final static def globalPropertiesName = "pageGlobal" //Properties file name with internal props in pages
     // Context for parsing expressions
     static enum ExpressionTarget{
         CtrlFunction,  // Controller function (need to use $scope)
@@ -28,6 +29,7 @@ class PageComponent {
     final static COMP_TYPE_PAGE = "page"
     final static COMP_TYPE_FORM = "form"
     final static COMP_TYPE_GRID = "grid"
+    final static COMP_TYPE_DATATABLE = "dataTable"
     final static COMP_TYPE_HTABLE = "htable"
     final static COMP_TYPE_SELECT = "select"
     final static COMP_TYPE_LIST = "list"
@@ -63,7 +65,7 @@ class PageComponent {
     final static COMP_DISPLAY_TYPES =  [COMP_TYPE_LITERAL,COMP_TYPE_DISPLAY,COMP_TYPE_LINK,COMP_TYPE_HIDDEN]
 
     // Types that have a DataSet associated  - not completely orthogonal yet. COMP_ITEM_TYPES can have it too
-    final static COMP_DATASET_TYPES = [COMP_TYPE_GRID,COMP_TYPE_HTABLE,COMP_TYPE_LIST,COMP_TYPE_SELECT,COMP_TYPE_DETAIL,COMP_TYPE_DATA, COMP_TYPE_RADIO]
+    final static COMP_DATASET_TYPES = [COMP_TYPE_GRID,COMP_TYPE_HTABLE,COMP_TYPE_DATATABLE,COMP_TYPE_LIST,COMP_TYPE_SELECT,COMP_TYPE_DETAIL,COMP_TYPE_DATA,COMP_TYPE_RADIO]
 
     // Data Set types only for display
     final static COMP_DATASET_DISPLAY_TYPES = [COMP_TYPE_SELECT,COMP_TYPE_RADIO]
@@ -713,6 +715,134 @@ class PageComponent {
         return result
     }
 
+    def dataTableJS() {
+        def dataSet = "${name}DS"
+        def columns = ""
+        def draggableColumns = ""
+        components.eachWithIndex { child, idx ->
+            //get the child components
+            def lbl = child.tran("label", ESC_JS)
+            columns += """,{position: {desktop: $idx, mobile: $idx}, name: "$child.model", title: "$lbl", options: {visible: true, sortable:true}}\n"""
+            draggableColumns += ",'$child.model'"
+        }
+        draggableColumns = "[${draggableColumns.substring(1)}]"
+        columns = columns.substring(1)
+        def code = """|    \$scope.${name}Config = {
+                      |        columns: [$columns],
+                      |        onDoubleClick: function(data,index) {
+                      |                    console.log("data-->" , data,index);
+                      |                },
+                      |        onBtnClick: function(data, index) {
+                      |                    console.log(data, index);
+                      |                },
+                      |        refreshContent: function() {
+                      |                    console.log('Refreshing grid data...');
+                      |                },
+                      |        fetch: function(query) {
+                      |                 var deferred = \$q.defer();
+                      |                 var paging=false;
+                      |                 if (\$scope.${name}DS.pagingOptions.pageSize!=query.pageSize) {
+                      |                     \$scope.${name}DS.pagingOptions.pageSize = query.pageSize;
+                      |                     paging=true;
+                      |                 }
+                      |                 if (\$scope.${name}DS.pagingOptions.currentPage!=query.onPage) {
+                      |                     \$scope.${name}DS.pagingOptions.currentPage = query.onPage;
+                      |                     paging=true;
+                      |                 }
+                      |                 if (paging) {
+                      |                   \$scope.gtvemalDS.load({paging:paging});
+                      |                 }
+                      |                 setTimeout(function() {
+                      |                   deferred.resolve({result:\$scope.gtvemalDS.data,
+                      |                                     length:\$scope.gtvemalDS.totalCount});
+                      |                   //deferred.reject(data);
+                      |                 }, 100);
+                      |                 console.log(query);
+                      |                 return deferred.promise;
+                      |                },
+                      |        postFetch: function(response, oldResult) {
+                      |                    console.log('Post fetch handler', response);
+                      |                },
+                      |        draggableColumnNames: $draggableColumns,
+                      |        //mobile: { term: 2,  crn: 2},
+                      |        search: {
+                      |                    id: '${name}Search',
+                      |                    title: 'Search (Alt+Y)',
+                      |                    ariaLabel: 'Search text field. Short cut is Alt+Y, Search for any text',
+                      |                    delay: 300,
+                      |                    //searchString : 201410,
+                      |                    maxlength: 200,
+                      |                    minimumCharacters : 2
+                      |                },
+                      |        pagination: {
+                      |                    pageLengths : [ 5, 10, 25, 50, 100],
+                      |                    offset : \$scope.${name}DS.pagingOptions.pageSize,
+                      |                    recordsFoundLabel : "Results found",
+                      |                    pageTitle: "Go To Page (End)",
+                      |                    pageLabel: "Page",
+                      |                    pageAriaLabel: "Go To Page. Short cut is End",
+                      |                    ofLabel: "of",
+                      |                    perPageLabel: "Per Page"
+                      |                }
+                      |    };
+                      |""".stripMargin('|')
+
+        code;
+    }
+
+    def dataTableCompile(int depth=0){
+        def dataSet = "${name}DS"
+        def children = ""
+        // generate all table columns from the data model
+        components.each { child ->
+            //get the child components
+            //children += """<xe-cell-markup column-name="${child.name}"> ${child.compileComponent("", depth)} </xe-cell-markup>\n"""
+        }
+        def cfg = "${name}Config"
+
+        def html = """
+            |<div $styleStr ${idAttribute()} class="pb-$type-container">
+            |<xe-table-grid
+            |  table-id="dataTable-${name}"
+            |  caption="${tran("label")}"
+            |  header="${cfg}.columns"
+            |  content="${dataSet}.data"
+            |  toolbar="true" paginate="true"
+            |  fetch="${cfg}.fetch(query)"
+            |  continuous-scrolling="false"
+            |  pagination-config="${cfg}.pagination"
+            |  on-row-double-click="${cfg}.onDoubleClick(data,index)"
+            |  draggable-column-names="${cfg}.draggableColumnNames"
+            |  no-data-msg="" empty-table-msg=""
+            |  search-config="${cfg}.search"
+            |  height="16em"
+            |  refresh-content="${cfg}.refreshContent">
+            |$children
+            |</xe-table-grid>
+            |</div>
+        """.stripMargin('|')
+        html
+        //|  pagination-config="${cfg}.pagination"
+        //|  fetch="${cfg}.fetch(query)"
+        //|  post-fetch="${cfg}.postFetch(response, oldResult)"
+        //|  mobile-layout="${cfg}.mobile"
+
+//                |  <xe-cell-markup heading-name="tick">
+//                |      <xe-checkbox xe-id="selectionAll" xe-label="Select All Rows" xe-label-hidden="true" xe-value="all" xe-model="model.allRowsSelected" xe-on-click="selectAll()">
+//                |  </xe-checkbox></xe-cell-markup>
+//                |  <xe-cell-markup column-name="tick">
+//                |      <xe-checkbox xe-id="selection- + {{row.term}}" xe-label="Term Code {{row.term}}" xe-label-hidden="true" xe-value="{{row.term}}" xe-model="row.isChecked" xe-on-click="checkBoxChecked(row)"></xe-checkbox>
+//                |  </xe-cell-markup>
+//                |  <xe-cell-markup column-name="subject">
+//                |      <xe-simple-text-box xe-value="row.subject" value="row.subject" on-change="updateInput(inputField)" disabled="editableInput" on-focus="focus()" on-blur="focus()"></xe-simple-text-box>
+//                |  </xe-cell-markup>
+//                |  <xe-cell-markup column-name="status">
+//                |      <xe-status-label colun-name="status" xe-label="{{row.status.label}}" xe-type="{{row.status.type}}"></xe-status-label>
+//                |      <!--<xe-button xe-type= "secondary" xe-label="Delete" xe-btn-click="onBtnClick(row,index)" xe-disabled="false"></xe-button><br></br>-->
+//                |  </xe-cell-markup>
+
+    }
+
     /*
     Special compilation for generating table specific controls
      */
@@ -982,6 +1112,8 @@ class PageComponent {
                 //headerRowHeight doesn't work in {{ expression }} - assume same as rowHeight hence pageSize+1
                 //style="...{{expression }}..."  does not evaluate properly in IE8 - fixed using ng-style
                 return """\n$heading\n<div ${idAttribute(idTxtParam)} class="gridStyle" ng-grid="${name}Grid" $styleStr ng-style="{height: (${borderpx*2}+${pageSize+1}*rowHeight+footerRowHeight) + 'px' }"></div>\n"""
+            case COMP_TYPE_DATATABLE:
+                return dataTableCompile(depth+1)
             case COMP_TYPE_DETAIL:
                 return detailCompile(depth+1)
             case COMP_TYPE_LIST:
@@ -1126,6 +1258,12 @@ class PageComponent {
         return result
     }
 
+    def handlesChildren() {
+        [COMP_TYPE_GRID, COMP_TYPE_HTABLE, COMP_TYPE_DETAIL, COMP_TYPE_DATATABLE].contains(this.type)
+    }
+
+
+
     def compileComponent(String inS, int depth=0){
         String result=inS
         def templateResult = compileComponentTemplate(depth)
@@ -1133,8 +1271,8 @@ class PageComponent {
             result += templateResult.code
         } else {
             result += componentStart(type, depth)
-            if (this.type != COMP_TYPE_GRID && this.type != COMP_TYPE_HTABLE && this.type != COMP_TYPE_DETAIL) {
-                //grid, detail will take care of its child objects
+            if (!handlesChildren()) {
+                //grid, detail and others will take care of its child objects
                 components.each {
                     result = it.compileComponent(result, depth + 1)
                 }
@@ -1317,7 +1455,7 @@ class PageComponent {
             optionalParams += "\n,onSave: function(){\n${compileCtrlFunction(onSave)}\n}"
         }
         if (onSaveSuccess) {
-            optionalParams += "\n,onSaveSuccess: function(response){\n${compileCtrlFunction(onSaveSuccess)}\n}"
+            optionalParams += "\n,onSaveSuccess: function(response,action){\n${compileCtrlFunction(onSaveSuccess)}\n}"
         }
 
         result = """
@@ -1336,6 +1474,9 @@ class PageComponent {
         def initNew = allowNew? initNewRecordJS(): ""
         if (type == COMP_TYPE_GRID) {
             result += gridJS() + initNew
+        }
+        if (type == COMP_TYPE_DATATABLE) {
+            result += dataTableJS() + initNew
         }
         if ( [COMP_TYPE_HTABLE,COMP_TYPE_DETAIL,COMP_TYPE_LIST].contains( type)) {
             result += dataSetWatches() + initNew
@@ -1405,7 +1546,8 @@ class PageComponent {
                 [from:  ".\$selection"       , to:"DS.selectedRecords" ],
                 [from:  ".\$data"            , to:"DS.data" ],
                 [from:  ".\$dirty"           , to:"DS.dirty()" ],
-                [from:  ".\$setModified"     , to:"DS.setModified" ]
+                [from:  ".\$setModified"     , to:"DS.setModified" ],
+                [from:  ".\$setResource"     , to:"DS.setResource" ]
 
         ]
         final def resourceReplacements = [

@@ -14,6 +14,7 @@ import net.hedtech.banner.tools.i18n.SortedProperties
 @Log4j
 class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     def pageService
+    def pageSecurityService
 
     def static final statusOk = 0
     def static final statusError = 1
@@ -261,9 +262,9 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     def compileMissingProperties() {
         def messageSource = ServletContextHolder.getServletContext()
                 .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT).getBean("messageSource")
-        def pageMessageSource = messageSource.pageMessageSource
+        def externalMessageSource = messageSource?.externalMessageSource
         // Check if properties files exist, if not we will compile pages if non-baseline pages exist
-        if (pageMessageSource.pageResources.size()==0){
+        if (externalMessageSource.basenamesExposed.size()==0){
             log.debug "No Page Resources found"
             // Check if custom pages exist
             def totalPages = Page.count()
