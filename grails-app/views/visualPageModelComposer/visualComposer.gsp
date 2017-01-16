@@ -312,6 +312,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             tr['type.block'       ]="${message(code:'sspb.model.type.block'    )}";
             tr['type.grid'        ]="${message(code:'sspb.model.type.grid'     )}";
             tr['type.htable'      ]="${message(code:'sspb.model.type.htable'   )}";
+            tr['type.dataTable'   ]="${message(code:'sspb.model.type.dataTable')}";
             tr['type.select'      ]="${message(code:'sspb.model.type.select'   )}";
             tr['type.radio'       ]="${message(code:'sspb.model.type.radio'    )}";
             tr['type.list'        ]="${message(code:'sspb.model.type.list'     )}";

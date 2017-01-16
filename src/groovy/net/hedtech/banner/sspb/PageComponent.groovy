@@ -750,11 +750,11 @@ class PageComponent {
                       |                     paging=true;
                       |                 }
                       |                 if (paging) {
-                      |                   \$scope.gtvemalDS.load({paging:paging});
+                      |                   \$scope.${name}DS.load({paging:paging});
                       |                 }
                       |                 setTimeout(function() {
-                      |                   deferred.resolve({result:\$scope.gtvemalDS.data,
-                      |                                     length:\$scope.gtvemalDS.totalCount});
+                      |                   deferred.resolve({result:\$scope.${name}DS.data,
+                      |                                     length:\$scope.${name}DS.totalCount});
                       |                   //deferred.reject(data);
                       |                 }, 100);
                       |                 console.log(query);
