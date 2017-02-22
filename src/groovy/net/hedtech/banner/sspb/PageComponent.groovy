@@ -877,7 +877,8 @@ class PageComponent {
         if (t != COMP_TYPE_HIDDEN) {
             autoStyleStr = """class="pb-${parent.type} pb-$type pb-item $valueStyle"  """
         }
-        def labelTxt = label && (parent.type != COMP_TYPE_HTABLE)?"<label class=\"pb-${parent.type} pb-$type pb-item pb-label $labelStyle \" ${idAttribute("-label"+idTxtParam)} ${idForAttribute(idTxtParam)}>${tran("label")}</label>":""
+        def tranLabel = ( !(label) || parent.type == COMP_TYPE_HTABLE)?"&#x2007;&#x2007;":tran("label")
+        def labelTxt = "<label class=\"pb-${parent.type} pb-$type pb-item pb-label $labelStyle \" ${idAttribute("-label"+idTxtParam)} ${idForAttribute(idTxtParam)}>$tranLabel</label>"
         def result=""
         def ngClick=""
         def ngChange=""
