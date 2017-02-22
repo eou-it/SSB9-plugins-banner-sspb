@@ -21,6 +21,9 @@ grant all on REQUESTMAP to &&pb_role;
 grant select on TWTVROLE to &&pb_role;
 grant select on TWGRMENU to &&pb_role;
 grant select on GUBOBJS to &&pb_role;
+grant select on GOVROLE to &&pb_role;
+grant select on TWGRWMRL to &&pb_role;
+grant select on TWGRROLE to &&pb_role;
 
 --
 -- Include Oracle Object grants the developer needs to access to develop and test the virtual domains
