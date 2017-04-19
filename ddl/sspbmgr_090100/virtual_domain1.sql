@@ -18,7 +18,6 @@
    (
     SERVICE_NAME                    VARCHAR2(60 CHAR)        NOT NULL ,
     TYPE_OF_CODE                    VARCHAR2(1 CHAR),
-    DATA_SOURCE                     VARCHAR2(1 CHAR) DEFAULT 'B',
     CODE_GET                        CLOB                     NOT NULL ,
     CODE_DELETE                     CLOB,
     CODE_POST                       CLOB,
