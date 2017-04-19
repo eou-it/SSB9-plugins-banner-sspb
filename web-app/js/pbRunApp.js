@@ -131,7 +131,7 @@ appModule.run( function($templateCache )  {
         "        <div class=\"paging-control previous {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageBackward()\"></div>"+
         "        <span class=\"paging-text page\"> {{i18n.pageLabel}}</span>"+
         "        <input class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"1\" max=\"{{maxPages()}}\" type=\"number\" ng-model=\"pagingOptions.currentPage\" style=\"width: 40px; display: inline;\"/>" +
-        "        <span class=\"paging-text page-of\"> {{i18n.maxPageLabel}} </span> <span class=\"paginate_total\"> {{maxPages()}}  </span>"+
+        "        <span class=\"paging-text page-of\"> {{i18n.maxPageLabel}} </span> <span class=\"paging-text total-pages\"> {{maxPages()}}  </span>"+
         "        <div class=\"paging-control next {{!cantPageForward() && 'enabled'||''}}\" ng-click=\"pageForward()\"></div>" +
         "        <div class=\"paging-control last {{!cantPageToLast()  && 'enabled'||''}}\" ng-click=\"pageToLast()\" ></div>"+
         "        <div class=\"divider\"></div>" +
