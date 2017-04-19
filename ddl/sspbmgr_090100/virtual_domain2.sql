@@ -19,8 +19,6 @@ COMMENT ON COLUMN VIRTUAL_DOMAIN.SERVICE_NAME IS
 'Restful Service name defined in this record';
 COMMENT ON COLUMN VIRTUAL_DOMAIN.TYPE_OF_CODE IS
 'Type of code. S for SQL. Other code type is currently not implemented.';
-COMMENT ON COLUMN VIRTUAL_DOMAIN.DATA_SOURCE IS
-'Data Source for this service. B for Banner is default.';
 COMMENT ON COLUMN VIRTUAL_DOMAIN.CODE_GET IS
 'Statement to retrieve a collection of records. To support update and delete a record should have an id field.';
 COMMENT ON COLUMN VIRTUAL_DOMAIN.CODE_DELETE IS

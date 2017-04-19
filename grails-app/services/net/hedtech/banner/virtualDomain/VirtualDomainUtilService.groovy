@@ -1,6 +1,6 @@
-/******************************************************************************
- *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
- ******************************************************************************/
+/*******************************************************************************
+ Copyright 2017 Ellucian Company L.P. and its affiliates.
+ *******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
 import grails.converters.JSON
@@ -30,7 +30,7 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
                     JSON.use("deep") {
                         def vdStripped = new VirtualDomain()
                         //nullify data that is derivable or not applicable in other environment
-                        vdStripped.properties['serviceName', 'typeOfCode', 'dataSource', 'codeGet', 'codePost', 'codePut', 'codeDelete'] = vd.properties
+                        vdStripped.properties['serviceName', 'typeOfCode', 'codeGet', 'codePost', 'codePut', 'codeDelete'] = vd.properties
                         vdStripped.fileTimestamp = new Date()
                         vd.virtualDomainRoles.each { role ->
                             def r = new VirtualDomainRole()
@@ -125,7 +125,7 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
                 }
             }
             if (doLoad) {
-                vd.properties['typeOfCode', 'dataSource', 'codeGet', 'codePost', 'codePut', 'codeDelete'] = json
+                vd.properties['typeOfCode', 'codeGet', 'codePost', 'codePut', 'codeDelete'] = json
                 if (!json.virtualDomainRoles.equals(null)) {
                     //have to use equals for JSONObject as it is not really null
                     json.virtualDomainRoles.each { newRole ->

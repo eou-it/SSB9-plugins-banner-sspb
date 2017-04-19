@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
- ******************************************************************************/
+ Copyright 2017 Ellucian Company L.P. and its affiliates.
+ *******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
 import groovy.sql.Sql
@@ -16,19 +16,8 @@ class VirtualDomainSqlService {
     def sessionFactory    //injected by Spring
     def grailsApplication //ditto
 
-    //allow connecting to 2 different datasources, depending on VirtualDomain.dataSource
-    //to make development easy, but maybe also useful
-    //def dataSource
-    def dataSource_sspb
-
-    private def getSql (vdDatasource) {
-        def result
-
-        if ( vdDatasource == "B") {
-            result = new Sql(sessionFactory.getCurrentSession().connection())
-        } else {
-            result = new Sql(dataSource_sspb)
-        }
+    private def getSql () {
+        def result = new Sql(sessionFactory.getCurrentSession().connection())
         result
     }
 
@@ -164,7 +153,7 @@ class VirtualDomainSqlService {
         if (!privs.get) {
             throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
         }
-        def sql = getSql(vd.dataSource)
+        def sql = getSql()
         def errorMessage = ""
         def statement = vd.codeGet
         //maybe remove metaData - what value?
@@ -211,7 +200,7 @@ class VirtualDomainSqlService {
         if (!privs.get) {
             throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
         }
-        def sql = getSql(vd.dataSource)
+        def sql = getSql()
         def errorMessage = ""
         // Add a dummy bind variable to Groovy SQL to workaround an issue related to passing a map
         // to a query without bind variables
@@ -242,7 +231,7 @@ class VirtualDomainSqlService {
         }
         def sql
         try {
-            sql = getSql(vd.dataSource)
+            sql = getSql()
             sql.execute(vd.codePut, data)
         }
         catch(SQLException e) {
@@ -273,7 +262,7 @@ class VirtualDomainSqlService {
         }
         def sql
         try {
-            sql = getSql(vd.dataSource)
+            sql = getSql()
             sql.execute(vd.codePost, data)
         }
         catch(SQLException e) {
@@ -296,7 +285,7 @@ class VirtualDomainSqlService {
         parameters.id = urlPathDecode(parameters.id)
         def sql
         try {
-            sql = getSql(vd.dataSource)
+            sql = getSql()
             sql.execute(vd.codeDelete, params)
         }
         catch(SQLException e) {

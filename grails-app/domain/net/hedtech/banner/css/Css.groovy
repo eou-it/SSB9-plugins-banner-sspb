@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
- ******************************************************************************/
+ Copyright 2017 Ellucian Company L.P. and its affiliates.
+ *******************************************************************************/
 package net.hedtech.banner.css
 
 class Css {
@@ -21,11 +21,4 @@ class Css {
         //lastUpdated     nullable:true
         fileTimestamp   nullable:true
     }
-      //uncomment first time if db object is created
-    static mapping = {
-        datasource 'sspb'
-        //autoTimestamp true
-    }
-
-
 }

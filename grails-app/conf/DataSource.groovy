@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
- ******************************************************************************/
+ Copyright 2017 Ellucian Company L.P. and its affiliates.
+ *******************************************************************************/
 // Support Hibernate annotations
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsAnnotationConfiguration
 dataSource {
@@ -26,36 +26,4 @@ hibernate {
             "classpath:hibernate-banner-core.cfg.xml"
     ]
     */
-}
-
-// environment specific settings
-environments {
-    development {
-
-        //Banner database (default)
-        dataSource {
-        }
-
-        //Database with sspb
-        dataSource_sspb {
-            /*   ---> moved to banner_configuration.groovy
-            */
-        }
-
-    }
-    test {
-        //Banner database (default)
-        dataSource {
-        }
-        //Database with sspb
-        dataSource_sspb {
-        }
-    }
-    production {
-        dataSource {
-        }
-        //Database with sspb
-        dataSource_sspb {
-        }
-    }
 }
