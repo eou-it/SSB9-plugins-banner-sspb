@@ -20,7 +20,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 
     <script type="text/javascript">
 
-     var myCustomServices = ['ngResource', 'ui.bootstrap', 'pagebuilder.directives', 'ngMessages'];
+     var myCustomServices = ['ngResource', 'ui.bootstrap', 'pagebuilder.directives', 'ngMessages', 'extensibility'];
 
     // remove additional properties added by Angular resource when pretty print page source
     function JSONFilter(key, value) {

@@ -38,6 +38,8 @@ modules = {
         //TODO jquery 1.9.1 is not supported by Aurora - update Aurora
 //        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/jquery', file:  'jquery-1.9.1.min.js'], disposition: 'head'
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/jquery', file:  'jquery-ui-1.8.24.custom.js'] , disposition: 'head'
+        resource url:[plugin: 'banner-ui-ss', file: 'js/menu/tools-menu.js']
+        resource url: [plugin: 'web-app-extensibility', file: 'js/extensibility-angular/xe-angular.js']
     }
 
     'pageBuilderLTR' {
@@ -98,8 +100,10 @@ modules = {
         resource url:[plugin: 'banner-ui-ss', file: 'js/jquery-plugins/jquery.jeditable.js']
         resource url:[plugin: 'banner-ui-ss', file: 'js/jquery-plugins/jquery.simplemodal-1.4.1.js']
         resource url:[plugin: 'banner-ui-ss', file: 'js/jquery-plugins/jquery.jeditable.datepicker.js']
+        resource url: [plugin: 'web-app-extensibility', file: 'js/extensibility-common/xe-common.js']
         // Removed resources not needed in PB
     }
+
 
     'min-bannerWebLTR' {
         dependsOn "min-bannerWeb, aurora"
@@ -111,10 +115,11 @@ modules = {
 
         // next resource used by Pagination options in PageBuilder Grid
         resource url:[plugin: 'banner-ui-ss', file: 'css/backbone.pagingcontrols.css'],  attrs:[media:'screen, projection']
+        resource url: [plugin: 'web-app-extensibility', file: 'css/extensibility-ss.css'], attrs: [media: 'screen, projection']
     }
 
     'min-bannerWebRTL' {
-        dependsOn "min-bannerWeb, auroraRTL"
+        dependsOn "min-bannerWeb, auroraRTL, extensibilityCommonRTL"
         defaultBundle environment == "development" ? false : "bannerSelfServiceRTL"
 
         resource id: 'themeRTL', url:[plugin:'banner-ui-ss', dir:'css/themeroller/jquery-ui-1.8.13-lt.gry.ov/css/custom-theme', file:'jquery-ui-1.8.13.custom-rtl.css'], attrs:[media:'screen, projection']

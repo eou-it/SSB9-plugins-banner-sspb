@@ -9,6 +9,10 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 <!DOCTYPE html>
 <html ng-app="BannerOnAngular" lang="${message(code: 'default.language.locale')}" dir="${message(code:'default.language.direction')}">
     <head>
+        <script>
+            var extensibilityInfo =
+                    ${raw(net.hedtech.extensibility.InfoService.getJSON(controllerName, resource(plugin:'web-app-extensibility', dir:'html')))};
+        </script>
         <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
             <r:require modules="pageBuilderRTL"/>
         </g:if>
@@ -94,7 +98,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                 console = {log: function() {}};
             }
             // inject services and controller modules to be registered with the global ng-app
-            var myCustomServices = ['ngResource','ngGrid','ui', 'pbrun.directives', 'ngSanitize', 'xe-ui-components'];
+            var myCustomServices = ['ngResource','ngGrid','ui', 'pbrun.directives', 'ngSanitize', 'xe-ui-components', 'extensibility'];
             var pageControllers = {};
 
         </script>
