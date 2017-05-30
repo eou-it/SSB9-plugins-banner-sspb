@@ -16,6 +16,7 @@ class VirtualDomain {
 
     Date dateCreated
     Date lastUpdated
+    String lastModifiedBy // Transient to work around banner-core issue
     Date fileTimestamp
 
     static constraints = {
@@ -29,4 +30,5 @@ class VirtualDomain {
         //lastUpdated     nullabel:true
         fileTimestamp   nullable:true
     }
+    static transients = ['lastModifiedBy']
 }
