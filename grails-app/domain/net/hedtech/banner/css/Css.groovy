@@ -13,6 +13,8 @@ class Css {
     Date lastUpdated
     Date fileTimestamp
 
+    String lastModifiedBy // Transient to work around banner-core issue
+
     static constraints = {
         constantName    nullable: false , unique: true, maxSize: 60
         css             nullable: false , maxSize: 1000000, widget: 'textarea'
@@ -21,4 +23,6 @@ class Css {
         //lastUpdated     nullable:true
         fileTimestamp   nullable:true
     }
+
+    static transients = ['lastModifiedBy']
 }

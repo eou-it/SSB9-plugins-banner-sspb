@@ -879,6 +879,10 @@ class PageComponent {
         }
         def tranLabel = ( !(label) || parent.type == COMP_TYPE_HTABLE)?"&#x2007;&#x2007;":tran("label")
         def labelTxt = "<label class=\"pb-${parent.type} pb-$type pb-item pb-label $labelStyle \" ${idAttribute("-label"+idTxtParam)} ${idForAttribute(idTxtParam)}>$tranLabel</label>"
+
+        //Use empty labels for radio and boolean to support xeStyle
+        labelTxt = ( !label && ![COMP_TYPE_RADIO,COMP_TYPE_BOOLEAN].contains(t))?"":labelTxt
+
         def result=""
         def ngClick=""
         def ngChange=""
