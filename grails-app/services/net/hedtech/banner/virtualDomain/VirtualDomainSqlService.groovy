@@ -137,6 +137,24 @@ class VirtualDomainSqlService {
         result
     }
 
+    private def cleanSqlExceptionMessage(e, debug) {
+        def userMessageAnnotation = "@USERMESSAGE:"
+        def oraErrorString = "ORA-"
+        def errorMessage = e.getLocalizedMessage()
+        if (!debug) {
+            if (errorMessage.contains(userMessageAnnotation)) {
+                errorMessage = errorMessage.substring(errorMessage.indexOf(userMessageAnnotation) + userMessageAnnotation.length())
+                def oraPos = errorMessage.indexOf(oraErrorString)
+                if (oraPos>=0) {
+                    errorMessage=errorMessage.substring(0,oraPos)
+                }
+            } else {
+                errorMessage = ""
+            }
+        }
+        errorMessage
+    }
+
     /*
     get will return an array of objects satisfying the parameters
     refactoring to support paging/pagination:
@@ -183,8 +201,12 @@ class VirtualDomainSqlService {
 
         } catch(SQLException e) {
             logmsg += message(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
-            errorMessage=privs.debug?logmsg :"Unable to get resources."
-        } finally {
+            errorMessage = privs.debug ? logmsg : cleanSqlExceptionMessage(e,privs.debug) ?: "Unable to get resources."
+        } catch(NumberFormatException e) {
+            logmsg += e.getLocalizedMessage()
+            errorMessage=message(code:"sspb.virtualdomain.sqlservice.paging.message", args:[])
+        }
+        finally {
             sql.close()
         }
         log.debug logmsg
@@ -213,7 +235,7 @@ class VirtualDomainSqlService {
             totalCount = rows[0].COUNT
         } catch(SQLException e) {
             logmsg += message(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
-            errorMessage=privs.debug?logmsg : "Unable to get resource count."
+            errorMessage=privs.debug?logmsg : cleanSqlExceptionMessage(e,privs.debug) ?: "Unable to get resource count."
         } finally {
             sql.close()
         }
@@ -236,7 +258,7 @@ class VirtualDomainSqlService {
         }
         catch(SQLException e) {
             log.error "Exception in update statement", e
-            throw new VirtualDomainException( privs.debug?e.getLocalizedMessage():"Unable to update resource.")
+            throw new VirtualDomainException( cleanSqlExceptionMessage(e,privs.debug) ?: "Unable to update resource.")
         }
         finally {
             sql?.close()
@@ -267,7 +289,7 @@ class VirtualDomainSqlService {
         }
         catch(SQLException e) {
             log.error "exception in create statement: $e"
-            throw new VirtualDomainException( privs.debug?e.getLocalizedMessage():"Unable to create resource.")
+            throw new VirtualDomainException( cleanSqlExceptionMessage(e,privs.debug) ?: "Unable to create resource.")
         }
         finally {
             sql?.close()
@@ -290,7 +312,7 @@ class VirtualDomainSqlService {
         }
         catch(SQLException e) {
             log.error "exception in delete statement: $e"
-            throw new VirtualDomainException( privs.debug?e.getLocalizedMessage():"Unable to delete resource.")
+            throw new VirtualDomainException( cleanSqlExceptionMessage(e,privs.debug) ?: "Unable to delete resource.")
         }
         finally {
             sql?.close()
