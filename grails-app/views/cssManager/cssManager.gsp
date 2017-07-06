@@ -19,7 +19,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
     <r:require modules="pageBuilderDev"/>
 
     <script type="text/javascript">
-        var myCustomServices = ['ngResource', 'ui.bootstrap', 'pagebuilder.directives', 'ngUpload', 'ngMessages'];
+        var myCustomServices = ['ngResource', 'ui.bootstrap', 'pagebuilder.directives', 'ngUpload', 'ngMessages', 'extensibility'];
         pageControllers["CssManagerController"] = function ( $scope, $http, $resource, $parse) {
             // upload status callback
             $scope.foo = "Hello!";

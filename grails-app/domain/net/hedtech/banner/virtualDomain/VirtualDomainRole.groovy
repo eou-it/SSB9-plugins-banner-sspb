@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
- ******************************************************************************/
+ Copyright 2017 Ellucian Company L.P. and its affiliates.
+ *******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
 class VirtualDomainRole {
@@ -11,13 +11,10 @@ class VirtualDomainRole {
     Boolean allowPost = false
     Boolean allowDelete = false
 
+    String lastModifiedBy // Transient to work around banner-core issue
+
     static constraints = {
         roleName nullable: false,  maxSize: 30
-
     }
-    static mapping = {
-        datasource 'sspb'
-        //virtual domains can be stored in a separate data store
-    }
-
+    static transients = ['lastModifiedBy']
 }

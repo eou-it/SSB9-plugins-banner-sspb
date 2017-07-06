@@ -115,8 +115,8 @@ class VirtualDomainExportService {
             def pComponent = PageComponent.parseJSON(jsonPage)
             def vds = pComponent.findComponents([PageComponent.COMP_TYPE_RESOURCE])
             vds.each { res ->
-                if ( res.resource?.startsWith(VirtualDomainService.vdPrefix)) {
-                    vdSet << res.resource.substring(VirtualDomainService.vdPrefix.length())
+                if ( res.resource?.startsWith(VirtualDomainResourceService.vdPrefix)) {
+                    vdSet << res.resource.substring(VirtualDomainResourceService.vdPrefix.length())
                 }
             }
         }

@@ -131,7 +131,7 @@ appModule.run( function($templateCache )  {
         "        <div class=\"paging-control previous {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageBackward()\"></div>"+
         "        <span class=\"paging-text page\"> {{i18n.pageLabel}}</span>"+
         "        <input class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"1\" max=\"{{maxPages()}}\" type=\"number\" ng-model=\"pagingOptions.currentPage\" style=\"width: 40px; display: inline;\"/>" +
-        "        <span class=\"paging-text page-of\"> {{i18n.maxPageLabel}} </span> <span class=\"paginate_total\"> {{maxPages()}}  </span>"+
+        "        <span class=\"paging-text page-of\"> {{i18n.maxPageLabel}} </span> <span class=\"paging-text total-pages\"> {{maxPages()}}  </span>"+
         "        <div class=\"paging-control next {{!cantPageForward() && 'enabled'||''}}\" ng-click=\"pageForward()\"></div>" +
         "        <div class=\"paging-control last {{!cantPageToLast()  && 'enabled'||''}}\" ng-click=\"pageToLast()\" ></div>"+
         "        <div class=\"divider\"></div>" +
@@ -187,8 +187,10 @@ appModule.factory('pbResource', function($resource ) {
     function PBResource(resourceName )  {
         //Expecting a resource name exposed at resourceBase+resourceName
         //For backwards compatibility, replace the location used in the alpha release with resourceBase
-        this.resourceURL=resourceName.startsWith("/")?
-                         resourceName.replace(rootWebApp+'internal/', resourceBase):resourceBase+resourceName;
+        this.resourceURL=resourceName.startsWith("$$contextRoot/")?
+            resourceName.replace("$$contextRoot/",rootWebApp):
+            resourceName.startsWith("/")?
+            resourceName.replace(rootWebApp+'internal/', resourceBase):resourceBase+resourceName;
         this.Resource=null;
 
         //get a new resource from the factory
@@ -265,13 +267,19 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
     // Common function to create a new DataSet
     // The DataSet should encapsulate all the model functions query, create, update, delete
     function PBDataSet(params)  {
+
+        this.setResource = function(resource){
+            if (resource) {
+                if (!this.cache) {
+                    this.cache = $cacheFactory(this.componentId);
+                }
+                this.Resource = resource.getResource(this.cache);
+            }
+        };
         this.componentId=params.componentId;
         this.data=params.data;
-        if (params.resource) {
-            this.cache = $cacheFactory(this.componentId);
-            this.Resource=params.resource.getResource(this.cache);
-        }
 
+        this.setResource(params.resource);
         this.queryParams=params.queryParams;
         this.selectValueKey=params.selectValueKey;
         this.selectInitialValue=params.selectInitialValue;
@@ -284,7 +292,6 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
         if (this.data === undefined)  {
             this.data = [];
         }
-
         this.pageSize=params.pageSize;
         if (this.pageSize>0){
             this.pagingOptions = {  pageSizes: [this.pageSize, this.pageSize*2, this.pageSize*4],
@@ -292,10 +299,11 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
                 currentPage: null
             };
         }
-
         this.numberOfPages = function () {
             return this.pageSize === 0? 1 : Math.max(1,Math.ceil(this.totalCount/this.pagingOptions.pageSize));
         };
+
+
 
         this.init = function() {
             this.currentRecord=null;
@@ -452,11 +460,15 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
 
 
         this.save = function() {
-            var success = function (response) {
-                       if (params.onSaveSuccess) {
-                           params.onSaveSuccess(response);
-                       }
-                   };
+
+            function successHandler(action) {
+                return function (response) {
+                    if (params.onSaveSuccess) {
+                        params.onSaveSuccess(response, action);
+                    }
+                };
+            }
+
             var replaces = false;
             if (params.onSave) {
                 replaces = params.onSave();
@@ -466,15 +478,15 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
             }
 
             this.added.forEach( function(item)  {
-                item.$save({},success, post.error);
+                item.$save({},successHandler('C'), post.error);
             });
             this.added = [];
             this.modified.forEach( function(item)  {
-                item.$update({}, success, post.error);
+                item.$update({}, successHandler('U'), post.error);
             });
             this.modified = [];
             this.deleted.forEach( function(item)  {
-                item.$delete({id:item.id}, success, post.error);
+                item.$delete({id:item.id}, successHandler('D'), post.error);
             });
             this.deleted = [];
             this.cache.removeAll();

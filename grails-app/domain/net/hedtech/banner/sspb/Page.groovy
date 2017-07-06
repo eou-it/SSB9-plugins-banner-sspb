@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
- ******************************************************************************/
+ Copyright 2017 Ellucian Company L.P. and its affiliates.
+ *******************************************************************************/
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
@@ -28,6 +28,8 @@ class Page {
 
     Date lastUpdated
 
+    String lastModifiedBy // Transient to work around banner-core issue
+
     Date fileTimestamp
 
     String deltaVersion
@@ -43,16 +45,7 @@ class Page {
         fileTimestamp   nullable: true
     }
 
-    static mapping = {
-        //autoTimestamp true
-        datasource 'sspb'
-        //uncomment first time if db object is created
-        //modelView type: "clob"
-        //compiledView type: "clob"
-        //compiledController type: "clob"
-    }
-
-    static transients = ['mergedModelText', 'mergedModelMap', 'modelMap', 'deltaVersion']
+    static transients = ['mergedModelText', 'mergedModelMap', 'modelMap', 'deltaVersion', 'lastModifiedBy']
 
 
     boolean isEmptyInstance() {

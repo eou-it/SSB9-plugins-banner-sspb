@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
- ******************************************************************************/
+ Copyright 2017 Ellucian Company L.P. and its affiliates.
+ *******************************************************************************/
 package net.hedtech.banner.css
 
 class Css {
@@ -13,6 +13,8 @@ class Css {
     Date lastUpdated
     Date fileTimestamp
 
+    String lastModifiedBy // Transient to work around banner-core issue
+
     static constraints = {
         constantName    nullable: false , unique: true, maxSize: 60
         css             nullable: false , maxSize: 1000000, widget: 'textarea'
@@ -21,11 +23,6 @@ class Css {
         //lastUpdated     nullable:true
         fileTimestamp   nullable:true
     }
-      //uncomment first time if db object is created
-    static mapping = {
-        datasource 'sspb'
-        //autoTimestamp true
-    }
 
-
+    static transients = ['lastModifiedBy']
 }

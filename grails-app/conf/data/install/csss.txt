@@ -2,3 +2,5 @@ landingPage.json
 pbDefault.json
 xeStyle.json
 pbadm.adminTasksCss.json
+pbadmVirtualDomainComposerCss.json
+resourceBundleAdminCss.json

@@ -57,6 +57,7 @@ class CustomPageController {
                 invalidPage(message(code: "sspb.renderer.page.does.not.exist"))
             }
         } catch ( RuntimeException ex ) {
+            ex.printStackTrace()
             invalidPage( message( code: "sspb.renderer.page.does.not.exist"))
         }
     }

@@ -1,6 +1,6 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
- ******************************************************************************/
+ Copyright 2017 Ellucian Company L.P. and its affiliates.
+ *******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
 import groovy.sql.Sql
@@ -16,19 +16,8 @@ class VirtualDomainSqlService {
     def sessionFactory    //injected by Spring
     def grailsApplication //ditto
 
-    //allow connecting to 2 different datasources, depending on VirtualDomain.dataSource
-    //to make development easy, but maybe also useful
-    //def dataSource
-    def dataSource_sspb
-
-    private def getSql (vdDatasource) {
-        def result
-
-        if ( vdDatasource == "B") {
-            result = new Sql(sessionFactory.getCurrentSession().connection())
-        } else {
-            result = new Sql(dataSource_sspb)
-        }
+    private def getSql () {
+        def result = new Sql(sessionFactory.getCurrentSession().connection())
         result
     }
 
@@ -148,6 +137,24 @@ class VirtualDomainSqlService {
         result
     }
 
+    private def cleanSqlExceptionMessage(e, debug) {
+        def userMessageAnnotation = "@USERMESSAGE:"
+        def oraErrorString = "ORA-"
+        def errorMessage = e.getLocalizedMessage()
+        if (!debug) {
+            if (errorMessage.contains(userMessageAnnotation)) {
+                errorMessage = errorMessage.substring(errorMessage.indexOf(userMessageAnnotation) + userMessageAnnotation.length())
+                def oraPos = errorMessage.indexOf(oraErrorString)
+                if (oraPos>=0) {
+                    errorMessage=errorMessage.substring(0,oraPos)
+                }
+            } else {
+                errorMessage = ""
+            }
+        }
+        errorMessage
+    }
+
     /*
     get will return an array of objects satisfying the parameters
     refactoring to support paging/pagination:
@@ -164,7 +171,7 @@ class VirtualDomainSqlService {
         if (!privs.get) {
             throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
         }
-        def sql = getSql(vd.dataSource)
+        def sql = getSql()
         def errorMessage = ""
         def statement = vd.codeGet
         //maybe remove metaData - what value?
@@ -194,8 +201,12 @@ class VirtualDomainSqlService {
 
         } catch(SQLException e) {
             logmsg += message(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
-            errorMessage=privs.debug?logmsg :"Unable to get resources."
-        } finally {
+            errorMessage = privs.debug ? logmsg : cleanSqlExceptionMessage(e,privs.debug) ?: "Unable to get resources."
+        } catch(NumberFormatException e) {
+            logmsg += e.getLocalizedMessage()
+            errorMessage=message(code:"sspb.virtualdomain.sqlservice.paging.message", args:[])
+        }
+        finally {
             sql.close()
         }
         log.debug logmsg
@@ -211,7 +222,7 @@ class VirtualDomainSqlService {
         if (!privs.get) {
             throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
         }
-        def sql = getSql(vd.dataSource)
+        def sql = getSql()
         def errorMessage = ""
         // Add a dummy bind variable to Groovy SQL to workaround an issue related to passing a map
         // to a query without bind variables
@@ -224,7 +235,7 @@ class VirtualDomainSqlService {
             totalCount = rows[0].COUNT
         } catch(SQLException e) {
             logmsg += message(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
-            errorMessage=privs.debug?logmsg : "Unable to get resource count."
+            errorMessage=privs.debug?logmsg : cleanSqlExceptionMessage(e,privs.debug) ?: "Unable to get resource count."
         } finally {
             sql.close()
         }
@@ -242,12 +253,12 @@ class VirtualDomainSqlService {
         }
         def sql
         try {
-            sql = getSql(vd.dataSource)
+            sql = getSql()
             sql.execute(vd.codePut, data)
         }
         catch(SQLException e) {
             log.error "Exception in update statement", e
-            throw new VirtualDomainException( privs.debug?e.getLocalizedMessage():"Unable to update resource.")
+            throw new VirtualDomainException( cleanSqlExceptionMessage(e,privs.debug) ?: "Unable to update resource.")
         }
         finally {
             sql?.close()
@@ -273,12 +284,12 @@ class VirtualDomainSqlService {
         }
         def sql
         try {
-            sql = getSql(vd.dataSource)
+            sql = getSql()
             sql.execute(vd.codePost, data)
         }
         catch(SQLException e) {
             log.error "exception in create statement: $e"
-            throw new VirtualDomainException( privs.debug?e.getLocalizedMessage():"Unable to create resource.")
+            throw new VirtualDomainException( cleanSqlExceptionMessage(e,privs.debug) ?: "Unable to create resource.")
         }
         finally {
             sql?.close()
@@ -296,12 +307,12 @@ class VirtualDomainSqlService {
         parameters.id = urlPathDecode(parameters.id)
         def sql
         try {
-            sql = getSql(vd.dataSource)
+            sql = getSql()
             sql.execute(vd.codeDelete, params)
         }
         catch(SQLException e) {
             log.error "exception in delete statement: $e"
-            throw new VirtualDomainException( privs.debug?e.getLocalizedMessage():"Unable to delete resource.")
+            throw new VirtualDomainException( cleanSqlExceptionMessage(e,privs.debug) ?: "Unable to delete resource.")
         }
         finally {
             sql?.close()

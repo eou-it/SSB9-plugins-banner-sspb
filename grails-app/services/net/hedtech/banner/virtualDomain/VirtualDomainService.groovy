@@ -1,153 +1,88 @@
 /******************************************************************************
- *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2016 Ellucian Company L.P. and its affiliates.                  *
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
-import groovy.util.logging.Log4j
-import org.hibernate.HibernateException
+import org.hibernate.criterion.CriteriaSpecification
 
-@Log4j
 class VirtualDomainService {
 
-    def virtualDomainSqlService
-
-    final static String vdPrefix = "virtualDomains."   // Todo: might want to get rid of plural or choose other prefix
-
-    private def vdName (params) {
-        String resourceName=params.pluralizedResourceName
-        if ( resourceName.startsWith(vdPrefix)) {
-            resourceName = resourceName.substring(vdPrefix.length())
-        } else {
-            resourceName = null
-        }
-    }
-
-    // Interface for restful API - TODO may choose to put this in a separate service or move to VirtualDomainSqlService
+    static transactional = false //Getting error connection closed without this
 
     def list(Map params) {
-        def queryResult
-        def result
-        def serviceName = vdName(params)
-        def vd = loadVirtualDomain(vdName(params))
-        if (vd.error) {
-            throw new VirtualDomainException( message(code:"sspb.virtualdomain.invalid.service.message", args:[serviceName]))
+        log.trace "VirtualDomainService.list invoked with params $params"
+        def max = Math.min( params.max ? params.max.toInteger() : 10000,  10000)
+        def offset = params.offset ?: 0
+        def cr = VirtualDomain.createCriteria()
+        def result = cr.list(offset: offset, max: max, paginationEnabledList: true) {
+            if (params.serviceName) {
+                like("serviceName", params.serviceName)
+            }
+            order("serviceName", "asc")
+            if (params.noData=="TRUE") {
+                resultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP)
+                projections {
+                    property("id", "id")
+                    property("serviceName", "serviceName")
+                    property("lastUpdated", "lastUpdated")
+                    property("fileTimestamp", "fileTimestamp")
+                    property("version", "version")
+                }
+            }
         }
-        queryResult = virtualDomainSqlService.get(vd.virtualDomain, params)
-        if (queryResult.error == "") {
-            result = queryResult.rows
-        } else {
-            throw new VirtualDomainException( queryResult.error )
-        }
+        log.trace "VirtualDomainService.list is returning a ${result.getClass().simpleName} containing ${result.size()} rows"
         result
     }
 
     def show(Map params) {
-        list(params)[0]
-    }
-
-    def count(Map params) {
-        def queryResult
+        log.trace "VirtualDomainService.show invoked"
         def result
-        def serviceName = vdName(params)
-        def vd = loadVirtualDomain(serviceName)
-        if (vd.error) {
-            throw new VirtualDomainException( message(code:"sspb.virtualdomain.invalid.service.message", args:[serviceName]))
-        }
-        queryResult = virtualDomainSqlService.count(vd.virtualDomain, params)
-        if (queryResult.error == "") {
-            result = queryResult.totalCount
+        if (params.serviceName) {
+            result = VirtualDomain.findByServiceName(params.serviceName)
+        } else if (validateInput([serviceName: params.id])) {
+            result = VirtualDomain.findByServiceName(params.id)
         } else {
-            throw new VirtualDomainException(queryResult.error )
+            result = VirtualDomain.get(params.id)
+        }
+        if (result) {
+            log.trace "VirtualDomainService.show returning Service: ${result.serviceName}, id: ${result.id}"
         }
         result
     }
 
-    def create (Map data, params) {
-        log.debug "Data for post/save/create:" + data
-        def serviceName = vdName(params)
-        def vd = loadVirtualDomain(serviceName)
-        if (vd.error) {
-            throw new VirtualDomainException( message(code:"sspb.virtualdomain.invalid.service.message", args:[serviceName]))
+    def create(Map content, ignore) {
+        log.trace "VirtualDomainService.create invoked"
+        if (!validateInput(content)) {
+            throw new RuntimeException(message(code:"sspb.virtualdomain.invalid.service.message", args:[content.serviceName]))
         }
-        virtualDomainSqlService.create(vd.virtualDomain,params,data)
-        //data
-        //Should really be querying the record again so any database trigger changes get reflected in client
+        def result = new VirtualDomain(content)
+        result.save(flush:true, failOnError: true)
     }
 
-    def update (/*def id,*/ Map data, params) {
-        log.debug "Data for put/update:" + data
-        def serviceName = vdName(params)
-        def vd = loadVirtualDomain(serviceName)
-        if (vd.error) {
-            throw new VirtualDomainException( message(code:"sspb.virtualdomain.invalid.service.message", args:[serviceName]))
+    def update(Map content, params) {
+        log.trace "VirtualDomainService.update invoked"
+        if (!validateInput(content)) {
+            throw new RuntimeException(message(code:"sspb.virtualdomain.invalid.service.message", args:[content.serviceName]))
         }
-        virtualDomainSqlService.update(vd.virtualDomain,params,data)
-        //data
-        //Should really be querying the record again so any database trigger changes get reflected in client
+        def result = VirtualDomain.get(params.id?:content.id)
+        result.serviceName = content.serviceName
+        result.codeGet = content.codeGet
+        result.codePost = content.codePost
+        result.codePut = content.codePut
+        result.codeDelete = content.codeDelete
+        result.save(flush:true, failOnError: true)
     }
 
-    def delete (/*def id,*/ Map data,  params) {
-        log.debug "Data for DELETE:" + data
-        def serviceName = vdName(params)
-        def vd = loadVirtualDomain(serviceName)
-        if (vd.error) {
-            throw new VirtualDomainException( message(code:"sspb.virtualdomain.invalid.service.message", args:[serviceName]))
-        }
-        virtualDomainSqlService.delete(vd.virtualDomain,params)
+    def delete(Map content, params) {
+        log.trace "VirtualDomainService.delete invoked"
+        def result = VirtualDomain.get(params.id?:content.id)
+        result.delete(flush:true, failOnError: true)
     }
 
-
-
-
-    // Services to retrieve and save a VirtualDomain
-
-    def saveVirtualDomain(vdServiceName, vdQuery, vdPost, vdPut, vdDelete) {
-
-        log.info "---------- Save $vdServiceName (VirtualDomainService)-------------"
-        def updateVD = true
-        def success = false
-        def error = ""
-        def vd = null
-
-        try {
-            vd=VirtualDomain.findByServiceName(vdServiceName)
-            if (!vd)   {
-                vd = new VirtualDomain([serviceName:vdServiceName])
-                updateVD = false
-            }
-            if (vd) {
-                vd.codeGet=vdQuery
-                vd.codePost=vdPost
-                vd.codePut=vdPut
-                vd.codeDelete=vdDelete
-                vd = vd.save(flush:true, failOnError: true)
-                if (vd)
-                    success = true
-            }
-        } catch (HibernateException ex) {
-            error = ex.getMessage()
-            log.error ex
-        }
-        return [success:success, updated:updateVD, error:error, id:vd?.id, version:vd?.version]
-    }
-
-    def loadVirtualDomain(vdServiceName) {
-
-        log.info "---------- load $vdServiceName (VirtualDomainService)-------------"
-        def success = false
-        def error = message(code:"sspb.virtualdomain.invalid.service.message", args:[vdServiceName])
-        def vd = null
-
-        try {
-            vd=VirtualDomain.findByServiceName(vdServiceName)
-            if (vd) {
-                success = true
-                error = null
-            }
-        } catch (HibernateException ex) {
-            error = ex.getMessage()
-            log.error ex
-        }
-        return [success:success, virtualDomain:vd, error:error]
+    private def validateInput(content) {
+        def name = content?.serviceName
+        def valid = (name?.size() <= 60)
+        valid &= name ==~ /[a-zA-Z]+[a-zA-Z0-9_\-]*/
+        valid
     }
 }

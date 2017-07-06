@@ -229,14 +229,14 @@
                            "name": "optionMenu",
                            "style": "more-option ui-widget-hidden",
                            "type": "literal",
-                           "value": "<a href='#'><\/a>"
+                           "value": "<a href=\"#\"><\/a>"
                         },
                         {
                            "valueStyle": "",
                            "name": "EditPage",
                            "style": "edit-page",
                            "type": "literal",
-                           "value": "<a href='{{$$contextRoot}}visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}'><\/a>"
+                           "value": "<a href=\"{{$$contextRoot}}visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}\"><\/a>"
                         },
                         {
                            "valueStyle": "",
@@ -245,7 +245,7 @@
                            "style": "run-page",
                            "label": "",
                            "type": "literal",
-                           "value": "<a href='{{$$contextRoot}}customPage/page/{{$item.CONSTANT_NAME}}'><\/a>"
+                           "value": "<a href=\"{{$$contextRoot}}customPage/page/{{$item.CONSTANT_NAME}}\"><\/a>"
                         },
                         {
                            "asHtml": false,
@@ -310,14 +310,14 @@
                               "style": "more-option ui-widget-hidden",
                               "label": "",
                               "type": "literal",
-                              "value": "<a href='#'><\/a>"
+                              "value": "<a href=\"#\"><\/a>"
                            },
                            {
                               "valueStyle": "",
                               "name": "EditPage2",
                               "style": "edit-page",
                               "type": "literal",
-                              "value": "<a href='{{$$contextRoot}}visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}'><\/a>"
+                              "value": "<a href=\"{{$$contextRoot}}visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}\"><\/a>"
                            },
                            {
                               "valueStyle": "",
@@ -326,7 +326,7 @@
                               "style": "run-page",
                               "label": "",
                               "type": "literal",
-                              "value": "<a href='{{$$contextRoot}}customPage/page/{{$item.CONSTANT_NAME}}'><\/a>"
+                              "value": "<a href=\"{{$$contextRoot}}customPage/page/{{$item.CONSTANT_NAME}}\"><\/a>"
                            },
                            {
                               "asHtml": false,
@@ -382,7 +382,7 @@
       "type": "page",
       "importCSS": "landingPage"
    },
-   "fileTimestamp": "2016-11-16T16:58:07Z",
+   "fileTimestamp": "2017-05-31T19:00:00Z",
    "pageRoles": [
       {
          "allow": true,
