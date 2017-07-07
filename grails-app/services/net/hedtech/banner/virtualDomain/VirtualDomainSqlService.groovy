@@ -399,10 +399,10 @@ class VirtualDomainSqlService {
         def foundClob=false
         for ( row in rows )  {
             for (col in row ) {
-                if (col.value.getClass().toString().endsWith("CLOB"))  {
-                    String s=getStringValue(col.value)
-                    col.value=s
-                    foundClob=true
+                if (col.value.getClass().getName().endsWith("CLOB")) {
+                    String s = getStringValue(col.value)
+                    col.value = s
+                    foundClob = true
                 }
             }
             if (!foundClob)
