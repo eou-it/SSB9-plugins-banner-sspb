@@ -48,8 +48,7 @@ class CssService {
         log.trace "CssService.show invoked"
         def result
         def showResult
-        //result = Css.find{constantName==params.id}
-        result = Css.findByConstantName(params.id)
+        result = Css.fetchByConstantName(params.id)
         if (result) {
             //supplementCss( result )
             log.trace "CssService.show returning ${result}"
@@ -98,7 +97,7 @@ class CssService {
         log.trace "in compileCss: \ncssSource=$cssSource"
 
         description = description?:""
-        def cssInstance  = Css.findByConstantName(cssName)
+        def cssInstance  = Css.fetchByConstantName(cssName)
         def ret
 
         if (!validateInput([constantName: cssName, description: description])) {
