@@ -23,7 +23,7 @@ class Css implements Serializable{
     @Id
     @Column(name="ID")
     //@GeneratedValue(strategy = GenerationType.AUTO)
-    @SequenceGenerator(name = 'CSS_SEQ_GENERATOR', sequenceName = 'HIBERNATE_SEQUENCE')
+    @SequenceGenerator(name = 'CSS_SEQ_GENERATOR', sequenceName = 'SSPBMGR.HIBERNATE_SEQUENCE')
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = 'CSS_SEQ_GENERATOR')
     Long id;
 
