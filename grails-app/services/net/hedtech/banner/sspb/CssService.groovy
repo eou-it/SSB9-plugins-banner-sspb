@@ -68,12 +68,7 @@ class CssService {
             throw new ApplicationException( CssService, "generic failure" )
         }
 
-        def result
-
-        Css.withTransaction {
-            // compile/validate first
-            result = compileCss(content.cssName, content.source, content.description)
-        }
+        def result = compileCss(content.cssName, content.source, content.description)
         //supplementCss( result )
         log.trace "CssService.create returning $result"
         result
@@ -85,10 +80,8 @@ class CssService {
 
         //checkForExceptionRequest()
 
-        def result
-        Css.withTransaction {
-            result = compileCss(content.cssName, content.source, content.description)
-        }
+        def result = compileCss(content.cssName, content.source, content.description)
+
         //supplementCss( result )
         result
     }
@@ -127,10 +120,8 @@ class CssService {
 
     // note the content-type header still needs to be set in the request even we don't send in any content in the body
     void delete(Map ignore, params) {
-        Css.withTransaction {
-            def css = Css.find{constantName==params.id}
+            def css = Css.fetchByConstantName(params.id)
             css.delete(failOnError:true)
-        }
     }
 
     private def validateInput(params) {

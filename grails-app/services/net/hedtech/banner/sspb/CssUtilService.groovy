@@ -26,7 +26,7 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             def es = new CssExportService()
             usedByPageLike = es.cssForPages(pageLike)
         }
-        Css.findAllByConstantNameLike(constantName).each { css ->
+        Css.fetchAllByConstantNameLike(constantName).each { css ->
             if (usedByPageLike==null || usedByPageLike.contains(css.constantName)) {
                 if (skipDuplicates && css.constantName.endsWith(".bak"))
                     log.info message(code:"sspb.css.export.skipDuplicate.message", args:[css.constantName])
@@ -35,7 +35,10 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                     JSON.use("deep") {
                         def cssStripped = new Css()
                         //nullify data that is derivable or not applicable in other environment
-                        cssStripped.properties['constantName', 'css', 'description'] = css.properties
+                        //cssStripped.properties['constantName', 'css', 'description'] = css.properties
+                        cssStripped.constantName = css.constantName
+                        cssStripped.css = css.css
+                        cssStripped.description = css.description
                         cssStripped.fileTimestamp = new Date()
                         def json = new JSON(cssStripped)
                         def jsonString = json.toString(true)
@@ -87,7 +90,7 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     //Load a css and save it
     int load( name, stream, file, mode ) {
         def cssName = name?name:file.name.substring(0,file.name.lastIndexOf(".json"))
-        def css = Css.findByConstantName(cssName)
+        def css = Css.fetchByConstantName(cssName)
         def result=0
         def jsonString
         if (file)
@@ -114,7 +117,8 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 }
             }
             if (doLoad) {
-                css.properties['css', 'description' /*, 'fileTimestamp'*/] = json
+                css.css = json.css
+                css.description = json.description
                 css.fileTimestamp = json2date(json.fileTimestamp)
                 if (file)
                     css.fileTimestamp = new Date(file.lastModified())

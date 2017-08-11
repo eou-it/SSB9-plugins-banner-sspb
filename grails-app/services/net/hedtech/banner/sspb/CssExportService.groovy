@@ -38,10 +38,14 @@ class CssExportService {
         if (params.id && params.id.matches("[0-9]+")) {
             css = Css.get(params.id )
         } else {
-            css = Css.findByConstantName(params.id?:params.constantName)
+            css = Css.fetchByConstantName(params.id?:params.constantName)
         }
         def cssExport = [:]
-        cssExport = css.properties['constantName', 'css', 'description', 'fileTimestamp']
+        //cssExport = css.properties['constantName', 'css', 'description', 'fileTimestamp']
+        cssExport.constantName = css.constantName
+        cssExport.css = css.css
+        cssExport.description = css.description
+        cssExport.fileTimestamp = css.fileTimestamp
         cssExport
     }
 

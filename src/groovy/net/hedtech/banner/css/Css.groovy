@@ -11,6 +11,11 @@ import javax.persistence.*
         @NamedQuery(name = "Css.fetchByConstantName",
                 query = """FROM   Css a
 		   WHERE  a.constantName = :constantName
+		  """
+        ),
+        @NamedQuery(name = "Css.fetchAllByConstantNameLike",
+                query = """FROM   Css a
+		   WHERE  a.constantName = :constantName
 		  """)
 ])
 class Css implements Serializable{
@@ -22,28 +27,34 @@ class Css implements Serializable{
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = 'CSS_SEQ_GENERATOR')
     Long id;
 
-    @Column(name="CONSTANT_NAME",nullable= false ,length =  60)
+    @Column(name="CONSTANT_NAME", nullable= false ,length = 60)
     String constantName
 
-    @Column(name="CSS",nullable = false)
+    @Column(name="CSS", nullable = false)
     @Lob
     String css
 
-    @Column(name="DESCRIPTION" ,nullable = true , length =  255)
+    @Column(name="DESCRIPTION" ,nullable = true , length = 255)
     String description
-
-    @Column(name="DATE_CREATED",nullable=true)
-    Date dateCreated
-
-    @Column(name="LAST_UPDATED",nullable=true)
-    Date lastUpdated
-
-    @Column(name="FILE_TIMESTAMP",nullable=true)
-    Date fileTimestamp
 
     @Version
     @Column(name="VERSION" , nullable = false, precision = 19)
     Long version
+
+    @Column(name = "DATE_CREATED",  nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    Date dateCreated
+
+    @Column(name = "LAST_UPDATED",  nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    Date lastUpdated
+
+    @Column(name = "FILE_TIMESTAMP", nullable = true)
+    @Temporal(TemporalType.TIMESTAMP)
+    Date fileTimestamp
+
+    @Transient
+    String lastModifiedBy // Transient to work around banner-core issue
 
     @Override
     public String toString() {
@@ -52,28 +63,30 @@ class Css implements Serializable{
                 ", constantName='" + constantName + '\'' +
                 ", css='" + css + '\'' +
                 ", description='" + description + '\'' +
-                ", dateCreated=" + dateCreated +
-                ", lastUpdated=" + lastUpdated +
-                ", fileTimestamp=" + fileTimestamp +
                 ", version=" + version +
+                ", dateCreated='" + dateCreated + '\'' +
+                ", lastUpdated='" + lastUpdated + '\'' +
+                ", fileTimestamp='" + fileTimestamp + '\'' +
+                ", lastModifiedBy=" + lastModifiedBy +
                 '}';
     }
 
 
     boolean equals(o) {
         if (this.is(o)) return true
-        if (!(o instanceof Css)) return false
+        if (getClass() != o.class) return false
 
-        Css css1 = (Css) o
+        Css that = (Css) o
 
-        if (constantName != css1.constantName) return false
-        if (css != css1.css) return false
-        if (dateCreated != css1.dateCreated) return false
-        if (description != css1.description) return false
-        if (fileTimestamp != css1.fileTimestamp) return false
-        if (id != css1.id) return false
-        if (lastUpdated != css1.lastUpdated) return false
-        if (version != css1.version) return false
+        if (constantName != that.constantName) return false
+        if (id != that.id) return false
+        if (css != that.css) return false
+        if (lastModifiedBy != that.lastModifiedBy) return false
+        if (description != that.description) return false
+        if (dateCreated != that.dateCreated) return false
+        if (lastUpdated != that.lastUpdated) return false
+        if (version != that.version) return false
+        if (fileTimestamp != that.fileTimestamp) return false
 
         return true
     }
@@ -84,6 +97,8 @@ class Css implements Serializable{
         result = 31 * result + (constantName != null ? constantName.hashCode() : 0)
         result = 31 * result + (css != null ? css.hashCode() : 0)
         result = 31 * result + (description != null ? description.hashCode() : 0)
+        result = 31 * result + (version != null ? version.hashCode() : 0)
+        result = 31 * result + (lastModifiedBy != null ? lastModifiedBy.hashCode() : 0)
         result = 31 * result + (dateCreated != null ? dateCreated.hashCode() : 0)
         result = 31 * result + (lastUpdated != null ? lastUpdated.hashCode() : 0)
         result = 31 * result + (fileTimestamp != null ? fileTimestamp.hashCode() : 0)
@@ -95,6 +110,14 @@ class Css implements Serializable{
         List css = []
         css = Css.withSession {session ->
             css = session.getNamedQuery('Css.fetchByConstantName').setString('constantName',constantName).list()}
+        Css result = css?.size()>0?css.get(0):null
+        return result
+    }
+
+    public static Css fetchAllByConstantNameLike(String constantName) {
+        List css = []
+        css = Css.withSession {session ->
+            css = session.getNamedQuery('Css.fetchByConstantName').setString('constantName',"%"+constantName+"%").list()}
         Css result = css?.size()>0?css.get(0):null
         return result
     }
