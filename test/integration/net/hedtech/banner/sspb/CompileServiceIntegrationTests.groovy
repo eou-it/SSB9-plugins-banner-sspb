@@ -3,23 +3,26 @@
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
-import grails.test.mixin.Mock
-import grails.test.mixin.TestMixin
-import grails.test.mixin.web.ControllerUnitTestMixin
+import grails.test.spock.IntegrationSpec
+import net.hedtech.banner.testing.BaseIntegrationTestCase
 import net.hedtech.banner.css.Css
-//Need next mixin for json converter
-@TestMixin(ControllerUnitTestMixin)
-@Mock(Css)
-class CompileServiceTests extends GroovyTestCase  {
-    protected void setUp() {
-        super.setUp()
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
+
+class CompileServiceIntegrationTests extends BaseIntegrationTestCase  {
+
+    @Before
+    void setUp() {
+
     }
 
-    protected void tearDown() {
-        super.tearDown()
+    @After
+    public void tearDown() {
+
     }
 
-
+    @Test
     void testCompileAll() {
         // test all page model compilation
         def modelIds = 1..6
