@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ * Copyright 2017 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 
 package net.hedtech.banner.sspb
@@ -1206,7 +1206,7 @@ class PageComponent {
         //split the string into a list
         def is = tempList?.tokenize(',')
         for (css in is) {
-            if (  Css.findByConstantName(css) )
+            if (  Css.fetchByConstantName(css) )
                 cssImp += """<link type="text/css" rel="stylesheet" href="$importPath?name=${css.trim()}" />\n"""
             else {
                 log.warn "Warning: Style sheet $css will not be imported as it does not exist."

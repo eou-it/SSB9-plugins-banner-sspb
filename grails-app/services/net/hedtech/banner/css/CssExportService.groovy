@@ -1,8 +1,8 @@
 /******************************************************************************
- *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2017 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 
-package net.hedtech.banner.sspb
+package net.hedtech.banner.css
 import net.hedtech.banner.css.Css
 import org.hibernate.criterion.CriteriaSpecification
 
@@ -38,10 +38,14 @@ class CssExportService {
         if (params.id && params.id.matches("[0-9]+")) {
             css = Css.get(params.id )
         } else {
-            css = Css.findByConstantName(params.id?:params.constantName)
+            css = Css.fetchByConstantName(params.id?:params.constantName)
         }
         def cssExport = [:]
-        cssExport = css.properties['constantName', 'css', 'description', 'fileTimestamp']
+        //cssExport = css.properties['constantName', 'css', 'description', 'fileTimestamp']
+        cssExport.constantName = css.constantName
+        cssExport.css = css.css
+        cssExport.description = css.description
+        cssExport.fileTimestamp = css.fileTimestamp
         cssExport
     }
 

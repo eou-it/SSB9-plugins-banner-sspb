@@ -21,9 +21,9 @@ hibernate {
     show_sql = false
     // naming_strategy = "org.hibernate.cfg.ImprovedNamingStrategy"
     dialect = "org.hibernate.dialect.Oracle10gDialect"
-    /*
+
     config.location = [
-            "classpath:hibernate-banner-core.cfg.xml"
+            "classpath:hibernate-banner-sspb.cfg.xml"
     ]
-    */
+
 }

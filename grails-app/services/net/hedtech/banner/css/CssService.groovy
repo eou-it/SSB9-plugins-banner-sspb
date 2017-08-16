@@ -1,14 +1,16 @@
 /*******************************************************************************
- Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ Copyright 2017 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 
-package net.hedtech.banner.sspb
+package net.hedtech.banner.css
 
-import net.hedtech.banner.css.Css
 import net.hedtech.banner.exceptions.ApplicationException
 import org.codehaus.groovy.grails.web.util.WebUtils
+import net.hedtech.banner.service.ServiceBase
 
-class CssService {
+class CssService extends ServiceBase {
+
+    static transactional = true
 
     def list(Map params) {
 
@@ -23,7 +25,7 @@ class CssService {
         } */
         def max = Math.min( params.max ? params.max.toInteger() : 100,  100)
         def offset = params.offset ?: 0
-        result = Css.list( offset: offset, max: max, sort: 'constantName' )
+        result = super.list( offset: offset, max: max, sort: 'constantName' )
 
         def listResult = []
 
@@ -40,7 +42,7 @@ class CssService {
 
     def count(Map ignore) {
         log.trace "CssService.count invoked"
-        Css.count()
+        super.count()
     }
 
 
@@ -48,8 +50,7 @@ class CssService {
         log.trace "CssService.show invoked"
         def result
         def showResult
-        //result = Css.find{constantName==params.id}
-        result = Css.findByConstantName(params.id)
+        result = Css.fetchByConstantName(params.id)
         if (result) {
             //supplementCss( result )
             log.trace "CssService.show returning ${result}"
@@ -62,19 +63,14 @@ class CssService {
 
     // TODO for now update(post) handles both update and creation to simplify client side logic
     def create(Map content, ignore) {
-        log.trace "CssService.create invoked"
+        log.trace "cssService.create invoked"
 
 
         if (WebUtils.retrieveGrailsWebRequest().getParameterMap().forceGenericError == 'y') {
             throw new ApplicationException( CssService, "generic failure" )
         }
 
-        def result
-
-        Css.withTransaction {
-            // compile/validate first
-            result = compileCss(content.cssName, content.source, content.description)
-        }
+        def result = compileCss(content.cssName, content.source, content.description)
         //supplementCss( result )
         log.trace "CssService.create returning $result"
         result
@@ -86,10 +82,8 @@ class CssService {
 
         //checkForExceptionRequest()
 
-        def result
-        Css.withTransaction {
-            result = compileCss(content.cssName, content.source, content.description)
-        }
+        def result = compileCss(content.cssName, content.source, content.description)
+
         //supplementCss( result )
         result
     }
@@ -98,7 +92,7 @@ class CssService {
         log.trace "in compileCss: \ncssSource=$cssSource"
 
         description = description?:""
-        def cssInstance  = Css.findByConstantName(cssName)
+        def cssInstance  = Css.fetchByConstantName(cssName)
         def ret
 
         if (!validateInput([constantName: cssName, description: description])) {
@@ -108,12 +102,14 @@ class CssService {
             // TODO CSS validation
             def validateResult =  [valid: true]
             if (validateResult.valid) {
-                if (!cssInstance)
-                    cssInstance = new Css([constantName:cssName])
-                cssInstance.css=cssSource
-                cssInstance.description = description
-
-                cssInstance.save()
+                if (cssInstance) {
+                    cssInstance.css = cssSource
+                    cssInstance.description = description
+                    super.update(cssInstance)
+                } else {
+                    cssInstance = new Css([constantName: cssName, description: description, css: cssSource])
+                    super.create(cssInstance)
+                }
                 ret = [statusCode:0, statusMessage:"${message(code:'sspb.css.cssManager.saved.message')}"]
             } else {
                 ret = [statusCode: 2, statusMessage:message(code:"sspb.css.cssManager.stylesheet.validation.error.message")]
@@ -128,10 +124,8 @@ class CssService {
 
     // note the content-type header still needs to be set in the request even we don't send in any content in the body
     void delete(Map ignore, params) {
-        Css.withTransaction {
-            def css = Css.find{constantName==params.id}
-            css.delete(failOnError:true)
-        }
+            def css = Css.fetchByConstantName(params.id)
+            super.delete(css)
     }
 
     private def validateInput(params) {
