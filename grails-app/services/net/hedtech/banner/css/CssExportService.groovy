@@ -1,8 +1,8 @@
 /******************************************************************************
- *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2017 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 
-package net.hedtech.banner.sspb
+package net.hedtech.banner.css
 import net.hedtech.banner.css.Css
 import org.hibernate.criterion.CriteriaSpecification
 
