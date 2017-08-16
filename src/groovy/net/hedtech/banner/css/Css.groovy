@@ -15,7 +15,7 @@ import javax.persistence.*
         ),
         @NamedQuery(name = "Css.fetchAllByConstantNameLike",
                 query = """FROM   Css a
-		   WHERE  a.constantName = :constantName
+		   WHERE  a.constantName like :constantName
 		  """)
 ])
 class Css implements Serializable{
@@ -117,7 +117,7 @@ class Css implements Serializable{
     public static Css fetchAllByConstantNameLike(String constantName) {
         List css = []
         css = Css.withSession {session ->
-            css = session.getNamedQuery('Css.fetchByConstantName').setString('constantName',"%"+constantName+"%").list()}
+            css = session.getNamedQuery('Css.fetchAllByConstantNameLike').setString('constantName', constantName).list()}
         Css result = css?.size()>0?css.get(0):null
         return result
     }
