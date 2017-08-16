@@ -25,7 +25,7 @@ class CssService extends ServiceBase {
         } */
         def max = Math.min( params.max ? params.max.toInteger() : 100,  100)
         def offset = params.offset ?: 0
-        result = Css.list( offset: offset, max: max, sort: 'constantName' )
+        result = super.list( offset: offset, max: max, sort: 'constantName' )
 
         def listResult = []
 
@@ -42,7 +42,7 @@ class CssService extends ServiceBase {
 
     def count(Map ignore) {
         log.trace "CssService.count invoked"
-        Css.count()
+        super.count()
     }
 
 
@@ -125,7 +125,7 @@ class CssService extends ServiceBase {
     // note the content-type header still needs to be set in the request even we don't send in any content in the body
     void delete(Map ignore, params) {
             def css = Css.fetchByConstantName(params.id)
-            css.delete(failOnError:true)
+            super.delete(css)
     }
 
     private def validateInput(params) {
