@@ -40,7 +40,6 @@ grails.project.dependency.resolution = {
         runtime ":hibernate:3.6.10.19"
         //runtime ":hibernate4:4.3.8.1"
         runtime ":database-migration:1.4.0"
-        compile ':restful-api:1.0.0'
 
         //build  ":tomcat:8.0.22"
         //compile  ":tomcat:8.0.22" //this avoids prompt for do you want to upgrade/downgrade
