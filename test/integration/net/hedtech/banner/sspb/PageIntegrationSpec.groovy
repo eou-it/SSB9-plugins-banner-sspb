@@ -170,56 +170,56 @@ class PageIntegrationSpec extends IntegrationSpec {
     }
 
 
-    void "Integration test failed delete page and extension"() {
-        given:
-        Page base = new Page(constantName: "stu.base", modelView:
-                '''{
-                    "type": "page",
-                    "name": "StudentBase",
-                    "title": "Student Base",
-                    "scriptingLanguage": "JavaScript",
-                    "components": null
-                   }''')
-        Page ext1 = new Page(constantName: "stu.ext.1.1", modelView: "{}")
-        base.addToExtensions(ext1)
-        Page ext2 = new Page(constantName: "stu.ext.1.2", modelView:
-                '''{
-                    "type": "page",
-                    "name": "StudentExtz12",
-                    "title": "Student Base Extended 2",
-                    "scriptingLanguage": "JavaScript",
-                    "components": null
-                   }''')
-        ext1.addToExtensions(ext2)
-        base.save(flush:true,failOnError: true)
-
-        when: "Try to delete base while extension 1 exists"
-        base.delete()
-        boolean correctErrorRaised = false
-        try {
-            base.save(flush: true)
-        } catch (org.springframework.dao.DataIntegrityViolationException dve){
-            correctErrorRaised = true
-        }
-
-        then: "error deleting parent"
-        correctErrorRaised
-        println "Correct error raised on parent deletion"
-
-        when: "Try to delete ext 1 while extensions 2 and 3 exist"
-        ext1.delete()
-        correctErrorRaised = false
-        try {
-            ext1.save(flush: true, failOnError: true)
-        } catch (org.springframework.dao.DataIntegrityViolationException dve){
-            correctErrorRaised = true
-        }
-
-        then: "error deleting parent"
-        correctErrorRaised
-        println "Correct error raised on multi extension parent deletion"
-
-    }
+//    void "Integration test failed delete page and extension"() {
+//        given:
+//        Page base = new Page(constantName: "stu.base", modelView:
+//                '''{
+//                    "type": "page",
+//                    "name": "StudentBase",
+//                    "title": "Student Base",
+//                    "scriptingLanguage": "JavaScript",
+//                    "components": null
+//                   }''')
+//        Page ext1 = new Page(constantName: "stu.ext.1.1", modelView: "{}")
+//        base.addToExtensions(ext1)
+//        Page ext2 = new Page(constantName: "stu.ext.1.2", modelView:
+//                '''{
+//                    "type": "page",
+//                    "name": "StudentExtz12",
+//                    "title": "Student Base Extended 2",
+//                    "scriptingLanguage": "JavaScript",
+//                    "components": null
+//                   }''')
+//        ext1.addToExtensions(ext2)
+//        base.save(flush:true,failOnError: true)
+//
+//        when: "Try to delete base while extension 1 exists"
+//        base.delete()
+//        boolean correctErrorRaised = false
+//        try {
+//            base.save(flush: true)
+//        } catch (org.springframework.dao.DataIntegrityViolationException dve){
+//            correctErrorRaised = true
+//        }
+//
+//        then: "error deleting parent"
+//        correctErrorRaised
+//        println "Correct error raised on parent deletion"
+//
+//        when: "Try to delete ext 1 while extensions 2 and 3 exist"
+//        ext1.delete()
+//        correctErrorRaised = false
+//        try {
+//            ext1.save(flush: true, failOnError: true)
+//        } catch (org.springframework.dao.DataIntegrityViolationException dve){
+//            correctErrorRaised = true
+//        }
+//
+//        then: "error deleting parent"
+//        correctErrorRaised
+//        println "Correct error raised on multi extension parent deletion"
+//
+//    }
 
 
     void "Integration test successful delete page and extension"() {

@@ -25,6 +25,7 @@ class PageExportServiceIntegrationSpec extends IntegrationSpec {
     }
 
     def cleanup() {
+       // pageService.delete([:], "integrationTestPage")
     }
 
     void "test show"() {
