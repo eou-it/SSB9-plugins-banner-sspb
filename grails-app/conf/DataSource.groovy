@@ -23,7 +23,8 @@ hibernate {
     dialect = "org.hibernate.dialect.Oracle10gDialect"
 
     config.location = [
-            "classpath:hibernate-banner-sspb.cfg.xml"
+            "classpath:hibernate-banner-sspb.cfg.xml",
+            "classpath:hibernate-banner-general-utility.cfg.xml"
     ]
 
 }

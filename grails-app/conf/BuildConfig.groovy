@@ -7,6 +7,7 @@ grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 grails.plugin.location.'banner-core'="../banner_core.git"
 grails.plugin.location.'i18n_core'="../i18n_core.git"
+grails.plugin.location.'banner-restful-api-support'="../banner-restful-api-support.git"
 grails.plugin.location.'banner_general_utility' = "../banner_general_utility.git"
 
 grails.project.dependency.resolver="maven"
@@ -40,7 +41,6 @@ grails.project.dependency.resolution = {
         runtime ":hibernate:3.6.10.19"
         //runtime ":hibernate4:4.3.8.1"
         runtime ":database-migration:1.4.0"
-
         //build  ":tomcat:8.0.22"
         //compile  ":tomcat:8.0.22" //this avoids prompt for do you want to upgrade/downgrade
     }
