@@ -5,12 +5,6 @@ class PBUrlMappings {
 
     static mappings = {
 
-        "/$controller/$action?/$id?"{
-            constraints {
-                // apply constraints here
-            }
-        }
-
         //PageBuilder restful resources
         "/internalPb/$pluralizedResourceName/$id"(controller:'restfulApi') {
             action = [GET: "show", PUT: "update",
