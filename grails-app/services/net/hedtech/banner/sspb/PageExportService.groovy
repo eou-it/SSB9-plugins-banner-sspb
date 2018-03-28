@@ -46,6 +46,8 @@ class PageExportService {
     }
 
     def list( params) {
+        Map parameter = CommonService.decodeBase64(params)
+        params.putAll(parameter);
         def max = Math.min( params.max ? params.max.toInteger() : 10000,  10000)
         def offset = params.offset ?: 0
         def sortBy = []

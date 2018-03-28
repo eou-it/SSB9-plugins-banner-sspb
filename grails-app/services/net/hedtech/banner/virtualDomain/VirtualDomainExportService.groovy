@@ -4,8 +4,10 @@
 
 package net.hedtech.banner.virtualDomain
 
+import net.hedtech.banner.sspb.CommonService
 import net.hedtech.banner.sspb.Page
 import net.hedtech.banner.sspb.PageComponent
+import org.apache.commons.codec.binary.Base64
 import org.hibernate.criterion.CriteriaSpecification
 
 class VirtualDomainExportService {
@@ -54,6 +56,8 @@ class VirtualDomainExportService {
     }
 
     def list(params) {
+        Map parameter = CommonService.decodeBase64(params)
+        params.putAll(parameter);
         def max = Math.min(params.max ? params.max.toInteger() : 10000, 10000)
         def offset = params.offset ?: 0
         def sortBy = []
