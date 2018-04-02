@@ -19,8 +19,12 @@ class CommonService {
                        valBase = valBase.substring(4)
                    }
                    byte[] key = Base64.decodeBase64(keyBase);
-                   byte[] value = Base64.decodeBase64(valBase)
-                   parameter.put(new String(key), new String(value))
+                   if (valBase.equalsIgnoreCase("undefined")|| valBase.equalsIgnoreCase("null")){
+                       parameter.put(new String(key), null)
+                   }else{
+                        byte[] value = Base64.decodeBase64(valBase)
+                       parameter.put(new String(key), new String(value))
+                   }
                }
            }
        }
