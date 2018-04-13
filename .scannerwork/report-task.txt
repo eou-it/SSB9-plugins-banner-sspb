@@ -1,0 +1,6 @@
+projectKey=sspb
+serverUrl=http://localhost:9000
+serverVersion=6.7.2.37468
+dashboardUrl=http://localhost:9000/dashboard/index/sspb
+ceTaskId=AWK4WYgEvnxJsN2s9QWB
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AWK4WYgEvnxJsN2s9QWB
