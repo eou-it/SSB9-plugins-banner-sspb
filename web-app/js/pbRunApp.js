@@ -522,6 +522,7 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
             });
             this.deleted = [];
             this.cache.removeAll();
+            this.load();
         };
 
         this.dirty = function() {
