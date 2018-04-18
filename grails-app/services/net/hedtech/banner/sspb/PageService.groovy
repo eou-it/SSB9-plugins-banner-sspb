@@ -8,6 +8,7 @@ class PageService {
     def compileService
     def groovyPagesTemplateEngine
     def pageSecurityService
+    def springSecurityService
 
     def get(String constantName) {
         Page.findByConstantName(constantName)
@@ -182,7 +183,8 @@ class PageService {
                 throw new RuntimeException( message(code:"sspb.page.visualComposer.deletion.failed.message",args: [page.extensions.constantName.join(", ")]))
             }
             else {
-                page.delete(failOnError:true)
+                page.delete(failOnError:true, flush: true)
+                springSecurityService.clearCachedRequestmaps()
             }
         }
     }
