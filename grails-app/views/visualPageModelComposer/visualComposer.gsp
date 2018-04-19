@@ -1,5 +1,5 @@
 <%--
-Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page import="net.hedtech.banner.sspb.PageComponent" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
@@ -743,7 +743,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
               }
               var msg;
               if( ($scope.pageCurName !== $scope.pageName)) {
-                  if ($scope.pageList.findIndex( function (it) { return it.constantName == $scope.pageCurName;  }) > -1) {
+                  if ($scope.pageList.some( function (page) { return page.constantName == $scope.pageCurName; })) {
                       msg = "${message(code:'sspb.page.visualbuilder.page.name.edit.overwrite.existing', encodeAs: 'Javascript')}";
                   } else if ($scope.pageCurName !== $scope.newPageName && $scope.pageName !== $scope.newPageName ) {
                       msg = "${message(code:'sspb.page.visualbuilder.page.name.edit.check.message', encodeAs: 'Javascript')}";
