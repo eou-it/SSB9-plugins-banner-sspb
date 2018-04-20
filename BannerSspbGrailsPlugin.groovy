@@ -1,9 +1,13 @@
 /*******************************************************************************
  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
  ****************************************************************************** */
+
+import grails.util.Holders
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import net.hedtech.banner.i18n.ExternalMessageSource
+import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.web.access.intercept.RequestmapFilterInvocationDefinition
 
 import net.hedtech.banner.tools.PBPersistenceListener
 
@@ -35,10 +39,14 @@ class BannerSspbGrailsPlugin {
     def doWithWebDescriptor = { xml ->
         // TODO Implement additions to web.xml (optional), this event occurs before
     }
-
+    String securityConfigType = SpringSecurityUtils.securityConfigType
     // From  I18nGrailsPlugin.groovy 2.5.4
     def doWithSpring = {
         //Register the ExternalMessageSource in the initialization of the application context.
+        String appId = Holders.grailsApplication.metadata['app.appId']
+        if ("EXTZ".equals(appId) && securityConfigType == 'Requestmap') {
+            objectDefinitionSource(RequestmapFilterInvocationDefinition)
+        }
     }
 
 
@@ -96,4 +104,6 @@ class BannerSspbGrailsPlugin {
     def onShutdown = { event ->
         // TODO Implement code that is executed when the application shuts down (optional)
     }
+
+    def loadAfter = ['banner-general-utility']
 }

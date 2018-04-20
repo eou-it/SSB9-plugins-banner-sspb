@@ -5,10 +5,11 @@ grails.servlet.version = "2.5"
 grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
-grails.plugin.location.'i18n_core'="../i18n_core.git"
+
 grails.plugin.location.'banner-core'="../banner_core.git"
 grails.plugin.location.'banner-restful-api-support'="../banner-restful-api-support.git"
 grails.plugin.location.'banner_general_utility' = "../banner_general_utility.git"
+grails.plugin.location.'i18n_core'="../i18n_core.git"
 
 grails.project.dependency.resolver="maven"
 grails.project.dependency.resolution = {
