@@ -43,8 +43,8 @@ class BannerSspbGrailsPlugin {
     // From  I18nGrailsPlugin.groovy 2.5.4
     def doWithSpring = {
         //Register the ExternalMessageSource in the initialization of the application context.
-        String appId = Holders.grailsApplication.metadata['app.appId']
-        if ("EXTZ".equals(appId) && securityConfigType == 'Requestmap') {
+        String appId = Holders?.grailsApplication?.metadata?.get('app.appId')
+        if (appId && "EXTZ".equals(appId) && securityConfigType == 'Requestmap') {
             objectDefinitionSource(RequestmapFilterInvocationDefinition)
         }
     }

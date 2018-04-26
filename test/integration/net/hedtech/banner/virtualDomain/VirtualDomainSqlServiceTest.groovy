@@ -1,0 +1,141 @@
+/******************************************************************************
+ *  Copyright 2018 Ellucian Company L.P. and its affiliates.                   *
+ ******************************************************************************/
+package net.hedtech.banner.virtualDomain
+
+import grails.util.Holders
+import org.springframework.security.access.AccessDeniedException
+import spock.lang.Specification
+
+class VirtualDomainSqlServiceTest extends Specification{
+
+    def virtualDomainSqlService
+    def params=['url_encoding' :'utf-8' ,
+                'id' : '123456'
+    ]
+
+
+    def sessionFactory
+
+    void "test for get"() {
+        given:
+        def vd = new VirtualDomain(serviceName: 'testPage', codeGet:
+                'select * from dual', typeOfCode: 's', id: 0)
+        virtualDomainSqlService = new VirtualDomainSqlService()
+        virtualDomainSqlService.grailsApplication = Holders.getGrailsApplication()
+        virtualDomainSqlService.sessionFactory = sessionFactory
+
+        when:
+        virtualDomainSqlService.get(vd, params)
+        then:
+        final AccessDeniedException exception = thrown()
+        exception.message == 'Deny access for _anonymousUser'
+    }
+    void "test for getwith roles"(){
+        given:
+        def vd = new VirtualDomain(serviceName: 'testPage', codeGet:
+                'select * from dual', typeOfCode: 's', id: 0)
+        virtualDomainSqlService = new VirtualDomainSqlService()
+        grails.util.Holders.config.pageBuilder.adminRoles = 'ROLE_GPBADMN_BAN_DEFAULT_PAGEBUILDER_M'
+        def grailsApplication =Holders.getGrailsApplication()
+        virtualDomainSqlService.grailsApplication = Holders.getGrailsApplication()
+        virtualDomainSqlService.sessionFactory = sessionFactory
+        def vdr = new VirtualDomainRole(allowGet: true, allowPost: true, allowDelete: true, allowPut: true , id: 0, roleName: 'GUEST')
+        def vdrSet = new HashSet<VirtualDomainRole>()
+        vdrSet.add(vdr)
+        vd.virtualDomainRoles=vdrSet
+
+        when:
+        def res = virtualDomainSqlService.get(vd,params)
+        then:
+        res.totalCount >0
+    }
+
+    void "test for count"(){
+        given:
+        def vd = new VirtualDomain(serviceName: 'testPage', codeGet:
+                'select * from dual' , typeOfCode: 's', id: 0)
+        virtualDomainSqlService = new VirtualDomainSqlService()
+        grails.util.Holders.config.pageBuilder.adminRoles = 'ROLE_GPBADMN_BAN_DEFAULT_PAGEBUILDER_M'
+        def grailsApplication =Holders.getGrailsApplication()
+        virtualDomainSqlService.grailsApplication = Holders.getGrailsApplication()
+        virtualDomainSqlService.sessionFactory = sessionFactory
+        def vdr = new VirtualDomainRole(allowGet: true, allowPost: true, allowDelete: true, allowPut: true , id: 0, roleName: 'GUEST')
+        def vdrSet = new HashSet<VirtualDomainRole>()
+        vdrSet.add(vdr)
+        vd.virtualDomainRoles=vdrSet
+
+        when:
+        def count = virtualDomainSqlService.count(vd,params)
+        then:
+        count.totalCount >0
+    }
+
+    void "test for delete"(){
+        given:
+        def vd = new VirtualDomain(serviceName: 'testPage', codeDelete:
+                'delete virtual_domain_Temp where service_name="Test"', typeOfCode: 's', id: 0)
+        virtualDomainSqlService = new VirtualDomainSqlService()
+        grails.util.Holders.config.pageBuilder.adminRoles = 'ROLE_GPBADMN_BAN_DEFAULT_PAGEBUILDER_M'
+        def grailsApplication =Holders.getGrailsApplication()
+        virtualDomainSqlService.grailsApplication = Holders.getGrailsApplication()
+        virtualDomainSqlService.sessionFactory = sessionFactory
+        def vdr = new VirtualDomainRole(allowGet: true, allowPost: true, allowDelete: true, allowPut: true , id: 0, roleName: 'GUEST')
+        def vdrSet = new HashSet<VirtualDomainRole>()
+        vdrSet.add(vdr)
+        vd.virtualDomainRoles=vdrSet
+        vd.codeDelete
+
+        when:
+        def delete = virtualDomainSqlService.delete(vd,params)
+        then:
+        final VirtualDomainException exception = thrown()
+        exception !=null
+    }
+
+    void "test for update"(){
+        given:
+        String par = 'testPage'
+        def vd = new VirtualDomain(serviceName: 'testPage', codePut:
+                "update virtual_domain set last_updated = sysdate where service_name=:param_id", typeOfCode: 's', id: 0)
+       def data = ['id':0]
+        virtualDomainSqlService = new VirtualDomainSqlService()
+        grails.util.Holders.config.pageBuilder.adminRoles = 'ROLE_GPBADMN_BAN_DEFAULT_PAGEBUILDER_M'
+        def grailsApplication =Holders.getGrailsApplication()
+        virtualDomainSqlService.grailsApplication = Holders.getGrailsApplication()
+        virtualDomainSqlService.sessionFactory = sessionFactory
+        def vdr = new VirtualDomainRole(allowGet: true, allowPost: true, allowDelete: true, allowPut: true , id: 0, roleName: 'GUEST')
+        def vdrSet = new HashSet<VirtualDomainRole>()
+        vdrSet.add(vdr)
+        vd.virtualDomainRoles=vdrSet
+        vd.codeDelete
+
+        when:
+        def update = virtualDomainSqlService.update(vd,params, data)
+        then:
+        update.id == "123456"
+    }
+
+    void "test for create"(){
+        given:
+        String par = 'testPage'
+        def vd = new VirtualDomain(serviceName: 'testPage', codePost:
+                "select * from virtual_domain where id=:param_id", typeOfCode: 's', id: 0)
+        def data = ['id':0]
+        virtualDomainSqlService = new VirtualDomainSqlService()
+        grails.util.Holders.config.pageBuilder.adminRoles = 'ROLE_GPBADMN_BAN_DEFAULT_PAGEBUILDER_M'
+        def grailsApplication =Holders.getGrailsApplication()
+        virtualDomainSqlService.grailsApplication = Holders.getGrailsApplication()
+        virtualDomainSqlService.sessionFactory = sessionFactory
+        def vdr = new VirtualDomainRole(allowGet: true, allowPost: true, allowDelete: true, allowPut: true , id: 0, roleName: 'GUEST')
+        def vdrSet = new HashSet<VirtualDomainRole>()
+        vdrSet.add(vdr)
+        vd.virtualDomainRoles=vdrSet
+        vd.codeDelete
+
+        when:
+        def create = virtualDomainSqlService.create(vd,params, data)
+        then:
+        noExceptionThrown()
+    }
+}

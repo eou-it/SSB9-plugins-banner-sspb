@@ -155,8 +155,8 @@ grails.plugin.springsecurity.useRequestMapDomainClass = false
 //        '/**': 'securityContextPersistenceFilter,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,exceptionTranslationFilter,filterInvocationInterceptor'
 //]
 // User RequestMap to only EXTZ App, since other app might need SS config changes.
-    String appId = Holders.grailsApplication.metadata['app.appId']
-    if("EXTZ".equals(appId)){
+    String appId = Holders?.grailsApplication?.metadata?.get('app.appId')
+    if(appId && "EXTZ".equals(appId)){
         grails.plugin.springsecurity.securityConfigType = SecurityConfigType.Requestmap //SecurityConfigType.Requestmap
         grails.plugin.springsecurity.requestMap.className = 'net.hedtech.banner.sspb.Requestmap'
     }else{
