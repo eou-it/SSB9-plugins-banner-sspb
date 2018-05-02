@@ -3,8 +3,9 @@
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
-import grails.test.spock.IntegrationSpec
 import grails.converters.JSON
+import grails.test.spock.IntegrationSpec
+import grails.validation.ValidationException
 import org.codehaus.groovy.grails.web.json.JSONObject
 
 class PageServiceIntegrationSpec extends IntegrationSpec {
@@ -20,18 +21,19 @@ class PageServiceIntegrationSpec extends IntegrationSpec {
     void "Integration test create page and extension"() {
         given:
         org.codehaus.groovy.grails.web.json.JSONObject extendsPage = null
-        Map basePageMap = [pageName: "stu.base",
-                           source: '''{
+        Map basePageMap = [pageName   : "stu.base",
+                           source     : '''{
                                      "type": "page",
                                      "name": "student",
                                      "title": "Student Base",
                                      "scriptingLanguage": "JavaScript",
                                      "components": null
                                      }''',
-                           extendsPage:extendsPage]
+                           extendsPage: extendsPage]
+        def params = ['constantName': 'stu.base']
 
         when: "base page create"
-        def result = pageService.create(basePageMap,[:])
+        def result = pageService.create(basePageMap, [:])
         Page basePage = result?.page
 
         then: "able to create page that is not an extension"
@@ -42,8 +44,8 @@ class PageServiceIntegrationSpec extends IntegrationSpec {
         println "Created page ${basePage?.constantName}"
 
         when: "extended page create"
-        Map extendedPageMap = [pageName: "ext.1",
-                               source: '''{
+        Map extendedPageMap = [pageName   : "ext.1",
+                               source     : '''{
                                      "type": "page",
                                      "name": "student",
                                      "title": "Student Extended",
@@ -70,7 +72,7 @@ class PageServiceIntegrationSpec extends IntegrationSpec {
                                       ]
                                      }''',
                                extendsPage: new JSONObject(new JSON(basePage).toString())]
-        result = pageService.create(extendedPageMap,[:])
+        result = pageService.create(extendedPageMap, [:])
         Page extendedPage = result?.page
 
         then: "able to create page that is an extension"
@@ -80,6 +82,34 @@ class PageServiceIntegrationSpec extends IntegrationSpec {
         extendedPage?.extendsPage == basePage
         println "Created page ${extendedPage?.constantName}"
 
+        when: "list the page"
+
+        def res = pageService.list(params)
+        then:
+        res.size() > 0
+
+        when: "throws Exception"
+        params << ['forceValidationError': 'y']
+        pageService.list(params)
+        then:
+        final ValidationException exception = thrown()
+        exception != null
+
+        when: "count"
+        res = pageService.count(params)
+        then:
+        res > 0
+
+        when: "count show"
+        res = pageService.show(params)
+        then:
+        noExceptionThrown()
+
+        when: "count greater"
+        params << ['constantName': null]
+        res = pageService.count(params)
+        then:
+        res > 0
     }
 
 }

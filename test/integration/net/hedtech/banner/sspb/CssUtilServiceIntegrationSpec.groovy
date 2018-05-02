@@ -42,8 +42,11 @@ class CssUtilServiceIntegrationSpec extends IntegrationSpec {
         if(cssInstance) {
             isPersisted = true
         }
+        int hashcode = cssInstance.hashCode()
         then:
         isPersisted ==  true
+        cssInstance.equals(cssInstance)
+        hashcode!=null
 
     }
 }
