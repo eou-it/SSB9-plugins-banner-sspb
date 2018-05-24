@@ -19,7 +19,8 @@ class PageService {
     }
 
     def list(Map params) {
-
+        Map parameter = CommonService.decodeBase64(params)
+        params.putAll(parameter);
         log.trace "PageService.list invoked with params $params"
         def result
 
@@ -62,6 +63,8 @@ class PageService {
 
 
     def show(Map params) {
+        Map parameter = CommonService.decodeBase64(params)
+        params.putAll(parameter);
         log.trace "PageService.show invoked"
         def page = Page.find { constantName == params.id }
         log.trace "PageService.show returning ${page}"

@@ -37,6 +37,8 @@ class VirtualDomainExportService {
     }
 
     def show(params) {
+        Map parameter = CommonService.decodeBase64(params)
+        params.putAll(parameter);
         def vd
         if (params.id && params.id.matches("[0-9]+")) {
             vd = VirtualDomain.get(params.id )

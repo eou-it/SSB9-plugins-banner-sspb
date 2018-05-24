@@ -36,6 +36,8 @@ class CssExportService {
     }
 
     def show(params) {
+        Map parameter = CommonService.decodeBase64(params)
+        params.putAll(parameter);
         def css
         if (params.id && params.id.matches("[0-9]+")) {
             css = Css.get(params.id )

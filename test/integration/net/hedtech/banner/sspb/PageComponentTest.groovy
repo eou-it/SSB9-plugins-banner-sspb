@@ -34,6 +34,6 @@ class PageComponentTest extends Specification{
         when:
         def res = pageComponent.initNewRecordJS()
         then:
-        res.length>0
+        res.length()>0
     }
 }

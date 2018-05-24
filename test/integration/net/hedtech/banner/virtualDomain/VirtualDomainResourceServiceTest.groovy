@@ -32,7 +32,10 @@ class VirtualDomainResourceServiceTest extends Specification{
         def vdrSet = new HashSet<VirtualDomainRole>()
         vdrSet.add(vdr)
         vd.virtualDomainRoles=vdrSet
-        vd.save(flush: true, failOnError: true)
+        def vdExist = VirtualDomain.findByServiceName('integrationTest')
+        if(!vdExist) {
+            vd.save(flush: true, failOnError: true)
+        }
     }
 
     void "test for list"(){

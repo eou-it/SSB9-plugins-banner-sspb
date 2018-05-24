@@ -38,6 +38,8 @@ class VirtualDomainService {
     }
 
     def show(Map params) {
+        Map parameter = CommonService.decodeBase64(params)
+        params.putAll(parameter);
         log.trace "VirtualDomainService.show invoked"
         def result
         if (params.serviceName) {
