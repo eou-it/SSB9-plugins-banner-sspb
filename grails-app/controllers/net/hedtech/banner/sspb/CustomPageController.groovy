@@ -61,4 +61,10 @@ class CustomPageController {
             invalidPage( message( code: "sspb.renderer.page.does.not.exist"))
         }
     }
+
+    def isPBUser(){
+        def res= PageService.isPBUser();
+        response.setContentType("application/json")
+        render res
+    }
 }

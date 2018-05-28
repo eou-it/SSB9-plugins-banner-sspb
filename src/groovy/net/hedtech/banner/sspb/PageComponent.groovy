@@ -238,6 +238,7 @@ class PageComponent {
 
     def content ="" //Added for template compile
     def templateName = "" //Added for template compile
+    def pageURL
 
 
     // map the validation key to angular attributes ? use HTML 5 validation instead with form
@@ -1152,7 +1153,25 @@ class PageComponent {
     String componentEnd(String t, int ignoreDepth=0) {
         switch (t) {
             case COMP_TYPE_PAGE:
-                return  "</div>\n</body>\n"
+
+                Page page =Page.findByConstantName(name)
+                def purlContent = ""
+                if(page || pageURL) {
+
+                    def purl=pageURL
+                    if(!purl){
+                        def model = new groovy.json.JsonSlurper().parseText(page.modelView)
+                        purl = model.get("pageURL")
+                    }
+                    purlContent = "<div ng-controller='homePageUrlCtr'>"
+                    if (purl) {
+                        purlContent +=
+                                "<div ng-view></div>\n" +
+                                        "   <input name='pageURL' value='${purl}' id= 'homeURL' hidden='true'/>"
+                    }
+                    purlContent += "</div>"
+                }
+                return  "</div>\n${purlContent}\n</body>\n"
             case COMP_TYPE_FORM:
                 def nextTxt = ""
                 if (root.flowDefs || submit) {

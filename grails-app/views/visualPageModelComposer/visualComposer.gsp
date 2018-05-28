@@ -299,6 +299,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
             tr['attribute.fractionDigits'   ]="${message(code:'sspb.model.attribute.fractionDigits')}";
             tr['attribute.labelStyle'       ]="${message(code:'sspb.model.attribute.labelStyle')}";
             tr['attribute.valueStyle'       ]="${message(code:'sspb.model.attribute.valueStyle')}";
+            tr['attribute.pageURL'          ]="${message(code:'sspb.model.attribute.pageUrl')}";
 
             tr['attribute.newRecordLabel'   ]="${message(code:'sspb.model.attribute.newRecordLabel')}";
             tr['attribute.deleteRecordLabel']="${message(code:'sspb.model.attribute.deleteRecordLabel')}";

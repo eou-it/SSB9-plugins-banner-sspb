@@ -106,7 +106,21 @@ if (pageControllers) {
         }
     }
 }
+appModule.controller('homePageUrlCtr', function($scope, $window, $http) {
+   $window.onload = function() {
+        $http.get("../isPBUser")
+            .success(function (data) {
+               var isPbuser = data instanceof Array?data[0].isPbUser:null;
+                var url = $('#homeURL').val();
+                if(!eval(isPbuser) && url){
+                    $('#branding').attr('href', url)
+                }
+            }).error(function (data){
+                console.log(data);
+        });
 
+    };
+});
 // below filter is used for pagination
 appModule.filter('startFrom', function() {
         return function(input, start) {
@@ -147,6 +161,7 @@ appModule.run( function($templateCache )  {
         "    </div>" +
         "    <div style=\"position: absolute; bottom:2px;\" ng-style=\"{ {{i18n.styleRight}}:'2px'}\"> #gridControlPanel# </div>" +
         "</div>");
+
 });
 
 //Add some functions to the scope
@@ -235,6 +250,7 @@ appModule.factory('pbResource', function($resource ) {
 appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
     // Use function to create a post query function associated with
     // a DataSet instance
+    console.log("========After Page load =========")
     var $scope;
     function CreatePostEventHandlers(instanceIn, userPostQuery, userOnError) {
         console.log("Post Query Constructor for DataSet " + instanceIn.componentId);
@@ -264,6 +280,7 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
         };
         return this;
     }
+
     // Common function to create a new DataSet
     // The DataSet should encapsulate all the model functions query, create, update, delete
     function PBDataSet(params)  {
