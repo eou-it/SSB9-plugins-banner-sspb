@@ -108,9 +108,9 @@ if (pageControllers) {
 }
 appModule.controller('homePageUrlCtr', function($scope, $window, $http) {
    $window.onload = function() {
-        $http.get("../isPBUser")
+        $http.get("../../customPage/isPBUser")
             .success(function (data) {
-               var isPbuser = data instanceof Array?data[0].isPbUser:null;
+                var isPbuser = data instanceof Array?data[0].isPbUser:null;
                 var url = $('#homeURL').val();
                 if(!eval(isPbuser) && url){
                     $('#branding').attr('href', url)
