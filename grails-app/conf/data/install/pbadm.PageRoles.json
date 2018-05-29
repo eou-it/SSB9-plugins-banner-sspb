@@ -83,7 +83,7 @@
                      "model": "ROLE_NAME",
                      "placeholder": "Select unique role...",
                      "labelKey": "DESCRIPTION",
-                     "sourceParameters": {},
+                     "sourceParameters":  {"PAGE_ID": "$selectPage"},
                      "label": "Role",
                      "onUpdate": "",
                      "type": "select",
