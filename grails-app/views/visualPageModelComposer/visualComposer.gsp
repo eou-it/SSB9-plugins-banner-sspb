@@ -255,6 +255,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
             tr['attribute.scriptingLanguage']="${message(code:'sspb.model.attribute.scriptingLanguage')}";
             tr['attribute.label'            ]="${message(code:'sspb.model.attribute.label')}";
             tr['attribute.style'            ]="${message(code:'sspb.model.attribute.style')}";
+            tr['attribute.objectName'       ]="${message(code:'sspb.model.attribute.objectName')}";
             tr['attribute.submit'           ]="${message(code:'sspb.model.attribute.submit')}";
             tr['attribute.submitLabel'      ]="${message(code:'sspb.model.attribute.submitLabel')}";
             tr['attribute.model'            ]="${message(code:'sspb.model.attribute.model')}";

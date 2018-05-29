@@ -110,6 +110,7 @@ class PageComponent {
     String scriptingLanguage = "JavaScript" // -> page property that specifies the scripting language to use in page model
     String importCSS   // specify what custom stylesheets to import, comma separated list of custom stylesheet names (without the .css extension )
     String label       // -> Items (inputs, display)
+    String objectName
 
     String newRecordLabel        //Grid/HTable/Detail  label
     String deleteRecordLabel     //Grid/HTable/Detail  label
