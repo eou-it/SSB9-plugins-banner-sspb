@@ -62,9 +62,4 @@ class CustomPageController {
         }
     }
 
-    def isPBUser(){
-        def res= PageService.isPBUser();
-        response.setContentType("application/json")
-        render res
-    }
 }

@@ -108,17 +108,8 @@ if (pageControllers) {
 }
 appModule.controller('homePageUrlCtr', function($scope, $window, $http) {
    $window.onload = function() {
-        $http.get("../../customPage/isPBUser")
-            .success(function (data) {
-                var isPbuser = data instanceof Array?data[0].isPbUser:null;
-                var url = $('#homeURL').val();
-                if(!eval(isPbuser) && url){
-                    $('#branding').attr('href', url)
-                }
-            }).error(function (data){
-                console.log(data);
-        });
-
+       var url = $('#homeURL').val();
+       $('#branding').attr('href', url)
     };
 });
 // below filter is used for pagination

@@ -200,18 +200,4 @@ class PageService {
         valid &= name ==~ /[a-zA-Z]+[a-zA-Z0-9_\-\.]*/
         valid
     }
-
-    static isPBUser(){
-        def userIn = SecurityContextHolder?.context?.authentication?.principal
-        def isPbUser = false
-        def val = '[{"statusCode": 200, "isPbUser":"false"}]'
-        userIn.authorities.each {
-            String objName = it.objectName.toString()
-            if(("GPBADMN").equalsIgnoreCase(objName)){
-               val= '[{"statusCode": 200, "isPbUser":"true"}]'
-            }
-        }
-      return val
-    }
-
  }
