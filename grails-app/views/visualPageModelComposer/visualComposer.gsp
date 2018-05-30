@@ -1,5 +1,5 @@
 <%--
-Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page import="net.hedtech.banner.sspb.PageComponent" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
@@ -255,6 +255,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             tr['attribute.scriptingLanguage']="${message(code:'sspb.model.attribute.scriptingLanguage')}";
             tr['attribute.label'            ]="${message(code:'sspb.model.attribute.label')}";
             tr['attribute.style'            ]="${message(code:'sspb.model.attribute.style')}";
+            tr['attribute.objectName'       ]="${message(code:'sspb.model.attribute.objectName')}";
             tr['attribute.submit'           ]="${message(code:'sspb.model.attribute.submit')}";
             tr['attribute.submitLabel'      ]="${message(code:'sspb.model.attribute.submitLabel')}";
             tr['attribute.model'            ]="${message(code:'sspb.model.attribute.model')}";
@@ -299,6 +300,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
             tr['attribute.fractionDigits'   ]="${message(code:'sspb.model.attribute.fractionDigits')}";
             tr['attribute.labelStyle'       ]="${message(code:'sspb.model.attribute.labelStyle')}";
             tr['attribute.valueStyle'       ]="${message(code:'sspb.model.attribute.valueStyle')}";
+            tr['attribute.pageURL'          ]="${message(code:'sspb.model.attribute.pageUrl')}";
 
             tr['attribute.newRecordLabel'   ]="${message(code:'sspb.model.attribute.newRecordLabel')}";
             tr['attribute.deleteRecordLabel']="${message(code:'sspb.model.attribute.deleteRecordLabel')}";
@@ -743,7 +745,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
               }
               var msg;
               if( ($scope.pageCurName !== $scope.pageName)) {
-                  if ($scope.pageList.findIndex( function (it) { return it.constantName == $scope.pageCurName;  }) > -1) {
+                  if ($scope.pageList.some( function (page) { return page.constantName == $scope.pageCurName; })) {
                       msg = "${message(code:'sspb.page.visualbuilder.page.name.edit.overwrite.existing', encodeAs: 'Javascript')}";
                   } else if ($scope.pageCurName !== $scope.newPageName && $scope.pageName !== $scope.newPageName ) {
                       msg = "${message(code:'sspb.page.visualbuilder.page.name.edit.check.message', encodeAs: 'Javascript')}";

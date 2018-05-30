@@ -1,10 +1,12 @@
 /******************************************************************************
- *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2018 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 
-package net.hedtech.banner.sspb
+package net.hedtech.banner.css
 import net.hedtech.banner.css.Css
+import net.hedtech.banner.sspb.CommonService
 import org.hibernate.criterion.CriteriaSpecification
+import net.hedtech.banner.sspb.Page
 
 
 class CssExportService {
@@ -34,18 +36,26 @@ class CssExportService {
     }
 
     def show(params) {
+        Map parameter = CommonService.decodeBase64(params)
+        params.putAll(parameter);
         def css
         if (params.id && params.id.matches("[0-9]+")) {
             css = Css.get(params.id )
         } else {
-            css = Css.findByConstantName(params.id?:params.constantName)
+            css = Css.fetchByConstantName(params.id?:params.constantName)
         }
         def cssExport = [:]
-        cssExport = css.properties['constantName', 'css', 'description', 'fileTimestamp']
+        //cssExport = css.properties['constantName', 'css', 'description', 'fileTimestamp']
+        cssExport.constantName = css.constantName
+        cssExport.css = css.css
+        cssExport.description = css.description
+        cssExport.fileTimestamp = css.fileTimestamp
         cssExport
     }
 
     def list( params) {
+        Map parameter = CommonService.decodeBase64(params)
+        params.putAll(parameter);
         def max = Math.min( params.max ? params.max.toInteger() : 10000,  10000)
         def offset = params.offset ?: 0
         def sortBy = []

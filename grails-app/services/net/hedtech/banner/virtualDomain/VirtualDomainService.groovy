@@ -1,8 +1,9 @@
 /******************************************************************************
- *  Copyright 2016 Ellucian Company L.P. and its affiliates.                  *
+ *  Copyright 2016-2018 Ellucian Company L.P. and its affiliates.                  *
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
+import net.hedtech.banner.sspb.CommonService
 import org.hibernate.criterion.CriteriaSpecification
 
 class VirtualDomainService {
@@ -10,6 +11,8 @@ class VirtualDomainService {
     static transactional = false //Getting error connection closed without this
 
     def list(Map params) {
+        Map parameter = CommonService.decodeBase64(params)
+        params.putAll(parameter);
         log.trace "VirtualDomainService.list invoked with params $params"
         def max = Math.min( params.max ? params.max.toInteger() : 10000,  10000)
         def offset = params.offset ?: 0
@@ -35,6 +38,8 @@ class VirtualDomainService {
     }
 
     def show(Map params) {
+        Map parameter = CommonService.decodeBase64(params)
+        params.putAll(parameter);
         log.trace "VirtualDomainService.show invoked"
         def result
         if (params.serviceName) {

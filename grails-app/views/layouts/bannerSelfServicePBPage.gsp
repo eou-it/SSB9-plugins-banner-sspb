@@ -1,5 +1,5 @@
 <%--
-Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2017 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="net.hedtech.banner.sspb.PBUser;" contentType="text/html;charset=UTF-8" %>
@@ -12,6 +12,7 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
         <script>
             var extensibilityInfo =
                     ${raw(net.hedtech.extensibility.InfoService.getJSON(controllerName, resource(plugin:'web-app-extensibility', dir:'html')))};
+            window.mepCode='${session.mep}';
         </script>
         <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
             <r:require modules="pageBuilderRTL"/>

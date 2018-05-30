@@ -9,6 +9,6 @@
     def onClickAt=""" ng-click="\$parent.${thiz.parent.name}DS.setCurrentRecord(row.entity);$onClickCustom" """
 %>
 <span name="$name" class="pb-${thiz.parent.type} pb-$type" ng-class="${name}_${thiz.STYLE_ATTR}"
-      style="background-color:transparent; border:0; width: 100%; height:{{rowHeight}}px" $onClickAt>
+      style="background-color:transparent; border:0; width: 100%; height:{{rowHeight}}px" $onClickAt $modelAt>
     $content
 </span>

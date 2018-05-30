@@ -13,7 +13,7 @@
             {
                 "componentType":["page"],
                 "requiredAttributes":[],
-                "optionalAttributes":["title", "label", "style", "importCSS", "spareComponents"],
+                "optionalAttributes":["title", "label", "style", "importCSS", "spareComponents", "objectName", "pageURL"],
                 "ignoredAttributes":["scriptingLanguage"],
                 "requiredChildren":[],
                 "optionalChildren":["flow", "form", "block", "grid", "htable", "detail",  "select", "radio", "list", "data", "resource", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button"]
@@ -167,9 +167,9 @@
             }
         ],
         "sourceRenderDefinitions" : [
-            {"AttributeType":[  "title", "label", "style", "importCSS", "submitLabel", "model", "placeholder", "labelKey", "valueKey", "sourceModel",
+            {"AttributeType":[  "title", "label", "style", "objectName", "importCSS", "submitLabel", "model", "placeholder", "labelKey", "valueKey", "sourceModel",
                 "booleanTrueValue", "booleanFalseValue", "imageUrl", "url", "labelStyle", "valueStyle","newRecordLabel","deleteRecordLabel","saveDataLabel",
-                "refreshDataLabel" ], "renderProperty":{"inputType":"text"}},
+                "refreshDataLabel" ,"pageURL"], "renderProperty":{"inputType":"text"}},
             {"AttributeType":["type"], "renderProperty":{"inputType":"select"}},
             {"AttributeType":["submit", "value", "onUpdate", "onBlur", "onFocus", "onClick", "onLoad", "onSave", "onSaveSuccess", "onError", "sequence", "description", "documentation"], "renderProperty":{"inputType":"textarea"}},
             {"AttributeType":["validation"],"renderProperty":{"inputType":"map"}},

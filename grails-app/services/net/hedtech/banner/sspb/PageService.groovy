@@ -1,13 +1,16 @@
 /*******************************************************************************
- Copyright 2015 Ellucian Company L.P. and its affiliates.
+ Copyright 2018 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 
 package net.hedtech.banner.sspb
+
+import org.springframework.security.core.context.SecurityContextHolder
 
 class PageService {
     def compileService
     def groovyPagesTemplateEngine
     def pageSecurityService
+    def springSecurityService
 
     def get(String constantName) {
         Page.findByConstantName(constantName)
@@ -18,7 +21,8 @@ class PageService {
     }
 
     def list(Map params) {
-
+        Map parameter = CommonService.decodeBase64(params)
+        params.putAll(parameter);
         log.trace "PageService.list invoked with params $params"
         def result
 
@@ -61,6 +65,8 @@ class PageService {
 
 
     def show(Map params) {
+        Map parameter = CommonService.decodeBase64(params)
+        params.putAll(parameter);
         log.trace "PageService.show invoked"
         def page = Page.find { constantName == params.id }
         log.trace "PageService.show returning ${page}"
@@ -182,7 +188,8 @@ class PageService {
                 throw new RuntimeException( message(code:"sspb.page.visualComposer.deletion.failed.message",args: [page.extensions.constantName.join(", ")]))
             }
             else {
-                page.delete(failOnError:true)
+                page.delete(failOnError:true, flush: true)
+                springSecurityService.clearCachedRequestmaps()
             }
         }
     }
@@ -193,5 +200,4 @@ class PageService {
         valid &= name ==~ /[a-zA-Z]+[a-zA-Z0-9_\-\.]*/
         valid
     }
-
  }

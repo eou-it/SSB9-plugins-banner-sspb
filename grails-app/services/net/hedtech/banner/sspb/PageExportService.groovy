@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2018 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
@@ -32,6 +32,8 @@ class PageExportService {
     }
 
     def show(params) {
+        Map parameter = CommonService.decodeBase64(params)
+        params.putAll(parameter);
         def pageExport
         def page
         if (params.id && params.id.matches("[0-9]+")) {
@@ -46,6 +48,8 @@ class PageExportService {
     }
 
     def list( params) {
+        Map parameter = CommonService.decodeBase64(params)
+        params.putAll(parameter);
         def max = Math.min( params.max ? params.max.toInteger() : 10000,  10000)
         def offset = params.offset ?: 0
         def sortBy = []

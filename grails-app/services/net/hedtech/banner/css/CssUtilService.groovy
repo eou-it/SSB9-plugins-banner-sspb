@@ -1,17 +1,17 @@
 /******************************************************************************
- *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2017 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
-package net.hedtech.banner.sspb
+package net.hedtech.banner.css
 
 import grails.converters.JSON
 import groovy.util.logging.Log4j
-import net.hedtech.banner.css.Css
-
+import net.hedtech.banner.tools.PBUtilServiceBase
 @Log4j
-class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
+class CssUtilService extends PBUtilServiceBase {
 
+    def cssService
 
-    static Date getTimestamp(String oName, String path=pbConfig.locations.css ) {
+    static Date getTimestamp(String oName, String path=PBUtilServiceBase.pbConfig.locations.css ) {
         def file = new File( "$path/${oName}.json")
         Date result
         if (file.exists())
@@ -20,13 +20,13 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     //Export one or more virtual domains to the configured directory
-    void exportToFile(String constantName, String pageLike=null, String path=pbConfig.locations.css, Boolean skipDuplicates=false ) {
+    void exportToFile(String constantName, String pageLike=null, String path=PBUtilServiceBase.pbConfig.locations.css, Boolean skipDuplicates=false ) {
         def usedByPageLike
         if (pageLike) {
             def es = new CssExportService()
             usedByPageLike = es.cssForPages(pageLike)
         }
-        Css.findAllByConstantNameLike(constantName).each { css ->
+        Css.fetchAllByConstantNameLike(constantName).each { css ->
             if (usedByPageLike==null || usedByPageLike.contains(css.constantName)) {
                 if (skipDuplicates && css.constantName.endsWith(".bak"))
                     log.info message(code:"sspb.css.export.skipDuplicate.message", args:[css.constantName])
@@ -35,7 +35,10 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                     JSON.use("deep") {
                         def cssStripped = new Css()
                         //nullify data that is derivable or not applicable in other environment
-                        cssStripped.properties['constantName', 'css', 'description'] = css.properties
+                        //cssStripped.properties['constantName', 'css', 'description'] = css.properties
+                        cssStripped.constantName = css.constantName
+                        cssStripped.css = css.css
+                        cssStripped.description = css.description
                         cssStripped.fileTimestamp = new Date()
                         def json = new JSON(cssStripped)
                         def jsonString = json.toString(true)
@@ -47,7 +50,7 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         }
     }
 
-    void importInitially(mode = loadSkipExisting) {
+    void importInitially(mode = PBUtilServiceBase.loadSkipExisting) {
         def fileNames = CssUtilService.class.classLoader.getResourceAsStream("data/install/csss.txt").text
         def count=0
         bootMsg "Checking/loading system required css files."
@@ -60,7 +63,7 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     //Import/Install Utility
-    int importAllFromDir(String path=pbConfig.locations.css, mode=loadIfNew, ArrayList names = null) {
+    int importAllFromDir(String path=PBUtilServiceBase.pbConfig.locations.css, mode=PBUtilServiceBase.loadIfNew, ArrayList names = null) {
         bootMsg "Importing updated or new css files from $path."
         def count=0
         try {
@@ -87,7 +90,7 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     //Load a css and save it
     int load( name, stream, file, mode ) {
         def cssName = name?name:file.name.substring(0,file.name.lastIndexOf(".json"))
-        def css = Css.findByConstantName(cssName)
+        def css = Css.fetchByConstantName(cssName)
         def result=0
         def jsonString
         if (file)
@@ -114,11 +117,12 @@ class CssUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 }
             }
             if (doLoad) {
-                css.properties['css', 'description' /*, 'fileTimestamp'*/] = json
+                css.css = json.css
+                css.description = json.description
                 css.fileTimestamp = json2date(json.fileTimestamp)
                 if (file)
                     css.fileTimestamp = new Date(file.lastModified())
-                css = saveObject(css)
+                css = cssService.create(css)
                 if (file && css && !css.hasErrors()) {
                     file.renameTo(file.getCanonicalPath() + '.' + nowAsIsoInFileName() + ".imp")
                 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2017 Ellucian Company L.P. and its affiliates.
+ Copyright 2018 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
@@ -8,7 +8,7 @@ import groovy.transform.*
 import groovy.util.logging.Log4j
 import net.hedtech.banner.sspb.PBUser
 import java.sql.SQLException
-
+import net.hedtech.banner.sspb.Page
 
 @Log4j
 class VirtualDomainSqlService {
@@ -194,6 +194,15 @@ class VirtualDomainSqlService {
                                where rownum <= :offset+:max
                          )
                          where row_number >= :offset+1 """
+            if(vd.serviceName == 'pbadmWebTailorRoles') {
+                if(parameters.page_id) {
+                    def pageInstance = Page.findById(parameters.page_id)
+                    def pageModel = pageInstance.getMergedModelMap()
+                    if (pageModel.objectName) {
+                        parameters.put("object_name", pageModel.objectName)
+                    }
+                }
+            }
             rows = sql.rows(statement,parameters,metaData)
             rows = idEncodeRows(rows)
             rows = handleClobRows(rows)
@@ -399,10 +408,10 @@ class VirtualDomainSqlService {
         def foundClob=false
         for ( row in rows )  {
             for (col in row ) {
-                if (col.value.getClass().toString().endsWith("CLOB"))  {
-                    String s=getStringValue(col.value)
-                    col.value=s
-                    foundClob=true
+                if (col.value.getClass().getName().endsWith("CLOB")) {
+                    String s = getStringValue(col.value)
+                    col.value = s
+                    foundClob = true
                 }
             }
             if (!foundClob)

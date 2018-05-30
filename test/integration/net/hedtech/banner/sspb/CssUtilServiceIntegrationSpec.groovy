@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2018 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
@@ -42,8 +42,11 @@ class CssUtilServiceIntegrationSpec extends IntegrationSpec {
         if(cssInstance) {
             isPersisted = true
         }
+        int hashcode = cssInstance.hashCode()
         then:
         isPersisted ==  true
+        cssInstance.equals(cssInstance)
+        hashcode!=null
 
     }
 }

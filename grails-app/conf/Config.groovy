@@ -1,7 +1,9 @@
 /*******************************************************************************
- Copyright 2017 Ellucian Company L.P. and its affiliates.
+ Copyright 2017-2018 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 
+
+import grails.util.Holders
 import net.hedtech.banner.configuration.ApplicationConfigurationUtils as ConfigFinder
 import grails.plugin.springsecurity.SecurityConfigType
 
@@ -152,9 +154,16 @@ grails.plugin.springsecurity.useRequestMapDomainClass = false
 //        '/api/**': 'authenticationProcessingFilter,basicAuthenticationFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,basicExceptionTranslationFilter,filterInvocationInterceptor',
 //        '/**': 'securityContextPersistenceFilter,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,exceptionTranslationFilter,filterInvocationInterceptor'
 //]
-
-grails.plugin.springsecurity.securityConfigType = SecurityConfigType.InterceptUrlMap
+// User RequestMap to only EXTZ App, since other app might need SS config changes.
+    String appId = Holders?.grailsApplication?.metadata?.get('app.appId')
+    if(appId && "EXTZ".equals(appId)){
+        grails.plugin.springsecurity.securityConfigType = SecurityConfigType.Requestmap //SecurityConfigType.Requestmap
+        grails.plugin.springsecurity.requestMap.className = 'net.hedtech.banner.sspb.Requestmap'
+    }else{
+        grails.plugin.springsecurity.securityConfigType = SecurityConfigType.InterceptUrlMap
+    }
 //TODO: evaluate if it makes sense to use grails.plugin.springsecurity.securityConfigType = "Requestmap"
+
 // This allows dynamic configuration of spring security as we need in page builder (now the security is done 'by hand' in the controller).
 //see http://blog.springsource.com/2010/08/11/simplified-spring-security-with-grails/
 
