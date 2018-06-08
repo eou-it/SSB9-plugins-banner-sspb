@@ -101,6 +101,8 @@ class PageService {
     def compileAndSavePage( pageName, pageSource, extendsPage) {
         log.trace "in compileAndSavePage: pageName=$pageName"
         def pageInstance  = Page.findByConstantName(pageName)
+        boolean isUpdated = updateConfigAttr(pageName, pageSource,pageInstance)
+
         def ret
         if ( !validateInput([constantName:pageName])) {
             ret = [statusCode: 1, statusMessage: message(code: "sspb.page.visualcomposer.invalid.name.message")]
@@ -147,6 +149,12 @@ class PageService {
         }
 
         groovyPagesTemplateEngine.clearPageCache() //Make sure that new page gets used
+        if(isUpdated && 0==ret.get("statusCode")){
+            def updMsg= message(code:"sspb.page.visualComposer.role.update")
+            def msg = ret.get("statusMessage")+"\n"+updMsg
+            ret << [statusMessage:msg ]
+            springSecurityService.clearCachedRequestmaps()
+        }
         return ret
     }
 
@@ -199,5 +207,45 @@ class PageService {
         def valid = (name?.size() <= 60)
         valid &= name ==~ /[a-zA-Z]+[a-zA-Z0-9_\-\.]*/
         valid
+    }
+
+
+    def boolean updateConfigAttr(pageName, pageSource,page){
+        def model = new groovy.json.JsonSlurper().parseText(page.modelView)
+        def pageData = new groovy.json.JsonSlurper().parseText(pageSource)
+        def objName = model.get("objectName")
+        def objectName = pageData.get("objectName")
+        if(!objectName && objName){
+            def url = "/customPage/page/${pageName}/**"
+            def rm=Requestmap.findByUrl(url)
+            def configAttributes = rm?.getConfigAttribute()
+            if(configAttributes){
+                String[] roles = configAttributes?.split(",")
+                String cfg=""
+                roles.eachWithIndex { str, i ->
+                    if(!str.contains("ROLE_${objName}")){
+                        cfg+=str
+                        if(i<roles.length-1){
+                            cfg+=","
+                        }
+                    }
+                }
+                if(cfg){
+                    rm.setConfigAttribute(cfg)
+                    rm.save(flush: true, failOnError: true)
+                }else{
+                    rm.delete(flush: true, failOnError: true)
+                }
+                String roleN = "ADMIN-${objName}"
+                page.pageRoles.each { pageRole ->
+                    if(roleN.equals(pageRole.roleName)) {
+                        page.removeFromPageRoles(pageRole)
+                        pageRole.delete()
+                    }
+                }
+                return true
+            }
+        }
+        return false
     }
  }
