@@ -148,7 +148,7 @@
                   }
                ],
                "loadInitially": true,
-               "onSaveSuccess": "var saveAction = \"saved\";\n\nif (response.hasOwnProperty(\"id\") && !_.findWhere($editVirtualDomainRolesDS.data,     {ROLE_NAME: response.ROLE_NAME}))\n  {\n    saveAction = \"deleted\";\n  }\nalert( \"Virtual Domain role \" + response.ROLE_NAME  + ' ' + saveAction,{type:\"success\", flash:true});"
+               "onSaveSuccess": "var saveAction = \"saved\";\n\nif (action == 'D')\n  {\n    saveAction = \"deleted\";\n  }\nalert( \"Virtual Domain role \" + response.ROLE_NAME  + ' ' + saveAction,{type:\"success\", flash:true});"
             }],
             "type": "block"
          }
