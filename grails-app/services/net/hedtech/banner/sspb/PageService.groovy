@@ -211,11 +211,11 @@ class PageService {
 
 
     def boolean updateConfigAttr(pageName, pageSource,page){
-        def model = new groovy.json.JsonSlurper().parseText(page.modelView)
-        def pageData = new groovy.json.JsonSlurper().parseText(pageSource)
-        def objName = model.get("objectName")
-        def objectName = pageData.get("objectName")
-        if(!objectName && objName){
+        def model = page?.modelView?new groovy.json.JsonSlurper().parseText(page.modelView):null
+        def pageData = pageSource?new groovy.json.JsonSlurper().parseText(pageSource):null
+        String objName = model?.get("objectName")?model?.get("objectName"):""
+        String objectName = pageData?.get("objectName")?pageData?.get("objectName"):""
+        if(objName && !objectName.equals(objName)){
             def url = "/customPage/page/${pageName}/**"
             def rm=Requestmap.findByUrl(url)
             def configAttributes = rm?.getConfigAttribute()
