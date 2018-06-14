@@ -103,7 +103,6 @@ class CompileService {
         result = """
                |function (\$scope ,\$locale,\$q,\$templateCache,pbDataSet,pbResource,pbAddCommon) {
                |    \$scope._controllerId = controllerId;
-               |    \$scope._user = user;
                |    \$scope._params = params;
                |    \$scope._contextRoot = rootWebApp;
                |    \$scope._now = new Date();
