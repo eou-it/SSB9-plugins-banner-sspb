@@ -109,7 +109,10 @@ class PageService {
             ret = [statusCode: 1, statusMessage: message(code: "sspb.page.visualcomposer.invalid.name.message")]
         } else if (pageSource) {
             def pageJSON = JSON.parse(pageSource)
-            def duplicateObjects = Page.findAllByModelViewLikeAndConstantNameNotEqual("%\"objectName\": \""+pageJSON.objectName+"\"%", pageJSON.name)
+            def duplicateObjects
+            if(pageJSON.objectName) {
+                duplicateObjects = Page.findAllByModelViewLikeAndConstantNameNotEqual("%\"objectName\": \"" + pageJSON.objectName.trim().toUpperCase() + "\"%", pageJSON.name)
+            }
             if (!duplicateObjects) {
                 if (!(extendsPage instanceof Page)) {
                     // Maps and Json Objects don't compare directly with nulls
