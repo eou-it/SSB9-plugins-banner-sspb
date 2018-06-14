@@ -10,7 +10,7 @@
       }
    ],
    "codePut": null,
-   "fileTimestamp": "2016-06-14T12:27:05Z",
+   "fileTimestamp": "2018-06-14T12:28:05Z",
    "codeDelete": null,
    "codeGet": "select TWTVROLE_CODE code,  TWTVROLE_DESC description \r\nfrom twtvrole\r\nwhere\r\n (:virtual_domain_id is null or\r\n   TWTVROLE_CODE not in \r\n  (select role_name from virtual_domain_role where virtual_domain_id=:virtual_domain_id)\r\n)\r\nunion\r\nselect 'GUEST', '*Guest (no authentication)' from dual \r\nwhere :virtual_domain_id is null or\r\n   'GUEST' not in \r\n  (select role_name from virtual_domain_role where virtual_domain_id=:virtual_domain_id)\r\nunion\r\nselect 'ALLROLES', '*Authenticated Self Service user (with PIDM)' from dual\r\nwhere :virtual_domain_id is null or\r\n   'ALLROLES' not in \r\n  (select role_name from virtual_domain_role where virtual_domain_id=:virtual_domain_id)\r\nunion\r\nselect 'ADMIN-'||gubobjs_name, '*'||gubobjs_desc\r\nfrom gubobjs\r\nwhere (:virtual_domain_id is null or\r\n   gubobjs_name not in (select role_name from virtual_domain_role where virtual_domain_id=:virtual_domain_id)\r\n  ) \r\n and GUBOBJS_SYSI_CODE = 'PB' or gubobjs_name = 'GPBADMN' order by 2",
    "typeOfCode": "S",
