@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ * Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
@@ -29,7 +29,7 @@ class PBUser {
         //avoid direct dependency on BannerUser
         if (userIn?.class?.name?.endsWith('BannerUser')) {
             userIn.authorities.each {
-                if (it.objectName.startsWith('SELFSERVICE')) {
+                if (it.objectName) {
                     authorities << [objectName: it.objectName, roleName: it.roleName]
                 } else if ( grails.util.Holders.config.pageBuilder.adminRoles?.contains(it.toString()) ) {
                     authorities << [objectName: it.objectName, roleName: it.roleName]

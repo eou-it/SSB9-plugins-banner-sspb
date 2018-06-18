@@ -1,5 +1,5 @@
 <%--
-Copyright 2013-2017 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="net.hedtech.banner.sspb.PBUser;" contentType="text/html;charset=UTF-8" %>
@@ -92,7 +92,7 @@ Copyright 2013-2017 Ellucian Company L.P. and its affiliates.
             var rootWebApp = "${createLink(uri: '/')}";
             var resourceBase = "${createLink(uri: '/') + grails.util.Holders.config.sspb.apiPath +'/' }";
             var templatesLocation = "<g:resource plugin="banner-sspb" dir="template" />";
-            var user = ${PBUser.getTrimmed()?.encodeAsJSON()};
+            var user;
             var gridLocale = '${localeBrowserFull.toLowerCase()}';
             var params = ${params?.encodeAsJSON()};
             if (!window.console) {
