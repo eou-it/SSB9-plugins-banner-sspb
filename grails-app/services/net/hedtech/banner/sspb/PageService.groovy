@@ -1,13 +1,17 @@
 /*******************************************************************************
- Copyright 2015 Ellucian Company L.P. and its affiliates.
+ Copyright 2018 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 
 package net.hedtech.banner.sspb
+
+import grails.converters.JSON
+import org.springframework.security.core.context.SecurityContextHolder
 
 class PageService {
     def compileService
     def groovyPagesTemplateEngine
     def pageSecurityService
+    def springSecurityService
 
     def get(String constantName) {
         Page.findByConstantName(constantName)
@@ -18,7 +22,8 @@ class PageService {
     }
 
     def list(Map params) {
-
+        Map parameter = CommonService.decodeBase64(params)
+        params.putAll(parameter);
         log.trace "PageService.list invoked with params $params"
         def result
 
@@ -61,6 +66,8 @@ class PageService {
 
 
     def show(Map params) {
+        Map parameter = CommonService.decodeBase64(params)
+        params.putAll(parameter);
         log.trace "PageService.show invoked"
         def page = Page.find { constantName == params.id }
         log.trace "PageService.show returning ${page}"
@@ -95,52 +102,70 @@ class PageService {
     def compileAndSavePage( pageName, pageSource, extendsPage) {
         log.trace "in compileAndSavePage: pageName=$pageName"
         def pageInstance  = Page.findByConstantName(pageName)
+        boolean isUpdated = updateConfigAttr(pageName, pageSource,pageInstance)
+
         def ret
         if ( !validateInput([constantName:pageName])) {
             ret = [statusCode: 1, statusMessage: message(code: "sspb.page.visualcomposer.invalid.name.message")]
-        } else if (pageSource)  {
-
-            if (!(extendsPage instanceof Page)) {
-                // Maps and Json Objects don't compare directly with nulls
-                extendsPage = extendsPage.equals(null)||extendsPage?.size()==0?null:extendsPage
+        } else if (pageSource) {
+            def pageJSON = JSON.parse(pageSource)
+            def duplicateObjects
+            if(pageJSON.objectName) {
+                duplicateObjects = Page.findAllByModelViewLikeAndConstantNameNotEqual("%\"objectName\": \"" + pageJSON.objectName.trim().toUpperCase() + "\"%", pageJSON.name)
             }
-
-            if (pageInstance) {
-                pageInstance.extendsPage = extendsPage ? Page.findByConstantName(extendsPage.constantName) : null
-            } else {
-                pageInstance = new Page([constantName:pageName, extendsPage:extendsPage])
-            }
-            pageInstance.modelView = pageSource
-            //remove merge Info if page is not extended
-            if (!pageInstance.extendsPage){
-                pageInstance.modelView = Page.modelToString(Page.cleanModelMap(pageInstance.getMergedModelMap()))
-            }
-            ret = compilePage(pageInstance)
-
-            if (ret.statusCode == 0) {
-
-                if (pageInstance.extendsPage) {
-                    pageInstance.modelView = pageInstance.diffModelViewText(pageSource)// save the diff if an extension
-
-                    //Validate the extended model matches the submitted model
-                    if ( !pageInstance.equals(pageSource) ) {
-                        ret.pageValidationResult.errors = PageModelErrors.getError(error: PageModelErrors.MODEL_INVALID_DELTA_ERR).message
-                        ret.statusCode = 8
-                        ret.statusMessage = ""
-                    }
+            if (!duplicateObjects) {
+                if (!(extendsPage instanceof Page)) {
+                    // Maps and Json Objects don't compare directly with nulls
+                    extendsPage = extendsPage.equals(null)||extendsPage?.size()==0?null:extendsPage
                 }
+
+                if (pageInstance) {
+                    pageInstance.extendsPage = extendsPage ? Page.findByConstantName(extendsPage.constantName) : null
+                } else {
+                    pageInstance = new Page([constantName :pageName, extendsPage :extendsPage])
+                }
+                pageInstance.modelView = pageSource
+                //remove merge Info if page is not extended
+                if (!pageInstance.extendsPage ){
+                    pageInstance.modelView = Page.modelToString(Page.cleanModelMap(pageInstance.getMergedModelMap()))
+                }
+                ret = compilePage(pageInstance)
+
                 if (ret.statusCode == 0) {
-                    if (!ret.page.save()) {
-                        ret.page.errors.allErrors.each { ret.statusMessage += it +"\n" }
-                        ret.statusCode = 3
+
+                    if (pageInstance.extendsPage) {
+                        pageInstance.modelView = pageInstance.diffModelViewText(pageSource)// save the diff if an extension
+
+                        //Validate the extended model matches the submitted model
+                        if ( !pageInstance.equals(pageSource) ) {
+                            ret.pageValidationResult.errors = PageModelErrors.getError(error: PageModelErrors.MODEL_INVALID_DELTA_ERR).message
+                            ret.statusCode = 8
+                            ret.statusMessage = ""
+                        }
+                    }
+                    if (ret.statusCode == 0) {
+                        if (!ret.page.save()) {
+                            ret.page.errors.allErrors.each { ret.statusMessage += it +"\n" }
+                            ret.statusCode = 3
+                        }
                     }
                 }
+            } else {
+                ret = [statusCode: 4, statusMessage: ""]
+                ret.pageValidationResult=[:]
+                ret.pageValidationResult.errors = message(code: "sspb.page.visualComposer.object.validation.error", args:[pageJSON.objectName])
             }
         } else {
             ret = [statusCode: 1, statusMessage: message(code: "sspb.page.visualcomposer.no.source.message")]
         }
 
         groovyPagesTemplateEngine.clearPageCache() //Make sure that new page gets used
+        if(isUpdated && 0==ret.get("statusCode")){
+            def updMsg= message(code:"sspb.page.visualComposer.role.update")
+            def msg = ret.get("statusMessage")+"\n"+updMsg
+            ret << [statusMessage:msg ]
+            springSecurityService.clearCachedRequestmaps()
+        }
         return ret
     }
 
@@ -182,7 +207,8 @@ class PageService {
                 throw new RuntimeException( message(code:"sspb.page.visualComposer.deletion.failed.message",args: [page.extensions.constantName.join(", ")]))
             }
             else {
-                page.delete(failOnError:true)
+                page.delete(failOnError:true, flush: true)
+                springSecurityService.clearCachedRequestmaps()
             }
         }
     }
@@ -194,4 +220,43 @@ class PageService {
         valid
     }
 
+
+    def boolean updateConfigAttr(pageName, pageSource,page){
+        def model = page?.modelView?new groovy.json.JsonSlurper().parseText(page.modelView):null
+        def pageData = pageSource?new groovy.json.JsonSlurper().parseText(pageSource):null
+        String objName = model?.get("objectName")?model?.get("objectName"):""
+        String objectName = pageData?.get("objectName")?pageData?.get("objectName"):""
+        if(objName && !objectName.equals(objName)){
+            def url = "/customPage/page/${pageName}/**"
+            def rm=Requestmap.findByUrl(url)
+            def configAttributes = rm?.getConfigAttribute()
+            if(configAttributes){
+                String[] roles = configAttributes?.split(",")
+                String cfg=""
+                roles.eachWithIndex { str, i ->
+                    if(!str.contains("ROLE_${objName}")){
+                        cfg+=str
+                        if(i<roles.length-1){
+                            cfg+=","
+                        }
+                    }
+                }
+                if(cfg){
+                    rm.setConfigAttribute(cfg)
+                    rm.save(flush: true, failOnError: true)
+                }else{
+                    rm.delete(flush: true, failOnError: true)
+                }
+                String roleN = "ADMIN-${objName}"
+                page.pageRoles.each { pageRole ->
+                    if(roleN.equals(pageRole.roleName)) {
+                        page.removeFromPageRoles(pageRole)
+                        pageRole.delete()
+                    }
+                }
+                return true
+            }
+        }
+        return false
+    }
  }

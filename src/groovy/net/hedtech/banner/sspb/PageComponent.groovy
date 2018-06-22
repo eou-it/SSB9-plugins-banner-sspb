@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2017 Ellucian Company L.P. and its affiliates.
+ * Copyright 2018 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 
 package net.hedtech.banner.sspb
@@ -110,6 +110,7 @@ class PageComponent {
     String scriptingLanguage = "JavaScript" // -> page property that specifies the scripting language to use in page model
     String importCSS   // specify what custom stylesheets to import, comma separated list of custom stylesheet names (without the .css extension )
     String label       // -> Items (inputs, display)
+    String objectName
 
     String newRecordLabel        //Grid/HTable/Detail  label
     String deleteRecordLabel     //Grid/HTable/Detail  label
@@ -238,6 +239,7 @@ class PageComponent {
 
     def content ="" //Added for template compile
     def templateName = "" //Added for template compile
+    def pageURL
 
 
     // map the validation key to angular attributes ? use HTML 5 validation instead with form
@@ -1152,7 +1154,25 @@ class PageComponent {
     String componentEnd(String t, int ignoreDepth=0) {
         switch (t) {
             case COMP_TYPE_PAGE:
-                return  "</div>\n</body>\n"
+
+                Page page =Page.findByConstantName(name)
+                def purlContent = ""
+                if(page || pageURL) {
+
+                    def purl=pageURL
+                    if(!purl){
+                        def model = new groovy.json.JsonSlurper().parseText(page.modelView)
+                        purl = model.get("pageURL")
+                    }
+                    purlContent = "<div ng-controller='homePageUrlCtr'>"
+                    if (purl) {
+                        purlContent +=
+                                "<div ng-view></div>\n" +
+                                        "   <input name='pageURL' value='${purl}' id= 'homeURL' hidden='true'/>"
+                    }
+                    purlContent += "</div>"
+                }
+                return  "</div>\n${purlContent}\n</body>\n"
             case COMP_TYPE_FORM:
                 def nextTxt = ""
                 if (root.flowDefs || submit) {

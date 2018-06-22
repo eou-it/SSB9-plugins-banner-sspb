@@ -4,7 +4,7 @@
       "allow": true,
       "roleName": "ADMIN-GPBADMN"
    }],
-   "fileTimestamp": "2016-07-25T12:27:05Z",
+   "fileTimestamp": "2018-06-19T02:25:51Z",
    "modelView": {
       "title": "Associate Roles with a virtual domain",
       "scriptingLanguage": "JavaScript",
@@ -27,7 +27,7 @@
          {
             "staticData": [],
             "name": "webTailorRolesLookup",
-            "resource": "virtualDomains.pbadmWebTailorRoles",
+            "resource": "virtualDomains.pbadmWebAdminRoles",
             "type": "resource"
          },
          {
@@ -148,7 +148,7 @@
                   }
                ],
                "loadInitially": true,
-               "onSaveSuccess": "var saveAction = \"saved\";\n\nif (response.hasOwnProperty(\"id\") && !_.findWhere($editVirtualDomainRolesDS.data,     {ROLE_NAME: response.ROLE_NAME}))\n  {\n    saveAction = \"deleted\";\n  }\nalert( \"Virtual Domain role \" + response.ROLE_NAME  + ' ' + saveAction,{type:\"success\", flash:true});"
+               "onSaveSuccess": "var saveAction = \"saved\";\n\nif (action == 'D')\n  {\n    saveAction = \"deleted\";\n  }\nalert( \"Virtual Domain role \" + response.ROLE_NAME  + ' ' + saveAction,{type:\"success\", flash:true});"
             }],
             "type": "block"
          }

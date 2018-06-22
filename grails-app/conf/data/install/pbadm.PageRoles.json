@@ -4,7 +4,7 @@
       "allow": true,
       "roleName": "ADMIN-GPBADMN"
    }],
-   "fileTimestamp": "2016-07-25T12:27:05Z",
+   "fileTimestamp": "2018-06-19T02:25:51Z",
    "modelView": {
       "title": "Associate Roles with a Page",
       "scriptingLanguage": "JavaScript",
@@ -83,7 +83,7 @@
                      "model": "ROLE_NAME",
                      "placeholder": "Select unique role...",
                      "labelKey": "DESCRIPTION",
-                     "sourceParameters": {},
+                     "sourceParameters":  {"PAGE_ID": "$selectPage"},
                      "label": "Role",
                      "onUpdate": "",
                      "type": "select",

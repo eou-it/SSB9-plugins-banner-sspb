@@ -1,10 +1,11 @@
 /*******************************************************************************
- Copyright 2017 Ellucian Company L.P. and its affiliates.
+ Copyright 2018 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 
 package net.hedtech.banner.css
 
 import net.hedtech.banner.exceptions.ApplicationException
+import net.hedtech.banner.sspb.CommonService
 import org.codehaus.groovy.grails.web.util.WebUtils
 import net.hedtech.banner.service.ServiceBase
 
@@ -47,6 +48,8 @@ class CssService extends ServiceBase {
 
 
     def show(Map params) {
+        Map parameter = CommonService.decodeBase64(params)
+        params.putAll(parameter);
         log.trace "CssService.show invoked"
         def result
         def showResult

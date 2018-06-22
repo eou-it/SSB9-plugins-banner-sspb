@@ -1,9 +1,11 @@
 /******************************************************************************
- *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2018 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
 import groovy.util.logging.Log4j
+import net.hedtech.banner.sspb.CommonService
+import org.apache.commons.codec.binary.Base64
 import org.hibernate.HibernateException
 
 @Log4j
@@ -25,6 +27,8 @@ class VirtualDomainResourceService {
     // Interface for restful API - TODO may choose to put this in a separate service or move to VirtualDomainSqlService
 
     def list(Map params) {
+        Map parameter = CommonService.decodeBase64(params)
+        params.putAll(parameter);
         def queryResult
         def result
         def serviceName = vdName(params)

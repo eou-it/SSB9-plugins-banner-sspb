@@ -1,10 +1,12 @@
 /******************************************************************************
- *  Copyright 2017 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2018 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 
 package net.hedtech.banner.css
 import net.hedtech.banner.css.Css
+import net.hedtech.banner.sspb.CommonService
 import org.hibernate.criterion.CriteriaSpecification
+import net.hedtech.banner.sspb.Page
 
 
 class CssExportService {
@@ -34,6 +36,8 @@ class CssExportService {
     }
 
     def show(params) {
+        Map parameter = CommonService.decodeBase64(params)
+        params.putAll(parameter);
         def css
         if (params.id && params.id.matches("[0-9]+")) {
             css = Css.get(params.id )
@@ -50,6 +54,8 @@ class CssExportService {
     }
 
     def list( params) {
+        Map parameter = CommonService.decodeBase64(params)
+        params.putAll(parameter);
         def max = Math.min( params.max ? params.max.toInteger() : 10000,  10000)
         def offset = params.offset ?: 0
         def sortBy = []
