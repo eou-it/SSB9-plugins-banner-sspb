@@ -14,22 +14,17 @@ import spock.lang.Specification
  */
 @TestFor(CustomPageController)
 class CustomPageControllerSpec extends Specification {
-    CustomPageController customPageController
-
-    def setup() {
-        customPageController = new CustomPageController()
-    }
 
     void "test page"() {
         given:
         def parm1 = [id: "menu"]
 
         when:
-        customPageController.request.parameters = parm1
-        customPageController.page()
+        controller.request.parameters = parm1
+        controller.page()
 
         then:
-        customPageController.response.status == 200
+        controller.response.status == 200
     }
 
     void "test custom page with url"() {
@@ -37,11 +32,11 @@ class CustomPageControllerSpec extends Specification {
         def param2 = [id: "pbadm.ssoauth"]
 
         when:
-        customPageController.request.parameters = param2
-        customPageController.page()
+        controller.request.parameters = param2
+        controller.page()
 
         then:
-        customPageController.response.redirectedUrl == "/themeEditor"
+        controller.response.redirectedUrl == "/themeEditor"
     }
 
     void "test PB enabled"() {
@@ -50,11 +45,11 @@ class CustomPageControllerSpec extends Specification {
         Holders.config.pageBuilder.enabled=true
 
         when:
-        customPageController.request.parameters = result
-        customPageController.page()
+        controller.request.parameters = result
+        controller.page()
 
         then:
-        customPageController.response.status == 200
+        controller.response.status == 200
     }
 
     void "test get HTML"() {
@@ -62,11 +57,11 @@ class CustomPageControllerSpec extends Specification {
         def parm1 = [id: "menu"]
 
         when:
-        customPageController.request.parameters = parm1
-        customPageController.getHTML()
+        controller.request.parameters = parm1
+        controller.getHTML()
 
         then:
-        customPageController.response.status == 404
+        controller.response.status == 404
 
     }
 }
