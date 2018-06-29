@@ -45,11 +45,22 @@ class CustomPageControllerSpec extends Specification {
         Holders.config.pageBuilder.enabled=true
 
         when:
-        controller.request.parameters = result
         controller.page()
 
         then:
         controller.response.status == 200
+    }
+
+    void "test PB notEnabled"(){
+        given:
+        def result1 = Holders.config.pageBuilder?.enabled
+        Holders.config.pageBuilder.enabled = false
+
+        when:
+        controller.page()
+
+        then:
+        controller.response.status == 302
     }
 
     void "test get HTML"() {
