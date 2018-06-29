@@ -4,6 +4,7 @@
 
 package net.hedtech.banner.sspb
 
+import grails.converters.JSON
 import org.springframework.security.core.context.SecurityContextHolder
 
 class PageService {
@@ -106,43 +107,53 @@ class PageService {
         def ret
         if ( !validateInput([constantName:pageName])) {
             ret = [statusCode: 1, statusMessage: message(code: "sspb.page.visualcomposer.invalid.name.message")]
-        } else if (pageSource)  {
-
-            if (!(extendsPage instanceof Page)) {
-                // Maps and Json Objects don't compare directly with nulls
-                extendsPage = extendsPage.equals(null)||extendsPage?.size()==0?null:extendsPage
+        } else if (pageSource) {
+            def pageJSON = JSON.parse(pageSource)
+            def duplicateObjects
+            if(pageJSON.objectName) {
+                duplicateObjects = Page.findAllByModelViewLikeAndConstantNameNotEqual("%\"objectName\": \"" + pageJSON.objectName.trim().toUpperCase() + "\"%", pageJSON.name)
             }
-
-            if (pageInstance) {
-                pageInstance.extendsPage = extendsPage ? Page.findByConstantName(extendsPage.constantName) : null
-            } else {
-                pageInstance = new Page([constantName:pageName, extendsPage:extendsPage])
-            }
-            pageInstance.modelView = pageSource
-            //remove merge Info if page is not extended
-            if (!pageInstance.extendsPage){
-                pageInstance.modelView = Page.modelToString(Page.cleanModelMap(pageInstance.getMergedModelMap()))
-            }
-            ret = compilePage(pageInstance)
-
-            if (ret.statusCode == 0) {
-
-                if (pageInstance.extendsPage) {
-                    pageInstance.modelView = pageInstance.diffModelViewText(pageSource)// save the diff if an extension
-
-                    //Validate the extended model matches the submitted model
-                    if ( !pageInstance.equals(pageSource) ) {
-                        ret.pageValidationResult.errors = PageModelErrors.getError(error: PageModelErrors.MODEL_INVALID_DELTA_ERR).message
-                        ret.statusCode = 8
-                        ret.statusMessage = ""
-                    }
+            if (!duplicateObjects) {
+                if (!(extendsPage instanceof Page)) {
+                    // Maps and Json Objects don't compare directly with nulls
+                    extendsPage = extendsPage.equals(null)||extendsPage?.size()==0?null:extendsPage
                 }
+
+                if (pageInstance) {
+                    pageInstance.extendsPage = extendsPage ? Page.findByConstantName(extendsPage.constantName) : null
+                } else {
+                    pageInstance = new Page([constantName :pageName, extendsPage :extendsPage])
+                }
+                pageInstance.modelView = pageSource
+                //remove merge Info if page is not extended
+                if (!pageInstance.extendsPage ){
+                    pageInstance.modelView = Page.modelToString(Page.cleanModelMap(pageInstance.getMergedModelMap()))
+                }
+                ret = compilePage(pageInstance)
+
                 if (ret.statusCode == 0) {
-                    if (!ret.page.save()) {
-                        ret.page.errors.allErrors.each { ret.statusMessage += it +"\n" }
-                        ret.statusCode = 3
+
+                    if (pageInstance.extendsPage) {
+                        pageInstance.modelView = pageInstance.diffModelViewText(pageSource)// save the diff if an extension
+
+                        //Validate the extended model matches the submitted model
+                        if ( !pageInstance.equals(pageSource) ) {
+                            ret.pageValidationResult.errors = PageModelErrors.getError(error: PageModelErrors.MODEL_INVALID_DELTA_ERR).message
+                            ret.statusCode = 8
+                            ret.statusMessage = ""
+                        }
+                    }
+                    if (ret.statusCode == 0) {
+                        if (!ret.page.save()) {
+                            ret.page.errors.allErrors.each { ret.statusMessage += it +"\n" }
+                            ret.statusCode = 3
+                        }
                     }
                 }
+            } else {
+                ret = [statusCode: 4, statusMessage: ""]
+                ret.pageValidationResult=[:]
+                ret.pageValidationResult.errors = message(code: "sspb.page.visualComposer.object.validation.error", args:[pageJSON.objectName])
             }
         } else {
             ret = [statusCode: 1, statusMessage: message(code: "sspb.page.visualcomposer.no.source.message")]

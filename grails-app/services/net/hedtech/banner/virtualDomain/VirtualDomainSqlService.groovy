@@ -68,20 +68,28 @@ class VirtualDomainSqlService {
         def result=[get: false, put: false, post: false, delete: false, debug: false ]
         String debugRoles = grailsApplication.config.pageBuilder.debugRoles?:""
         log.debug "Determining access right for ${vd.serviceName}"
+        //        def adminRolesObjects = userRoles.findAll {!it.objectName.startsWith('SELFSERVICE')}
+//        adminRolesObjects.each {
+//            grailsApplication.config.formControllerMap.put(vd.serviceName, it.objectName)
+//        }
         for (it in userRoles) {
             //objectName is like SELFSERVICE-ALUMNI
             //role is BAN_DEFAULT_M
             //strip SELFSERVICE-
-
+            def adminDBRole = it.roleName
             def r
             def i = it.objectName.indexOf("-")
             r = i>-1?it.objectName.substring(i+1):'ADMIN-'+it.objectName
             if (r) {
                 vd.virtualDomainRoles.findAll { vr -> vr.roleName == r }.each {
-                    result.get |= it.allowGet
-                    result.put |= it.allowPut
-                    result.post |= it.allowPost
-                    result.delete |= it.allowDelete
+                    if(adminDBRole == "BAN_DEFAULT_Q") {
+                        result.get |= it.allowGet
+                    } else {
+                        result.get |= it.allowGet
+                        result.put |= it.allowPut
+                        result.post |= it.allowPost
+                        result.delete |= it.allowDelete
+                    }
                 }
                 result.debug |= debugRoles.indexOf("ROLE_${it.objectName}_${it.roleName}") > -1
             }
