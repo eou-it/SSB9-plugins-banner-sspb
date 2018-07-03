@@ -41,7 +41,6 @@ class CustomPageControllerSpec extends Specification {
 
     void "test PB enabled"() {
         given:
-        def result = Holders.config.pageBuilder?.enabled
         Holders.config.pageBuilder.enabled=true
 
         when:
@@ -53,7 +52,6 @@ class CustomPageControllerSpec extends Specification {
 
     void "test PB notEnabled"(){
         given:
-        def result1 = Holders.config.pageBuilder?.enabled
         Holders.config.pageBuilder.enabled = false
 
         when:
