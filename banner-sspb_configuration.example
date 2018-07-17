@@ -183,8 +183,8 @@ grails.plugin.springsecurity.saml.keyManager.defaultKey = 'extensibility'
 grails.plugin.springsecurity.saml.keyManager.storeFile = 'classpath:security/bekeystore.jks'
 grails.plugin.springsecurity.saml.keyManager.storePass = 'password'
 grails.plugin.springsecurity.saml.keyManager.passwords = [ 'extensibility': 'password' ]
-grails.plugin.springsecurity.saml.metadata.sp.file = 'security/banner-BannerExtensibility-sp.xml'
-grails.plugin.springsecurity.saml.metadata.providers = [adfs: 'security/banner-BannerExtensibility-idp.xml']
+grails.plugin.springsecurity.saml.metadata.sp.file = 'security/banner-BannerExtensibility-saml_sp.xml'
+grails.plugin.springsecurity.saml.metadata.providers = [adfs: 'security/banner-BannerExtensibility-saml_idp.xml']
 grails.plugin.springsecurity.saml.metadata.defaultIdp = 'adfs'
 grails.plugin.springsecurity.saml.metadata.sp.defaults = [
     local: true,
