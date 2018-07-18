@@ -3,6 +3,7 @@
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
+import grails.util.Holders
 import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
@@ -52,8 +53,14 @@ class PBUser {
     //Dont include data that should not be exposed
     static def getTrimmed() {
         def user = PBUser.get()
-        [authenticated:  user.authenticated, pidm: user.pidm?0:user.pidm,
-         loginName: user.loginName, fullName: user.fullName, authorities: user.authorities]
+        def userInfo =
+                [authenticated:  user.authenticated,
+                 loginName: user.loginName, fullName: user.fullName ]
+        boolean isEnabled = Holders.config.userDevelopmentRole
+        if(isEnabled){
+            userInfo<<[authorities: user.authorities, pidm: user.pidm?0:user.pidm]
+        }
+        return userInfo
     }
 
 }
