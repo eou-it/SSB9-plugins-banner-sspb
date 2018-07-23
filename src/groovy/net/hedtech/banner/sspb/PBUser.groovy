@@ -56,9 +56,9 @@ class PBUser {
         def userInfo =
                 [authenticated:  user.authenticated,
                  loginName: user.loginName, fullName: user.fullName ]
-        boolean isEnabled = Holders.config.userDevelopmentRole
+        boolean isEnabled = Holders.config?.pageBuilder?.development?.authorities?.enabled
         if(isEnabled){
-            userInfo<<[authorities: user.authorities, pidm: user.pidm?0:user.pidm]
+            userInfo<<[authorities: user.authorities]
         }
         return userInfo
     }
