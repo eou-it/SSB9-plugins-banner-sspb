@@ -92,7 +92,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
             var rootWebApp = "${createLink(uri: '/')}";
             var resourceBase = "${createLink(uri: '/') + grails.util.Holders.config.sspb.apiPath +'/' }";
             var templatesLocation = "<g:resource plugin="banner-sspb" dir="template" />";
-            var user;
+            var user = ${PBUser.getTrimmed()?.encodeAsJSON()};
             var gridLocale = '${localeBrowserFull.toLowerCase()}';
             var params = ${params?.encodeAsJSON()};
             if (!window.console) {
