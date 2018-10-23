@@ -7,7 +7,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 <%@ page import="org.springframework.context.i18n.LocaleContextHolder" %>
 
 <!DOCTYPE html>
-<html ng-app="BannerOnAngular" lang="${message(code: 'default.language.locale')}" dir="${message(code:'default.language.direction')}">
+<html lang="${message(code: 'default.language.locale')}" dir="${message(code:'default.language.direction')}">
     <head>
         <script>
             var extensibilityInfo =
@@ -45,6 +45,9 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         <meta name="hideSSBHeaderComps" content="${session?.hideSSBHeaderComps?.trim()}"/>
         <meta name="menuEndPoint" content="${request.contextPath}/ssb/menu"/>
         <meta name="menuBaseURL" content="${request.contextPath}/ssb"/>
+        <g:set var="aboutServiceUrl" value="${net.hedtech.banner.controllers.ControllerUtils.aboutServiceUrl()}" />
+        <meta name="aboutUrl" content="${!aboutServiceUrl ? '' : aboutServiceUrl}"/>
+        <meta name="aboutUrlContextPath" content="${request.contextPath}/ssb"/>
 
 
         <meta name="headerAttributes" content=""/>
@@ -110,6 +113,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         <g:theme />
     </head>
     <body>
+        <div ng-app="BannerOnAngular">
         <div id="splash"></div>
         <div id="spinner" class="spinner spinner-img" style="display:none;">
 
@@ -124,7 +128,6 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
                                         locale: localeBrowserFull, html: '<script src="{resource}" ></script>' )}
         ${LocaleResource.importExisting(plugin:'banner-sspb', dir: 'BannerXE/lib/angular/i18n', file: 'angular-locale_{locale}.js',
                                         locale: localeBrowserFull.toLowerCase(), html: '<script src="{resource}" ></script>' )}
-
 
 
         <script type="text/javascript">
@@ -148,5 +151,12 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
                 pageLabel:                 '${message(code:'nggrid.pageLabel'                , encodeAs: 'JavaScript')}'
             };
         </script>
+        </div>
+        <div id="dialogAppDiv"></div>
+        <g:if test="${grails.util.Holders.config.locale_userPreferenceEnable}">
+            <g:render template="/layouts/userPreference" plugin="banner-ui-ss"/>
+        </g:if>
+        <g:render template="/layouts/bannershortcuts" plugin="banner-ui-ss"/>
+
     </body>
 </html>

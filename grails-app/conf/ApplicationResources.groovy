@@ -4,11 +4,34 @@ Copyright 2009-2016 Ellucian Company L.P. and its affiliates.
 
 modules = {
     'angular' {
-        resource url:[plugin: 'banner-ui-ss', dir: 'js/angular/', file: 'angular.js']
-        resource url:[plugin: 'banner-ui-ss', dir: 'js/angular/', file: 'angular-resource.js']
-        resource url:[plugin: 'banner-ui-ss', dir: 'js/angular/', file: 'angular-sanitize.min.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular/angular.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular/load-angular-locale.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular/angular-resource.min.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular/angular-route.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular/angular-sanitize.min.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular/angular-animate.min.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular/angular-ui-router.min.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular/angular-messages.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular/angular-translate.min.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular/ui-bootstrap-tpls.min.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular/lrInfiniteScroll.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/moment.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular/angular-common.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular/angular-dateparser.min.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular-components/locale-numeric-input/custom-number-input.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular-components/locale-numeric-input/directives/currency-directive.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular-components/locale-numeric-input/directives/decimal-directive.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular-components/locale-numeric-input/directives/percent-directive.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular-components/locale-numeric-input/directives/only-number.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'css/custom-number-input/custom-number-input.css'],     attrs:[media:'screen, projection']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular-components/locale-numeric-input/services/readonly-service.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular-components/date-picker/directives/date-picker-directive.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular-components/i18n/i18n-filter.js']
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular/hotkeys.js']
+        resource url:[plugin: 'banner-ui-ss', file: 'js/shortcuts/bannershortcuts.js']
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular', file: "angular-messages.js"]
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular', file: "angular-translate.js"]
+
     }
 
     'pageBuilderDev' {
@@ -18,6 +41,7 @@ modules = {
         // modal dialog
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/angular-ui', file: "ui-bootstrap-tpls-0.3.0.js"]
         resource url:[plugin: 'banner-sspb', dir: 'js', file: "pbDirectives.js"]
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular/hotkeys.js']
     }
 
     'pageBuilder' {
@@ -40,6 +64,10 @@ modules = {
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/jquery', file:  'jquery-ui-1.8.24.custom.js'] , disposition: 'head'
         resource url:[plugin: 'banner-ui-ss', file: 'js/menu/tools-menu.js']
         resource url: [plugin: 'web-app-extensibility', file: 'js/extensibility-angular/xe-angular.js']
+        resource url:[plugin: 'banner-ui-ss', file: 'css/shortcuts/bannershortcuts.css', attrs:[media:'screen, projection']]
+        resource url: [plugin: 'banner-ui-ss', file: 'css/preference/userpreference.css', attrs: [media: 'screen, projection']]
+        resource url:[plugin: 'banner-ui-ss',file: 'js/angular/hotkeys.js']
+        resource url: [plugin: 'banner-ui-ss', file: 'js/about/about.js']
     }
 
     'pageBuilderLTR' {
@@ -51,9 +79,14 @@ modules = {
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'ng-grid.css']
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'angular-ui.css']
         resource url:[plugin: 'banner-ui-ss', dir: 'bootstrap/css', file: 'bootstrap.css']
-        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/xe-components/css', file: "xe-ui-components.min.css"]
+        resource url: [plugin: 'banner-ui-ss', file: 'js/preference/userpreference.js']
+        resource url: [plugin: 'banner-ui-ss', file: 'css/preference/userpreference.css', attrs: [media: 'screen, projection']]
+        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/xe-components/css', file: "xe-ui-components.css"]
         resource url:[plugin: 'banner-sspb', dir: 'css', file: 'main.css']
         resource url:[plugin: 'banner-sspb', dir: 'css', file: 'pbDefault.css']
+        resource url:[plugin: 'banner-ui-ss', file: 'css/shortcuts/bannershortcuts.css', attrs:[media:'screen, projection']]
+        resource url:[plugin: 'banner-ui-ss', file: 'js/select2/select2.css'],           attrs:[media:'screen, projection']
+        resource url: [plugin: 'banner-ui-ss', file: 'js/about/about.js']
     }
 
     'pageBuilderRTL' {
@@ -68,6 +101,12 @@ modules = {
         resource url:[plugin: 'banner-sspb', file: 'css/banner-sspb-rtl-patch.css']
         resource url:[plugin: 'banner-sspb', dir: 'css', file: 'main-rtl.css']
         resource url:[plugin: 'banner-sspb', dir: 'css', file: 'pbDefault-rtl.css']
+        resource url: [plugin: 'banner-ui-ss', file: 'js/preference/userpreference.js']
+        resource url: [plugin: 'banner-ui-ss', file: 'css/shortcuts/bannershortcuts-rtl.css', attrs: [media: 'screen, projection']]
+        resource url: [plugin: 'banner-ui-ss', file: 'css/preference/userpreference-rtl.css', attrs: [media: 'screen, projection']]
+        resource url: [plugin: 'banner-ui-ss', file: 'css/preference/userpreference-rtl-patch.css', attrs: [media: 'screen, projection']]
+        resource url:[plugin: 'banner-ui-ss', file: 'js/select2/select2-rtl.css'],           attrs:[media:'screen, projection']
+        resource url: [plugin: 'banner-ui-ss', file: 'js/about/about.js']
     }
 
     // A reduced set of dependencies compared to the resources in banner-ui-ss
