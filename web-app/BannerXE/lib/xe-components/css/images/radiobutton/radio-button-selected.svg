@@ -6,7 +6,7 @@
     <defs></defs>
     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
         <g id="Rectangle-38-+-Shape-2" sketch:type="MSLayerGroup">
-            <ellipse id="Oval-120" fill="#1C8445" sketch:type="MSShapeGroup" cx="10" cy="10" rx="10" ry="10"></ellipse>
+            <ellipse id="Oval-120" fill="#026BC8" stroke="#81C8FF" stroke-width="1" sketch:type="MSShapeGroup" cx="10" cy="10" rx="10" ry="10"></ellipse>
             <circle id="Oval-123" fill="#FFFFFF" sketch:type="MSShapeGroup" cx="10" cy="10" r="4"></circle>
         </g>
     </g>

@@ -11,7 +11,7 @@
                     <g id="Mobile-Portrait">
                         <g id="Check-box-+-Checkbox-default-+-Checkbox-selected" transform="translate(0.000000, 0.500000)">
                             <g id="Checkbox-default" transform="translate(0.977444, 0.000000)">
-                                <rect id="Rectangle-37" x="0" y="0" width="20" height="20" rx="4"></rect>
+                                <rect id="Rectangle-37" fill="#FFFFFF" stroke="#B2B3B7" stroke-width="1" x="0" y="0" width="20" height="20" rx="4"></rect>
                             </g>
                         </g>
                     </g>
@@ -22,7 +22,7 @@
                     <g id="Mobile-Portrait">
                         <g id="Check-box-+-Checkbox-default-+-Checkbox-selected" transform="translate(0.000000, 0.500000)">
                             <g id="Checkbox-default-Copy" transform="translate(0.977444, 0.000000)">
-                                <rect id="Rectangle-37" x="0" y="0" width="20" height="20" rx="4"></rect>
+                                <rect id="Rectangle-37" fill="#F7F7F7" stroke="#B2B3B7" stroke-width="1" x="0" y="0" width="20" height="20" rx="4"></rect>
                             </g>
                         </g>
                     </g>
@@ -34,7 +34,7 @@
                         <g id="Check-box-+-Checkbox-default-+-Checkbox-selected" transform="translate(0.000000, 0.500000)">
                             <g id="Checkbox-selected" transform="translate(0.977444, 0.000000)">
                                 <g id="Rectangle-38-+-Shape-Copy">
-                                    <rect id="Rectangle-38" fill="#145F32" x="0" y="0" width="20" height="19.5555556" rx="4"></rect>
+                                    <rect id="Rectangle-38" fill="#026BC8" x="0" y="0" width="20" height="19.5555556" rx="4"></rect>
                                     <path d="M8.78450136,12.1161388 L6.69612534,10.0889894 L6,10.7647059 L8.78450136,13.4675716 L14.75129,7.67571644 L14.0551646,7 L8.78450136,12.1161388 L8.78450136,12.1161388 Z" id="Shape" stroke="#FFFFFF" stroke-width="0.5" fill="#FFFFFF"></path>
                                 </g>
                             </g>
@@ -48,7 +48,7 @@
                         <g id="Check-box-+-Checkbox-default-+-Checkbox-selected">
                             <g id="Checkbox-selected" transform="translate(0.977444, 0.000000)">
                                 <g id="Rectangle-38-+-Shape">
-                                    <rect id="Rectangle-38" fill="#1C8445" x="0" y="0" width="20" height="19.5555556" rx="4"></rect>
+                                    <rect id="Rectangle-38" fill="#026BC8" stroke="#81C8FF" stroke-width="1" x="0" y="0" width="20" height="19.5555556" rx="4"></rect>
                                     <path d="M8.78450136,12.1161388 L6.69612534,10.0889894 L6,10.7647059 L8.78450136,13.4675716 L14.75129,7.67571644 L14.0551646,7 L8.78450136,12.1161388 L8.78450136,12.1161388 Z" id="Shape" stroke="#FFFFFF" stroke-width="0.5" fill="#FFFFFF"></path>
                                 </g>
                             </g>
