@@ -1083,7 +1083,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         </div>
         <div class="modal-footer">
             <button class="btn btn-success ok" ng-click="closeTypeSelectionModal()"><g:message code="sspb.page.visualbuilder.create.component.label" /></button>
-            <button class="btn btn-warning cancel" ng-click="cancelTypeSelectionModal()"><g:message code="sspb.page.visualbuilder.create.cancel.label" /></button>
+            <button class="btn btn-warning" ng-click="cancelTypeSelectionModal()"><g:message code="sspb.page.visualbuilder.create.cancel.label" /></button>
         </div>
     </div>
 
