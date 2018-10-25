@@ -965,7 +965,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
                         </div>
 
                         <div class='tab-content' ng-show="showTree">
-                            <div style="width:100%;  overflow-y: auto; overflow-x: auto; white-space:nowrap; overflow: scroll; height: 500px;">
+                            <div style="width:100%;  overflow-y: scroll; overflow-x: auto; white-space:nowrap; height: 500px;">
                                 <ul ng-init="showChildren=true;">
                                     <li ng-repeat="data in pageSource"   ng-include="'tree_item_renderer.html'"></li>
                                 </ul>
