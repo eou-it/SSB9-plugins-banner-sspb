@@ -68,6 +68,7 @@ modules = {
         resource url: [plugin: 'banner-ui-ss', file: 'css/preference/userpreference.css', attrs: [media: 'screen, projection']]
         resource url:[plugin: 'banner-ui-ss',file: 'js/angular/hotkeys.js']
         resource url: [plugin: 'banner-ui-ss', file: 'js/about/about.js']
+        resource url: [plugin: 'banner-ui-ss', file: 'js/preference/userpreference.js']
     }
 
     'pageBuilderLTR' {
@@ -79,14 +80,13 @@ modules = {
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'ng-grid.css']
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'angular-ui.css']
         resource url:[plugin: 'banner-ui-ss', dir: 'bootstrap/css', file: 'bootstrap.css']
-        resource url: [plugin: 'banner-ui-ss', file: 'js/preference/userpreference.js']
         resource url: [plugin: 'banner-ui-ss', file: 'css/preference/userpreference.css', attrs: [media: 'screen, projection']]
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/xe-components/css', file: "xe-ui-components.css"]
         resource url:[plugin: 'banner-sspb', dir: 'css', file: 'main.css']
         resource url:[plugin: 'banner-sspb', dir: 'css', file: 'pbDefault.css']
         resource url:[plugin: 'banner-ui-ss', file: 'css/shortcuts/bannershortcuts.css', attrs:[media:'screen, projection']]
         resource url:[plugin: 'banner-ui-ss', file: 'js/select2/select2.css'],           attrs:[media:'screen, projection']
-        resource url: [plugin: 'banner-ui-ss', file: 'js/about/about.js']
+        resource url:[plugin: 'banner-ui-ss', file: 'css/eds.css'],             attrs:[media:'screen, projection']
     }
 
     'pageBuilderRTL' {
@@ -101,12 +101,11 @@ modules = {
         resource url:[plugin: 'banner-sspb', file: 'css/banner-sspb-rtl-patch.css']
         resource url:[plugin: 'banner-sspb', dir: 'css', file: 'main-rtl.css']
         resource url:[plugin: 'banner-sspb', dir: 'css', file: 'pbDefault-rtl.css']
-        resource url: [plugin: 'banner-ui-ss', file: 'js/preference/userpreference.js']
         resource url: [plugin: 'banner-ui-ss', file: 'css/shortcuts/bannershortcuts-rtl.css', attrs: [media: 'screen, projection']]
         resource url: [plugin: 'banner-ui-ss', file: 'css/preference/userpreference-rtl.css', attrs: [media: 'screen, projection']]
         resource url: [plugin: 'banner-ui-ss', file: 'css/preference/userpreference-rtl-patch.css', attrs: [media: 'screen, projection']]
         resource url:[plugin: 'banner-ui-ss', file: 'js/select2/select2-rtl.css'],           attrs:[media:'screen, projection']
-        resource url: [plugin: 'banner-ui-ss', file: 'js/about/about.js']
+    
     }
 
     // A reduced set of dependencies compared to the resources in banner-ui-ss
