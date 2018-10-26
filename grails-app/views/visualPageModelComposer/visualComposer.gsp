@@ -911,9 +911,9 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
                 ng-model="pageName"
                 ng-change="getPageSource();saveAs=false;"></select>
 
-    <button id="reload-btn" ng-click='loadPageNames(); saveAs=false;' title="${message( code:'sspb.page.visualbuilder.reload.pages.label')}" ng-show="false" /> </i> </button>
-    <button ng-click='newPageSource()'><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
-    <button ng-click='saveAs=true;' ng-show="pageName && pageName!=newPageName"> <g:message code="sspb.page.visualbuilder.save.as.label" /></button>
+    <button id="reload-btn" class="secondary" ng-click='loadPageNames(); saveAs=false;' title="${message( code:'sspb.page.visualbuilder.reload.pages.label')}" ng-show="false" /> </i> </button>
+    <button ng-click='newPageSource()' class="primary"><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
+    <button ng-click='saveAs=true;' ng-show="pageName && pageName!=newPageName" class="secondary"> <g:message code="sspb.page.visualbuilder.save.as.label" /></button>
     <span ng-hide="pageCurName == pageName && !saveAs">
         <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.name.label" /></label>
         <input id="saveAsInput" class="vpc-name-input" type="text" name="constantNameEdit" ng-model="pageCurName" required maxlength="60"
@@ -936,11 +936,11 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
     </select>
 
 
-    <button ng-show="pageName && pageCurName && pageCurName != newPageName" ng-click='validateAndSubmitPageSource(); saveAs=false;'
+    <button class="primary" ng-show="pageName && pageCurName && pageCurName != newPageName" ng-click='validateAndSubmitPageSource(); saveAs=false;'
             ng-disabled='sourceEditEnabled || !pagemodelform.$valid'><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
-    <button ng-show="pageName && pageName != newPageName" ng-click="getPageSource(); saveAs=false;" ><g:message code="sspb.page.visualbuilder.reload.label" /></button>
-    <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click="previewPageSource()" ><g:message code="sspb.page.visualbuilder.preview.label" /></button>
-    <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click='deletePageSource(); saveAs=false;'><g:message code="sspb.page.visualbuilder.delete.label" /></button>
+    <button class="secondary" ng-show="pageName && pageName != newPageName" ng-click="getPageSource(); saveAs=false;" ><g:message code="sspb.page.visualbuilder.reload.label" /></button>
+    <button class="secondary" ng-show="pageName && pageCurName && pageName != newPageName"    ng-click="previewPageSource()" ><g:message code="sspb.page.visualbuilder.preview.label" /></button>
+    <button class="secondary" ng-show="pageName && pageCurName && pageName != newPageName"    ng-click='deletePageSource(); saveAs=false;'><g:message code="sspb.page.visualbuilder.delete.label" /></button>
     <table style="height:80%; min-width: 60em">
         <tr>
             <th style="width:50%"><g:message code="sspb.page.visualbuilder.page.view.label" /></th>
@@ -1082,8 +1082,8 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
             <select  ng-model="$parent.selectedType" ng-options="i18nGet('type.'+type) for type in validChildTypes"></select>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-success ok" ng-click="closeTypeSelectionModal()"><g:message code="sspb.page.visualbuilder.create.component.label" /></button>
-            <button class="btn btn-warning" ng-click="cancelTypeSelectionModal()"><g:message code="sspb.page.visualbuilder.create.cancel.label" /></button>
+            <button class="primary" ng-click="closeTypeSelectionModal()"><g:message code="sspb.page.visualbuilder.create.component.label" /></button>
+            <button class="secondary" ng-click="cancelTypeSelectionModal()"><g:message code="sspb.page.visualbuilder.create.cancel.label" /></button>
         </div>
     </div>
 

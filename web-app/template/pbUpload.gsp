@@ -1,7 +1,7 @@
 <span>
     <!--Copyright 2013-2016 Ellucian Company L.P. and its affiliates.-->
     <!--TODO referencing $parent.i18nGet, should not have this dependency-->
-    <button ng-click="openUploadModal()"><g:message code="sspb.css.cssManager.upload.label" /></button>
+    <button class="secondary" ng-click="openUploadModal()"><g:message code="sspb.css.cssManager.upload.label" /></button>
 
     <!-- map editing modal body-->
     <div modal="uploadShouldBeOpen"  options="uploadModalOpts">
@@ -30,14 +30,14 @@
                     <input type="file" name="file" accept=".css" />
                 </div>
                 <div>
-                    <input upload-submit="complete(content, completed)" type="submit" class="btn btn-primary" value="Submit" />
+                    <input class="primary" upload-submit="complete(content, completed)" type="submit" class="btn btn-primary" value="Submit" />
                 </div>
             </form>
             <div class="alert alert-info"><g:message code="sspb.css.cssManager.upload.server.response.label" /> {{uploadResponse}}</div>
 
         </div>
         <div class="modal-footer">
-            <button class="btn btn-success ok" ng-click="closeUploadModal()"><g:message code="pb.template.upload.ok.label" /></button>
+            <button class="secondary" ng-click="closeUploadModal()"><g:message code="pb.template.upload.ok.label" /></button>
         </div>
     </div>
 </span>

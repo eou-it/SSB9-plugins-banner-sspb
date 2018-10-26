@@ -206,13 +206,13 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
                 ng-model="cssName"
                 ng-change="getCssSource()"></select>
 
-        <button ng-click='loadCssNames()'><g:message code="sspb.css.cssManager.reload.pages.label" /></button>
+        <button class="secondary" ng-click='loadCssNames()'><g:message code="sspb.css.cssManager.reload.pages.label" /></button>
         <div>
-        <button ng-click='newCssSource()'><g:message code="sspb.css.cssManager.newCss.label" /></button>
-        <button ng-click='submitCssSource()'><g:message code="sspb.css.cssManager.save.label" /></button>
+        <button class="primary" ng-click='newCssSource()'><g:message code="sspb.css.cssManager.newCss.label" /></button>
+        <button class="secondary" ng-click='submitCssSource()'><g:message code="sspb.css.cssManager.save.label" /></button>
         <pb-Upload label='Upload Stylesheet' status='cssStatus' pb-change='loadCssNames()'></pb-Upload>
-        <button ng-click="getCssSource()"><g:message code="sspb.css.cssManager.reload.label" /></button>
-        <button ng-click='deleteCssSource()'><g:message code="sspb.css.cssManager.delete.label" /></button>
+        <button class="secondary" ng-click="getCssSource()"><g:message code="sspb.css.cssManager.reload.label" /></button>
+        <button class="secondary" ng-click='deleteCssSource()'><g:message code="sspb.css.cssManager.delete.label" /></button>
 
         </div>
         <div class="form-horizontal" ng-form="cssform">
