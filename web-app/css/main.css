@@ -49,3 +49,7 @@ h6,
 .ui-datepicker .ui-datepicker-title select {
     font-size: .9em;
 }
+
+.btn-warning:hover {
+    border: 1px solid #026BC8;
+}

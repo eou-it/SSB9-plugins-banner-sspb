@@ -4,7 +4,7 @@
       "allow": true,
       "roleName": "ADMIN-GPBADMN"
    }],
-   "fileTimestamp": "2018-06-19T02:25:51Z",
+   "fileTimestamp": "2018-10-30T02:25:51Z",
    "modelView": {
       "title": "Associate Roles with a Page",
       "scriptingLanguage": "JavaScript",
@@ -128,6 +128,7 @@
             "showInitially": false,
             "components": [
                {
+                  "valueStyle": "primary",
                   "onClick": "console.log('Apply pressed');\n$pagesecurity.$post({pageId:$selectPage}, null, \n  function(){\n     alert('Roles applied', {type:\"success\", flash:true}); \n     $appliedPageRoles.$load({clearCache:true});\n     $applyRolesButton.$style='hidden';\n    }\n);",
                   "style": "hidden",
                   "name": "applyRolesButton",
