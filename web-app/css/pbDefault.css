@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 *******************************************************************************/
 
 input, textarea, select {
@@ -10,6 +10,10 @@ input, textarea, select {
 
 input, textarea {
     padding-left: 4px;
+}
+
+:focus, :visited{
+    border-color: #026BC8;
 }
 
 input.hasDatepicker.pb-datetime{

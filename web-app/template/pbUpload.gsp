@@ -1,5 +1,5 @@
 <span>
-    <!--Copyright 2013-2016 Ellucian Company L.P. and its affiliates.-->
+    <!--Copyright 2013-2018 Ellucian Company L.P. and its affiliates.-->
     <!--TODO referencing $parent.i18nGet, should not have this dependency-->
     <button class="secondary" ng-click="openUploadModal()"><g:message code="sspb.css.cssManager.upload.label" /></button>
 
