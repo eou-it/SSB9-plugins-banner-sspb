@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2016 Ellucian Company L.P. and its affiliates.
+ Copyright 2018 Ellucian Company L.P. and its affiliates.
 *******************************************************************************/
 
 body {
@@ -48,4 +48,8 @@ h6,
 
 .ui-datepicker .ui-datepicker-title select {
     font-size: .9em;
+}
+
+.btn-warning:hover {
+    border: 1px solid #026BC8;
 }
