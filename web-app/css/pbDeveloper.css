@@ -236,6 +236,15 @@ input[name="prop_objectName"] {
     text-transform: uppercase !important;
 }
 
+.btn-section {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+.btn-section button{
+    margin-right: 1px;
+    margin-left: 1px;
+}
+
 /* End Visual Page Composer */
 
 /* Start Virtual Domain Composer (mainly moved from main.css) */
@@ -333,3 +342,5 @@ input:invalid, select:invalid, textarea:invalid {
 }
 
 /* End Virtual Domain Composer */
+
+
