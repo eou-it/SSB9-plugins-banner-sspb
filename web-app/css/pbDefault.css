@@ -57,6 +57,30 @@ div[ng-grid] {
     border-bottom: none;
 }
 
+
+/* common components patch - pagination controls */
+.pagination-container {
+    direction: initial;
+}
+
+.pagination-container .pagination-controls button:hover, .pagination-container .pagination-controls button:focus {
+    background-color: #026BC8;
+    color: #FFFFFF;
+    border: none;
+}
+
+.pagination-container {
+    padding: 0;
+}
+
+#pbid-PageListDetail-record-control-container {
+    padding: 5px 5px;
+}
+
+#pbid-PageListDetail2-record-control-container {
+    padding: 5px 5px;
+}
+
 .ngGrid input[type="checkbox"] {
     -webkit-transform:scale(0.6);
     -moz-transform: scale(1.4);
