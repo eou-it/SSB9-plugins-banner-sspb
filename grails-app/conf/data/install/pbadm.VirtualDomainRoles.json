@@ -4,7 +4,7 @@
       "allow": true,
       "roleName": "ADMIN-GPBADMN"
    }],
-   "fileTimestamp": "2018-06-19T02:25:51Z",
+   "fileTimestamp": "2018-10-30T02:25:51Z",
    "modelView": {
       "title": "Associate Roles with a virtual domain",
       "scriptingLanguage": "JavaScript",
