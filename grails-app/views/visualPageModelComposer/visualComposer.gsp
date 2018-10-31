@@ -927,7 +927,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         </span>
     </div>
     
-    <div class="btn-section">
+    <div class="btn-section-2">
         <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.extends.label" /></label>
         <select class="vpc-name-input" name="extendsPage"
                 ng-options="page as page.constantName disable when page.constantName==pageName for page in pageList track by page.id"

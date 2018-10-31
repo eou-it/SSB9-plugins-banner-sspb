@@ -236,10 +236,11 @@ input[name="prop_objectName"] {
     text-transform: uppercase !important;
 }
 
-.btn-section {
-    margin-top: 5px;
-    margin-bottom: 5px;
+.btn-section-2 {
+    margin-top: 1px;
+    margin-bottom: 6px;
 }
+
 .btn-section button{
     margin-right: 1px;
     margin-left: 1px;
@@ -333,7 +334,8 @@ textarea {
 input:invalid, select:invalid, textarea:invalid {
 	background: #fff3f3;
 	border-color: #ffaaaa;
-	color: #cc0000;
+    color: #cc0000;
+    padding: 0.4em 0.4em;
 }
 
 #vdQueryView, #vdDeleteView, #vdPostView, #vdPutView {
@@ -341,6 +343,34 @@ input:invalid, select:invalid, textarea:invalid {
     padding: 5px 10px;
 }
 
+.vd-section {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+.vd-section select {
+    height: 30px;
+}
+.vd-section-2 {
+    margin-bottom: 10px;
+}
+.vdPage input[type='text'], textarea {
+    padding: 5px 5px;
+}
 /* End Virtual Domain Composer */
 
 
+/* CSS Manager */
+
+.cssPage input, select, textarea {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 12px;
+}
+
+.cssPage select {
+    height: 30px;
+}
+
+.cssPage textarea {
+    font-size: 12px;
+}

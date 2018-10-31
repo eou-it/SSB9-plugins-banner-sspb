@@ -39,29 +39,31 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 </head>
 
 <body>
-<div id="content"  class="customPage container-fluid" >
+<div id="content"  class="customPage container-fluid vdPage" >
 <h3><g:message code="sspb.page.virtualdomain.heading" /></h3>
-<br/>
-<g:form name="LoadVDForm" action="loadVirtualDomain">
-    <label><g:message code="sspb.page.virtualdomain.select.label" /></label>
-    <g:select name="vdServiceName"
-              from="${VirtualDomain.list().sort{it.serviceName}}"
-              value="${pageInstance?.vdServiceName}"
-              noSelection="${['null':message(code:"sspb.page.virtualdomain.select.noselection.label")]}"
-              optionKey="serviceName"
-              optionValue="serviceName"
-              onChange="this.form.submit()"
-    />
-</g:form>
+<div class="vd-section">
+    <g:form name="LoadVDForm" action="loadVirtualDomain">
+        <label><g:message code="sspb.page.virtualdomain.select.label" /></label>
+        <g:select name="vdServiceName"
+                from="${VirtualDomain.list().sort{it.serviceName}}"
+                value="${pageInstance?.vdServiceName}"
+                noSelection="${['null':message(code:"sspb.page.virtualdomain.select.noselection.label")]}"
+                optionKey="serviceName"
+                optionValue="serviceName"
+                onChange="this.form.submit()"
+        />
+    </g:form>
+</div>
 
-<br/>
 <g:form name="ComposeVDForm" action="saveVirtualDomain">
-    <label><g:message code="sspb.page.virtualdomain.servicename.label" /></label>
-    <input maxlength="60"  pattern="^[a-zA-Z]+[a-zA-Z0-9_-]*$" type="text" name="vdServiceName" value="${pageInstance?.vdServiceName}" required />
-    <g:actionSubmit action="saveVirtualDomain" class="primary" value="${message(code:"sspb.page.virtualdomain.save.label")}" />
-    <g:actionSubmit action="deleteVirtualDomain" class="secondary" value="${message(code:"sspb.page.virtualdomain.delete.label")}" />
-<br/>
-<br/>
+    <div class="vd-section-2">
+        <label><g:message code="sspb.page.virtualdomain.servicename.label" /></label>
+        <input maxlength="60"  pattern="^[a-zA-Z]+[a-zA-Z0-9_-]*$" type="text" name="vdServiceName" value="${pageInstance?.vdServiceName}" required />
+        
+        <g:actionSubmit action="saveVirtualDomain" class="primary" value="${message(code:"sspb.page.virtualdomain.save.label")}" />
+        <g:actionSubmit action="deleteVirtualDomain" class="secondary" value="${message(code:"sspb.page.virtualdomain.delete.label")}" />
+    </div>
+
 
 <table>
 <tr>
