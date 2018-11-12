@@ -259,19 +259,12 @@ pagebuilderModule.directive('pbCombo', function() {
 pagebuilderModule.directive('pbUpload', function() {
     return {
         restrict:'E',
-        //transclude: true,
         scope:{label:'@', status:'=', pbChange:'&'},
         templateUrl: templatesLocation + '/pbUpload.gsp',
         controller: ['$scope', '$element', '$attrs', '$transclude',
             function($scope, $element, $attrs, $transclude) {
-
-                //$scope.cssStatus = {};
-                // upload status callback
-                //$scope.foo = "Hello!";
                 $scope.complete = function(content, completed) {
-                    //console.log(content.length);
                     $scope.uploadResponse = content;
-                    $scope.status.message = content.statusMessage;
 
                     // call parent handler
                     if (completed)
@@ -285,9 +278,6 @@ pagebuilderModule.directive('pbUpload', function() {
 
                 $scope.closeUploadModal = function () {
                     $scope.uploadShouldBeOpen = false;
-                    // cause ng-change function passed to the directive to be applied
-                    //$scope.pbChange();
-                    //$scope.handlePageTreeChange();
                 };
 
                 $scope.cancelUploadModal = function() {

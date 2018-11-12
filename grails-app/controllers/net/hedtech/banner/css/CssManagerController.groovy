@@ -3,6 +3,7 @@
  ******************************************************************************/
 package net.hedtech.banner.css
 
+import groovy.json.JsonOutput
 import org.springframework.web.multipart.MultipartFile
 import grails.converters.JSON
 
@@ -38,7 +39,7 @@ class CssManagerController {
                    statusMessage: message(code:"sspb.css.cssManager.upload.invalid.file.type.message")]
         }
         header 'X-Frame-Options' ,"SAMEORIGIN"
-        render res as JSON
+        render JsonOutput.toJson(res)
     }
 
     def validEncoding(data) {
