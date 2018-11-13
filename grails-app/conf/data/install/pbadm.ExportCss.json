@@ -1,54 +1,69 @@
 {
-   "extendsPage": {"constantName": "pbadm.ExportBase"},
-   "pageRoles": [{
-      "allow": true,
-      "roleName": "ADMIN-GPBADMN"
-   }],
-   "fileTimestamp": "2018-10-30T09:58:36Z",
+   "constantName": "pbadm.ExportCss",
+   "extendsPage": {
+      "constantName": "pbadm.ExportBase"
+   },
+   "fileTimestamp": "2018-11-13T11:51:35Z",
    "modelView": {
       "baseRoot": "pbadmExportBase",
+      "deltaVersion": "1.0",
       "deltas": {
-         "id": {"model": {
-            "base": "serviceName",
-            "ext": "constantName"
-         }},
+         "Intro": {
+            "value": {
+               "base": "The table below shows the Page Builder virtual domains matching the Virtual domain Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button.",
+               "ext": "The table below shows the Page Builder CSS files matching the CSS Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button."
+            }
+         },
+         "ShowForm": {
+            "label": {
+               "base": "Filtered Objects",
+               "ext": "Filtered CSS files"
+            }
+         },
          "downloadLink": {
-            "onClick": {
-               "base": "$exportId=item.serviceName;\n$getExport.$get();",
-               "patch": "--- original\n+++ revised\n@@ -1,2 +1,2 @@\n-$exportId=item.serviceName;\n+$exportId=item.constantName;\n $getExport.$get();",
-               "ext": "$exportId=item.constantName;\n$getExport.$get();"
-            },
             "description": {
                "base": "Click to download this virtual domain",
                "ext": "Click to download this CSS file"
+            },
+            "onClick": {
+               "base": "$exportId=item.serviceName;\n$getExport.$get();",
+               "ext": "$exportId=item.constantName;\n$getExport.$get();",
+               "patch": "--- original\n+++ revised\n@@ -1,2 +1,2 @@\n-$exportId=item.serviceName;\n+$exportId=item.constantName;\n $getExport.$get();"
             }
          },
-         "pbadmExportBase": {
-            "title": {
-               "base": "Export artifacts basepage",
-               "ext": "Export CSS files"
-            },
-            "documentation": {
-               "base": "This page is the base for a number of export pages and contains common definitions",
-               "ext": "Export Css"
-            },
-            "_name": {
-               "base": "pbadmExportBase",
-               "ext": "pbadmExportCss"
-            },
+         "exportGrid": {
             "label": {
-               "base": "Export artifacts basepage",
-               "ext": "Export CSS files"
+               "base": "Objects to export",
+               "ext": "CSS files to export"
+            },
+            "onSave": {
+               "base": "var exportDone = false; // return false use the default save handler\nif ($exportTarget == 'C')  {\n\tvar count = 0;\n\tfunction getOne(data, index) {\n\t\tif (data.export) {\n\t\t\t$exportId=data.serviceName;\n\t\t\t$getExport.$get();\n\t\t\tcount++;\n\t\t}\n\t}\n\t$exportGrid.$data.forEach( getOne);\n\tconsole.log(\"Started download of\",count,\" files.\");\n\texportDone = true; // well, it is kicked off - the download is started asynch\n}\nreturn exportDone;",
+               "ext": "var exportDone = false; // return false use the default save handler\nif ($exportTarget == 'C')  {\n\tvar count = 0;\n\tfunction getOne(data, index) {\n\t\tif (data.export) {\n\t\t\t$exportId=data.constantName;\n\t\t\t$getExport.$get();\n\t\t\tcount++;\n\t\t}\n\t}\n\t$exportGrid.$data.forEach( getOne);\n\tconsole.log(\"Started download of\",count,\" files.\");\n\texportDone = true; // well, it is kicked off - the download is started asynch\n}\nreturn exportDone;",
+               "patch": "--- original\n+++ revised\n@@ -4,5 +4,5 @@\n \tfunction getOne(data, index) {\n \t\tif (data.export) {\n-\t\t\t$exportId=data.serviceName;\n+\t\t\t$exportId=data.constantName;\n \t\t\t$getExport.$get();\n \t\t\tcount++;"
+            },
+            "onSaveSuccess": {
+               "base": "if (response.export == \"1\") {\n  alert( \"Exported virtual domain: \" + response.serviceName, {flash: true});\n}",
+               "ext": "if (response.export == \"1\") {\n  alert( \"Exported CSS: \" + response.constantName, {flash: true});\n}",
+               "patch": "--- original\n+++ revised\n@@ -1,3 +1,3 @@\n if (response.export == \"1\") {\n-  alert( \"Exported virtual domain: \" + response.serviceName, {flash: true});\n+  alert( \"Exported CSS: \" + response.constantName, {flash: true});\n }"
+            },
+            "parameters": {
+               "base": {
+                  "serviceName": "$nameFilter"
+               },
+               "ext": {
+                  "constantName": "$nameFilter"
+               }
+            },
+            "style": {
+               "ext": ""
             }
          },
-         "exportResource": {"resource": {
-            "base": "objectexports",
-            "ext": "cssexports"
-         }},
-         "ShowForm": {"label": {
-            "base": "Filtered Objects",
-            "ext": "Filtered CSS files"
-         }},
+         "exportResource": {
+            "resource": {
+               "base": "objectexports",
+               "ext": "cssexports"
+            }
+         },
          "getExport": {
             "model": {
                "base": "exportResource.serviceName",
@@ -56,37 +71,40 @@
             },
             "onLoad": {
                "base": "function download(p){\n    if(!p) return;\n    var theAnchor = $('<a />')\n        .attr('href', p.header+p.data)\n        .attr('download', p.fileName)\n        // Firefox does not fires click if the link is outside\n        // the DOM\n        .appendTo('body');\n    \n    theAnchor[0].click(); \n    theAnchor.remove();\n}\n\n//Define keys to remove using + to avoid replacement with PB variables\nvar keys={};\nkeys[ \"$\"+\"resolved\"]= true;\nkeys[\"$\"+\"$\"+\"hashKey\"]= true;\nkeys[\"$\"+\"promise\"]=true;\n\n// remove additional properties added by Angular resource when pretty print source\nfunction jsonFilter(key, value) {\n    return keys[key]?undefined:value;\n}\n\n\nif (data && data.serviceName){\n    var params = {\n          fileName: 'objects.'+data.serviceName+'.json',\n          header: 'data:text/csv;charset=utf8,',\n          data: encodeURIComponent(JSON.stringify(data,jsonFilter,3))\n    };\n    download(params);\n    alert(\"Exported virtual domain: \"+ data.serviceName,{flash: true});\n} else {\n    alert('Unable to save data - unexpected format.', {type:\"error\"});   \n}",
-               "patch": "--- original\n+++ revised\n@@ -1,13 +1,17 @@\n function download(p){\n     if(!p) return;\n-    var theAnchor = $('<a />')\n+    var blob = new Blob([decodeURIComponent(p.data)],{type: \"text/csv;charset=utf-8;\"});\n+\n+if (window.navigator.msSaveBlob) { // IE 10+\n+window.navigator.msSaveBlob(blob, p.fileName)\n+    } else {\n+        var theAnchor = $('<a />')\n         .attr('href', p.header+p.data)\n         .attr('download', p.fileName)\n-        // Firefox does not fires click if the link is outside\n-        // the DOM\n         .appendTo('body');\n     \n     theAnchor[0].click(); \n     theAnchor.remove();\n+    }\n }\n \n@@ -24,12 +28,12 @@\n \n \n-if (data && data.serviceName){\n+if (data && data.constantName){\n     var params = {\n-          fileName: 'objects.'+data.serviceName+'.json',\n+          fileName: 'css.'+data.constantName+'.json',\n           header: 'data:text/csv;charset=utf8,',\n           data: encodeURIComponent(JSON.stringify(data,jsonFilter,3))\n     };\n     download(params);\n-    alert(\"Exported virtual domain: \"+ data.serviceName,{flash: true});\n+    alert(\"Exported css: \"+ data.constantName,{flash: true});\n } else {\n     alert('Unable to save data - unexpected format.', {type:\"error\"});   ",
-               "ext": "function download(p){\n    if(!p) return;\n    var blob = new Blob([decodeURIComponent(p.data)],{type: \"text/csv;charset=utf-8;\"});\n\nif (window.navigator.msSaveBlob) { // IE 10+\nwindow.navigator.msSaveBlob(blob, p.fileName)\n    } else {\n        var theAnchor = $('<a />')\n        .attr('href', p.header+p.data)\n        .attr('download', p.fileName)\n        .appendTo('body');\n    \n    theAnchor[0].click(); \n    theAnchor.remove();\n    }\n}\n\n//Define keys to remove using + to avoid replacement with PB variables\nvar keys={};\nkeys[ \"$\"+\"resolved\"]= true;\nkeys[\"$\"+\"$\"+\"hashKey\"]= true;\nkeys[\"$\"+\"promise\"]=true;\n\n// remove additional properties added by Angular resource when pretty print source\nfunction jsonFilter(key, value) {\n    return keys[key]?undefined:value;\n}\n\n\nif (data && data.constantName){\n    var params = {\n          fileName: 'css.'+data.constantName+'.json',\n          header: 'data:text/csv;charset=utf8,',\n          data: encodeURIComponent(JSON.stringify(data,jsonFilter,3))\n    };\n    download(params);\n    alert(\"Exported css: \"+ data.constantName,{flash: true});\n} else {\n    alert('Unable to save data - unexpected format.', {type:\"error\"});   \n}"
+               "ext": "function download(p){\n    if(!p) return;\n    var blob = new Blob([decodeURIComponent(p.data)],{type: \"text/csv;charset=utf-8;\"});\n\nif (window.navigator.msSaveBlob) { // IE 10+\nwindow.navigator.msSaveBlob(blob, p.fileName)\n    } else {\n        var theAnchor = $('<a />')\n        .attr('href', p.header+p.data)\n        .attr('download', p.fileName)\n        .appendTo('body');\n    \n    theAnchor[0].click(); \n    theAnchor.remove();\n    }\n}\n\n//Define keys to remove using + to avoid replacement with PB variables\nvar keys={};\nkeys[ \"$\"+\"resolved\"]= true;\nkeys[\"$\"+\"$\"+\"hashKey\"]= true;\nkeys[\"$\"+\"promise\"]=true;\n\n// remove additional properties added by Angular resource when pretty print source\nfunction jsonFilter(key, value) {\n    return keys[key]?undefined:value;\n}\n\n\nif (data && data.constantName){\n    var params = {\n          fileName: 'css.'+data.constantName+'.json',\n          header: 'data:text/csv;charset=utf8,',\n          data: encodeURIComponent(JSON.stringify(data,jsonFilter,3))\n    };\n    download(params);\n    alert(\"Exported css: \"+ data.constantName,{flash: true});\n} else {\n    alert('Unable to save data - unexpected format.', {type:\"error\"});   \n}",
+               "patch": "--- original\n+++ revised\n@@ -1,13 +1,17 @@\n function download(p){\n     if(!p) return;\n-    var theAnchor = $('<a />')\n+    var blob = new Blob([decodeURIComponent(p.data)],{type: \"text/csv;charset=utf-8;\"});\n+\n+if (window.navigator.msSaveBlob) { // IE 10+\n+window.navigator.msSaveBlob(blob, p.fileName)\n+    } else {\n+        var theAnchor = $('<a />')\n         .attr('href', p.header+p.data)\n         .attr('download', p.fileName)\n-        // Firefox does not fires click if the link is outside\n-        // the DOM\n         .appendTo('body');\n     \n     theAnchor[0].click(); \n     theAnchor.remove();\n+    }\n }\n \n@@ -24,12 +28,12 @@\n \n \n-if (data && data.serviceName){\n+if (data && data.constantName){\n     var params = {\n-          fileName: 'objects.'+data.serviceName+'.json',\n+          fileName: 'css.'+data.constantName+'.json',\n           header: 'data:text/csv;charset=utf8,',\n           data: encodeURIComponent(JSON.stringify(data,jsonFilter,3))\n     };\n     download(params);\n-    alert(\"Exported virtual domain: \"+ data.serviceName,{flash: true});\n+    alert(\"Exported css: \"+ data.constantName,{flash: true});\n } else {\n     alert('Unable to save data - unexpected format.', {type:\"error\"});   "
             }
          },
-         "Intro": {"value": {
-            "base": "The table below shows the Page Builder virtual domains matching the Virtual domain Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button.",
-            "ext": "The table below shows the Page Builder CSS files matching the CSS Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button."
-         }},
-         "exportGrid": {
-            "style": {"ext": ""},
-            "onSave": {
-               "base": "var exportDone = false; // return false use the default save handler\nif ($exportTarget == 'C')  {\n\tvar count = 0;\n\tfunction getOne(data, index) {\n\t\tif (data.export) {\n\t\t\t$exportId=data.serviceName;\n\t\t\t$getExport.$get();\n\t\t\tcount++;\n\t\t}\n\t}\n\t$exportGrid.$data.forEach( getOne);\n\tconsole.log(\"Started download of\",count,\" files.\");\n\texportDone = true; // well, it is kicked off - the download is started asynch\n}\nreturn exportDone;",
-               "patch": "--- original\n+++ revised\n@@ -4,5 +4,5 @@\n \tfunction getOne(data, index) {\n \t\tif (data.export) {\n-\t\t\t$exportId=data.serviceName;\n+\t\t\t$exportId=data.constantName;\n \t\t\t$getExport.$get();\n \t\t\tcount++;",
-               "ext": "var exportDone = false; // return false use the default save handler\nif ($exportTarget == 'C')  {\n\tvar count = 0;\n\tfunction getOne(data, index) {\n\t\tif (data.export) {\n\t\t\t$exportId=data.constantName;\n\t\t\t$getExport.$get();\n\t\t\tcount++;\n\t\t}\n\t}\n\t$exportGrid.$data.forEach( getOne);\n\tconsole.log(\"Started download of\",count,\" files.\");\n\texportDone = true; // well, it is kicked off - the download is started asynch\n}\nreturn exportDone;"
+         "id": {
+            "model": {
+               "base": "serviceName",
+               "ext": "constantName"
+            }
+         },
+         "pbadmExportBase": {
+            "_name": {
+               "base": "pbadmExportBase",
+               "ext": "pbadmExportCss"
+            },
+            "documentation": {
+               "base": "This page is the base for a number of export pages and contains common definitions",
+               "ext": "Export Css"
             },
             "label": {
-               "base": "Objects to export",
-               "ext": "CSS files to export"
+               "base": "Export artifacts basepage",
+               "ext": "Export CSS files"
             },
-            "parameters": {
-               "base": {"serviceName": "$nameFilter"},
-               "ext": {"constantName": "$nameFilter"}
-            },
-            "onSaveSuccess": {
-               "base": "if (response.export == \"1\") {\n  alert( \"Exported virtual domain: \" + response.serviceName, {flash: true});\n}",
-               "patch": "--- original\n+++ revised\n@@ -1,3 +1,3 @@\n if (response.export == \"1\") {\n-  alert( \"Exported virtual domain: \" + response.serviceName, {flash: true});\n+  alert( \"Exported CSS: \" + response.constantName, {flash: true});\n }",
-               "ext": "if (response.export == \"1\") {\n  alert( \"Exported CSS: \" + response.constantName, {flash: true});\n}"
+            "title": {
+               "base": "Export artifacts basepage",
+               "ext": "Export CSS files"
             }
          }
-      },
-      "deltaVersion": "1.0"
+      }
    },
-   "constantName": "pbadm.ExportCss"
+   "pageRoles": [
+      {
+         "roleName": "ADMIN-GPBADMN",
+         "allow": true
+      }
+   ]
 }

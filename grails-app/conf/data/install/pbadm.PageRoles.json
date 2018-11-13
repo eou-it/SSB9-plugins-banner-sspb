@@ -1,21 +1,13 @@
 {
+   "constantName": "pbadm.PageRoles",
    "extendsPage": null,
-   "pageRoles": [{
-      "allow": true,
-      "roleName": "ADMIN-GPBADMN"
-   }],
-   "fileTimestamp": "2018-10-30T02:25:51Z",
+   "fileTimestamp": "2018-11-13T11:51:36Z",
    "modelView": {
-      "title": "Associate Roles with a Page",
-      "scriptingLanguage": "JavaScript",
-      "name": "pbadmPageRoles",
-      "documentation": "Associate Roles with a Page",
-      "label": "Page Roles",
       "components": [
          {
-            "staticData": [],
             "name": "pageRoles",
             "resource": "virtualDomains.pbadmPageRoles",
+            "staticData": [],
             "type": "resource"
          },
          {
@@ -29,148 +21,168 @@
             "type": "resource"
          },
          {
-            "staticData": [],
             "name": "pagesecurity",
             "resource": "pagesecurity",
+            "staticData": [],
             "type": "resource"
          },
          {
-            "staticData": [],
             "name": "appliedPageRolesRes",
             "resource": "virtualDomains.pbadmAppliedPageRoles",
+            "staticData": [],
             "type": "resource"
          },
          {
+            "components": [
+               {
+                  "label": "Page",
+                  "labelKey": "CONSTANT_NAME",
+                  "loadInitially": true,
+                  "model": "selectPage",
+                  "name": "selectPage",
+                  "onUpdate": "$editPageRoles.$load();\n$EditRolesForm.$visible=$selectPage;\n$roleName.$populateSource();\n$ApplyRolesForm.$visible=$selectPage;\n$appliedPageRoles.$load();",
+                  "placeholder": "Select...",
+                  "required": false,
+                  "sourceModel": "pageLookup",
+                  "sourceParameters": {},
+                  "type": "select",
+                  "valueKey": "PID"
+               }
+            ],
+            "label": "",
             "name": "SelectPageBlock",
             "showInitially": true,
-            "label": "",
-            "components": [{
-               "sourceModel": "pageLookup",
-               "valueKey": "PID",
-               "model": "selectPage",
-               "placeholder": "Select...",
-               "sourceParameters": {},
-               "name": "selectPage",
-               "labelKey": "CONSTANT_NAME",
-               "label": "Page",
-               "type": "select",
-               "required": false,
-               "onUpdate": "$editPageRoles.$load();\n$EditRolesForm.$visible=$selectPage;\n$roleName.$populateSource();\n$ApplyRolesForm.$visible=$selectPage;\n$appliedPageRoles.$load();",
-               "loadInitially": true
-            }],
             "type": "block"
          },
          {
+            "components": [
+               {
+                  "allowDelete": true,
+                  "allowModify": true,
+                  "allowNew": true,
+                  "allowReload": true,
+                  "components": [
+                     {
+                        "documentation": "Should have some way to forbid selecting existing roles for this domain...",
+                        "label": "Role",
+                        "labelKey": "DESCRIPTION",
+                        "loadInitially": true,
+                        "model": "ROLE_NAME",
+                        "name": "roleName",
+                        "onUpdate": "",
+                        "placeholder": "Select unique role...",
+                        "required": true,
+                        "sourceModel": "webTailorRolesLookup",
+                        "sourceParameters": {
+                           "PAGE_ID": "$selectPage"
+                        },
+                        "type": "select",
+                        "value": "",
+                        "valueKey": "CODE"
+                     },
+                     {
+                        "loadInitially": true,
+                        "model": "PAGE_ID",
+                        "name": "pageID",
+                        "type": "hidden",
+                        "value": "$selectPage"
+                     },
+                     {
+                        "booleanFalseValue": "0",
+                        "booleanTrueValue": "1",
+                        "label": "Allow Access",
+                        "loadInitially": true,
+                        "model": "ALLOW",
+                        "name": "allow",
+                        "onUpdate": "",
+                        "readonly": false,
+                        "type": "boolean",
+                        "value": "1"
+                     }
+                  ],
+                  "label": "Edit Roles for selected page",
+                  "loadInitially": false,
+                  "model": "pageRoles",
+                  "name": "editPageRoles",
+                  "onError": "var errorMessage =response.data.errors? response.data.errors.errorMessage: null;\nif (errorMessage&&errorMessage.indexOf(\"ORA-20000\") > -1) {\n  alert(\"An entry already exists for this page and role, cannot add a duplicate\", {type:\"error\"});\n} else {\n  if (response.data.errors.errorMessage) {\n    alert(response.data.errors.errorMessage,{type:\"error\"});\n  }\n  else if (response.data.errors[0].errorMessage) {\n    alert(response.data.errors[0].errorMessage,{type:\"error\"});\n  } else {\n    alert(errorMessage?errorMessage:response.data, {type:\"error\"});\n  }\n}",
+                  "onSave": "",
+                  "onSaveSuccess": "var saveAction = \"saved\";\n\nif (response.hasOwnProperty(\"id\") && !_.findWhere($editPageRolesDS.data,     {ROLE_NAME: response.ROLE_NAME}))\n  {\n    saveAction = \"deleted\";\n  }\nalert( \"Page role \" + response.ROLE_NAME + \" \" + saveAction,{type:\"success\", flash:true});\n\n$applyRolesButton.$style=\"visible\";",
+                  "pageSize": 5,
+                  "parameters": {
+                     "PAGE_ID": "$selectPage"
+                  },
+                  "submit": "",
+                  "type": "grid"
+               }
+            ],
             "name": "EditRolesForm",
             "nextButtonLabel": "Next",
             "showInitially": false,
-            "components": [{
-               "model": "pageRoles",
-               "onError": "var errorMessage =response.data.errors? response.data.errors.errorMessage: null;\nif (errorMessage&&errorMessage.indexOf(\"ORA-20000\") > -1) {\n  alert(\"An entry already exists for this page and role, cannot add a duplicate\", {type:\"error\"});\n} else {\n  if (response.data.errors.errorMessage) {\n    alert(response.data.errors.errorMessage,{type:\"error\"});\n  }\n  else if (response.data.errors[0].errorMessage) {\n    alert(response.data.errors[0].errorMessage,{type:\"error\"});\n  } else {\n    alert(errorMessage?errorMessage:response.data, {type:\"error\"});\n  }\n}",
-               "submit": "",
-               "pageSize": 5,
-               "onSave": "",
-               "label": "Edit Roles for selected page",
-               "type": "grid",
-               "allowModify": true,
-               "allowDelete": true,
-               "allowReload": true,
-               "name": "editPageRoles",
-               "parameters": {"PAGE_ID": "$selectPage"},
-               "allowNew": true,
-               "components": [
-                  {
-                     "model": "ROLE_NAME",
-                     "placeholder": "Select unique role...",
-                     "labelKey": "DESCRIPTION",
-                     "sourceParameters":  {"PAGE_ID": "$selectPage"},
-                     "label": "Role",
-                     "onUpdate": "",
-                     "type": "select",
-                     "sourceModel": "webTailorRolesLookup",
-                     "valueKey": "CODE",
-                     "name": "roleName",
-                     "value": "",
-                     "documentation": "Should have some way to forbid selecting existing roles for this domain...",
-                     "required": true,
-                     "loadInitially": true
-                  },
-                  {
-                     "model": "PAGE_ID",
-                     "name": "pageID",
-                     "value": "$selectPage",
-                     "type": "hidden",
-                     "loadInitially": true
-                  },
-                  {
-                     "model": "ALLOW",
-                     "name": "allow",
-                     "value": "1",
-                     "booleanTrueValue": "1",
-                     "label": "Allow Access",
-                     "type": "boolean",
-                     "onUpdate": "",
-                     "readonly": false,
-                     "loadInitially": true,
-                     "booleanFalseValue": "0"
-                  }
-               ],
-               "loadInitially": false,
-               "onSaveSuccess": "var saveAction = \"saved\";\n\nif (response.hasOwnProperty(\"id\") && !_.findWhere($editPageRolesDS.data,     {ROLE_NAME: response.ROLE_NAME}))\n  {\n    saveAction = \"deleted\";\n  }\nalert( \"Page role \" + response.ROLE_NAME + \" \" + saveAction,{type:\"success\", flash:true});\n\n$applyRolesButton.$style=\"visible\";"
-            }],
             "type": "form"
          },
          {
-            "submit": "",
-            "name": "ApplyRolesForm",
-            "nextButtonLabel": "",
-            "submitLabel": "",
-            "showInitially": false,
             "components": [
                {
-                  "valueStyle": "primary",
+                  "label": "Apply page roles",
+                  "name": "applyRolesButton",
                   "onClick": "console.log('Apply pressed');\n$pagesecurity.$post({pageId:$selectPage}, null, \n  function(){\n     alert('Roles applied', {type:\"success\", flash:true}); \n     $appliedPageRoles.$load({clearCache:true});\n     $applyRolesButton.$style='hidden';\n    }\n);",
                   "style": "hidden",
-                  "name": "applyRolesButton",
-                  "label": "Apply page roles",
-                  "type": "button"
+                  "type": "button",
+                  "valueStyle": "primary"
                },
                {
+                  "allowDelete": false,
+                  "allowModify": false,
+                  "allowNew": false,
                   "allowReload": false,
+                  "components": [
+                     {
+                        "asHtml": false,
+                        "label": "URL",
+                        "loadInitially": true,
+                        "model": "URL",
+                        "name": "url",
+                        "type": "display"
+                     },
+                     {
+                        "asHtml": false,
+                        "label": "Spring Security Attributes",
+                        "loadInitially": true,
+                        "model": "CONFIG_ATTRIBUTE",
+                        "name": "attributes",
+                        "type": "display"
+                     }
+                  ],
+                  "label": "Applied Page roles",
+                  "loadInitially": false,
                   "model": "appliedPageRolesRes",
                   "name": "appliedPageRoles",
                   "pageSize": 5,
-                  "label": "Applied Page roles",
-                  "parameters": {"selected_url": "$selectPage.$selected?$selectPage.$selected.CONSTANT_NAME:null"},
-                  "components": [
-                     {
-                        "model": "URL",
-                        "name": "url",
-                        "label": "URL",
-                        "type": "display",
-                        "loadInitially": true,
-                        "asHtml": false
-                     },
-                     {
-                        "model": "CONFIG_ATTRIBUTE",
-                        "name": "attributes",
-                        "label": "Spring Security Attributes",
-                        "type": "display",
-                        "loadInitially": true,
-                        "asHtml": false
-                     }
-                  ],
-                  "allowNew": false,
-                  "type": "detail",
-                  "loadInitially": false,
-                  "allowModify": false,
-                  "allowDelete": false
+                  "parameters": {
+                     "selected_url": "$selectPage.$selected?$selectPage.$selected.CONSTANT_NAME:null"
+                  },
+                  "type": "detail"
                }
             ],
+            "name": "ApplyRolesForm",
+            "nextButtonLabel": "",
+            "showInitially": false,
+            "submit": "",
+            "submitLabel": "",
             "type": "form"
          }
       ],
+      "documentation": "Associate Roles with a Page",
+      "label": "Page Roles",
+      "name": "pbadmPageRoles",
+      "scriptingLanguage": "JavaScript",
+      "title": "Associate Roles with a Page",
       "type": "page"
    },
-   "constantName": "pbadm.PageRoles"
+   "pageRoles": [
+      {
+         "roleName": "ADMIN-GPBADMN",
+         "allow": true
+      }
+   ]
 }
