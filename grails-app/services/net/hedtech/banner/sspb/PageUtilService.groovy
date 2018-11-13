@@ -22,8 +22,12 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     def static final actionImportInitally = 1
     def static final bundleLocation = getBundleLocation()
     def static final bundleName = "pageBuilder"
+    def static pageVersionMap
 
     def currentAction = null
+    static{
+        pageVersionMap = new HashMap<String,Integer>()
+    }
 
     def static getBundleLocation() {
         if (bundleLocation) {//only need to determine location once
@@ -250,6 +254,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         def pages = Page.findAllByConstantNameLike(pat)
         def errors =[]
         pages.each { page ->
+            pageVersionMap.put(page.constantName,page.version)
             def model=page.extendsPage?page.mergedModelText:page.modelView
             def result = pageService.compileAndSavePage(page.constantName, model, page.extendsPage)
             if (result.statusCode>0)

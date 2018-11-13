@@ -4,12 +4,15 @@
 
 package net.hedtech.banner.sspb
 
+import org.grails.datastore.mapping.model.types.Custom
+
 class CustomPageController {
 
     static defaultAction = "page"
     def groovyPagesTemplateEngine
     def compileService
     def grailsApplication
+    def pageUtilService
 
     def page() {
         if (params.id=="menu") {    //Work around aurora issue calling this 'page'. Todo: analyse and provide better fix
@@ -52,7 +55,24 @@ class CustomPageController {
                 html = compileService.assembleFinalPage(page.compiledView, page.compiledController)
             }
             if (html) {
-                render renderGsp(html, "Page$pageId")
+                def pageName = pageId+'_'+page.version
+                synchronized (CustomPageController.class) {
+                    boolean isNewProperties = false
+                    if (PageUtilService.pageVersionMap.get(page.constantName)) {
+                        Integer pageCurrVersion = page.version
+                        Integer pageMapVersion = PageUtilService.pageVersionMap.get(page.constantName)
+                        if (pageCurrVersion > pageMapVersion) {
+                            isNewProperties = true
+                        }
+                    } else {
+                        isNewProperties = true
+                    }
+                    if(isNewProperties){
+                        pageUtilService.compileAll(page.constantName)
+                        PageUtilService.pageVersionMap.put(page.constantName, page.version)
+                    }
+                }
+                render renderGsp(html, pageName)
             } else {
                 invalidPage(message(code: "sspb.renderer.page.does.not.exist"))
             }
