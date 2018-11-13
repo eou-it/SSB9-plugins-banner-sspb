@@ -374,3 +374,8 @@ input:invalid, select:invalid, textarea:invalid {
 .cssPage textarea {
     font-size: 12px;
 }
+
+/*This css is for pagebuilder landing page mapping it with the CTA Color*/
+.pb-block a, .pb-link span{
+  color: #026BC8;
+}
