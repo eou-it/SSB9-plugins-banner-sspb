@@ -4,8 +4,6 @@
 
 package net.hedtech.banner.sspb
 
-import org.grails.datastore.mapping.model.types.Custom
-
 class CustomPageController {
 
     static defaultAction = "page"
