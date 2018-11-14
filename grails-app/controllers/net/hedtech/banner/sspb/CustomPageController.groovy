@@ -54,22 +54,10 @@ class CustomPageController {
             }
             if (html) {
                 def pageName = pageId+'_'+page.version
-                synchronized (CustomPageController.class) {
-                    boolean isNewProperties = false
-                    if (PageUtilService.pageVersionMap.get(page.constantName)) {
-                        Integer pageCurrVersion = page.version
-                        Integer pageMapVersion = PageUtilService.pageVersionMap.get(page.constantName)
-                        if (pageCurrVersion > pageMapVersion) {
-                            isNewProperties = true
-                        }
-                    } else {
-                        isNewProperties = true
-                    }
-                    if(isNewProperties){
-                        pageUtilService.compileAll(page.constantName)
-                        PageUtilService.pageVersionMap.put(page.constantName, page.version)
-                    }
+                 if(!groovyPagesTemplateEngine.pageCache.get(pageName+".gsp")){
+                    pageUtilService.compileAll(page.constantName);
                 }
+                System.out.println("========"+groovyPagesTemplateEngine.pageCache.get(pageName+".gsp"))
                 render renderGsp(html, pageName)
             } else {
                 invalidPage(message(code: "sspb.renderer.page.does.not.exist"))
