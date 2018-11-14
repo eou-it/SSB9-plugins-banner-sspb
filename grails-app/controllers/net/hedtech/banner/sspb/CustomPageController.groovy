@@ -57,7 +57,6 @@ class CustomPageController {
                  if(!groovyPagesTemplateEngine.pageCache.get(pageName+".gsp")){
                     pageUtilService.compileAll(page.constantName);
                 }
-                System.out.println("========"+groovyPagesTemplateEngine.pageCache.get(pageName+".gsp"))
                 render renderGsp(html, pageName)
             } else {
                 invalidPage(message(code: "sspb.renderer.page.does.not.exist"))
