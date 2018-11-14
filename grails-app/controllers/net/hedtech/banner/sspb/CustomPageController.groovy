@@ -10,7 +10,7 @@ class CustomPageController {
     def groovyPagesTemplateEngine
     def compileService
     def grailsApplication
-    def pageUtilService
+    def pageService
 
     def page() {
         if (params.id=="menu") {    //Work around aurora issue calling this 'page'. Todo: analyse and provide better fix
@@ -55,7 +55,7 @@ class CustomPageController {
             if (html) {
                 def pageName = pageId+'_'+page.version+".gsp"
                  if(!groovyPagesTemplateEngine.pageCache.get(pageName)){
-                    pageUtilService.compileAll(page.constantName);
+                     pageService.compilePage(page)
                 }
                 render renderGsp(html, pageName)
             } else {
