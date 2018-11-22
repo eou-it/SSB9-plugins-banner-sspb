@@ -85,3 +85,34 @@ div[ng-grid] {
     -webkit-transform:scale(0.6);
     -moz-transform: scale(1.4);
 }
+
+.pb-boolean input[type="checkbox"] {
+    display: none;
+}
+input[type=checkbox], input[type=radio] {
+    box-sizing: border-box;
+    padding: 0;
+}
+
+label.pb-label.pb-boolean {
+    display: inline-block;
+}
+label.pb-label {
+    size: 1em;
+    font-weight: 400;
+    display: block;
+    margin-top:5px;
+}
+
+.pb-boolean .pb-item.pb-boolean:checked+label {
+    background-image: url(../../angular-components/css/images/checkbox/checkbox-selected_new.svg);
+}
+.pb-boolean .pb-item.pb-boolean+label {
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 1.25em;
+    line-height: 172%;
+    cursor: pointer;
+    padding-left: 30px;
+    background-image: url(../../angular-components/css/images/checkbox/checkbox-default_new.svg);
+}

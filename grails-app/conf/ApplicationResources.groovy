@@ -77,7 +77,7 @@ modules = {
 
         // below file (jquery-ui.css) fixes datepicker display issue
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'jquery-ui.css']
-        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'ng-grid.css']
+        resource url:[plugin: 'banner-sspb', file: 'BannerXE/css/ng-grid.css']
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'angular-ui.css']
         resource url:[plugin: 'banner-ui-ss', dir: 'bootstrap/css', file: 'bootstrap.css']
         resource url: [plugin: 'banner-ui-ss', file: 'css/preference/userpreference.css', attrs: [media: 'screen, projection']]
@@ -94,7 +94,7 @@ modules = {
         defaultBundle environment == "development" ? false : "pageBuilderRTL"
 
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'jquery-ui-rtl.css']
-        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'ng-grid-rtl.css']
+        resource url:[plugin: 'banner-sspb', file: 'BannerXE/css/ng-grid-rtl.css']
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/css', file: 'angular-ui-rtl.css']
         resource url:[plugin: 'banner-ui-ss', dir: 'bootstrap/css', file: 'bootstrap-rtl.css']
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/xe-components/css', file: "xe-ui-components.min-rtl.css"]
