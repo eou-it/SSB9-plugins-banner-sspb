@@ -1,5 +1,5 @@
 <span>
-    <!--Copyright 2013-2016 Ellucian Company L.P. and its affiliates.-->
+    <!--Copyright 2013-2018 Ellucian Company L.P. and its affiliates.-->
     <!--TODO referencing $parent.i18nGet, should not have this dependency-->
     <!--label>{{label}}</label-->
     <input style="text-align:start;"  type="text" ng-model='value' ng-change='processInput()'/> <button class="btn btn-xs" ng-click='openTextareaModal()'>...</button>
@@ -18,7 +18,7 @@
 
         </div>
         <div class="modal-footer">
-            <button class="btn btn-success ok" ng-click="closeTextareaModal()">{{$parent.i18nGet('pb.template.textarea.ok.label')}}</button>
+            <button class="secondary" ng-click="closeTextareaModal()">{{$parent.i18nGet('pb.template.textarea.ok.label')}}</button>
             <!--
             <button class="btn btn-warning cancel" ng-click="cancelMapEditModal()">Cancel</button>
             -->

@@ -1,15 +1,19 @@
 /*******************************************************************************
- Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 *******************************************************************************/
 
 input, textarea, select {
     line-height: normal;
-    border: 1px solid #CCC;
+    border: 1px solid #B2B3B7;
     border-radius: 3px;
 }
 
 input, textarea {
     padding-left: 4px;
+}
+
+:focus, :visited{
+    border-color: #026BC8;
 }
 
 input.hasDatepicker.pb-datetime{
@@ -51,6 +55,30 @@ div[ng-grid] {
     height: 0;
     min-height: 0;
     border-bottom: none;
+}
+
+
+/* common components patch - pagination controls */
+.pagination-container {
+    direction: initial;
+}
+
+.pagination-container .pagination-controls button:hover, .pagination-container .pagination-controls button:focus {
+    background-color: #026BC8;
+    color: #FFFFFF;
+    border: none;
+}
+
+.pagination-container {
+    padding: 0;
+}
+
+#pbid-PageListDetail-record-control-container {
+    padding: 5px 5px;
+}
+
+#pbid-PageListDetail2-record-control-container {
+    padding: 5px 5px;
 }
 
 .ngGrid input[type="checkbox"] {

@@ -1,5 +1,5 @@
 <span>
-    <!--Copyright 2013-2016 Ellucian Company L.P. and its affiliates.-->
+    <!--Copyright 2013-2018 Ellucian Company L.P. and its affiliates.-->
     <!--TODO referencing $parent.i18nGet, should not have this dependency-->
     <!--label>{{label}}</label-->
     <input style="text-align:start;" readonly value='{{map}}'></input> <button class="btn btn-xs" ng-click='openMapEditModal(map)'>...</button>
@@ -21,7 +21,7 @@
                         <input type="number" ng-show='type1=="number"' ng-model='map[key]'/>
                         <input type="checkbox" ng-show='type1=="boolean"' ng-model='map[key]'/>
 
-                        <button class="btn btn-xs" ng-click="deleteEntry(key)">-</button>
+                        <button class="secondary" ng-click="deleteEntry(key)">-</button>
                     </td>
                 </tr>
             </table>
@@ -44,12 +44,12 @@
                         </div>
                     </div>
                 </div>
-                <div><button ng-click='add(newKey, newValue)'>{{$parent.i18nGet('pb.template.map.add.label')}}</button></div>
+                <div><button class="primary" ng-click='add(newKey, newValue)'>{{$parent.i18nGet('pb.template.map.add.label')}}</button></div>
             </form>
 
         </div>
         <div class="modal-footer">
-            <button class="btn btn-success ok" ng-click="closeMapEditModal()">{{$parent.i18nGet('pb.template.map.ok.label')}}</button>
+            <button class="secondary" ng-click="closeMapEditModal()">{{$parent.i18nGet('pb.template.map.ok.label')}}</button>
             <!--
             <button class="btn btn-warning cancel" ng-click="cancelMapEditModal()">Cancel</button>
             -->

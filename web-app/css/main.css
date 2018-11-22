@@ -1,11 +1,11 @@
 /*******************************************************************************
- Copyright 2016 Ellucian Company L.P. and its affiliates.
+ Copyright 2018 Ellucian Company L.P. and its affiliates.
 *******************************************************************************/
 
 body {
     font: 14px "Open Sans", sans-serif;
     line-height: 1.428571429;
-    color: #4F585F;
+    color: #151618;
     background-color: #ffffff;
 }
 
@@ -40,6 +40,15 @@ h6,
 	padding-right: 10px;
 	padding-left: 10px;
     padding-bottom: 2px;
+    margin-bottom: 10px !important;
+}
+
+.pb-datetime {
+    font-size: 12px;
+}
+
+.pbid-PageListBlock{
+    color: #4d4640;
 }
 
 .ui-datepicker table {
@@ -48,4 +57,8 @@ h6,
 
 .ui-datepicker .ui-datepicker-title select {
     font-size: .9em;
+}
+
+.btn-warning:hover {
+    border: 1px solid #026BC8;
 }
