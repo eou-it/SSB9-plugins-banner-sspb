@@ -20,6 +20,14 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 
     <script type="text/javascript">
 
+        $( document ).ready(function() {
+            $('.tabs-below') .css({'height': (($(window).height()) - 265)+'px'});
+
+            $(window).bind('resize', function(){
+                $('.tabs-below') .css({'height': (($(window).height()) - 265)+'px'});
+            });
+        });
+
      var myCustomServices = ['ngResource', 'ui.bootstrap', 'pagebuilder.directives', 'ngMessages', 'extensibility'];
 
     // remove additional properties added by Angular resource when pretty print page source
@@ -959,14 +967,14 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
                             <button class="btn btn-xs" ng-click='discardSourceEdit()' ng-disabled='!sourceEditEnabled'><g:message code="sspb.page.visualbuilder.page.discard.change.label" /></button>
                         </span>
                     </div>
-                    <div class="tabs-below">
+                    <div class="tabs-below" style="overflow-y: scroll; height: 100%">
                         <div class='tab-content' ng-show='!showTree'>
                             <g:textArea name="modelView" ng-model="pageSourceView"
                                         cols="60" rows="30" style="width:90%; height:auto;" required="true" ng-readonly="!sourceEditEnabled" />
                         </div>
 
                         <div class='tab-content' ng-show="showTree">
-                            <div style="width:100%;  overflow-y: scroll; overflow-x: auto; white-space:nowrap; height: 500px;">
+                            <div style="width:100%; white-space:nowrap;">
                                 <ul ng-init="showChildren=true;">
                                     <li ng-repeat="data in pageSource"   ng-include="'tree_item_renderer.html'"></li>
                                 </ul>
