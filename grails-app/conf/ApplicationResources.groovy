@@ -105,6 +105,7 @@ modules = {
         resource url: [plugin: 'banner-ui-ss', file: 'css/preference/userpreference-rtl.css', attrs: [media: 'screen, projection']]
         resource url: [plugin: 'banner-ui-ss', file: 'css/preference/userpreference-rtl-patch.css', attrs: [media: 'screen, projection']]
         resource url:[plugin: 'banner-ui-ss', file: 'js/select2/select2-rtl.css'],           attrs:[media:'screen, projection']
+        resource url:[plugin: 'banner-ui-ss', file: 'css/eds-rtl.css'],             attrs:[media:'screen, projection']
     
     }
 
