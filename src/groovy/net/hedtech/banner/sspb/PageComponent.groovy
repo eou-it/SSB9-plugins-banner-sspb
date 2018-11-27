@@ -379,13 +379,8 @@ class PageComponent {
                    |        <$button ${idAttribute('-pagination-prev-button')} class="secondary previous" ng-disabled="${dataSet}.pagingOptions.currentPage == 1"
                    |            ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1">
                    |        </button>
-                   |        <g:set var="lang" value="\${session.'org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE'} "/>
-                   |        <g:set var="lang1" value="\${ request.getLocale().getLanguage() }"/>        
-                   |        <span ${idAttribute('-pagination-page-count')} ng-if='"\${lang}".indexOf("ar")<0  &&  "\${lang1}".indexOf("ar")<0  '>
+                   |        <span ${idAttribute('-pagination-page-count')}>
                    |        {{${dataSet}.pagingOptions.currentPage}}/{{${dataSet}.numberOfPages()}}
-                   |        </span>
-                   |        <span ${idAttribute('-pagination-page-count')} ng-if='"\${lang}".indexOf("ar")>=0  || "\${lang1}".indexOf("ar")>=0 '>
-                   |        {{${dataSet}.numberOfPages()}}\\{{${dataSet}.pagingOptions.currentPage}}
                    |        </span>
                    |        <$button ${idAttribute('-pagination-next-button')} class="secondary next" ng-disabled="${dataSet}.pagingOptions.currentPage >= ${dataSet}.totalCount/${dataSet}.pagingOptions.pageSize "
                    |            ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1">
