@@ -1,5 +1,5 @@
 <%--
-Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html xmlns="http://www.w3.org/1999/html">
