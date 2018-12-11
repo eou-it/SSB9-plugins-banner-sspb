@@ -1,5 +1,5 @@
 <%--
-Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page import="net.hedtech.banner.virtualDomain.VirtualDomain" %>
 <!DOCTYPE html>
@@ -39,28 +39,31 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
 </head>
 
 <body>
-<div id="content"  class="customPage container-fluid" >
+<div id="content"  class="customPage container-fluid vdPage" >
 <h3><g:message code="sspb.page.virtualdomain.heading" /></h3>
-<br/>
-<g:form name="LoadVDForm" action="loadVirtualDomain">
-    <label><g:message code="sspb.page.virtualdomain.select.label" /></label>
-    <g:select name="vdServiceName"
-              from="${VirtualDomain.list().sort{it.serviceName}}"
-              value="${pageInstance?.vdServiceName}"
-              noSelection="${['null':message(code:"sspb.page.virtualdomain.select.noselection.label")]}"
-              optionKey="serviceName"
-              optionValue="serviceName"
-              onChange="this.form.submit()"
-    />
-</g:form>
+<div class="vd-section">
+    <g:form name="LoadVDForm" action="loadVirtualDomain">
+        <label><g:message code="sspb.page.virtualdomain.select.label" /></label>
+        <g:select name="vdServiceName"
+                from="${VirtualDomain.list().sort{it.serviceName}}"
+                value="${pageInstance?.vdServiceName}"
+                noSelection="${['null':message(code:"sspb.page.virtualdomain.select.noselection.label")]}"
+                optionKey="serviceName"
+                optionValue="serviceName"
+                onChange="this.form.submit()"
+        />
+    </g:form>
+</div>
 
-<br/>
 <g:form name="ComposeVDForm" action="saveVirtualDomain">
-    <label><g:message code="sspb.page.virtualdomain.servicename.label" /></label>
-    <input maxlength="60"  pattern="^[a-zA-Z]+[a-zA-Z0-9_-]*$" type="text" name="vdServiceName" value="${pageInstance?.vdServiceName}" required />
-    <g:actionSubmit action="saveVirtualDomain" value="${message(code:"sspb.page.virtualdomain.save.label")}" />
-    <g:actionSubmit action="deleteVirtualDomain" value="${message(code:"sspb.page.virtualdomain.delete.label")}" />
-<br/>
+    <div class="vd-section-2">
+        <label><g:message code="sspb.page.virtualdomain.servicename.label" /></label>
+        <input maxlength="60"  pattern="^[a-zA-Z]+[a-zA-Z0-9_-]*$" type="text" name="vdServiceName" value="${pageInstance?.vdServiceName}" required />
+        
+        <g:actionSubmit action="saveVirtualDomain" class="primary" value="${message(code:"sspb.page.virtualdomain.save.label")}" />
+        <g:actionSubmit action="deleteVirtualDomain" class="secondary" value="${message(code:"sspb.page.virtualdomain.delete.label")}" />
+    </div>
+
 
 <table>
 <tr>
@@ -101,7 +104,8 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
     ${message(code:"sspb.page.virtualdomain.query.result.parameters.label")}
     <input type="text" id="vdTestParameters" name="vdTestParameters" value="${pageInstance.vdTestParameters?pageInstance.vdTestParameters:""}" />
     <input type="hidden"  name="vdServiceName" value="${pageInstance?.vdServiceName}" />
-    <input type="button" value="${message(code:"sspb.page.virtualdomain.query.result.test.label")}" id="getDataButton"/>
+    <input type="button" class="primary" value="${message(code:"sspb.page.virtualdomain.query.result.test.label")}" id="getDataButton"/>
+    <br/>
     <br/>
     <textarea id="testarea1" rows="5" readonly style="width:98%"></textarea>
     """

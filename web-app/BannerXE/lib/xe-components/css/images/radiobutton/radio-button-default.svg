@@ -9,7 +9,7 @@
             <g id="Radio-Button-default-+-Radio-Button-selected-+-Check-box-Copy" sketch:type="MSLayerGroup" transform="translate(18.000000, 6217.500000)">
                 <g id="Radio-Button-default" transform="translate(133.000000, 29.000000)" sketch:type="MSShapeGroup">
                     <g id="Rectangle-38-+-Shape-2">
-                        <ellipse id="Oval-119" cx="10" cy="10" rx="10" ry="10"></ellipse>
+                        <ellipse id="Oval-119" fill="#FFFFFF" stroke="#B2B3B7" stroke-width="1" cx="10" cy="10" rx="10" ry="10"></ellipse>
                     </g>
                 </g>
             </g>

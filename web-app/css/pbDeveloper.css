@@ -107,7 +107,7 @@ legend {
     color: #4F585F;
     /*border-bottom: 1px solid #e5e5e5;*/
     /*margin-bottom: 0;*/
-    border: 1px solid #9AC0D2;
+    border: 1px solid #026BC8;
     padding: 15px 25px;
 }
 
@@ -236,6 +236,16 @@ input[name="prop_objectName"] {
     text-transform: uppercase !important;
 }
 
+.btn-section-2 {
+    margin-top: 1px;
+    margin-bottom: 6px;
+}
+
+.btn-section button{
+    margin-right: 1px;
+    margin-left: 1px;
+}
+
 /* End Visual Page Composer */
 
 /* Start Virtual Domain Composer (mainly moved from main.css) */
@@ -324,7 +334,8 @@ textarea {
 input:invalid, select:invalid, textarea:invalid {
 	background: #fff3f3;
 	border-color: #ffaaaa;
-	color: #cc0000;
+    color: #cc0000;
+    padding: 0.4em 0.4em;
 }
 
 #vdQueryView, #vdDeleteView, #vdPostView, #vdPutView {
@@ -332,4 +343,39 @@ input:invalid, select:invalid, textarea:invalid {
     padding: 5px 10px;
 }
 
+.vd-section {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+.vd-section select {
+    height: 30px;
+}
+.vd-section-2 {
+    margin-bottom: 10px;
+}
+.vdPage input[type='text'], textarea {
+    padding: 5px 5px;
+}
 /* End Virtual Domain Composer */
+
+
+/* CSS Manager */
+
+.cssPage input, select, textarea {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 12px;
+}
+
+.cssPage select {
+    height: 30px;
+}
+
+.cssPage textarea {
+    font-size: 12px;
+}
+
+/*This css is for pagebuilder landing page mapping it with the CTA Color*/
+.pb-block a, .pb-link span{
+  color: #026BC8;
+}

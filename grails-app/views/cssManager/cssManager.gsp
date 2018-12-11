@@ -1,5 +1,5 @@
 <%--
-Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html xmlns="http://www.w3.org/1999/html">
@@ -198,22 +198,23 @@ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
     </script>
 </head>
 <body>
-    <div id="content" ng-controller="CssManagerController" class="customPage container-fluid">
+    <div id="content" ng-controller="CssManagerController" class="customPage container-fluid cssPage">
 
-        <label><g:message code="sspb.css.cssManager.load.label" /></label>
-        <select name="constantName"
-                ng-options="css.css.constantName as css.css.constantName for css in cssList"
-                ng-model="cssName"
-                ng-change="getCssSource()"></select>
-
-        <button ng-click='loadCssNames()'><g:message code="sspb.css.cssManager.reload.pages.label" /></button>
-        <div>
-        <button ng-click='newCssSource()'><g:message code="sspb.css.cssManager.newCss.label" /></button>
-        <button ng-click='submitCssSource()'><g:message code="sspb.css.cssManager.save.label" /></button>
-        <pb-Upload label='Upload Stylesheet' status='cssStatus' pb-change='loadCssNames()'></pb-Upload>
-        <button ng-click="getCssSource()"><g:message code="sspb.css.cssManager.reload.label" /></button>
-        <button ng-click='deleteCssSource()'><g:message code="sspb.css.cssManager.delete.label" /></button>
-
+        <div class="btn-section">
+            <label><g:message code="sspb.css.cssManager.load.label" /></label>
+            <select name="constantName"
+                    ng-options="css.css.constantName as css.css.constantName for css in cssList"
+                    ng-model="cssName"
+                    ng-change="getCssSource()">
+            </select>
+            <button class="secondary" ng-click='loadCssNames()'><g:message code="sspb.css.cssManager.reload.pages.label" /></button>
+        </div>
+        <div class="btn-section-2">
+            <button class="primary" ng-click='newCssSource()'><g:message code="sspb.css.cssManager.newCss.label" /></button>
+            <button class="secondary" ng-click='submitCssSource()'><g:message code="sspb.css.cssManager.save.label" /></button>
+            <pb-Upload label='Upload Stylesheet' status='cssStatus' pb-change='loadCssNames()'></pb-Upload>
+            <button class="secondary" ng-click="getCssSource()"><g:message code="sspb.css.cssManager.reload.label" /></button>
+            <button class="secondary" ng-click='deleteCssSource()'><g:message code="sspb.css.cssManager.delete.label" /></button>
         </div>
         <div class="form-horizontal" ng-form="cssform">
             <div class="control-group">

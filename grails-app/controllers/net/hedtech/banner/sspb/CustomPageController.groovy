@@ -10,6 +10,7 @@ class CustomPageController {
     def groovyPagesTemplateEngine
     def compileService
     def grailsApplication
+    def pageService
 
     def page() {
         if (params.id=="menu") {    //Work around aurora issue calling this 'page'. Todo: analyse and provide better fix
@@ -34,7 +35,7 @@ class CustomPageController {
     }
 
     private def renderGsp(String templateString, String pageName) {
-        def t = groovyPagesTemplateEngine.createTemplate(templateString, "${pageName}.gsp")
+        def t = groovyPagesTemplateEngine.createTemplate(templateString, "${pageName}")
         def writer = new StringWriter()
         t.make().writeTo(writer)
         return writer.toString()
@@ -52,7 +53,11 @@ class CustomPageController {
                 html = compileService.assembleFinalPage(page.compiledView, page.compiledController)
             }
             if (html) {
-                render renderGsp(html, "Page$pageId")
+                def pageName = pageId+'_'+page.version+".gsp"
+                 if(!groovyPagesTemplateEngine.pageCache.get(pageName)){
+                     pageService.compilePage(page)
+                }
+                render renderGsp(html, pageName)
             } else {
                 invalidPage(message(code: "sspb.renderer.page.does.not.exist"))
             }

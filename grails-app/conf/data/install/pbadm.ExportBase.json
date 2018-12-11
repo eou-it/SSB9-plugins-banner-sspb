@@ -1,191 +1,193 @@
 {
+   "constantName": "pbadm.ExportBase",
    "extendsPage": null,
-   "pageRoles": [],
-   "fileTimestamp": "2016-12-12T09:58:36Z",
+   "fileTimestamp": "2018-11-13T11:51:35Z",
    "modelView": {
-      "title": "Export artifacts basepage",
-      "scriptingLanguage": "JavaScript",
-      "name": "pbadmExportBase",
-      "documentation": "This page is the base for a number of export pages and contains common definitions",
-      "label": "Export artifacts basepage",
-      "importCSS": "xeStyle",
       "components": [
          {
-            "staticData": [],
             "name": "exportResource",
             "resource": "objectexports",
+            "staticData": [],
             "type": "resource"
          },
          {
+            "name": "exportTargetRes",
             "staticData": [
                {
-                  "description": "Server File System",
-                  "code": "S"
+                  "code": "S",
+                  "description": "Server File System"
                },
                {
-                  "description": "Download to client",
-                  "code": "C"
+                  "code": "C",
+                  "description": "Download to client"
                }
             ],
-            "name": "exportTargetRes",
             "type": "resource"
          },
          {
-            "onError": "var msg;  \nif (response.data.errors.errorMessage) {\n  msg = response.data.errors.errorMessage;\n} else if (response.data.errors[0].errorMessage) {\n  msg=response.data.errors[0].errorMessage;\n} else {\n  msg=response.statusText;\n}\nif (msg) {\n  alert(msg,{type:\"error\"});\n}",
-            "model": "exportResource.serviceName",
-            "onLoad": "function download(p){\n    if(!p) return;\n    var theAnchor = $('<a />')\n        .attr('href', p.header+p.data)\n        .attr('download', p.fileName)\n        // Firefox does not fires click if the link is outside\n        // the DOM\n        .appendTo('body');\n    \n    theAnchor[0].click(); \n    theAnchor.remove();\n}\n\n//Define keys to remove using + to avoid replacement with PB variables\nvar keys={};\nkeys[ \"$\"+\"resolved\"]= true;\nkeys[\"$\"+\"$\"+\"hashKey\"]= true;\nkeys[\"$\"+\"promise\"]=true;\n\n// remove additional properties added by Angular resource when pretty print source\nfunction jsonFilter(key, value) {\n    return keys[key]?undefined:value;\n}\n\n\nif (data && data.serviceName){\n    var params = {\n          fileName: 'objects.'+data.serviceName+'.json',\n          header: 'data:text/csv;charset=utf8,',\n          data: encodeURIComponent(JSON.stringify(data,jsonFilter,3))\n    };\n    download(params);\n    alert(\"Exported virtual domain: \"+ data.serviceName,{flash: true});\n} else {\n    alert('Unable to save data - unexpected format.', {type:\"error\"});   \n}",
-            "name": "getExport",
             "documentation": "",
-            "parameters": {"id": "$exportId"},
-            "type": "data",
-            "loadInitially": false
+            "loadInitially": false,
+            "model": "exportResource.serviceName",
+            "name": "getExport",
+            "onError": "var msg;  \nif (response.data.errors.errorMessage) {\n  msg = response.data.errors.errorMessage;\n} else if (response.data.errors[0].errorMessage) {\n  msg=response.data.errors[0].errorMessage;\n} else {\n  msg=response.statusText;\n}\nif (msg) {\n  alert(msg,{type:\"error\"});\n}",
+            "onLoad": "function download(p){\n    if(!p) return;\n    var theAnchor = $('<a />')\n        .attr('href', p.header+p.data)\n        .attr('download', p.fileName)\n        // Firefox does not fires click if the link is outside\n        // the DOM\n        .appendTo('body');\n    \n    theAnchor[0].click(); \n    theAnchor.remove();\n}\n\n//Define keys to remove using + to avoid replacement with PB variables\nvar keys={};\nkeys[ \"$\"+\"resolved\"]= true;\nkeys[\"$\"+\"$\"+\"hashKey\"]= true;\nkeys[\"$\"+\"promise\"]=true;\n\n// remove additional properties added by Angular resource when pretty print source\nfunction jsonFilter(key, value) {\n    return keys[key]?undefined:value;\n}\n\n\nif (data && data.serviceName){\n    var params = {\n          fileName: 'objects.'+data.serviceName+'.json',\n          header: 'data:text/csv;charset=utf8,',\n          data: encodeURIComponent(JSON.stringify(data,jsonFilter,3))\n    };\n    download(params);\n    alert(\"Exported virtual domain: \"+ data.serviceName,{flash: true});\n} else {\n    alert('Unable to save data - unexpected format.', {type:\"error\"});   \n}",
+            "parameters": {
+               "id": "$exportId"
+            },
+            "type": "data"
          },
          {
-            "name": "SelectBlock",
-            "showInitially": true,
-            "label": "",
             "components": [
                {
-                  "model": "",
-                  "validation": {},
-                  "placeholder": "Filter...",
-                  "name": "nameFilter",
                   "label": "Name Filter",
-                  "parameters": {},
-                  "type": "text",
-                  "required": false,
+                  "loadInitially": false,
+                  "model": "",
+                  "name": "nameFilter",
                   "onUpdate": "var cnt = 1000;\nif ($exportGridDS.pageSize!=cnt) {\n  $exportGridDS.pageSize=cnt;\n  $exportGridDS.pagingOptions.pageSizes[0]=cnt;\n  $exportGridDS.pagingOptions.pageSize=cnt;\n  $exportGridDS.pagingOptions.currentPage=1;\n}\n$exportGrid.$load();",
+                  "parameters": {},
+                  "placeholder": "Filter...",
                   "readonly": false,
-                  "loadInitially": false
+                  "required": false,
+                  "type": "text",
+                  "validation": {}
                },
                {
-                  "model": "",
-                  "validation": {},
-                  "placeholder": "Page...",
-                  "name": "pageFilter",
-                  "value": "",
                   "label": "Used by page like",
-                  "parameters": {},
-                  "type": "text",
-                  "required": false,
+                  "loadInitially": false,
+                  "model": "",
+                  "name": "pageFilter",
                   "onUpdate": "var cnt = 1000;\nif ($exportGridDS.pageSize!=cnt) {\n  $exportGridDS.pageSize=cnt;\n  $exportGridDS.pagingOptions.pageSizes[0]=cnt;\n  $exportGridDS.pagingOptions.pageSize=cnt;\n  $exportGridDS.pagingOptions.currentPage=1;\n}\n$exportGrid.$load();",
+                  "parameters": {},
+                  "placeholder": "Page...",
                   "readonly": false,
-                  "loadInitially": false
+                  "required": false,
+                  "type": "text",
+                  "validation": {},
+                  "value": ""
                }
             ],
+            "label": "",
+            "name": "SelectBlock",
+            "showInitially": true,
             "type": "block"
          },
          {
-            "name": "ShowForm",
-            "nextButtonLabel": "",
-            "showInitially": true,
-            "label": "Filtered Objects",
             "components": [
                {
-                  "name": "Intro",
-                  "value": "The table below shows the Page Builder virtual domains matching the Virtual domain Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button.",
                   "label": "",
-                  "type": "literal"
+                  "name": "Intro",
+                  "type": "literal",
+                  "value": "The table below shows the Page Builder virtual domains matching the Virtual domain Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button."
                },
                {
-                  "sourceModel": "exportTargetRes",
-                  "valueKey": "code",
-                  "sourceParameters": {},
-                  "name": "exportTarget",
-                  "labelKey": "description",
-                  "value": "C",
                   "label": "Export Target",
-                  "type": "radio",
+                  "labelKey": "description",
+                  "loadInitially": true,
+                  "name": "exportTarget",
                   "required": false,
-                  "loadInitially": true
+                  "sourceModel": "exportTargetRes",
+                  "sourceParameters": {},
+                  "type": "radio",
+                  "value": "C",
+                  "valueKey": "code"
                },
                {
-                  "onClick": "$exportGrid.$data.forEach(\n   function (data, index) {\n      data.export = 1;\n       $exportGrid.$setModified(data); // Using undocumented method\n   }\n);",
-                  "valueStyle": "primary",
-                  "name": "markAll",
                   "label": "Select all for export",
-                  "type": "button"
+                  "name": "markAll",
+                  "onClick": "$exportGrid.$data.forEach(\n   function (data, index) {\n      data.export = 1;\n       $exportGrid.$setModified(data); // Using undocumented method\n   }\n);",
+                  "type": "button",
+                  "valueStyle": "primary"
                },
                {
-                  "model": "exportResource",
-                  "onLoad": "//Clear internal array to bypass default behavior\n$exportGridDS.modified.removeAll();",
-                  "submit": "",
-                  "pageSize": 5,
-                  "onSave": "var exportDone = false; // return false use the default save handler\nif ($exportTarget == 'C')  {\n\tvar count = 0;\n\tfunction getOne(data, index) {\n\t\tif (data.export) {\n\t\t\t$exportId=data.serviceName;\n\t\t\t$getExport.$get();\n\t\t\tcount++;\n\t\t}\n\t}\n\t$exportGrid.$data.forEach( getOne);\n\tconsole.log(\"Started download of\",count,\" files.\");\n\texportDone = true; // well, it is kicked off - the download is started asynch\n}\nreturn exportDone;",
-                  "label": "Objects to export",
-                  "type": "grid",
-                  "allowModify": true,
                   "allowDelete": false,
+                  "allowModify": true,
+                  "allowNew": false,
                   "allowReload": true,
+                  "components": [
+                     {
+                        "asHtml": false,
+                        "label": "Name",
+                        "loadInitially": true,
+                        "model": "serviceName",
+                        "name": "id",
+                        "type": "display",
+                        "value": ""
+                     },
+                     {
+                        "label": "Last update",
+                        "loadInitially": true,
+                        "model": "lastUpdated",
+                        "name": "lastUpdated",
+                        "parameters": {},
+                        "readonly": true,
+                        "required": false,
+                        "type": "datetime",
+                        "validation": {}
+                     },
+                     {
+                        "label": "Timestamp File",
+                        "loadInitially": true,
+                        "model": "fileTimestamp",
+                        "name": "fileTimestamp",
+                        "parameters": {},
+                        "readonly": true,
+                        "required": false,
+                        "type": "datetime",
+                        "validation": {}
+                     },
+                     {
+                        "booleanFalseValue": "0",
+                        "booleanTrueValue": "1",
+                        "label": "Select for Export",
+                        "loadInitially": true,
+                        "model": "export",
+                        "name": "export",
+                        "onUpdate": "",
+                        "readonly": false,
+                        "type": "boolean",
+                        "value": "1"
+                     },
+                     {
+                        "description": "Click to download this virtual domain",
+                        "label": "Download",
+                        "name": "downloadLink",
+                        "onClick": "$exportId=item.serviceName;\n$getExport.$get();",
+                        "replaceView": true,
+                        "type": "link"
+                     }
+                  ],
+                  "label": "Objects to export",
+                  "loadInitially": false,
+                  "model": "exportResource",
                   "name": "exportGrid",
+                  "onLoad": "//Clear internal array to bypass default behavior\n$exportGridDS.modified.removeAll();",
+                  "onSave": "var exportDone = false; // return false use the default save handler\nif ($exportTarget == 'C')  {\n\tvar count = 0;\n\tfunction getOne(data, index) {\n\t\tif (data.export) {\n\t\t\t$exportId=data.serviceName;\n\t\t\t$getExport.$get();\n\t\t\tcount++;\n\t\t}\n\t}\n\t$exportGrid.$data.forEach( getOne);\n\tconsole.log(\"Started download of\",count,\" files.\");\n\texportDone = true; // well, it is kicked off - the download is started asynch\n}\nreturn exportDone;",
+                  "onSaveSuccess": "if (response.export == \"1\") {\n  alert( \"Exported virtual domain: \" + response.serviceName, {flash: true});\n}",
+                  "pageSize": 5,
                   "parameters": {
                      "pageLike": "$pageFilter",
                      "serviceName": "$nameFilter"
                   },
-                  "allowNew": false,
-                  "components": [
-                     {
-                        "model": "serviceName",
-                        "name": "id",
-                        "value": "",
-                        "label": "Name",
-                        "type": "display",
-                        "loadInitially": true,
-                        "asHtml": false
-                     },
-                     {
-                        "model": "lastUpdated",
-                        "validation": {},
-                        "name": "lastUpdated",
-                        "label": "Last update",
-                        "parameters": {},
-                        "type": "datetime",
-                        "required": false,
-                        "readonly": true,
-                        "loadInitially": true
-                     },
-                     {
-                        "model": "fileTimestamp",
-                        "validation": {},
-                        "name": "fileTimestamp",
-                        "label": "Timestamp File",
-                        "parameters": {},
-                        "type": "datetime",
-                        "required": false,
-                        "readonly": true,
-                        "loadInitially": true
-                     },
-                     {
-                        "model": "export",
-                        "name": "export",
-                        "value": "1",
-                        "booleanTrueValue": "1",
-                        "label": "Select for Export",
-                        "type": "boolean",
-                        "onUpdate": "",
-                        "readonly": false,
-                        "loadInitially": true,
-                        "booleanFalseValue": "0"
-                     },
-                     {
-                        "onClick": "$exportId=item.serviceName;\n$getExport.$get();",
-                        "description": "Click to download this virtual domain",
-                        "name": "downloadLink",
-                        "label": "Download",
-                        "type": "link",
-                        "replaceView": true
-                     }
-                  ],
                   "refreshDataLabel": "Clear Selection",
-                  "loadInitially": false,
                   "saveDataLabel": "Export",
-                  "onSaveSuccess": "if (response.export == \"1\") {\n  alert( \"Exported virtual domain: \" + response.serviceName, {flash: true});\n}"
+                  "submit": "",
+                  "type": "grid"
                }
             ],
+            "label": "Filtered Objects",
+            "name": "ShowForm",
+            "nextButtonLabel": "",
+            "showInitially": true,
             "type": "form"
          }
       ],
+      "documentation": "This page is the base for a number of export pages and contains common definitions",
+      "importCSS": "xeStyle",
+      "label": "Export artifacts basepage",
+      "name": "pbadmExportBase",
+      "scriptingLanguage": "JavaScript",
+      "title": "Export artifacts basepage",
       "type": "page"
    },
-   "constantName": "pbadm.ExportBase"
+   "pageRoles": []
 }

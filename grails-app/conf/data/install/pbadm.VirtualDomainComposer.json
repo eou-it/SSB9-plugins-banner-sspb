@@ -1,31 +1,32 @@
 {
    "constantName": "pbadm.VirtualDomainComposer",
    "extendsPage": null,
+   "fileTimestamp": "2018-11-13T11:51:36Z",
    "modelView": {
       "components": [
          {
-            "resource": "virtualDomains.pbadmSdeToolCode",
             "name": "codeGen",
-            "type": "resource",
-            "staticData": []
-         },
-         {
-            "resource": "virtualDomains.pbadmSdeTables",
-            "name": "sdeTables",
-            "type": "resource",
-            "staticData": []
-         },
-         {
-            "resource": "virtualdomains",
-            "name": "vdResource",
-            "type": "resource",
-            "staticData": []
-         },
-         {
             "resource": "virtualDomains.pbadmSdeToolCode",
+            "staticData": [],
+            "type": "resource"
+         },
+         {
+            "name": "sdeTables",
+            "resource": "virtualDomains.pbadmSdeTables",
+            "staticData": [],
+            "type": "resource"
+         },
+         {
+            "name": "vdResource",
+            "resource": "virtualdomains",
+            "staticData": [],
+            "type": "resource"
+         },
+         {
             "name": "testResource",
-            "type": "resource",
-            "staticData": []
+            "resource": "virtualDomains.pbadmSdeToolCode",
+            "staticData": [],
+            "type": "resource"
          },
          {
             "components": [
@@ -33,89 +34,95 @@
                   "components": [
                      {
                         "label": "Virtual Domain",
-                        "loadInitially": true,
-                        "type": "select",
-                        "required": false,
-                        "sourceParameters": {"noData": "\"TRUE\""},
-                        "name": "selectVirtualDomain",
-                        "sourceModel": "vdResource",
-                        "style": "col-md-4",
-                        "placeholder": "None",
                         "labelKey": "serviceName",
-                        "valueKey": "serviceName",
+                        "loadInitially": true,
+                        "name": "selectVirtualDomain",
                         "onUpdate": "$virtualDomain.$load()",
-                        "value": "None"
+                        "placeholder": "None",
+                        "required": false,
+                        "sourceModel": "vdResource",
+                        "sourceParameters": {
+                           "noData": "\"TRUE\""
+                        },
+                        "style": "col-md-4",
+                        "type": "select",
+                        "value": "None",
+                        "valueKey": "serviceName"
                      },
                      {
                         "components": [
                            {
                               "label": "SDE enabled table",
+                              "labelKey": "GOBSDTB_TABLE_NAME",
                               "loadInitially": true,
-                              "type": "select",
-                              "required": false,
-                              "sourceParameters": {},
+                              "model": "",
                               "name": "tablesChoice",
                               "onLoad": "",
-                              "model": "",
-                              "sourceModel": "sdeTables",
-                              "style": "col-md-4",
+                              "onUpdate": "$generatedCode.$load()",
                               "placeholder": "Select to generate statements",
-                              "labelKey": "GOBSDTB_TABLE_NAME",
-                              "valueKey": "GOBSDTB_TABLE_NAME",
-                              "onUpdate": "$generatedCode.$load()"
+                              "required": false,
+                              "sourceModel": "sdeTables",
+                              "sourceParameters": {},
+                              "style": "col-md-4",
+                              "type": "select",
+                              "valueKey": "GOBSDTB_TABLE_NAME"
                            },
                            {
-                              "onClick": "console.log('vd selection:'+$virtualDomain.$selection);\nif($virtualDomain.$data.length==0) {\n  alert(\"Select an existing or create a new Virtual Domain\");\n  return;\n}\nif (!$virtualDomain) {\n  $virtualDomain=$virtualDomain.$data[0];\n}\nif ($tablesChoice && $generatedCode) {\n  $virtualDomain.codeGet  = $generatedCode.$data[0].SQL_STATEMENT; \n  $virtualDomain.codePost = $generatedCode.$data[1].SQL_STATEMENT; \n  $virtualDomain.codePut   = $generatedCode.$data[2].SQL_STATEMENT;\n  $virtualDomain.codeDelete = $generatedCode.$data[3].SQL_STATEMENT\n  $virtualDomain.$setModified($virtualDomain);\n} else {\n  alert(\"Select an SDE enabled Table first\");\n}",
-                              "name": "generator",
-                              "style": "col-md-2",
                               "label": "&#9881;",
+                              "name": "generator",
+                              "onClick": "console.log('vd selection:'+$virtualDomain.$selection);\nif($virtualDomain.$data.length==0) {\n  alert(\"Select an existing or create a new Virtual Domain\");\n  return;\n}\nif (!$virtualDomain) {\n  $virtualDomain=$virtualDomain.$data[0];\n}\nif ($tablesChoice && $generatedCode) {\n  $virtualDomain.codeGet  = $generatedCode.$data[0].SQL_STATEMENT; \n  $virtualDomain.codePost = $generatedCode.$data[1].SQL_STATEMENT; \n  $virtualDomain.codePut   = $generatedCode.$data[2].SQL_STATEMENT;\n  $virtualDomain.codeDelete = $generatedCode.$data[3].SQL_STATEMENT\n  $virtualDomain.$setModified($virtualDomain);\n} else {\n  alert(\"Select an SDE enabled Table first\");\n}",
+                              "style": "col-md-2",
                               "type": "button"
                            },
                            {
-                              "components": [{
-                                 "allowDelete": false,
-                                 "components": [
-                                    {
-                                       "readonly": true,
-                                       "name": "template",
-                                       "model": "GOBSDCT_NAME",
-                                       "label": "Template",
-                                       "loadInitially": true,
-                                       "type": "text",
-                                       "parameters": {},
-                                       "required": false,
-                                       "validation": {}
+                              "components": [
+                                 {
+                                    "allowDelete": false,
+                                    "allowModify": false,
+                                    "allowNew": false,
+                                    "allowReload": true,
+                                    "components": [
+                                       {
+                                          "label": "Template",
+                                          "loadInitially": true,
+                                          "model": "GOBSDCT_NAME",
+                                          "name": "template",
+                                          "parameters": {},
+                                          "readonly": true,
+                                          "required": false,
+                                          "type": "text",
+                                          "validation": {}
+                                       },
+                                       {
+                                          "asHtml": false,
+                                          "loadInitially": true,
+                                          "model": "GOBSDCT_DESC",
+                                          "name": "description",
+                                          "type": "display"
+                                       },
+                                       {
+                                          "loadInitially": true,
+                                          "model": "SQL_STATEMENT",
+                                          "name": "sqlStatement",
+                                          "parameters": {},
+                                          "readonly": true,
+                                          "required": false,
+                                          "type": "textArea",
+                                          "validation": {}
+                                       }
+                                    ],
+                                    "label": "Generated Code",
+                                    "loadInitially": false,
+                                    "model": "codeGen",
+                                    "name": "generatedCode",
+                                    "onLoad": "",
+                                    "pageSize": 5,
+                                    "parameters": {
+                                       "table_name": "$tablesChoice"
                                     },
-                                    {
-                                       "asHtml": false,
-                                       "name": "description",
-                                       "model": "GOBSDCT_DESC",
-                                       "loadInitially": true,
-                                       "type": "display"
-                                    },
-                                    {
-                                       "readonly": true,
-                                       "name": "sqlStatement",
-                                       "model": "SQL_STATEMENT",
-                                       "loadInitially": true,
-                                       "type": "textArea",
-                                       "parameters": {},
-                                       "required": false,
-                                       "validation": {}
-                                    }
-                                 ],
-                                 "allowNew": false,
-                                 "pageSize": 5,
-                                 "label": "Generated Code",
-                                 "loadInitially": false,
-                                 "type": "detail",
-                                 "name": "generatedCode",
-                                 "allowModify": false,
-                                 "onLoad": "",
-                                 "model": "codeGen",
-                                 "allowReload": true,
-                                 "parameters": {"table_name": "$tablesChoice"}
-                              }],
+                                    "type": "detail"
+                                 }
+                              ],
                               "name": "codeHidden",
                               "showInitially": false,
                               "type": "block"
@@ -134,81 +141,83 @@
                },
                {
                   "allowDelete": true,
+                  "allowModify": true,
+                  "allowNew": true,
+                  "allowReload": true,
                   "components": [
                      {
-                        "readonly": false,
-                        "name": "serviceName",
-                        "model": "serviceName",
                         "label": "Service Name",
                         "loadInitially": true,
-                        "placeholder": "Enter a Service Name",
-                        "type": "text",
+                        "model": "serviceName",
+                        "name": "serviceName",
                         "parameters": {},
+                        "placeholder": "Enter a Service Name",
+                        "readonly": false,
                         "required": true,
+                        "type": "text",
                         "validation": {}
                      },
                      {
-                        "readonly": false,
-                        "name": "codeGet",
-                        "model": "codeGet",
-                        "style": "col-md-6",
                         "label": "Select statement (get)",
                         "loadInitially": true,
-                        "type": "textArea",
+                        "model": "codeGet",
+                        "name": "codeGet",
                         "parameters": {},
-                        "value": "",
+                        "readonly": false,
                         "required": false,
-                        "validation": {}
+                        "style": "col-md-6",
+                        "type": "textArea",
+                        "validation": {},
+                        "value": ""
                      },
                      {
-                        "readonly": false,
-                        "name": "codeDelete",
-                        "model": "codeDelete",
-                        "style": "col-md-6",
                         "label": "Delete statement",
                         "loadInitially": true,
-                        "type": "textArea",
+                        "model": "codeDelete",
+                        "name": "codeDelete",
                         "parameters": {},
+                        "readonly": false,
                         "required": false,
+                        "style": "col-md-6",
+                        "type": "textArea",
                         "validation": {}
                      },
                      {
-                        "readonly": false,
-                        "name": "codePost",
-                        "model": "codePost",
-                        "style": "col-md-6",
                         "label": "Create statement (post)",
                         "loadInitially": true,
-                        "type": "textArea",
+                        "model": "codePost",
+                        "name": "codePost",
                         "parameters": {},
+                        "readonly": false,
                         "required": false,
+                        "style": "col-md-6",
+                        "type": "textArea",
                         "validation": {}
                      },
                      {
-                        "readonly": false,
-                        "name": "codePut",
-                        "model": "codePut",
-                        "style": "col-md-6",
                         "label": "Update statement (put)",
                         "loadInitially": true,
-                        "type": "textArea",
+                        "model": "codePut",
+                        "name": "codePut",
                         "parameters": {},
+                        "readonly": false,
                         "required": false,
+                        "style": "col-md-6",
+                        "type": "textArea",
                         "validation": {}
                      }
                   ],
+                  "loadInitially": false,
+                  "model": "vdResource",
+                  "name": "virtualDomain",
                   "onError": "var errorMessage =response.data.errors? response.data.errors.errorMessage: null;\n  if (response.data.errors.errorMessage) {\n    alert(response.data.errors.errorMessage,{type:\"error\"});\n  }\n  else if (response.data.errors[0].errorMessage) {\n    alert(response.data.errors[0].errorMessage,{type:\"error\"});\n  } else {\n    alert(errorMessage?errorMessage:response.data, {type:\"error\"});\n  }",
-                  "allowNew": true,
+                  "onLoad": "$vdTestBlock.$visible=true;",
                   "onSaveSuccess": "var msg=\"Saved Virtual Domain \" + response.serviceName;\nif (action==\"D\") {\n   msg=\"Deleted Virtual Domain \" + response.serviceName;\n}\nalert( msg,{type:\"success\", flash:true});\n\nif (action!=\"U\" || !$selectVirtualDomain) {\n  $selectVirtualDomain.$load({paging:true,clearCache:true});\n}\n\nif (action==\"C\") {\n$selectVirtualDomain=$virtualDomain.serviceName;\n}\n\n$vdTestBlock.$visible=true;",
                   "pageSize": 1,
-                  "loadInitially": false,
-                  "type": "detail",
-                  "name": "virtualDomain",
-                  "allowModify": true,
-                  "onLoad": "$vdTestBlock.$visible=true;",
-                  "model": "vdResource",
-                  "allowReload": true,
-                  "parameters": {"serviceName": "nvl($selectVirtualDomain,-1)"}
+                  "parameters": {
+                     "serviceName": "nvl($selectVirtualDomain,-1)"
+                  },
+                  "type": "detail"
                }
             ],
             "name": "virtualDomainsBlock",
@@ -218,27 +227,29 @@
          {
             "components": [
                {
+                  "loadInitially": false,
+                  "model": "testResource",
                   "name": "testData",
                   "onLoad": "$displayTestData = JSON.stringify($testData.$data, null, 2);",
-                  "model": "testResource",
-                  "loadInitially": false,
-                  "type": "data",
-                  "parameters": {"debug": "\"true\""}
+                  "parameters": {
+                     "debug": "\"true\""
+                  },
+                  "type": "data"
                },
                {
-                  "onClick": "if (!$originalUrl) {\n  $originalUrl = $testResource.resourceURL;\n}\n\n$testResource.resourceURL=$originalUrl.replace('pbadmSdeToolCode', $virtualDomain.serviceName);\nconsole.log('Origin', $originalUrl, 'New Test Url',$testResource.resourceURL);\n$testData.$setResource($testResource);\n$testData.$load();",
-                  "name": "testIt",
                   "label": "Test",
+                  "name": "testIt",
+                  "onClick": "if (!$originalUrl) {\n  $originalUrl = $testResource.resourceURL;\n}\n\n$testResource.resourceURL=$originalUrl.replace('pbadmSdeToolCode', $virtualDomain.serviceName);\nconsole.log('Origin', $originalUrl, 'New Test Url',$testResource.resourceURL);\n$testData.$setResource($testResource);\n$testData.$load();",
                   "type": "button"
                },
                {
-                  "readonly": false,
-                  "name": "displayTestData",
-                  "model": "",
                   "loadInitially": true,
-                  "type": "textArea",
+                  "model": "",
+                  "name": "displayTestData",
                   "parameters": {},
+                  "readonly": false,
                   "required": false,
+                  "type": "textArea",
                   "validation": {}
                }
             ],
@@ -247,13 +258,14 @@
             "type": "block"
          }
       ],
+      "importCSS": "pbadmVirtualDomainComposerCss,xeStyle",
       "name": "pbadmVirtualDomainComposer",
-      "type": "page",
-      "importCSS": "pbadmVirtualDomainComposerCss,xeStyle"
+      "type": "page"
    },
-   "fileTimestamp": "2016-12-20T17:57:47Z",
-   "pageRoles": [{
-      "allow": true,
-      "roleName": "ADMIN-GPBADMN"
-   }]
+   "pageRoles": [
+      {
+         "roleName": "ADMIN-GPBADMN",
+         "allow": true
+      }
+   ]
 }

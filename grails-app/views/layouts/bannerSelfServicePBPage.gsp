@@ -7,7 +7,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 <%@ page import="org.springframework.context.i18n.LocaleContextHolder" %>
 
 <!DOCTYPE html>
-<html ng-app="BannerOnAngular" lang="${message(code: 'default.language.locale')}" dir="${message(code:'default.language.direction')}">
+<html lang="${message(code: 'default.language.locale')}" dir="${message(code:'default.language.direction')}">
     <head>
         <script>
             var extensibilityInfo =
@@ -45,6 +45,9 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         <meta name="hideSSBHeaderComps" content="${session?.hideSSBHeaderComps?.trim()}"/>
         <meta name="menuEndPoint" content="${request.contextPath}/ssb/menu"/>
         <meta name="menuBaseURL" content="${request.contextPath}/ssb"/>
+        <g:set var="aboutServiceUrl" value="${net.hedtech.banner.controllers.ControllerUtils.aboutServiceUrl()}" />
+        <meta name="aboutUrl" content="${!aboutServiceUrl ? '' : aboutServiceUrl}"/>
+        <meta name="aboutUrlContextPath" content="${request.contextPath}/ssb"/>
 
 
         <meta name="headerAttributes" content=""/>
@@ -55,8 +58,20 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         </script>
 
         <title><g:layoutTitle default="Banner Page Builder"/></title>
-
-        <link rel="shortcut icon" href="${resource(plugin: 'banner-ui-ss', dir:'images',file:'favicon.ico')}" type="image/x-icon"/>
+        
+        <link rel="apple-touch-icon" sizes="57x57" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'apple-touch-icon-57x57.png')}"/>
+        <link rel="apple-touch-icon" sizes="60x60" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'apple-touch-icon-60x60.png')}"/>
+        <link rel="apple-touch-icon" sizes="72x72" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'apple-touch-icon-72x72.png')}"/>
+        <link rel="apple-touch-icon" sizes="76x76" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'apple-touch-icon-76x76.png')}"/>
+        <link rel="apple-touch-icon" sizes="114x114" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'apple-touch-icon-114x114.png')}"/>
+        <link rel="apple-touch-icon" sizes="120x120" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'apple-touch-icon-120x120.png')}"/>
+        <link rel="apple-touch-icon" sizes="144x144" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'apple-touch-icon-144x144.png')}"/>
+        <link rel="apple-touch-icon" sizes="152x152" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'apple-touch-icon-152x152.png')}"/>
+        <link rel="shortcut icon" type="image/png" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'favicon-32x32.png')}" sizes="32x32"/>
+        <link rel="shortcut icon" type="image/png" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'android-chrome-192x192.png')}" sizes="192x192"/>
+        <link rel="shortcut icon" type="image/png" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'favicon-96x96.png')}" sizes="96x96"/>
+        <link rel="shortcut icon" type="image/png" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'favicon-16x16.png')}" sizes="16x16"/>
+        <link rel="shortcut icon" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'favicon.ico')}" type="image/x-icon" />
 
 
         <r:script>
@@ -92,7 +107,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
             var rootWebApp = "${createLink(uri: '/')}";
             var resourceBase = "${createLink(uri: '/') + grails.util.Holders.config.sspb.apiPath +'/' }";
             var templatesLocation = "<g:resource plugin="banner-sspb" dir="template" />";
-            var user;
+            var user = ${PBUser.getTrimmed()?.encodeAsJSON()};
             var gridLocale = '${localeBrowserFull.toLowerCase()}';
             var params = ${params?.encodeAsJSON()};
             if (!window.console) {
@@ -110,6 +125,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         <g:theme />
     </head>
     <body>
+        <div ng-app="BannerOnAngular">
         <div id="splash"></div>
         <div id="spinner" class="spinner spinner-img" style="display:none;">
 
@@ -124,7 +140,6 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
                                         locale: localeBrowserFull, html: '<script src="{resource}" ></script>' )}
         ${LocaleResource.importExisting(plugin:'banner-sspb', dir: 'BannerXE/lib/angular/i18n', file: 'angular-locale_{locale}.js',
                                         locale: localeBrowserFull.toLowerCase(), html: '<script src="{resource}" ></script>' )}
-
 
 
         <script type="text/javascript">
@@ -148,5 +163,12 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
                 pageLabel:                 '${message(code:'nggrid.pageLabel'                , encodeAs: 'JavaScript')}'
             };
         </script>
+        </div>
+        <div id="dialogAppDiv"></div>
+        %{--<g:if test="${grails.util.Holders.config.locale_userPreferenceEnable}">
+            <g:render template="/layouts/userPreference" plugin="banner-ui-ss"/>
+        </g:if>--}%
+        %{--<g:render template="/layouts/bannershortcuts" plugin="banner-ui-ss"/>--}%
+
     </body>
 </html>

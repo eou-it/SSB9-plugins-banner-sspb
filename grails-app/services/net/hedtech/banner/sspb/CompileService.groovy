@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ * Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 
 package net.hedtech.banner.sspb
@@ -103,6 +103,7 @@ class CompileService {
         result = """
                |function (\$scope ,\$locale,\$q,\$templateCache,pbDataSet,pbResource,pbAddCommon) {
                |    \$scope._controllerId = controllerId;
+               |    \$scope._user = user;
                |    \$scope._params = params;
                |    \$scope._contextRoot = rootWebApp;
                |    \$scope._now = new Date();

@@ -370,37 +370,37 @@ class PageComponent {
     }
 
     def recordControlPanel()  {
-        def button = "button class=\"btn btn-sm\""
+        def button = "button"
         def dataSet    =  "${name}DS"
         def result = """|
                    |<!-- pagination -->
-                   |<span ${idAttribute('-pagination-container')} class="pb-pagination-control" ng-show='${dataSet}.totalCount > ${dataSet}.pagingOptions.pageSize'>
-                   |    <$button ${idAttribute('-pagination-prev-button')} ng-disabled="${dataSet}.pagingOptions.currentPage == 1"
+                   |<div class="pagination-container">
+                   |    <div ${idAttribute('-pagination-container')} class="pagination-controls" ng-show='${dataSet}.totalCount > ${dataSet}.pagingOptions.pageSize'>
+                   |        <$button ${idAttribute('-pagination-prev-button')} class="secondary previous" ng-disabled="${dataSet}.pagingOptions.currentPage == 1"
                    |            ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1">
-                   |            ${tranGlobal("page.previous.label","Previous")}
-                   |    </button>
-                   |    <span ${idAttribute('-pagination-page-count')}>
+                   |        </button>
+                   |        <span ${idAttribute('-pagination-page-count')}>
                    |        {{${dataSet}.pagingOptions.currentPage}}/{{${dataSet}.numberOfPages()}}
-                   |    </span>
-                   |    <$button ${idAttribute('-pagination-next-button')} ng-disabled="${dataSet}.pagingOptions.currentPage >= ${dataSet}.totalCount/${dataSet}.pagingOptions.pageSize "
+                   |        </span>
+                   |        <$button ${idAttribute('-pagination-next-button')} class="secondary next" ng-disabled="${dataSet}.pagingOptions.currentPage >= ${dataSet}.totalCount/${dataSet}.pagingOptions.pageSize "
                    |            ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1">
-                   |            ${tranGlobal("page.next.label","Next")}
-                   |    </button>
-                   |</span>
+                   |        </button>
+                   |    </div>
+                   |</div>
                    |""".stripMargin()
         def changeData = ""
         def btnLabel
         if (allowNew) {
             btnLabel=newRecordLabel?tran("newRecordLabel"):tranGlobal("newRecord.label","Add New")
-            changeData += """ <$button ${idAttribute('-new-button')} ng-click="${dataSet}.add(${newRecordName()}())"> $btnLabel </button>"""
+            changeData += """ <$button ${idAttribute('-new-button')} class="primary" ng-click="${dataSet}.add(${newRecordName()}())"> $btnLabel </button>"""
         }
         if (allowModify || allowDelete) {
             btnLabel=saveDataLabel?tran("saveDataLabel"):tranGlobal("save.label","Save")
-            changeData += """ <$button ${idAttribute('-save-button')} ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()"> $btnLabel </button>"""
+            changeData += """ <$button ${idAttribute('-save-button')} class="primary" ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()"> $btnLabel </button>"""
         }
         if (allowReload) {
             btnLabel=refreshDataLabel?tran("refreshDataLabel"):tranGlobal("refresh.label","Refresh")
-            changeData += """ <$button ${idAttribute('-reload-button')} ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})"> $btnLabel </button> """
+            changeData += """ <$button ${idAttribute('-reload-button')} class="secondary" ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})"> $btnLabel </button> """
         }
         if (changeData) {
             changeData = "<span ${idAttribute('-change-data-container')} class=\"pb-change-data-control\" > $changeData </span>"
@@ -436,19 +436,19 @@ class PageComponent {
         def btnLabel
         if (allowNew) {
             btnLabel=newRecordLabel?tran("newRecordLabel",ESC_JS):tranGlobal("newRecord.label","Add New",[], ESC_JS)
-            result += """ <button $styleStr ng-click="${dataSet}.add(${newRecordName()}())"> $btnLabel  </button>"""
+            result += """ <button class="primary" $styleStr ng-click="${dataSet}.add(${newRecordName()}())"> $btnLabel  </button>"""
         }
         if (allowDelete) {
             btnLabel=deleteRecordLabel?tran("deleteRecordLabel",ESC_JS):tranGlobal("deleteRecord.label","Delete selected",[], ESC_JS)
-            result += """ <button $styleStr ng-click="${dataSet}.deleteRecords(${dataSet}.selectedRecords)" ng-disabled="${dataSet}.selectedRecords.length==0"> $btnLabel  </button>"""
+            result += """ <button class="secondary" $styleStr ng-click="${dataSet}.deleteRecords(${dataSet}.selectedRecords)" ng-disabled="${dataSet}.selectedRecords.length==0"> $btnLabel  </button>"""
         }
         if (allowModify || allowDelete) {
             btnLabel=saveDataLabel?tran("saveDataLabel",ESC_JS):tranGlobal("save.label","Save",[], ESC_JS)
-            result += """ <button $styleStr ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()"> $btnLabel </button>"""
+            result += """ <button class="primary" $styleStr ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()"> $btnLabel </button>"""
         }
         if (allowReload) {
             btnLabel=refreshDataLabel?tran("refreshDataLabel",ESC_JS):tranGlobal("refresh.label","Refresh",[], ESC_JS)
-            result += """ <button $styleStr ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})"> $btnLabel </button> """
+            result += """ <button class="secondary" $styleStr ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})"> $btnLabel </button> """
         }
         // alas, but cannot dynamically toggle multiSelect property of grid
         //result += "<input type=\"checkbox\" ng-model=\"${name}Grid.multiSelect\">Select multiple</input>"

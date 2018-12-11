@@ -13,4 +13,4 @@ cobertura.ser
 sonar-project.properties
 /**/*.lis
 /ddl/login.sql
-
+*.DS_Store

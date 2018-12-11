@@ -1,5 +1,5 @@
 <span>
-    <!--Copyright 2013-2016 Ellucian Company L.P. and its affiliates.-->
+    <!--Copyright 2013-2018 Ellucian Company L.P. and its affiliates.-->
     <span style="text-align:start;">
         {{keys[0]}} = {{keys[1]}}:[
         <span ng-show='array.length>0' ng-repeat='item in array'>
@@ -23,20 +23,20 @@
                     <td><input type="text" ng-model='item[keys[0]]'/>
                     </td>
                     <td><input type="text" ng-model='item[keys[1]]'/>
-                    <button class="btn btn-xs" ng-click="deleteEntry($index)">-</button>
-                    <button class="btn btn-xs" ng-click="insert($index)">+</button></td>
+                    <button class="secondary" ng-click="deleteEntry($index)">-</button>
+                    <button class="secondary" ng-click="insert($index)">+</button></td>
                 </tr>
             </table>
 
             <form>
                 <div><label >{{$parent.i18nGet('pb.template.arraymap.new.value.label',[keys[0]])}} </label><input id="value1" ng-model="newValue1" required> </div>
                 <div><label >{{$parent.i18nGet('pb.template.arraymap.new.value.label',[keys[1]])}} </label><input id='value2' ng-model="newValue2" required> </div>
-                <div><button ng-click='add(newValue1, newValue2)'>{{$parent.i18nGet('pb.template.arraymap.add.label')}}</button></div>
+                <div><button class="primary" ng-click='add(newValue1, newValue2)'>{{$parent.i18nGet('pb.template.arraymap.add.label')}}</button></div>
             </form>
 
         </div>
         <div class="modal-footer">
-            <button class="btn btn-success ok" ng-click="closeArrayOfMapEditModal()">{{$parent.i18nGet('pb.template.arraymap.ok.label')}}</button>
+            <button class="secondary" ng-click="closeArrayOfMapEditModal()">{{$parent.i18nGet('pb.template.arraymap.ok.label')}}</button>
             <!--
             <button class="btn btn-warning cancel" ng-click="cancelMapEditModal()">Cancel</button>
             -->
