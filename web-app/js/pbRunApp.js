@@ -485,7 +485,7 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
                     u=this._keyStr.indexOf(e.charAt(f++));
                     a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);
                     if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);
-                return t},_utf8_encode:function(e){e=e.toString().replace(/rn/g,"n");var t="";for(var n=0;n<e.length;n++)
+                return t},_utf8_encode:function(e){e=e.toString().replace(/\r\n/g,"n");var t="";for(var n=0;n<e.length;n++)
                 {var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048)
                 {t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else
                     {t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);
