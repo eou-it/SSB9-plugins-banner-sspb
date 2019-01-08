@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2018 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 package net.hedtech.banner.css
 
@@ -58,7 +58,7 @@ class CssExportServiceIntegrationSpec extends IntegrationSpec {
 
     void "page name like"(){
         when:"page name"
-        String pageName = "dharmaTest"
+        String pageName = "pbadm.PageRoles"
         def object = cssExportService.cssForPages(pageName)
         then:
         object.size()==0
