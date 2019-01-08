@@ -47,4 +47,20 @@ class CssExportServiceIntegrationSpec extends IntegrationSpec {
         result.export == 1
         result.id != null
     }
+
+    void "export css"(){
+        when: "css, page details"
+        def params = [id: "500001"]
+        def cssExport = cssExportService.show(params)
+        then:
+        cssExport
+    }
+
+    void "page name like"(){
+        when:"page name"
+        String pageName = "dharmaTest"
+        def object = cssExportService.cssForPages(pageName)
+        then:
+        object.size()==0
+    }
 }

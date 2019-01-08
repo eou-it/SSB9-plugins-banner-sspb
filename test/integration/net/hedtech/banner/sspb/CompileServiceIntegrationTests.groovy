@@ -55,6 +55,16 @@ class CompileServiceIntegrationTests extends BaseIntegrationTestCase  {
                 //println "Compbined View = $combinedView\n"
                 println "Page is compiled"
 
+            }else if(!validateResult.valid){
+                def compiledJSCode = CompileService.compileController(validateResult.pageComponent)
+                println "JavaScript is not compiled"
+
+                def compiledView = CompileService.compile2page(validateResult.pageComponent)
+                println "HTML is not compiled"
+
+                def combinedView = CompileService.assembleFinalPage(compiledView, compiledJSCode)
+                println "Page is not compiled"
+
             } else {
                 println "modelFilePath validation error:\n" + validateResult.error.join('\n')
                 assert (false)
