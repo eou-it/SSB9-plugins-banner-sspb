@@ -59,7 +59,7 @@ class CssUtilServiceIntegrationSpec extends IntegrationSpec {
 
     void "test exportToFile"(){
         when: "export File"
-        String constantName = "dharmaTest"
+        String constantName = "pbadm.PageRoles"
         String pageLike=null
         Boolean skipDuplicates=false
         cssUtilService.exportToFile(constantName, pageLike, path, skipDuplicates)

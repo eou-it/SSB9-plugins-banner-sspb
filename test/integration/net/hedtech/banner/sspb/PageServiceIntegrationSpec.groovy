@@ -129,10 +129,10 @@ class PageServiceIntegrationSpec extends IntegrationSpec {
         res > 0
 
         when: "get page"
-        String constantName = "dharmaTest"
+        String constantName = "pbadm.PageRoles"
         res = pageService.get(constantName)
         then:
-        res.constantName == "dharmaTest"
+        res.constantName == "pbadm.PageRoles"
 
 
     }
