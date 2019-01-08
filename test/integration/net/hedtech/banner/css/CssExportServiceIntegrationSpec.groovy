@@ -50,7 +50,7 @@ class CssExportServiceIntegrationSpec extends IntegrationSpec {
 
     void "export css"(){
         when: "css, page details"
-        def params = [id: "500001"]
+        def params = [constantName: "pbDefault"]
         def cssExport = cssExportService.show(params)
         then:
         cssExport
