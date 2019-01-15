@@ -7,6 +7,8 @@ import groovy.sql.Sql
 import groovy.transform.*
 import groovy.util.logging.Log4j
 import net.hedtech.banner.sspb.PBUser
+import net.hedtech.restfulapi.AccessDeniedException
+
 import java.sql.SQLException
 import net.hedtech.banner.sspb.Page
 
@@ -177,7 +179,8 @@ class VirtualDomainSqlService {
         def logmsg=message(code:"sspb.virtualdomain.sqlservice.param", args:[vd.serviceName,parameters])
         def privs=userAccessRights(vd, parameters.parm_user_authorities)
         if (!privs.get) {
-            throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
+            throw new AccessDeniedException("user.not.authorized.get",["${parameters.parm_user_loginName} "]);
+            //throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
         }
         def sql = getSql()
         def errorMessage = ""
@@ -237,7 +240,8 @@ class VirtualDomainSqlService {
         def logmsg=message(code:"sspb.virtualdomain.sqlservice.param.count", args:[vd.serviceName,parameters])
         def privs=userAccessRights(vd, parameters.parm_user_authorities)
         if (!privs.get) {
-            throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
+            throw new AccessDeniedException("user.not.authorized.get",["${parameters.parm_user_loginName} "])
+            //throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
         }
         def sql = getSql()
         def errorMessage = ""
@@ -266,7 +270,8 @@ class VirtualDomainSqlService {
         data = prepareData(data, parameters)
         def privs=userAccessRights(vd, parameters.parm_user_authorities)
         if (!privs.put) {
-            throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
+            throw new AccessDeniedException("user.not.authorized.update",["${parameters.parm_user_loginName} "])
+            //throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
         }
         def sql
         try {
@@ -297,7 +302,8 @@ class VirtualDomainSqlService {
         data = prepareData(data, parameters)
         def privs=userAccessRights(vd, parameters.parm_user_authorities)
         if (!privs.post){
-            throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
+            throw new AccessDeniedException("user.not.authorized.create",["${parameters.parm_user_loginName} "])
+            //throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
         }
         def sql
         try {
@@ -319,7 +325,8 @@ class VirtualDomainSqlService {
         addUser(parameters)
         def privs=userAccessRights(vd, parameters.parm_user_authorities)
         if (!privs.delete){
-            throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
+            throw new AccessDeniedException("user.not.authorized.delete",["${parameters.parm_user_loginName} "])
+            //throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
         }
         parameters.id = urlPathDecode(parameters.id)
         def sql
@@ -387,7 +394,7 @@ class VirtualDomainSqlService {
     // AAAO/0AAHAAABpFAAA:AAAO/2AAHAAAREwAAA -> 4141414f2f304141484141414270464141413a4141414f2f32414148414141524577414141
 
     private def urlPathEncode  (id) {
-         id.bytes.encodeAsHex()   // Hex encoding doesn't use problematic characters like / in Base64
+        id.bytes.encodeAsHex()   // Hex encoding doesn't use problematic characters like / in Base64
     }
 
     private def urlPathDecode (id) {
