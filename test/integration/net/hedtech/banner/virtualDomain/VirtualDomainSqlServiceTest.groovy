@@ -3,9 +3,11 @@
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
+import grails.converters.JSON
 import grails.util.Holders
-import org.springframework.security.access.AccessDeniedException
+import net.hedtech.restfulapi.AccessDeniedException
 import spock.lang.Specification
+
 
 class VirtualDomainSqlServiceTest extends Specification{
 
@@ -29,7 +31,7 @@ class VirtualDomainSqlServiceTest extends Specification{
         virtualDomainSqlService.get(vd, params)
         then:
         final AccessDeniedException exception = thrown()
-        exception.message == 'Deny access for _anonymousUser'
+        exception.errorMessage == 'user.not.authorized.get'
     }
 
     void "test for gets2"() {
