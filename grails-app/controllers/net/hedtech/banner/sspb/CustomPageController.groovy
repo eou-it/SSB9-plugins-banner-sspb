@@ -48,6 +48,23 @@ class CustomPageController {
             def html
             def page = Page.findByConstantName(pageId)
 
+            if(pageId=="pbadm.PageRoles" && params.pageId) {
+                def selectValue = params.pageId
+                def replacingStr = """PID",
+          selectInitialValue: "${selectValue}"
+            """
+
+                page.compiledController = page.compiledController.replaceAll(/\bPID\W+(?:\w+\W+){1,4}?null\b/, replacingStr)
+            }
+
+            if(pageId=="pbadm.VirtualDomainRoles" && params.pageId){
+                def selectValue = params.pageId
+                def replacingStr = """VID",
+          selectInitialValue: "${selectValue}"
+            """
+
+                page.compiledController = page.compiledController.replaceAll(/\bVID\W+(?:\w+\W+){1,4}?null\b/, replacingStr)
+            }
             // maybe better to only store the assembled page?
             if (page && page.compiledView && page.compiledController) {
                 html = compileService.assembleFinalPage(page.compiledView, page.compiledController)
