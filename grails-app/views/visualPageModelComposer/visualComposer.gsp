@@ -1,5 +1,5 @@
 <%--
-Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page import="net.hedtech.banner.sspb.PageComponent" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
@@ -776,7 +776,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
              }
 
              //check if page name is set
-             if ($scope.pageCurName == undefined || $scope.pageCurName == '') {
+             if (!$scope.pageCurName) {
                  $scope.alertError("${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
                  return;
              }
@@ -820,7 +820,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 
           $scope.previewPageSource = function() {
               //check if page name is set
-              if ($scope.pageCurName== undefined || $scope.pageCurName == '') {
+              if (!$scope.pageCurName) {
                   $scope.alertError( "${message(code:'sspb.page.visualbuilder.page.name.prompt.message', encodeAs: 'JavaScript')}");
                   return;
               }
@@ -832,7 +832,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
             //check if page name is set
             var pages = {};
             var pageId;
-            if ($scope.pageCurName== undefined || $scope.pageCurName == '') {
+            if (!$scope.pageCurName) {
                 $scope.alertError("${message(code:'sspb.page.visualbuilder.page.name.prompt.message', encodeAs: 'JavaScript')}");
                 return;
             }
@@ -880,7 +880,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 
           $scope.deletePageSource = function () {
               //check if page name is set
-              if ($scope.pageCurName== undefined || $scope.pageCurName == '') {
+              if (!$scope.pageCurName) {
                   $scope.alertError("${message(code:'sspb.page.visualbuilder.page.name.prompt.message', encodeAs: 'JavaScript')}");
                   return;
               }
