@@ -925,9 +925,6 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         $scope.initialize();
 
      }
-
-        //...
-        //# sourceURL=MyInlineScript.js
     </script>
 
 
