@@ -1,5 +1,5 @@
 <%--
-Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page import="net.hedtech.banner.sspb.PageComponent" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
@@ -776,7 +776,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
              }
 
              //check if page name is set
-             if ($scope.pageCurName == undefined || $scope.pageCurName == '') {
+             if (!$scope.pageCurName) {
                  $scope.alertError("${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
                  return;
              }
@@ -820,13 +820,33 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 
           $scope.previewPageSource = function() {
               //check if page name is set
-              if ($scope.pageCurName== undefined || $scope.pageCurName == '') {
+              if (!$scope.pageCurName) {
                   $scope.alertError( "${message(code:'sspb.page.visualbuilder.page.name.prompt.message', encodeAs: 'JavaScript')}");
                   return;
               }
               window.open(rootWebApp+'customPage/page/'+ $scope.pageCurName, '_blank');
 
           };
+
+        $scope.showRolesPage = function() {
+            //check if page name is set
+            var pages = {};
+            var pageId;
+            if (!$scope.pageCurName) {
+                $scope.alertError("${message(code:'sspb.page.visualbuilder.page.name.prompt.message', encodeAs: 'JavaScript')}");
+                return;
+            }
+
+            $scope.pageList.forEach(function(ele){
+                pages[ele.constantName] = ele.id;
+            });
+
+            pageId = pages[$scope.pageCurName];
+
+            window.open(rootWebApp+'customPage/page/'+ 'pbadm.PageRoles?pageId=' + pageId, '_blank');
+        };
+
+
 
          $scope.deletePage = function () {
              Page.remove({constantName:$scope.pageCurName }, function() {
@@ -860,7 +880,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 
           $scope.deletePageSource = function () {
               //check if page name is set
-              if ($scope.pageCurName== undefined || $scope.pageCurName == '') {
+              if (!$scope.pageCurName) {
                   $scope.alertError("${message(code:'sspb.page.visualbuilder.page.name.prompt.message', encodeAs: 'JavaScript')}");
                   return;
               }
@@ -868,6 +888,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
               $scope.confirmPageAction("${message(code:'sspb.page.visualbuilder.page.delete.check.message', encodeAs: 'Javascript')}",$scope.deletePage);
 
           };
+
          /* tab controls */
          // show tree view initially
          $scope.showTree= true;
@@ -905,6 +926,8 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 
      }
 
+        //...
+        //# sourceURL=MyInlineScript.js
     </script>
 
 
@@ -943,12 +966,12 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
             <option value=""> </option>
         </select>
 
-
         <button ng-show="pageName && pageCurName && pageCurName != newPageName" ng-click='validateAndSubmitPageSource(); saveAs=false;'
                 ng-disabled='sourceEditEnabled || !pagemodelform.$valid' class="primary"><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
         <button ng-show="pageName && pageName != newPageName" ng-click="getPageSource(); saveAs=false;" class="secondary" ><g:message code="sspb.page.visualbuilder.reload.label" /></button>
         <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click="previewPageSource()" class="secondary" ><g:message code="sspb.page.visualbuilder.preview.label" /></button>
         <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click='deletePageSource(); saveAs=false;' class="secondary"><g:message code="sspb.page.visualbuilder.delete.label" /></button>
+        <button ng-show="pageName && pageName != newPageName" ng-click="showRolesPage(); saveAs=false;" class="secondary" ><g:message code="sspb.page.visualbuilder.roles.label" /></button>
     </div>
     <table style="height:80%; min-width: 60em">
         <tr>
