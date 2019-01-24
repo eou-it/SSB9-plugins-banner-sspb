@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.PageRoles",
    "extendsPage": null,
-   "fileTimestamp": "2018-11-13T11:51:36Z",
+   "fileTimestamp": "2019-01-25T11:51:36Z",
    "modelView": {
       "components": [
          {
@@ -40,6 +40,7 @@
                   "loadInitially": true,
                   "model": "selectPage",
                   "name": "selectPage",
+                  "onLoad": "$editPageRoles.$load();\n$EditRolesForm.$visible=$selectPage;\n$roleName.$populateSource();\n$ApplyRolesForm.$visible=$selectPage;\n$appliedPageRoles.$load();",
                   "onUpdate": "$editPageRoles.$load();\n$EditRolesForm.$visible=$selectPage;\n$roleName.$populateSource();\n$ApplyRolesForm.$visible=$selectPage;\n$appliedPageRoles.$load();",
                   "placeholder": "Select...",
                   "required": false,
