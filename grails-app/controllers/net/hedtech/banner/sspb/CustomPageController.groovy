@@ -70,8 +70,12 @@ class CustomPageController {
                 html = compileService.assembleFinalPage(page.compiledView, page.compiledController)
             }
             if (html) {
-                def pageName = pageId+'_'+page.version+".gsp"
-                 if(!groovyPagesTemplateEngine.pageCache.get(pageName)){
+                def pageName
+                if(params.pageId)
+                    pageName = pageId+'_'+page.version+"_"+params.pageId+".gsp"
+                else
+                    pageName = pageId+'_'+page.version+".gsp"
+                if(!groovyPagesTemplateEngine.pageCache.get(pageName)){
                      pageService.compilePage(page)
                 }
                 render renderGsp(html, pageName)
