@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2013-2018 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 
 /*
@@ -88,6 +88,7 @@ if (undefined == myCustomServices) {
     var myCustomServices = [];
 }
 
+myCustomServices.push('modalPopup')
 //noinspection JSUnusedAssignment
 var appModule = appModule||angular.module('BannerOnAngular', myCustomServices);
 
@@ -557,3 +558,147 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
 
     return PBDataSetFactory;
 });
+
+function initlizePopUp(params){
+    try {
+        if (angular.module("modalPopup") && angular.module("xe-ui-components")) {
+            var popupContainerDiv = document.getElementById('popupContainerDiv');
+            if (null != popupContainerDiv && undefined != popupContainerDiv) {
+               dialogPopUp(params);
+            }
+        }
+    } catch (e) {
+        console.log(e)
+        document.getElementById('popupContainerDiv').style.display = 'none';
+    }
+};
+
+function dialogPopUp(params) {
+
+    console.log("dialogPopUp");
+    var dataFetch = false;
+    var dialogDiv = document.getElementById('popupContainerDiv');
+    dialogDiv.setAttribute("ng-app","modalPopup");
+    dialogDiv.setAttribute("ng-controller","nameModalPopupCtrl");
+
+    var titleHeader = '';
+    var no_result_found = $.i18n.prop("nameDataTable.no.result.found");
+    var go_button_label = $.i18n.prop("nameDataTable.column.common.button.label");
+    var columnRefName = '';
+    var nameHeader = '';
+    if(params.serviceNameType == 'virtualdomains'){
+        nameHeader = 'serviceName';
+        titleHeader = $.i18n.prop("nameDataTable.popup.virtualDomain.pageheader");
+        columnRefName = 'virtualDomainColumns';
+    }else if(params.serviceNameType == 'pages'){
+        nameHeader = 'constantName';
+        titleHeader = $.i18n.prop("nameDataTable.column.page.name.heading");
+        columnRefName = 'pageColumns';
+    }else if(params.serviceNameType == 'csses'){
+        nameHeader = 'constantName';
+        titleHeader = $.i18n.prop("nameDataTable.popup.stylesheet.pageheader");
+        columnRefName = 'cssColumns';
+    }
+    params.excludePage = params.excludePage ? params.excludePage : "";
+    dialogDiv.setAttribute("ng-init","nameHeader='"+nameHeader+"';serviceNameType='"+params.serviceNameType+"';excludePage='"+ params.excludePage+"'");
+
+    var scope = angular.element(document.getElementById('popupContainerDiv')).scope();
+    if(!scope){
+        dialogDiv.innerHTML =
+            '<xe-popup-modal show="modalShown" focusbackelement="" ' +
+            'pageheader="'+titleHeader+'" class="custom-popup-landpage" > '+
+            '<popup-content>' +
+            '<div id="namePopupGrid" class="demo-container"> \n' +
+            '    <xe-table-grid table-id="nameDataTable" \n'+
+             '                   header="'+columnRefName+'"  \n'+
+             '                   end-point="urlTest" \n' +
+            '                   fetch="getData(query)" on-row-click="onRowClick(data,index)"\n' +
+            '                   post-fetch="postFetch(response, oldResult)" \n' +
+            '                   content="content"  results-found="resultsFound" toolbar="true"\n' +
+            '                   paginate="true" \n' +
+            '                   continuous-scrolling="false" \n' +
+            '                   on-row-double-click="onDoubleClick(data,index)" \n' +
+            '                   no-data-msg="'+no_result_found+'"\n' +
+            '                   empty-table-msg="emptyTableMsg" \n' +
+            '                   search-config="searchConfig" \n' +
+            '                   pagination-config="paginationConfig"\n' +
+            '                   draggable-column-names="draggableColumnNames" \n' +
+            '                   mobile-layout="mobileConfig"\n' +
+            '                   height="12em" \n' +
+            '                   refresh-grid="refreshGrid">\n' +
+            '    </xe-table-grid>\n' +
+            '</div> ' +
+            '</popup-content>  <popup-buttons>\n' +
+            '            <xe-button ng-click="goToPage()" id="saveLanguage" xe-disabled="isResponseEmpty()" xe-type="primary" xe-label="'+go_button_label+'" ></xe-button>\n' +
+            '        </popup-buttons>' +
+            '</xe-popup-modal>';
+        angular.element(document.getElementById('popupContainerDiv')).ready(function() {
+            angular.bootstrap(document.getElementById('popupContainerDiv'), ['modalPopup']);
+        });
+        angular.element(document.getElementsByClassName('column-filter-container ng-scope')).remove();
+        angular.element(document.getElementsByClassName('xe-label ng-binding ng-isolate-scope')).remove();
+        angular.element(document.getElementsByClassName('per-page-select ng-pristine ng-untouched ng-valid ng-not-empty')).remove();
+       //angular.element(document.getElementsByClassName('tbody ng-isolate-scope')).removeAttr('style');
+        scope = angular.element(document.getElementById('popupContainerDiv')).scope();
+    }else{
+        dataFetch = true;
+    }
+    scope.$apply(function(){
+        scope.excludePage = params.excludePage;
+        scope.inputTypeFieldID = params.id;
+        scope.isPbPage = params.isPbPage;
+        scope.nameToggleModal(dataFetch)
+    });
+
+};
+
+
+appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
+    return {
+        require: '?ngModel',
+        restrict: 'C',
+        scope: false,
+        controller: ['$scope', function ($scope) {
+            $scope.loadPopup = function (options) {
+                initlizePopUp(options);
+            };
+        }],
+
+        link : function (scope,element,attrs) {
+            scope.onClickData = function () {
+                scope.options = $parse(attrs.pbPopupDataGrid)() || {};
+                if(scope.options.id == 'extendsPage') {
+                    scope.options.excludePage = scope.pageName;
+                }
+                console.log("onClickData");
+                scope.loadPopup(scope.options)
+            }
+
+            function changeData(){
+                if(scope.options.isPbPage== 'true'){
+                    scope.inputTypeFieldID = 'pbid-'+scope.options.id;
+                }else{
+                    scope.inputTypeFieldID = scope.options.id;
+                }
+                var selectedValue = document.getElementById(scope.inputTypeFieldID).value;
+                var selectedText = $("#"+scope.inputTypeFieldID+" option:selected").text();
+                if(scope.options.id == 'selectVirtualDomain'){
+                    scope.selectVirtualDomain = selectedValue;
+                    scope.CONSTANT_NAME = selectedText;
+                    scope.selectVirtualDomain_onUpdate();
+                }
+                if(scope.options.id == 'selectPage'){
+                    scope.selectPage = selectedValue;
+                    scope.CONSTANT_NAME = selectedText;
+                    scope.selectPage_onUpdate();
+                }
+            }
+            element.on('enter',scope.onClickData);
+            element.on('keyup', scope.onClickData);
+            element.on('keydown', scope.onClickData);
+            element.on('change', changeData);
+            element.on('click', scope.onClickData);
+        }
+    };
+}]);
+
