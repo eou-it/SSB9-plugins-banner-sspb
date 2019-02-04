@@ -172,7 +172,7 @@ class CssService extends ServiceBase {
     def extractReqPrams(Map reqParams) {
         Map params = [:]
         if(reqParams && reqParams.searchString){
-            params.constantName = "%$reqParams.searchString%"
+            params.constantName = "$reqParams.searchString%"
         }
 
         if(reqParams && reqParams.sortColumnName){

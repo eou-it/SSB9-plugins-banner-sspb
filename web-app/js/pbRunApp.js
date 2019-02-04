@@ -582,7 +582,7 @@ function dialogPopUp(params) {
     dialogDiv.setAttribute("ng-controller","nameModalPopupCtrl");
 
     var titleHeader = '';
-    var no_result_found = $.i18n.prop("nameDataTable.no.result.found");
+    var no_result_found = $.i18n.prop("nameDataTable.column.common.nodata");
     var go_button_label = $.i18n.prop("nameDataTable.column.common.button.label");
     var columnRefName = '';
     var nameHeader = '';

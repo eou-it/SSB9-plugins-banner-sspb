@@ -125,7 +125,7 @@ class VirtualDomainService {
     def extractReqPrams(Map reqParams) {
         Map params = [:]
         if(reqParams && reqParams.searchString){
-            params.serviceName = "%$reqParams.searchString%"
+            params.serviceName = "$reqParams.searchString%"
         }
 
         if(reqParams && reqParams.sortColumnName){
