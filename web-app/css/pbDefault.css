@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
+ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 *******************************************************************************/
 
 input, textarea, select {
@@ -85,3 +85,35 @@ div[ng-grid] {
     -webkit-transform:scale(0.6);
     -moz-transform: scale(1.4);
 }
+@media screen and (min-width: 768px) {
+   #popupContainerDiv .xe-popup-container  {
+        width:42em !important;
+        height:30em !important;
+        padding:1.5em;
+        border-radius:6px;
+        padding:1.5em;
+        box-shadow:0 2px 40px rgba(0, 0, 0, 0.5);
+    }
+}
+
+#popupContainerDiv .table-container .caption caption .toolbar {
+    display: inline-block;
+    float: left;
+
+}
+
+#popupContainerDiv .search-container .simple-input-field {
+     width: 20em;
+}
+
+#popupContainerDiv xe-button .primary {
+    width: 7em;
+    height: 3em;
+    border-radius: 2em;
+    padding: 0.5em 1.5em;
+}
+
+.popupSelectBox  {
+    width: 17.5em;
+}
+

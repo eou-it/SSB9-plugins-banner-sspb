@@ -1,5 +1,5 @@
 <%--
-Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html xmlns="http://www.w3.org/1999/html">
@@ -86,7 +86,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
                 });
             };
             // populate the css list initially
-            $scope.loadCssNames();
+          //  $scope.loadCssNames();
 
             $scope.getCssSource = function() {
                 //TODO prompt for unsaved data
@@ -151,7 +151,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
                     alert($scope.cssStatus.message, note );
 
                     // refresh the page list in case new page is added
-                    $scope.loadCssNames();
+                  //  $scope.loadCssNames();
                 }, function(response) {
                     var msg ="${message(code: 'sspb.css.cssManager.stylesheet.submit.failed.message', encodeAs: 'JavaScript')}";;
                     if (response.data != undefined && response.data.errors!=undefined)
@@ -178,7 +178,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
                     $scope.cssName = "";
                     $scope.description = "";
                     $scope.cssSource= undefined;
-                    $scope.loadCssNames();
+                   // $scope.loadCssNames();
 
                 }, function(response) {
                     var msg="${message(code:'sspb.css.cssManager.deletion.error.message')}";
@@ -193,6 +193,12 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
                 });
 
             }
+            $scope.pageNamePoppup = function(params) {
+                console.log("Model Popup");
+                initlizePopUp(params);
+
+            }
+
 
         }
     </script>
@@ -202,17 +208,17 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 
         <div class="btn-section">
             <label><g:message code="sspb.css.cssManager.load.label" /></label>
-            <select name="constantName"
-                    ng-options="css.css.constantName as css.css.constantName for css in cssList"
+            <select id="cssConstantName" name="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'csses','id':'cssConstantName'}"
                     ng-model="cssName"
                     ng-change="getCssSource()">
             </select>
-            <button class="secondary" ng-click='loadCssNames()'><g:message code="sspb.css.cssManager.reload.pages.label" /></button>
+
+            <button class="secondary" ng-click='loadCssNames()' ng-show="false" ><g:message code="sspb.css.cssManager.reload.pages.label" /></button>
         </div>
         <div class="btn-section-2">
             <button class="primary" ng-click='newCssSource()'><g:message code="sspb.css.cssManager.newCss.label" /></button>
             <button class="secondary" ng-click='submitCssSource()'><g:message code="sspb.css.cssManager.save.label" /></button>
-            <pb-Upload label='Upload Stylesheet' status='cssStatus' pb-change='loadCssNames()'></pb-Upload>
+            <pb-Upload label='Upload Stylesheet' status='cssStatus' pb-change=''></pb-Upload>
             <button class="secondary" ng-click="getCssSource()"><g:message code="sspb.css.cssManager.reload.label" /></button>
             <button class="secondary" ng-click='deleteCssSource()'><g:message code="sspb.css.cssManager.delete.label" /></button>
         </div>

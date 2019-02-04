@@ -1,5 +1,5 @@
 /*******************************************************************************
-Copyright 2009-2018 Ellucian Company L.P. and its affiliates.
+Copyright 2009-2019 Ellucian Company L.P. and its affiliates.
 *******************************************************************************/
 
 modules = {
@@ -56,6 +56,7 @@ modules = {
         resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/xe-components/js', file: "xe-ui-components.js"]
 
         resource url:[plugin: 'banner-ui-ss', dir: 'bootstrap/js', file: "bootstrap.js"]
+        resource url:[plugin: 'banner-sspb', dir: 'js', file: "modelPoppup.js"]
         resource url:[plugin: 'banner-sspb', dir: 'js', file: "pbRunApp.js"]
         //Load newer version of jquery required for date picker
 //        resource url:[plugin: 'banner-sspb', dir: 'BannerXE/lib/jquery', file:  'jquery-1.8.2.js'], disposition: 'head'

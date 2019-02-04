@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2018 Ellucian Company L.P. and its affiliates.
+ Copyright 2018-2019 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 
 package net.hedtech.banner.css
@@ -24,16 +24,29 @@ class CssService extends ServiceBase {
             // This will throw a validation exception...
             new Css(code:'FAIL', description: 'Code exceeds 2 chars').save(failOnError:true)
         } */
+        params = extractReqPrams(params)
+
         def max = Math.min( params.max ? params.max.toInteger() : 100,  100)
         def offset = params.offset ?: 0
-        result = super.list( offset: offset, max: max, sort: 'constantName' )
+
+        def qp= [offset: offset, max: max, sort: params.sort ?: 'constantName' , order:params.order ?: 'asc']
+
+        if  (params.constantName) {
+            result = super.getDomainClass().findAllByConstantNameIlike(params.constantName, qp)
+        } else {
+            result = super.list( qp )
+        }
 
         def listResult = []
 
         result.each {
             //supplementCss( it )
             // trim the object since we only need to return the constantName properties for listing
-            listResult << [css : [constantName : it.constantName, id: it.id, version: it.version]]
+            if(params.containsKey('getGridData')){
+                listResult << [constantName : it.constantName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format("dd/MM/yyyy"), lastUpdated:it.lastUpdated?.format("dd/MM/yyyy")]
+            }else {
+                listResult << [css : [constantName : it.constantName, id: it.id, version: it.version]]
+            }
         }
 
         log.trace "CssService.list is returning a ${result.getClass().simpleName} containing ${result.size()} style sheets"
@@ -41,15 +54,31 @@ class CssService extends ServiceBase {
     }
 
 
-    def count(Map ignore) {
+    def count(Map params) {
         log.trace "CssService.count invoked"
-        super.count()
+        params = extractReqPrams(params)
+        if (params.constantName) {
+            super.getDomainClass().countByConstantNameIlike(params.constantName)
+        } else {
+            super.count()
+        }
+
     }
 
 
     def show(Map params) {
         Map parameter = CommonService.decodeBase64(params)
         params.putAll(parameter);
+        if(params && params.containsKey('getGridData')) {
+            def returnMap = [
+                    result: list(params),
+                    length: count(params)
+            ]
+
+            return returnMap
+
+        }
+
         log.trace "CssService.show invoked"
         def result
         def showResult
@@ -140,4 +169,24 @@ class CssService extends ServiceBase {
         valid
     }
 
+    def extractReqPrams(Map reqParams) {
+        Map params = [:]
+        if(reqParams && reqParams.searchString){
+            params.constantName = "$reqParams.searchString%"
+        }
+
+        if(reqParams && reqParams.sortColumnName){
+            params.sort = reqParams.sortColumnName
+        }
+
+        if(reqParams && 'true'.equalsIgnoreCase(reqParams.ascending)){
+            params.order = 'asc'
+        }
+
+        if(reqParams && 'false'.equalsIgnoreCase(reqParams.ascending)){
+            params.order = 'desc'
+        }
+
+        params << reqParams
+    }
 }
