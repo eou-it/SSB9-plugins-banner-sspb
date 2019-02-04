@@ -44,11 +44,12 @@
                   "onUpdate": "$editPageRoles.$load();\n$EditRolesForm.$visible=$selectPage;\n$roleName.$populateSource();\n$ApplyRolesForm.$visible=$selectPage;\n$appliedPageRoles.$load();",
                   "placeholder": "Select...",
                   "required": false,
-                  "sourceModel": "pageLookup",
+                  "sourceModel": "pageLookup1",
                   "style": "col-sm-6",
                   "sourceParameters": {},
                   "type": "select",
-                  "valueKey": "PID"
+                  "valueKey": "PID",
+                  "valueStyle": "popupSelectBox pbListView pbPopupDataGrid:{'serviceNameType':'pages','id':'selectPage','isPbPage':'true'}"
                },
                {
                   "valueStyle": "primary",
@@ -170,7 +171,7 @@
                   "name": "appliedPageRoles",
                   "pageSize": 5,
                   "parameters": {
-                     "selected_url": "$selectPage.$selected?$selectPage.$selected.CONSTANT_NAME:null"
+                     "selected_url": "$CONSTANT_NAME"
                   },
                   "type": "detail"
                }
