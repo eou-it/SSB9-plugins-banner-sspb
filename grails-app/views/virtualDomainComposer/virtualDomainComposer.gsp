@@ -1,5 +1,5 @@
 <%--
-Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page import="net.hedtech.banner.virtualDomain.VirtualDomain" %>
 <!DOCTYPE html>
@@ -44,15 +44,18 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 <div class="vd-section">
     <g:form name="LoadVDForm" action="loadVirtualDomain">
         <label><g:message code="sspb.page.virtualdomain.select.label" /></label>
-        <g:select name="vdServiceName"
-                from="${VirtualDomain.list().sort{it.serviceName}}"
-                value="${pageInstance?.vdServiceName}"
-                noSelection="${['null':message(code:"sspb.page.virtualdomain.select.noselection.label")]}"
-                optionKey="serviceName"
-                optionValue="serviceName"
-                onChange="this.form.submit()"
+
+        <g:select id="vdServiceName" name="vdServiceName" class="popupSelectBox pbPopupDataGrid:{'serviceNameType':'virtualdomains','id':'vdServiceName'}"
+                  from="${[['serviceName': (pageInstance?.vdServiceName?:'')]]}"
+                  value="${pageInstance?.vdServiceName}"
+                  noSelection="${['null':message(code:"sspb.page.virtualdomain.select.noselection.label")]}"
+                  optionKey="serviceName"
+                  optionValue="serviceName"
+                  onChange="this.form.submit()"
         />
     </g:form>
+
+
 </div>
 
 <g:form name="ComposeVDForm" action="saveVirtualDomain">
@@ -62,6 +65,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         
         <g:actionSubmit action="saveVirtualDomain" class="primary" value="${message(code:"sspb.page.virtualdomain.save.label")}" />
         <g:actionSubmit action="deleteVirtualDomain" class="secondary" value="${message(code:"sspb.page.virtualdomain.delete.label")}" />
+        <g:actionSubmit action="showRolesPage" class="secondary" value="${message(code:"sspb.page.virtualdomain.roles.label")}" />
     </div>
 
 

@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2016-2018 Ellucian Company L.P. and its affiliates.                  *
+ *  Copyright 2016-2019 Ellucian Company L.P. and its affiliates.                  *
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
@@ -14,14 +14,15 @@ class VirtualDomainService {
         Map parameter = CommonService.decodeBase64(params)
         params.putAll(parameter);
         log.trace "VirtualDomainService.list invoked with params $params"
+        params = extractReqPrams(params)
         def max = Math.min( params.max ? params.max.toInteger() : 10000,  10000)
         def offset = params.offset ?: 0
         def cr = VirtualDomain.createCriteria()
         def result = cr.list(offset: offset, max: max, paginationEnabledList: true) {
             if (params.serviceName) {
-                like("serviceName", params.serviceName)
+                ilike("serviceName", params.serviceName)
             }
-            order("serviceName", "asc")
+            order(params.sort ?: 'serviceName', params.order ?: 'asc')
             if (params.noData=="TRUE") {
                 resultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP)
                 projections {
@@ -33,13 +34,43 @@ class VirtualDomainService {
                 }
             }
         }
+
+        if(params.containsKey('getGridData')){
+            def listResult = []
+            result.each {
+                listResult << [serviceName : it.serviceName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format("dd/MM/yyyy"), lastUpdated:it.lastUpdated?.format("dd/MM/yyyy")]
+            }
+            log.trace "VirtualDomainService.list is returning a ${listResult.getClass().simpleName} containing ${listResult.size()} rows"
+
+            return listResult
+        }
+
         log.trace "VirtualDomainService.list is returning a ${result.getClass().simpleName} containing ${result.size()} rows"
         result
+    }
+
+    def count(Map params) {
+        log.trace "PageService.count invoked"
+        params = extractReqPrams(params)
+        if (params.serviceName) {
+            VirtualDomain.countByServiceNameIlike(params.serviceName)
+        } else {
+            VirtualDomain.count()
+        }
     }
 
     def show(Map params) {
         Map parameter = CommonService.decodeBase64(params)
         params.putAll(parameter);
+        if(params && params.containsKey('getGridData')) {
+            def returnMap = [
+                    result: list(params),
+                    length: count(params)
+            ]
+
+            return returnMap
+
+        }
         log.trace "VirtualDomainService.show invoked"
         def result
         if (params.serviceName) {
@@ -89,5 +120,26 @@ class VirtualDomainService {
         def valid = (name?.size() <= 60)
         valid &= name ==~ /[a-zA-Z]+[a-zA-Z0-9_\-]*/
         valid
+    }
+
+    def extractReqPrams(Map reqParams) {
+        Map params = [:]
+        if(reqParams && reqParams.searchString){
+            params.serviceName = "$reqParams.searchString%"
+        }
+
+        if(reqParams && reqParams.sortColumnName){
+            params.sort = reqParams.sortColumnName
+        }
+
+        if(reqParams && 'true'.equalsIgnoreCase(reqParams.ascending)){
+            params.order = 'asc'
+        }
+
+        if(reqParams && 'false'.equalsIgnoreCase(reqParams.ascending)){
+            params.order = 'desc'
+        }
+
+        params << reqParams
     }
 }

@@ -47,6 +47,23 @@ class CssUtilServiceIntegrationSpec extends IntegrationSpec {
         isPersisted ==  true
         cssInstance.equals(cssInstance)
         hashcode!=null
+    }
 
+    void "test fileTimeStamp"(){
+        when: "Getting time stamp"
+        String fName= "testCss"
+        Date result= cssUtilService.getTimestamp(fName, path)
+        then:
+        result.equals(result)
+    }
+
+    void "test exportToFile"(){
+        when: "export File"
+        String constantName = "pbadm.PageRoles"
+        String pageLike=null
+        Boolean skipDuplicates=false
+        cssUtilService.exportToFile(constantName, pageLike, path, skipDuplicates)
+        then:
+        pageLike == null
     }
 }

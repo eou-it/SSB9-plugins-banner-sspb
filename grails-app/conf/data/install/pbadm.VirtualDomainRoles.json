@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.VirtualDomainRoles",
    "extendsPage": null,
-   "fileTimestamp": "2018-11-13T11:51:36Z",
+   "fileTimestamp": "2019-02-03T11:51:53Z",
    "modelView": {
       "components": [
          {
@@ -30,13 +30,15 @@
                   "loadInitially": true,
                   "model": "selectVirtualDomain",
                   "name": "selectVirtualDomain",
+                  "onLoad": "$editVirtualDomainRoles.$load();$EditRolesForm.$visible=$selectVirtualDomain; $roleName.$populateSource();",
                   "onUpdate": "$editVirtualDomainRoles.$load();\n$EditRolesForm.$visible=$selectVirtualDomain;\n $roleName.$populateSource();",
                   "placeholder": "Select...",
                   "required": false,
-                  "sourceModel": "virtualDomainLookup",
+                  "sourceModel": "virtualDomainLookup1",
                   "sourceParameters": {},
                   "type": "select",
-                  "valueKey": "VID"
+                  "valueKey": "VID",
+                  "valueStyle": "popupSelectBox pbPopupDataGrid:{'serviceNameType':'virtualdomains','id':'selectVirtualDomain','isPbPage':'true'}"
                }
             ],
             "label": "",

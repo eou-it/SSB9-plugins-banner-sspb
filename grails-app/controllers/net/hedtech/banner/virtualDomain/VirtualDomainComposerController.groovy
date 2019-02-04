@@ -1,7 +1,9 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ * Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
+
+import javax.servlet.http.HttpSession
 
 class VirtualDomainComposerController {
     static defaultAction = "loadVirtualDomain"
@@ -37,6 +39,8 @@ class VirtualDomainComposerController {
         if (pageInstance.vdServiceName) {
            if (validateInput(params)) {
                def loadResult = virtualDomainResourceService.loadVirtualDomain(pageInstance.vdServiceName)
+               HttpSession session = request.getSession()
+               session.setAttribute("pageId", loadResult.virtualDomain.id.toString())
                pageInstance.loadSuccess = loadResult.success
                pageInstance.error = loadResult.error
                pageInstance.loadSubmitted = true
@@ -62,6 +66,12 @@ class VirtualDomainComposerController {
             }
         }
         render (view:"virtualDomainComposer", model: [pageInstance: null])
+    }
+
+    def showRolesPage = {
+        def pageId = session.getAttribute("pageId")
+        def uri = "/customPage/page/pbadm.VirtualDomainRoles?pageId=" + pageId
+        redirect(uri: uri)
     }
 
     private def filter(params) {

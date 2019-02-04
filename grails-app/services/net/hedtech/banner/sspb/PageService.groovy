@@ -1,11 +1,10 @@
 /*******************************************************************************
- Copyright 2018 Ellucian Company L.P. and its affiliates.
+ Copyright 2018-2019 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
-import org.springframework.security.core.context.SecurityContextHolder
 
 class PageService {
     def compileService
@@ -24,6 +23,7 @@ class PageService {
     def list(Map params) {
         Map parameter = CommonService.decodeBase64(params)
         params.putAll(parameter);
+        params = extractReqPrams(params)
         log.trace "PageService.list invoked with params $params"
         def result
 
@@ -34,11 +34,15 @@ class PageService {
         }
         def max = Math.min( params.max ? params.max.toInteger() : 10000,  10000)
         def offset = params.offset ?: 0
-        def qp= [offset: offset, max: max, sort: 'constantName']
-        if  (params.constantName) {
-            result = Page.findAllByConstantNameLike(params.constantName, qp)
+        def qp= [offset: offset, max: max, sort: params.sort ?: 'constantName' , order:params.order ?: 'asc']
+        if (params.constantName && params.excludePage?.trim()) {
+            result = Page.findAllByConstantNameIlikeAndConstantNameNotEqual(params.constantName, params.excludePage ?: ' ', qp)
+        } else if (params.constantName) {
+            result = Page.findAllByConstantNameIlike(params.constantName, qp)
+        } else if (params.excludePage?.trim()) {
+            result = Page.findAllByConstantNameNotEqual(params.excludePage, qp)
         } else {
-            result = Page.list( qp )
+            result = Page.list(qp)
         }
 
         def listResult = []
@@ -47,7 +51,7 @@ class PageService {
             //supplementPage( it )
             // trim the object since we only need to return the constantName properties for listing
             //listResult << [page : [constantName : it.constantName, id: it.id, version: it.version]]
-            listResult << [constantName : it.constantName, id: it.id, version: it.version]
+            listResult << [constantName : it.constantName,extendsPage:  it.extendsPage?.constantName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format("dd/MM/yyyy"), lastUpdated:it.lastUpdated?.format("dd/MM/yyyy")]
         }
 
         log.trace "PageService.list is returning a ${result.getClass().simpleName} containing ${result.size()} pages"
@@ -57,15 +61,32 @@ class PageService {
 
     def count(Map params) {
         log.trace "PageService.count invoked"
-        if (params.constantName) {
-            Page.countByConstantNameLike(params.constantName)
+        params = extractReqPrams(params)
+
+        if (params.constantName && params.excludePage?.trim()) {
+            Page.countByConstantNameIlikeAndConstantNameNotEqual(params.constantName,params.excludePage ?: ' ')
+        } else if (params.constantName) {
+             Page.countByConstantNameIlike(params.constantName)
+        } else if (params.excludePage?.trim()) {
+            Page.countByConstantNameNotEqual(params.excludePage)
         } else {
             Page.count()
         }
+
     }
 
 
     def show(Map params) {
+        if(params && params.containsKey('getGridData')) {
+            def returnMap = [
+                    result: list(params),
+                    length: count(params)
+            ]
+
+            return returnMap
+
+        }
+
         Map parameter = CommonService.decodeBase64(params)
         params.putAll(parameter);
         log.trace "PageService.show invoked"
@@ -258,5 +279,31 @@ class PageService {
             }
         }
         return false
+    }
+
+
+    def extractReqPrams(Map reqParams) {
+        Map params = [:]
+        if (reqParams && reqParams.excludePage) {
+            params.excludePage = reqParams.excludePage
+        }
+
+        if (reqParams && reqParams.searchString) {
+            params.constantName = "$reqParams.searchString%"
+        }
+
+        if (reqParams && reqParams.sortColumnName) {
+            params.sort = reqParams.sortColumnName
+        }
+
+        if (reqParams && 'true'.equalsIgnoreCase(reqParams.ascending)) {
+            params.order = 'asc'
+        }
+
+        if (reqParams && 'false'.equalsIgnoreCase(reqParams.ascending)) {
+            params.order = 'desc'
+        }
+
+        params << reqParams
     }
  }
