@@ -894,7 +894,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 
             pageId = pages[$scope.pageCurName];
 
-            window.open(rootWebApp+'customPage/page/'+ 'pbadm.PageRoles?pageId=' + pageId, '_blank');
+            window.open(rootWebApp+'customPage/page/'+ 'pbadm.PageRoles?pageId=' + pageId, '_self');
         };
 
 

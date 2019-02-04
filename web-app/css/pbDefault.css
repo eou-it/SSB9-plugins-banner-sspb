@@ -81,6 +81,14 @@ div[ng-grid] {
     padding: 5px 5px;
 }
 
+#pbid-visualPageComposer-container {
+    left: 35%;
+}
+
+#pbid-virtualDomainComposer-container {
+    left: 35%;
+}
+
 .ngGrid input[type="checkbox"] {
     -webkit-transform:scale(0.6);
     -moz-transform: scale(1.4);
