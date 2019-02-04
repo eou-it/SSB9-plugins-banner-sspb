@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
+ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 *******************************************************************************/
 
 input, textarea, select {
@@ -79,6 +79,14 @@ div[ng-grid] {
 
 #pbid-PageListDetail2-record-control-container {
     padding: 5px 5px;
+}
+
+#pbid-visualPageComposer-container {
+    left: 35%;
+}
+
+#pbid-virtualDomainComposer-container {
+    left: 35%;
 }
 
 .ngGrid input[type="checkbox"] {

@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.VirtualDomainRoles",
    "extendsPage": null,
-   "fileTimestamp": "2019-01-25T11:51:36Z",
+   "fileTimestamp": "2019-02-05T11:51:36Z",
    "modelView": {
       "components": [
          {
@@ -38,10 +38,19 @@
                   "sourceParameters": {},
                   "type": "select",
                   "valueKey": "VID"
+               },
+               {
+                  "valueStyle": "primary",
+                  "onClick": "var baseUrl = location.origin; \nvar path = \"/BannerExtensibility/virtualDomainComposer/loadVirtualDomain\";\nvar url = baseUrl + path;\nlocation.assign(url);",
+                  "name": "virtualDomainComposerButton",
+                  "style": "col-sm-6",
+                  "label": "Virtual Domain Composer",
+                  "type": "button"
                }
             ],
             "label": "",
             "name": "SelectVirtualDomainBlock",
+            "style": "col-sm-12",
             "showInitially": true,
             "type": "block"
          },

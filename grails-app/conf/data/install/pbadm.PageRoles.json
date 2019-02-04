@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.PageRoles",
    "extendsPage": null,
-   "fileTimestamp": "2019-01-25T11:51:36Z",
+   "fileTimestamp": "2019-02-05T11:51:36Z",
    "modelView": {
       "components": [
          {
@@ -45,13 +45,23 @@
                   "placeholder": "Select...",
                   "required": false,
                   "sourceModel": "pageLookup",
+                  "style": "col-sm-6",
                   "sourceParameters": {},
                   "type": "select",
                   "valueKey": "PID"
+               },
+               {
+                  "valueStyle": "primary",
+                  "onClick": "var baseUrl = location.origin; \nvar path = \"/BannerExtensibility/visualPageModelComposer/loadComposerPage\";\nvar url = baseUrl + path;\nlocation.assign(url);",
+                  "name": "visualPageComposerButton",
+                  "style": "col-sm-6",
+                  "label": "Visual Page Composer",
+                  "type": "button"
                }
             ],
             "label": "",
             "name": "SelectPageBlock",
+            "style": "col-sm-12",
             "showInitially": true,
             "type": "block"
          },
