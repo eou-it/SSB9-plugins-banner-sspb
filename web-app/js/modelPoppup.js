@@ -6,14 +6,6 @@
     'use strict';
 
     angular.module('modalPopup',['xe-ui-components'])
-        .config(function($httpProvider) {
-            $httpProvider.defaults.headers.common['Cache-Control'] = 'no-cache';
-            $httpProvider.defaults.cache = false;
-            if (!$httpProvider.defaults.headers.get) {
-                $httpProvider.defaults.headers.get = {};
-            }
-            $httpProvider.defaults.headers.get['If-Modified-Since'] = '0';
-        })
         .controller("nameModalPopupCtrl", ["$scope","$timeout","$http", "$q", "$filter",  function($scope, $timeout,$http, $q, $filter) {
             $scope.nocolumnFilterMenu = true;
             $scope.rtl = "xe-ui-components.min";
