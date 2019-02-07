@@ -20,14 +20,76 @@
             $scope.excludePage =" ";
             $scope.inputTypeFieldID="";
             $scope.isPbPage = "";
-
+            $scope.offset = 5;
+            var oldPageValue;
 
             function getContextPath() {
                 return window.location.pathname.substring(0, window.location.pathname.indexOf("/",2));
             };
 
+            var focusPageInput = function() {
+                $timeout(function() {
+                    angular.element('#pageInput').select().focus();
+                }, 50);
+            };
+
+            var disableButtons = function(pageNumber, numberOfPages) {
+                pageNumber = parseInt(pageNumber);
+                numberOfPages = parseInt(numberOfPages);
+                var reminder = numberOfPages / pageNumber;
+
+                if (numberOfPages === 1) { // Only one page
+                    $scope.firstPrev = true;
+                    $scope.nextLast = true;
+                } else if(reminder === 1) { // On last page
+                    $scope.nextLast = true;
+                    $scope.firstPrev = false;
+                } else if(reminder === numberOfPages) { // On first page
+                    $scope.firstPrev = true;
+                    $scope.nextLast = false;
+                } else if(pageNumber <= 0 || (pageNumber > numberOfPages)) { // Out of range
+                    $scope.firstPrev = true;
+                    $scope.nextLast = true;
+                } else { // Between first and last page
+                    $scope.nextLast = false;
+                    $scope.firstPrev = false;
+                }
+            };
+
+            $scope.dataPaginizationfirst = function() {
+                if ($scope.firstPrev) {
+                    return;
+                }
+
+                setPageValue(1);
+
+                $scope.fetchData($scope.onPage, $scope.offset);
+                disableButtons($scope.onPage, $scope.numberOfPages);
+                focusPageInput();
+            };
+
+            var setPageValue = function(onPage) {
+                $scope.onPage = onPage;
+                oldPageValue = onPage;
+            };
+
+            var calculateNumberOfPages = function() {
+                $scope.numberOfPages = Math.ceil($scope.resultsFound / $scope.offset);
+                $scope.numberOfPages = $scope.numberOfPages < 1 ? 0 : $scope.numberOfPages;
+
+                if ($scope.onPage > $scope.numberOfPages) {
+                    setPageValue($scope.numberOfPages);
+                }
+            };
+
+
             $scope.nameToggleModal = function(dataFetch) {
                 if(dataFetch){
+                   // $scope.refreshData('nameDataTable');
+                    $scope.firstPrev = false;
+                    $scope.nextLast = false;
+                    $scope.onPage = 1;
+                    $scope.first();
                     $scope.getData({excludePage:$scope.excludePage,max:5,offset:0});
                 }
                 $scope.modalShown = !$scope.modalShown;

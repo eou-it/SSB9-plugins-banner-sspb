@@ -36,7 +36,9 @@
                   "required": false,
                   "sourceModel": "virtualDomainLookup1",
                   "sourceParameters": {},
-                  "valueKey": "VID"
+                  "type": "select",
+                  "valueKey": "VID",
+                  "valueStyle": "popupSelectBox pbPopupDataGrid:{'serviceNameType':'virtualdomains','id':'selectVirtualDomain','isPbPage':'true'}"
                },
                {
                   "valueStyle": "primary",
