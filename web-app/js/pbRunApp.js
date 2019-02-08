@@ -685,12 +685,14 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
                 if(scope.options.id == 'selectVirtualDomain'){
                     scope.selectVirtualDomain = selectedValue;
                     scope.CONSTANT_NAME = selectedText;
-                    scope.selectVirtualDomain_onUpdate();
+                    scope.selectVirtualDomainDS.onUpdate(scope.selectVirtualDomain);
+                   // scope.selectVirtualDomain_onUpdate();
                 }
                 if(scope.options.id == 'selectPage'){
                     scope.selectPage = selectedValue;
                     scope.CONSTANT_NAME = selectedText;
-                    scope.selectPage_onUpdate();
+                    scope.selectPageDS.onUpdate(scope.selectPage);
+                   // scope.selectPage_onUpdate();
                 }
             }
             element.on('enter',scope.onClickData);

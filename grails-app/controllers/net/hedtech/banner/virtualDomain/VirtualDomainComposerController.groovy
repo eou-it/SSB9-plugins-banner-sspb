@@ -49,6 +49,7 @@ class VirtualDomainComposerController {
                    pageInstance.vdPostView = loadResult.virtualDomain.codePost
                    pageInstance.vdPutView = loadResult.virtualDomain.codePut
                    pageInstance.vdDeleteView = loadResult.virtualDomain.codeDelete
+                   pageInstance.id = loadResult.virtualDomain.id
                }
            } else {
                pageInstance.error = message(code:"sspb.virtualdomain.invalid.service.message", args:[pageInstance.vdServiceName])
@@ -68,11 +69,6 @@ class VirtualDomainComposerController {
         render (view:"virtualDomainComposer", model: [pageInstance: null])
     }
 
-    def showRolesPage = {
-        def pageId = session.getAttribute("pageId")
-        def uri = "/customPage/page/pbadm.VirtualDomainRoles?pageId=" + pageId
-        redirect(uri: uri)
-    }
 
     private def filter(params) {
         def vo = [:]

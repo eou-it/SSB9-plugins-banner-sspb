@@ -125,3 +125,18 @@ div[ng-grid] {
     width: 17.5em;
 }
 
+.rTable {
+    display: block;
+    width: 100%;
+}
+
+.rTableCell, .rTableHead {
+    float: left;
+    overflow: hidden;
+    width: 50%;
+}
+
+.divAlignToRight {
+    text-align: right;
+}
+

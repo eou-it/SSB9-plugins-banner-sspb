@@ -34,7 +34,7 @@
                   "onUpdate": "$editVirtualDomainRoles.$load();\n$EditRolesForm.$visible=$selectVirtualDomain;\n $roleName.$populateSource();",
                   "placeholder": "Select...",
                   "required": false,
-                  "sourceModel": "virtualDomainLookup1",
+                  "sourceModel": "virtualDomainLookup",
                   "sourceParameters": {},
                   "type": "select",
                   "valueKey": "VID",
