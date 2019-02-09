@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.VirtualDomainRoles",
    "extendsPage": null,
-   "fileTimestamp": "2019-02-08T13:49:36Z",
+   "fileTimestamp": "2019-02-09T19:06:25Z",
    "modelView": {
       "components": [
          {
@@ -44,7 +44,7 @@
                {
                   "label": "Virtual Domain Composer",
                   "name": "virtualDomainComposerButton",
-                  "onClick": "var baseUrl = location.origin; \nvar path = \"/BannerExtensibility/virtualDomainComposer/loadVirtualDomain\";\nvar url = baseUrl + path;\nlocation.assign(url);",
+                  "onClick": "var baseUrl = location.origin; \nvar path = \"/BannerExtensibility/virtualDomainComposer/loadVirtualDomain\";\nvar url = baseUrl + path+'?id='+$selectVirtualDomain+'&name='+$CONSTANT_NAME;\nlocation.assign(url);",
                   "style": "col-sm-6 rTableCell divAlignToRight",
                   "type": "button",
                   "valueStyle": "primary"
