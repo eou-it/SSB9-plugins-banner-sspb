@@ -44,7 +44,7 @@
                   "onUpdate": "$editPageRoles.$load();\n$EditRolesForm.$visible=$selectPage;\n$roleName.$populateSource();\n$ApplyRolesForm.$visible=$selectPage;\n$appliedPageRoles.$load();",
                   "placeholder": "Select...",
                   "required": false,
-                  "sourceModel": "pageLookup",
+                  "sourceModel": "pageLookup1",
                   "sourceParameters": {},
                   "style": "col-sm-6 rTableCell",
                   "type": "select",

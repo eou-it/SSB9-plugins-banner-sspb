@@ -888,7 +888,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                 return;
             }
 
-            window.open(rootWebApp+'customPage/page/'+ 'pbadm.PageRoles?pageId=' + pageId, '_self');
+            window.open(rootWebApp+'customPage/page/'+ 'pbadm.PageRoles?id=' +Base64.encode(pageId)+'&name='+$scope.pageCurName, '_self');
         };
 
 
@@ -1006,7 +1006,10 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.load.label" /> </label>
         <select id="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'constantName'}" name="constantName"
                 ng-model="pageName"
-                ng-change="getPageSource();saveAs=false;"></select>
+                ng-change="getPageSource();saveAs=false;">
+            <option label="{{pageName}}" value="{{pageName}}">{{pageName}}</option>
+
+        </select>
 
         <button id="reload-btn" ng-click='loadPageNames(); saveAs=false;' title="${message( code:'sspb.page.visualbuilder.reload.pages.label')}" ng-show="false" /> </i> </button>
         <button ng-click='newPageSource()' class="primary"><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
@@ -1028,6 +1031,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         <select id="extendsPage" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'extendsPage'}" name="extendsPage"
                 ng-model="extendsPageName"
                 ng-change="getExtendsPage();saveAs=false;">
+            <option label="{{extendsPageName}}" value="{{extendsPageName}}">{{extendsPageName}}</option>
         </select>
 
         <button ng-show="pageName && pageCurName && pageCurName != newPageName" ng-click='validateAndSubmitPageSource(); saveAs=false;updatePageName();'
