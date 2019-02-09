@@ -709,7 +709,6 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
                 if(searchParams){
                     searchParams = searchParams.replace('?','')
                     reqParams = JSON.parse('{"' + searchParams.replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
-                    console.log(reqParams)
                 }
                 if(Object.keys(reqParams).length != 0 && pbDataOptions.isPbPage== 'true'){
                     pbPagesChangeEvent(pbDataOptions.id,reqParams.name,reqParams.id)

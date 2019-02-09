@@ -54,7 +54,7 @@
                {
                   "label": "Visual Page Composer",
                   "name": "visualPageComposerButton",
-                  "onClick": "console.log($selectPage);\nvar baseUrl = location.origin; \nvar path = \"/BannerExtensibility/visualPageModelComposer/loadComposerPage\";\nvar url = baseUrl + path+'?id='+$selectPage+'&name='+$CONSTANT_NAME;\nlocation.assign(url);",
+                  "onClick": "var baseUrl = location.origin; \nvar path = \"/BannerExtensibility/visualPageModelComposer/loadComposerPage\";\nvar url = baseUrl + path+'?id='+$selectPage+'&name='+$CONSTANT_NAME;\nlocation.assign(url);",
                   "style": "col-sm-6 rTableCell divAlignToRight",
                   "type": "button",
                   "valueStyle": "primary"
