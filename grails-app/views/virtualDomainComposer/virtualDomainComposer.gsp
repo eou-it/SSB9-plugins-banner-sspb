@@ -65,9 +65,11 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         
         <g:actionSubmit action="saveVirtualDomain" class="primary" value="${message(code:"sspb.page.virtualdomain.save.label")}" />
         <g:actionSubmit action="deleteVirtualDomain" class="secondary" value="${message(code:"sspb.page.virtualdomain.delete.label")}" />
-       <a href="${createLink(uri:'/customPage/page/pbadm.VirtualDomainRoles',params:['id':pageInstance?.id?:'','name':pageInstance?.vdServiceName?:''])}"  >
+       <g:if test="${pageInstance?.vdServiceName}">
+        <a href="${createLink(uri:'/customPage/page/pbadm.VirtualDomainRoles',params:['id':pageInstance?.id?:'','name':pageInstance?.vdServiceName?:''])}"  >
         <input type="button" class="secondary" value="${message(code:"sspb.page.virtualdomain.roles.label")}" />
        </a>
+       </g:if>
     </div>
 
 
