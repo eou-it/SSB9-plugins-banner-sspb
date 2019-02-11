@@ -665,7 +665,9 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
         }],
 
         link : function (scope,element,attrs) {
+            onLoadEventData();
             scope.onClickData = function () {
+                //scope.pageName = null;
                 scope.options = $parse(attrs.pbPopupDataGrid)() || {};
                 if(scope.options.id == 'extendsPage') {
                     scope.options.excludePage = scope.pageName;
@@ -676,23 +678,56 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
 
             function changeData(){
                 if(scope.options.isPbPage== 'true'){
-                    scope.inputTypeFieldID = 'pbid-'+scope.options.id;
-                }else{
-                    scope.inputTypeFieldID = scope.options.id;
-                }
-                var selectedValue = document.getElementById(scope.inputTypeFieldID).value;
-                var selectedText = $("#"+scope.inputTypeFieldID+" option:selected").text();
-                if(scope.options.id == 'selectVirtualDomain'){
-                    scope.selectVirtualDomain = selectedValue;
-                    scope.CONSTANT_NAME = selectedText;
-                    scope.selectVirtualDomain_onUpdate();
-                }
-                if(scope.options.id == 'selectPage'){
-                    scope.selectPage = selectedValue;
-                    scope.CONSTANT_NAME = selectedText;
-                    scope.selectPage_onUpdate();
+                    var selectedValue = document.getElementById(attrs.id).value;
+                    var selectedText = $("#"+attrs.id+" option:selected").text();
+                    pbPagesChangeEvent(scope.options.id,selectedText,selectedValue);
                 }
             }
+
+            function pbPagesChangeEvent(id,name,value) {
+                if(id == 'selectVirtualDomain'){
+                    scope.selectVirtualDomainDS = {};
+                    scope.selectVirtualDomainDS.data = [{'VID':value,'SERVICE_NAME':name}]
+                    scope.selectVirtualDomain = value;
+                    scope.CONSTANT_NAME = name;
+                    scope.selectVirtualDomain_onUpdate();
+                }
+                if(id == 'selectPage'){
+                    scope.selectPageDS = {};
+                    scope.selectPageDS.data = [{'PID':value,'CONSTANT_NAME':name}];
+                    scope.selectPage = value;
+                    scope.CONSTANT_NAME = name;
+                    scope.selectPage_onUpdate();
+                }
+
+            }
+            function onLoadEventData(){
+                console.log('On load Event trigger');
+                var pbDataOptions = $parse(attrs.pbPopupDataGrid)() || {};
+                var searchParams = window.location.search;
+                var reqParams = {};
+                if(searchParams){
+                    searchParams = searchParams.replace('?','')
+                    reqParams = JSON.parse('{"' + searchParams.replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
+                }
+                if(Object.keys(reqParams).length != 0 && pbDataOptions.isPbPage== 'true'){
+                    pbPagesChangeEvent(pbDataOptions.id,reqParams.name,reqParams.id)
+                }
+
+                if(Object.keys(reqParams).length != 0 && pbDataOptions.isPbPage != 'true' && pbDataOptions.id == 'constantName'){
+                    $("#pageRoleId").val(reqParams.id);
+                    scope.pageName = reqParams.name;
+                    scope.getPageSource();
+                }
+                if(Object.keys(reqParams).length != 0 && pbDataOptions.isPbPage != 'true' && pbDataOptions.id == 'vdServiceName'){
+                    $("#"+pbDataOptions.id+" option:selected").remove();
+                    $("#"+pbDataOptions.id).append("<option label='"+reqParams.name+"' selected='selected' value="+reqParams.name+">"+reqParams.name+"</option>");
+                    $("#LoadVDForm").submit();
+                }
+
+
+            }
+
             element.on('enter',scope.onClickData);
             element.on('keyup', scope.onClickData);
             element.on('keydown', scope.onClickData);

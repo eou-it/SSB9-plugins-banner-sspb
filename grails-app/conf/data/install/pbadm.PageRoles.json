@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.PageRoles",
    "extendsPage": null,
-   "fileTimestamp": "2019-02-05T11:51:36Z",
+   "fileTimestamp": "2019-02-09T19:04:00Z",
    "modelView": {
       "components": [
          {
@@ -45,25 +45,25 @@
                   "placeholder": "Select...",
                   "required": false,
                   "sourceModel": "pageLookup1",
-                  "style": "col-sm-6",
                   "sourceParameters": {},
+                  "style": "col-sm-6 rTableCell",
                   "type": "select",
                   "valueKey": "PID",
                   "valueStyle": "popupSelectBox pbListView pbPopupDataGrid:{'serviceNameType':'pages','id':'selectPage','isPbPage':'true'}"
                },
                {
-                  "valueStyle": "primary",
-                  "onClick": "var baseUrl = location.origin; \nvar path = \"/BannerExtensibility/visualPageModelComposer/loadComposerPage\";\nvar url = baseUrl + path;\nlocation.assign(url);",
-                  "name": "visualPageComposerButton",
-                  "style": "col-sm-6",
                   "label": "Visual Page Composer",
-                  "type": "button"
+                  "name": "visualPageComposerButton",
+                  "onClick": "var baseUrl = location.origin; \nvar path = \"/BannerExtensibility/visualPageModelComposer/loadComposerPage\";\nvar url = baseUrl + path+'?id='+$selectPage+'&name='+$CONSTANT_NAME;\nlocation.assign(url);",
+                  "style": "col-sm-6 rTableCell divAlignToRight",
+                  "type": "button",
+                  "valueStyle": "primary"
                }
             ],
             "label": "",
             "name": "SelectPageBlock",
-            "style": "col-sm-12",
             "showInitially": true,
+            "style": "col-sm-12 rTable",
             "type": "block"
          },
          {

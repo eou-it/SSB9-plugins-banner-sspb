@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.VirtualDomainRoles",
    "extendsPage": null,
-   "fileTimestamp": "2019-02-05T11:51:36Z",
+   "fileTimestamp": "2019-02-09T19:06:25Z",
    "modelView": {
       "components": [
          {
@@ -36,23 +36,24 @@
                   "required": false,
                   "sourceModel": "virtualDomainLookup1",
                   "sourceParameters": {},
+                  "style": "rTableCell",
                   "type": "select",
                   "valueKey": "VID",
                   "valueStyle": "popupSelectBox pbPopupDataGrid:{'serviceNameType':'virtualdomains','id':'selectVirtualDomain','isPbPage':'true'}"
                },
                {
-                  "valueStyle": "primary",
-                  "onClick": "var baseUrl = location.origin; \nvar path = \"/BannerExtensibility/virtualDomainComposer/loadVirtualDomain\";\nvar url = baseUrl + path;\nlocation.assign(url);",
-                  "name": "virtualDomainComposerButton",
-                  "style": "col-sm-6",
                   "label": "Virtual Domain Composer",
-                  "type": "button"
+                  "name": "virtualDomainComposerButton",
+                  "onClick": "var baseUrl = location.origin; \nvar path = \"/BannerExtensibility/virtualDomainComposer/loadVirtualDomain\";\nvar url = baseUrl + path+'?id='+$selectVirtualDomain+'&name='+$CONSTANT_NAME;\nlocation.assign(url);",
+                  "style": "col-sm-6 rTableCell divAlignToRight",
+                  "type": "button",
+                  "valueStyle": "primary"
                }
             ],
             "label": "",
             "name": "SelectVirtualDomainBlock",
-            "style": "col-sm-12",
             "showInitially": true,
+            "style": "col-sm-12 rTable",
             "type": "block"
          },
          {
