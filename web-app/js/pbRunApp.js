@@ -706,25 +706,19 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
                 var pbDataOptions = $parse(attrs.pbPopupDataGrid)() || {};
                 var searchParams = window.location.search;
                 var reqParams = {};
-                if(searchParams){
+                if(searchParams && (pbDataOptions.id == 'vdServiceName' || pbDataOptions.isPbPage== 'true')){
                     searchParams = searchParams.replace('?','')
                     reqParams = JSON.parse('{"' + searchParams.replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
                 }
-                if(Object.keys(reqParams).length != 0 && pbDataOptions.isPbPage== 'true'){
+                if(Object.keys(reqParams).length != 0 && reqParams.name && pbDataOptions.isPbPage== 'true'){
                     pbPagesChangeEvent(pbDataOptions.id,reqParams.name,reqParams.id)
                 }
 
-                if(Object.keys(reqParams).length != 0 && pbDataOptions.isPbPage != 'true' && pbDataOptions.id == 'constantName'){
-                    $("#pageRoleId").val(reqParams.id);
-                    scope.pageName = reqParams.name;
-                    scope.getPageSource();
-                }
-                if(Object.keys(reqParams).length != 0 && pbDataOptions.isPbPage != 'true' && pbDataOptions.id == 'vdServiceName'){
+                if(Object.keys(reqParams).length != 0 && reqParams.name && pbDataOptions.isPbPage != 'true' && pbDataOptions.id == 'vdServiceName'){
                     $("#"+pbDataOptions.id+" option:selected").remove();
                     $("#"+pbDataOptions.id).append("<option label='"+reqParams.name+"' selected='selected' value="+reqParams.name+">"+reqParams.name+"</option>");
                     $("#LoadVDForm").submit();
                 }
-
 
             }
 

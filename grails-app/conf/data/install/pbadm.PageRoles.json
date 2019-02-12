@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.PageRoles",
    "extendsPage": null,
-   "fileTimestamp": "2019-02-11T13:53:04Z",
+   "fileTimestamp": "2019-02-12T06:14:28Z",
    "modelView": {
       "components": [
          {
@@ -54,7 +54,7 @@
                {
                   "label": "Visual Page Composer",
                   "name": "visualPageComposerButton",
-                  "onClick": "var baseUrl = location.origin; \nvar path = \"/BannerExtensibility/visualPageModelComposer/loadComposerPage\";\nvar url = baseUrl + path;\nif($selectPage && $CONSTANT_NAME){\nurl = url+'?id='+$selectPage+'&name='+$CONSTANT_NAME;\n}\nlocation.assign(url);",
+                  "onClick": "var baseUrl = location.origin; \nvar path = \"/BannerExtensibility/visualPageModelComposer/loadComposerPage\";\nvar url = baseUrl + path;\nif($selectPage && $CONSTANT_NAME){\nurl = url+'?constantName='+$CONSTANT_NAME;\n}\nlocation.assign(url);",
                   "style": "col-sm-6 rTableCell divAlignToRight",
                   "type": "button",
                   "valueStyle": "primary"
