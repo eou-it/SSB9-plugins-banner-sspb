@@ -11,7 +11,6 @@
             $scope.rtl = "xe-ui-components.min";
             $scope.rtlText = "Switch to RTL";
             $scope.urlTest = getContextPath()+/internalPb/;
-            $scope.records = 1;
             $scope.content = {};
             $scope.resultsFound = 0;
             $scope.params = {};

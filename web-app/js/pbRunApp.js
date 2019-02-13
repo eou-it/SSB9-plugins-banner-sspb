@@ -641,6 +641,9 @@ function dialogPopUp(params) {
        //angular.element(document.getElementsByClassName('tbody ng-isolate-scope')).removeAttr('style');
         scope = angular.element(document.getElementById('popupContainerDiv')).scope();
     }else{
+        angular.element(document.getElementById('nameDataTableSearch')).val('')
+        angular.element(document.getElementsByClassName('secondary first')).click();
+
         dataFetch = true;
     }
     scope.$apply(function(){
