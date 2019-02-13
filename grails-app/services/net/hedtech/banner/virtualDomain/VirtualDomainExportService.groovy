@@ -76,7 +76,7 @@ class VirtualDomainExportService {
         def cr = VirtualDomain.createCriteria()
         def result = cr.list(offset: offset, max: max, paginationEnabledList: true) {
             if (params.serviceName) {
-                like("serviceName", params.serviceName)
+                ilike("serviceName", "%${params.serviceName}%")
             }
             if (vdSet) {
                 'in'("serviceName",vdSet)
@@ -114,7 +114,7 @@ class VirtualDomainExportService {
     // return a list of referenced virtual domains
     def vdForPages(pageNameLike) {
         Set vdSet = new HashSet()
-        def pages = Page.findAllByConstantNameLike(pageNameLike)
+        def pages = Page.findAllByConstantNameIlike("%${pageNameLike}%")
         //this is gonna be pretty expensive probably
         pages.each{ p ->
             def jsonPage =  p.getMergedModelMap(false)

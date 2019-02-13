@@ -59,7 +59,7 @@ class PageExportService {
         def cr = Page.createCriteria()
         def result = cr.list (offset: offset, max: max) {
             if  (params.constantName) {
-                like ("constantName",params.constantName )
+                ilike ("constantName","%${params.constantName}%" )
             }
             if (sortBy[0]) {
                 sortBy.each {
