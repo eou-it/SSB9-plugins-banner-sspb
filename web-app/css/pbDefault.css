@@ -93,6 +93,7 @@ div[ng-grid] {
     -webkit-transform:scale(0.6);
     -moz-transform: scale(1.4);
 }
+
 @media screen and (min-width: 768px) {
    #popupContainerDiv .xe-popup-container  {
         width:42em !important;
@@ -107,11 +108,15 @@ div[ng-grid] {
 #popupContainerDiv .table-container .caption caption .toolbar {
     display: inline-block;
     float: left;
+}
 
+#popupContainerDiv .pagination-container  {
+    direction: ltr;
 }
 
 #popupContainerDiv .search-container .simple-input-field {
-     width: 20em;
+    width: 20em;
+    background-position: right;
 }
 
 #popupContainerDiv xe-button .primary {
@@ -122,8 +127,18 @@ div[ng-grid] {
 }
 
 #popupContainerDiv .thead{
-    height: 35px;
+    height: 38px;
 }
+
+#popupContainerDiv .table-container .thead thead tr th, .table-container .tbody thead tr th {
+    height: 1em;
+}
+
+#popupContainerDiv .pagination-container .pagination-controls button {
+    width: 2.5em;
+    height: 3.5em;
+}
+
 
 .popupSelectBox  {
     width: 17.5em;
@@ -143,4 +158,6 @@ div[ng-grid] {
 .divAlignToRight {
     text-align: right;
 }
+
+
 

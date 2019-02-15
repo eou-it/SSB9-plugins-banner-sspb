@@ -5,6 +5,8 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
+import org.springframework.context.i18n.LocaleContextHolder
+
 
 class PageService {
     def compileService
@@ -46,12 +48,17 @@ class PageService {
         }
 
         def listResult = []
+       Locale locale = LocaleContextHolder.getLocale()
+        String date_format = "dd/MM/yyyy"
+        if(locale && locale.language && locale.language == 'ar'){
+            date_format = "yyyy/MM/dd"
+        }
 
         result.each {
             //supplementPage( it )
             // trim the object since we only need to return the constantName properties for listing
             //listResult << [page : [constantName : it.constantName, id: it.id, version: it.version]]
-            listResult << [constantName : it.constantName,extendsPage:  it.extendsPage?.constantName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format("dd/MM/yyyy"), lastUpdated:it.lastUpdated?.format("dd/MM/yyyy")]
+            listResult << [constantName : it.constantName,extendsPage:  it.extendsPage?.constantName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format(date_format), lastUpdated:it.lastUpdated?.format(date_format)]
         }
 
         log.trace "PageService.list is returning a ${result.getClass().simpleName} containing ${result.size()} pages"

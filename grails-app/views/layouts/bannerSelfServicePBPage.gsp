@@ -218,9 +218,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
             <g:render template="/layouts/userPreference" plugin="banner-ui-ss"/>
         </g:if>--}%
         %{--<g:render template="/layouts/bannershortcuts" plugin="banner-ui-ss"/>--}%
-%{--
-        <g:render template="/layouts/modelPoppup" plugin="banner-sspb"/>
---}%
+
     <div id="popupContainerDiv"></div>
     </body>
 </html>

@@ -8,6 +8,7 @@ import net.hedtech.banner.exceptions.ApplicationException
 import net.hedtech.banner.sspb.CommonService
 import org.codehaus.groovy.grails.web.util.WebUtils
 import net.hedtech.banner.service.ServiceBase
+import org.springframework.context.i18n.LocaleContextHolder
 
 class CssService extends ServiceBase {
 
@@ -38,12 +39,16 @@ class CssService extends ServiceBase {
         }
 
         def listResult = []
-
+        Locale locale = LocaleContextHolder.getLocale()
+        String date_format = "dd/MM/yyyy"
+        if(locale && locale.language && locale.language == 'ar'){
+            date_format = "yyyy/MM/dd"
+        }
         result.each {
             //supplementCss( it )
             // trim the object since we only need to return the constantName properties for listing
             if(params.containsKey('getGridData')){
-                listResult << [constantName : it.constantName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format("dd/MM/yyyy"), lastUpdated:it.lastUpdated?.format("dd/MM/yyyy")]
+                listResult << [constantName : it.constantName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format(date_format), lastUpdated:it.lastUpdated?.format(date_format)]
             }else {
                 listResult << [css : [constantName : it.constantName, id: it.id, version: it.version]]
             }

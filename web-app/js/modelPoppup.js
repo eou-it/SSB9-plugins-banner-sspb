@@ -7,7 +7,6 @@
 
     angular.module('modalPopup',['xe-ui-components'])
         .controller("nameModalPopupCtrl", ["$scope","$timeout","$http", "$q", "$filter",  function($scope, $timeout,$http, $q, $filter) {
-            $scope.nocolumnFilterMenu = true;
             $scope.rtl = "xe-ui-components.min";
             $scope.rtlText = "Switch to RTL";
             $scope.urlTest = getContextPath()+/internalPb/;
@@ -27,13 +26,12 @@
 
             $scope.nameToggleModal = function(dataFetch) {
                 if(dataFetch){
-                    $scope.getData({excludePage:$scope.excludePage,max:5,offset:0});
+                    $scope.getData({excludePage:$scope.excludePage,pageSize:5,offset:0});
                 }
                 $scope.modalShown = !$scope.modalShown;
                 $timeout(function () {
                     angular.element('#nameDataTableSearch').focus();
                 },0);
-
             };
 
             $scope.draggableColumnNames = [$scope.nameHeader, 'dateCreated', 'lastUpdated'];
@@ -46,7 +44,7 @@
             };
 
             $scope.paginationConfig = {
-                pageLengths : [ 5, 10, 25, 50, 100],
+                pageLengths : [10, 25, 50, 100],
                 offset : 5,
                 recordsFoundLabel : $.i18n.prop("nameDataTable.column.common.pagination.recordsFoundLabel"),
                 pageTitle: "Go To Page (End)",
@@ -56,13 +54,35 @@
                 perPageLabel: $.i18n.prop("nameDataTable.column.common.pagination.perPageLabel")
             };
 
-            $scope.searchConfig = {
+            $scope.pageSearchConfig = {
                 id: 'nameDataTableSearch',
                 title: 'Search (Alt+Y)',
                 ariaLabel: 'Search for any Name',
                 delay: 300,
                 searchString : '',
-                placeholder : 'Search by Name',
+                placeholder : $.i18n.prop("nameDataTable.popup.page.search.placeholder"),
+                maxlength: 250,
+                minimumCharacters : 1
+            };
+
+            $scope.virtualDomainSearchConfig = {
+                id: 'nameDataTableSearch',
+                title: 'Search (Alt+Y)',
+                ariaLabel: 'Search for any Name',
+                delay: 300,
+                searchString : '',
+                placeholder : $.i18n.prop("nameDataTable.popup.virtualDomain.search.placeholder"),
+                maxlength: 250,
+                minimumCharacters : 1
+            };
+
+            $scope.cssSearchConfig = {
+                id: 'nameDataTableSearch',
+                title: 'Search (Alt+Y)',
+                ariaLabel: 'Search for any Name',
+                delay: 300,
+                searchString : '',
+                placeholder : $.i18n.prop("nameDataTable.popup.stylesheet.search.placeholder"),
                 maxlength: 250,
                 minimumCharacters : 1
             };
@@ -70,7 +90,7 @@
             $scope.getData = function(query) {
                 var deferred = $q.defer(),
                     url = "";
-                    query.max = '5';
+                    query.max = query.pageSize ? query.pageSize : 5;
                 url = getContextPath()+/internalPb/+$scope.serviceNameType+"/getGridData"
                     + "?getGridData=true&"
                     + "excludePage="+$scope.excludePage+"&"
@@ -83,7 +103,7 @@
                 $http.get(url)
                     .success(function(data) {
                         deferred.resolve(data);
-                        $scope.postFetch({response: data, oldResult: $scope.content});
+                       $scope.postFetch({response: data, oldResult: $scope.content});
                         $scope.content = data.result;
                         $scope.resultsFound = data.length;
                     })
@@ -177,8 +197,18 @@
 
                 var input = angular.element(document.getElementById($scope.inputTypeFieldID))
                 input.trigger('change');
-            }
+            };
 
+            $scope.setFocusOnLoad = function () {
+                var FOCUSRING = 'focus-ring';
+                var ACTIVEROW = 'active-row';
+                var gridFirstRow = $("#nameDataTable").closest('.table-container').find('.tbody tbody tr:first');
+                var gridFirstRowFirstCell = $("#nameDataTable").closest('.table-container').find('.tbody tbody tr:first td:first');
+                $('tr.active-row').removeClass(ACTIVEROW);
+                $(gridFirstRow).addClass(ACTIVEROW);
+                $(gridFirstRowFirstCell).focus();
+                $(gridFirstRowFirstCell).addClass(FOCUSRING);
+            }
 
         }]);
 })();
