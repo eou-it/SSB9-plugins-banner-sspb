@@ -29,9 +29,6 @@
                     $scope.getData({excludePage:$scope.excludePage,pageSize:5,offset:0});
                 }
                 $scope.modalShown = !$scope.modalShown;
-                $timeout(function () {
-                    angular.element('#nameDataTableSearch').focus();
-                },0);
             };
 
             $scope.draggableColumnNames = [$scope.nameHeader, 'dateCreated', 'lastUpdated'];
@@ -106,6 +103,10 @@
                        $scope.postFetch({response: data, oldResult: $scope.content});
                         $scope.content = data.result;
                         $scope.resultsFound = data.length;
+                        $timeout(function () {
+                            $scope.setFocusOnLoad();
+                            angular.element('#nameDataTableSearch').focus();
+                        },0);
                     })
                     .error(function(data) {
                         deferred.reject(data);
@@ -206,7 +207,7 @@
                 var gridFirstRowFirstCell = $("#nameDataTable").closest('.table-container').find('.tbody tbody tr:first td:first');
                 $('tr.active-row').removeClass(ACTIVEROW);
                 $(gridFirstRow).addClass(ACTIVEROW);
-                $(gridFirstRowFirstCell).focus();
+                //$(gridFirstRowFirstCell).focus();
                 $(gridFirstRowFirstCell).addClass(FOCUSRING);
             }
 
