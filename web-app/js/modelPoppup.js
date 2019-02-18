@@ -26,7 +26,10 @@
 
             $scope.nameToggleModal = function(dataFetch) {
                 if(dataFetch){
-                    $scope.getData({excludePage:$scope.excludePage,pageSize:5,offset:0});
+                    $scope.pageSearchConfig.searchString = '';
+                    $scope.virtualDomainSearchConfig.searchString = '';
+                    $scope.cssSearchConfig.searchString = '';
+                    $scope.getData({excludePage:$scope.excludePage,pageSize:5,offset:0,searchString:''});
                 }
                 $scope.modalShown = !$scope.modalShown;
             };

@@ -640,16 +640,15 @@ function dialogPopUp(params) {
             angular.bootstrap(document.getElementById('popupContainerDiv'), ['modalPopup']);
         });
         angular.element(document.getElementsByClassName('column-filter-container ng-scope')).remove();
-        //angular.element(document.getElementsByClassName('xe-label ng-binding ng-isolate-scope')).remove();
+       // angular.element(document.getElementsByClassName('xe-label ng-binding ng-isolate-scope')).remove();
        // angular.element(document.getElementsByClassName('per-page-select ng-pristine ng-untouched ng-valid ng-not-empty')).remove();
        //angular.element(document.getElementsByClassName('tbody ng-isolate-scope')).removeAttr('style');
         scope = angular.element(document.getElementById('popupContainerDiv')).scope();
     }else{
-        $("th.constantName").removeClass("focus-ring ascending decending");
-        $("th.dateCreated").removeClass("focus-ring ascending decending");
-        $("th.lastUpdated").removeClass("focus-ring ascending decending");
-        $("th.serviceName").removeClass("focus-ring ascending decending");
-        angular.element(document.getElementById('nameDataTableSearch')).val('');
+       $("th.constantName").removeClass("focus-ring ascending decending");
+       $("th.dateCreated").removeClass("focus-ring ascending decending");
+       $("th.lastUpdated").removeClass("focus-ring ascending decending");
+       $("th.serviceName").removeClass("focus-ring ascending decending");
         angular.element(document.getElementsByClassName('secondary first')).click();
         dataFetch = true;
     }
