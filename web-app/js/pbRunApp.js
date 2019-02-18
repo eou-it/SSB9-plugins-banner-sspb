@@ -586,15 +586,19 @@ function dialogPopUp(params) {
     var go_button_label = $.i18n.prop("nameDataTable.column.common.button.label");
     var columnRefName = '';
     var nameHeader = '';
+    var searchConfig = '';
     if(params.serviceNameType == 'virtualdomains'){
+        searchConfig = 'virtualDomainSearchConfig';
         nameHeader = 'serviceName';
         titleHeader = $.i18n.prop("nameDataTable.popup.virtualDomain.pageheader");
         columnRefName = 'virtualDomainColumns';
     }else if(params.serviceNameType == 'pages'){
+        searchConfig = 'pageSearchConfig';
         nameHeader = 'constantName';
         titleHeader = $.i18n.prop("nameDataTable.column.page.name.heading");
         columnRefName = 'pageColumns';
     }else if(params.serviceNameType == 'csses'){
+        searchConfig = 'cssSearchConfig';
         nameHeader = 'constantName';
         titleHeader = $.i18n.prop("nameDataTable.popup.stylesheet.pageheader");
         columnRefName = 'cssColumns';
@@ -620,7 +624,7 @@ function dialogPopUp(params) {
             '                   on-row-double-click="onDoubleClick(data,index)" \n' +
             '                   no-data-msg="'+no_result_found+'"\n' +
             '                   empty-table-msg="emptyTableMsg" \n' +
-            '                   search-config="searchConfig" \n' +
+            '                   search-config="'+searchConfig+'" \n' +
             '                   pagination-config="paginationConfig"\n' +
             '                   draggable-column-names="draggableColumnNames" \n' +
             '                   mobile-layout="mobileConfig"\n' +
@@ -636,21 +640,24 @@ function dialogPopUp(params) {
             angular.bootstrap(document.getElementById('popupContainerDiv'), ['modalPopup']);
         });
         angular.element(document.getElementsByClassName('column-filter-container ng-scope')).remove();
-        angular.element(document.getElementsByClassName('xe-label ng-binding ng-isolate-scope')).remove();
-        angular.element(document.getElementsByClassName('per-page-select ng-pristine ng-untouched ng-valid ng-not-empty')).remove();
+        //angular.element(document.getElementsByClassName('xe-label ng-binding ng-isolate-scope')).remove();
+       // angular.element(document.getElementsByClassName('per-page-select ng-pristine ng-untouched ng-valid ng-not-empty')).remove();
        //angular.element(document.getElementsByClassName('tbody ng-isolate-scope')).removeAttr('style');
         scope = angular.element(document.getElementById('popupContainerDiv')).scope();
     }else{
-        angular.element(document.getElementById('nameDataTableSearch')).val('')
+        $("th.constantName").removeClass("focus-ring ascending decending");
+        $("th.dateCreated").removeClass("focus-ring ascending decending");
+        $("th.lastUpdated").removeClass("focus-ring ascending decending");
+        $("th.serviceName").removeClass("focus-ring ascending decending");
+        angular.element(document.getElementById('nameDataTableSearch')).val('');
         angular.element(document.getElementsByClassName('secondary first')).click();
-
         dataFetch = true;
     }
     scope.$apply(function(){
         scope.excludePage = params.excludePage;
         scope.inputTypeFieldID = params.id;
         scope.isPbPage = params.isPbPage;
-        scope.nameToggleModal(dataFetch)
+        scope.nameToggleModal(dataFetch);
     });
 
 };

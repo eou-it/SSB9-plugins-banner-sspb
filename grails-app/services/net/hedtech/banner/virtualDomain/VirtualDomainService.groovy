@@ -5,7 +5,9 @@ package net.hedtech.banner.virtualDomain
 
 import net.hedtech.banner.sspb.CommonService
 import org.hibernate.criterion.CriteriaSpecification
+
 import org.hibernate.criterion.Order
+import org.springframework.context.i18n.LocaleContextHolder
 
 class VirtualDomainService {
 
@@ -43,8 +45,13 @@ class VirtualDomainService {
 
         if(params.containsKey('getGridData')){
             def listResult = []
+            Locale locale = LocaleContextHolder.getLocale()
+            String date_format = "dd/MM/yyyy"
+            if(locale && locale.language && locale.language == 'ar'){
+                date_format = "yyyy/MM/dd"
+            }
             result.each {
-                listResult << [serviceName : it.serviceName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format("dd/MM/yyyy"), lastUpdated:it.lastUpdated?.format("dd/MM/yyyy")]
+                listResult << [serviceName : it.serviceName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format(date_format), lastUpdated:it.lastUpdated?.format(date_format)]
             }
             log.trace "VirtualDomainService.list is returning a ${listResult.getClass().simpleName} containing ${listResult.size()} rows"
 
