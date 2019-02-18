@@ -5,6 +5,8 @@ package net.hedtech.banner.virtualDomain
 
 import net.hedtech.banner.sspb.CommonService
 import org.hibernate.criterion.CriteriaSpecification
+
+import org.hibernate.criterion.Order
 import org.springframework.context.i18n.LocaleContextHolder
 
 class VirtualDomainService {
@@ -23,7 +25,12 @@ class VirtualDomainService {
             if (params.serviceName) {
                 ilike("serviceName", params.serviceName)
             }
-            order(params.sort ?: 'serviceName', params.order ?: 'asc')
+            if(params.order && "desc".equalsIgnoreCase(params.order) ){
+                order(Order.desc('serviceName').ignoreCase())
+            }else{
+                order(Order.asc('serviceName').ignoreCase())
+            }
+            //order(params.sort ?: 'serviceName', params.order ?: 'asc')
             if (params.noData=="TRUE") {
                 resultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP)
                 projections {
