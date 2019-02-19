@@ -13,7 +13,8 @@
                 scope: false,
                 link: function (scope, ele) {
                     ele.on('keydown keyup keypress ', function (event) {
-                        if(event.keyCode === 13){
+                        console.log(document.activeElement.className);
+                        if(event.keyCode === 13 && document.activeElement.className === 'width-animate ng-scope sortable focus-ring'){
                             angular.element('#goToPageButton').trigger('click');
                         }
                     });
