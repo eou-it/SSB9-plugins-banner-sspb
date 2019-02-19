@@ -41,9 +41,10 @@ class CssService extends ServiceBase {
         def listResult = []
         Locale locale = LocaleContextHolder.getLocale()
         String date_format = "dd/MM/yyyy"
-        if(locale && locale.language && locale.language == 'ar'){
+        if(locale && ['ar','fr_CA'].contains(locale.toString())){
             date_format = "yyyy/MM/dd"
         }
+
         result.each {
             //supplementCss( it )
             // trim the object since we only need to return the constantName properties for listing
