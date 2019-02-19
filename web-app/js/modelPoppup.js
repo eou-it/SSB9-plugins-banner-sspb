@@ -6,6 +6,20 @@
     'use strict';
 
     angular.module('modalPopup',['xe-ui-components'])
+        .directive('dataGridModalPopup', function () {
+            return {
+                require: '?ngModel',
+                restrict: 'C',
+                scope: false,
+                link: function (scope, ele) {
+                    ele.on('keydown keyup keypress ', function (event) {
+                        if(event.keyCode === 13){
+                            angular.element('#goToPageButton').trigger('click');
+                        }
+                    });
+                }
+            }
+        })
         .controller("nameModalPopupCtrl", ["$scope","$timeout","$http", "$q", "$filter",  function($scope, $timeout,$http, $q, $filter) {
             $scope.rtl = "xe-ui-components.min";
             $scope.rtlText = "Switch to RTL";
@@ -188,10 +202,11 @@
                     $scope.inputTypeFieldID = 'pbid-'+$scope.inputTypeFieldID;
                 }
 
-                if($scope.inputTypeFieldID == 'constantName' && $scope.content[nameIndex]['extendsPage']) {
+                if($scope.inputTypeFieldID == 'constantName'){
                     $("#extendsPage  option:selected").remove();
+                }
+                if($scope.inputTypeFieldID == 'constantName' && $scope.content[nameIndex]['extendsPage']) {
                     $("#extendsPage").append("<option label='"+$scope.content[nameIndex]['extendsPage']+"' selected='selected' value="+$scope.content[nameIndex]['extendsPage']+">"+$scope.content[nameIndex]['extendsPage']+"</option>");
-
                     var input = angular.element(document.getElementById('extendsPage'))
                     input.trigger('change');
                 }
@@ -199,8 +214,8 @@
                 $("#"+$scope.inputTypeFieldID+" option:selected").remove();
                 $("#"+$scope.inputTypeFieldID).append("<option label='"+name+"' selected='selected' value="+value+">"+name+"</option>");
 
-                var input = angular.element(document.getElementById($scope.inputTypeFieldID))
-                input.trigger('change');
+                var selectInput = angular.element(document.getElementById($scope.inputTypeFieldID))
+                selectInput.trigger('change');
             };
 
             $scope.setFocusOnLoad = function () {

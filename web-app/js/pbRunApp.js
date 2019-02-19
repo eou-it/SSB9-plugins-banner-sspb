@@ -610,7 +610,7 @@ function dialogPopUp(params) {
     if(!scope){
         dialogDiv.innerHTML =
             '<xe-popup-modal show="modalShown" focusbackelement="" ' +
-            'pageheader="'+titleHeader+'" class="custom-popup-landpage" > '+
+            'pageheader="'+titleHeader+'" class="custom-popup-landpage dataGridModalPopup" > '+
             '<popup-content>' +
             '<div id="namePopupGrid" class="demo-container"> \n' +
             '    <xe-table-grid table-id="nameDataTable" \n'+
@@ -633,16 +633,13 @@ function dialogPopUp(params) {
             '    </xe-table-grid>\n' +
             '</div> ' +
             '</popup-content>  <popup-buttons>\n' +
-            '            <xe-button ng-click="goToPage()" id="saveLanguage" xe-disabled="isResponseEmpty()" xe-type="primary" xe-label="'+go_button_label+'" ></xe-button>\n' +
+            '            <xe-button ng-click="goToPage()" id="goToPageButton" xe-disabled="isResponseEmpty()" xe-type="primary" xe-label="'+go_button_label+'" ></xe-button>\n' +
             '        </popup-buttons>' +
             '</xe-popup-modal>';
         angular.element(document.getElementById('popupContainerDiv')).ready(function() {
             angular.bootstrap(document.getElementById('popupContainerDiv'), ['modalPopup']);
         });
         angular.element(document.getElementsByClassName('column-filter-container ng-scope')).remove();
-       // angular.element(document.getElementsByClassName('xe-label ng-binding ng-isolate-scope')).remove();
-       // angular.element(document.getElementsByClassName('per-page-select ng-pristine ng-untouched ng-valid ng-not-empty')).remove();
-       //angular.element(document.getElementsByClassName('tbody ng-isolate-scope')).removeAttr('style');
         scope = angular.element(document.getElementById('popupContainerDiv')).scope();
     }else{
        $("th.constantName").removeClass("focus-ring ascending decending");
@@ -650,7 +647,15 @@ function dialogPopUp(params) {
        $("th.lastUpdated").removeClass("focus-ring ascending decending");
        $("th.serviceName").removeClass("focus-ring ascending decending");
         angular.element(document.getElementsByClassName('secondary first')).click();
-        dataFetch = true;
+        var perPageEle = angular.element(document.getElementsByClassName('per-page-select'));
+        if($($(perPageEle)[0]).attr("value") != 'number:5'){
+            $($(perPageEle)[0]).val("number:5");
+            perPageEle.trigger('change');
+            dataFetch = false;
+        }else{
+            dataFetch = true;
+        }
+
     }
     scope.$apply(function(){
         scope.excludePage = params.excludePage;

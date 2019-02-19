@@ -103,17 +103,26 @@ div[ng-grid] {
         padding:1.5em;
         box-shadow:0 2px 40px rgba(0, 0, 0, 0.5);
     }
-    #popupContainerDiv .xe-popup-container .xe-popup-close {
-        padding: 0.5em;
-    }
+
     #popupContainerDiv div#buttonContainer.buttonContainer {
         padding: 0.5em;
     }
 }
 
 #popupContainerDiv .pagination-container .pagination-controls button {
-    width: 0.5em;
-    height: 0.5em;
+    width: 2.5em;
+    height: 2.5em;
+}
+
+#popupContainerDiv #pageInput {
+    padding-top: 3.8em;
+    padding-top: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    width: 47px;
+    height: 26px;
+
 }
 
 #popupContainerDiv .table-container .caption caption .toolbar {
