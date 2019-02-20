@@ -12,10 +12,12 @@
                 restrict: 'C',
                 scope: false,
                 link: function (scope, ele) {
-                    ele.on('keydown keyup keypress ', function (event) {
+                    ele.on('keydown', function (event) {
                         console.log(document.activeElement.className);
                         if(event.keyCode === 13 && document.activeElement.className === 'width-animate ng-scope sortable focus-ring'){
                             angular.element('#goToPageButton').trigger('click');
+                            event.preventDefault();
+                            event.stopPropagation();
                         }
                     });
                 }

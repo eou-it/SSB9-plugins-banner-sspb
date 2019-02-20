@@ -738,6 +738,7 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
             element.on('keydown', scope.onClickData);
             element.on('change', changeData);
             element.on('click', scope.onClickData);
+            element.on('mousedown',scope.onClickData);
         }
     };
 }]);
