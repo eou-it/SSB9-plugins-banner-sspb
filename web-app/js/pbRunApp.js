@@ -651,11 +651,8 @@ function dialogPopUp(params) {
         if($($(perPageEle)[0]).attr("value") != 'number:5'){
             $($(perPageEle)[0]).val("number:5");
             perPageEle.trigger('change');
-            dataFetch = false;
-        }else{
-            dataFetch = true;
         }
-
+            dataFetch = true;
     }
     scope.$apply(function(){
         scope.excludePage = params.excludePage;
