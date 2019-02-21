@@ -52,8 +52,7 @@ class PageService {
         String date_format = "dd/MM/yyyy"
         if(locale && ['ar','fr_CA'].contains(locale.toString())){
             date_format = "yyyy/MM/dd"
-        }
-        if(locale.toString().contains("en_US")){
+        } else if(locale.toString().contains("en_US")){
             date_format = "MM/dd/YYYY"
         }
         result.each {
