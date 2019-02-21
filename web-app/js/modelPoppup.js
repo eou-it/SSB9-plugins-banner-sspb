@@ -132,19 +132,19 @@
             };
             // Data to populate as part of data table header
             $scope.pageColumns = [
-                {position: {desktop: 1, mobile: 1}, name: 'constantName', title: $.i18n.prop("nameDataTable.column.page.name.heading"), options: {visible: true, sortable:true}, ascending: true},
+                {position: {desktop: 1, mobile: 1}, name: 'constantName', title: $.i18n.prop("nameDataTable.column.page.name.heading"), options: {visible: true, sortable:true}},
                 {position: {desktop: 2, mobile: 2}, name: 'dateCreated', title: $.i18n.prop("nameDataTable.column.common.createDate.heading"), options: {visible: true, sortable: true}},
                 {position: {desktop: 3, mobile: 3}, name: 'lastUpdated', title: $.i18n.prop("nameDataTable.column.common.modifiedDate.heading"), options: {visible: true, sortable:true}}
             ];
 
             $scope.virtualDomainColumns = [
-                {position: {desktop: 1, mobile: 1}, name: 'serviceName', title: $.i18n.prop("nameDataTable.column.virtualDomain.name.heading"), options: {visible: true, sortable:true,ascending: true}},
+                {position: {desktop: 1, mobile: 1}, name: 'serviceName', title: $.i18n.prop("nameDataTable.column.virtualDomain.name.heading"), options: {visible: true, sortable:true}},
                 {position: {desktop: 2, mobile: 2}, name: 'dateCreated', title: $.i18n.prop("nameDataTable.column.common.createDate.heading"), options: {visible: true, sortable: true}},
                 {position: {desktop: 3, mobile: 3}, name: 'lastUpdated', title: $.i18n.prop("nameDataTable.column.common.modifiedDate.heading"), options: {visible: true, sortable:true}}
             ];
 
             $scope.cssColumns = [
-                {position: {desktop: 1, mobile: 1}, name: 'constantName', title: $.i18n.prop("nameDataTable.column.stylesheet.name.heading"), options: {visible: true, sortable:true,ascending: true}},
+                {position: {desktop: 1, mobile: 1}, name: 'constantName', title: $.i18n.prop("nameDataTable.column.stylesheet.name.heading"), options: {visible: true, sortable:true}},
                 {position: {desktop: 2, mobile: 2}, name: 'dateCreated', title: $.i18n.prop("nameDataTable.column.common.createDate.heading"), options: {visible: true, sortable: true}},
                 {position: {desktop: 3, mobile: 3}, name: 'lastUpdated', title: $.i18n.prop("nameDataTable.column.common.modifiedDate.heading"), options: {visible: true, sortable:true}}
             ];
