@@ -627,7 +627,7 @@ function dialogPopUp(params) {
             '                   draggable-column-names="draggableColumnNames" \n' +
             '                   mobile-layout="mobileConfig"\n' +
             '                   height="12em" \n' +
-            '                   refresh-grid="refreshGrid">\n' +
+            '                   refresh-grid="refreshGrid" xe-section="sdeDataTable">\n' +
             '    </xe-table-grid>\n' +
             '</div> ' +
             '</popup-content>  <popup-buttons>\n' +
