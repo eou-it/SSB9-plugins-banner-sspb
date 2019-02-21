@@ -50,7 +50,9 @@ class VirtualDomainService {
             if(locale && ['ar','fr_CA'].contains(locale.toString())){
                 date_format = "yyyy/MM/dd"
             }
-
+            if(locale.toString().contains("en_US")){
+                date_format = "MM/dd/YYYY"
+            }
             result.each {
                 listResult << [serviceName : it.serviceName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format(date_format), lastUpdated:it.lastUpdated?.format(date_format)]
             }

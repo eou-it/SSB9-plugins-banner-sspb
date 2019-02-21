@@ -53,8 +53,9 @@ class PageService {
         if(locale && ['ar','fr_CA'].contains(locale.toString())){
             date_format = "yyyy/MM/dd"
         }
-
-
+        if(locale.toString().contains("en_US")){
+            date_format = "MM/dd/YYYY"
+        }
         result.each {
             //supplementPage( it )
             // trim the object since we only need to return the constantName properties for listing
