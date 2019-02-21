@@ -574,8 +574,6 @@ function initlizePopUp(params){
 };
 
 function dialogPopUp(params) {
-
-    console.log("dialogPopUp");
     var dataFetch = false;
     var dialogDiv = document.getElementById('popupContainerDiv');
     dialogDiv.setAttribute("ng-app","modalPopup");
@@ -629,7 +627,7 @@ function dialogPopUp(params) {
             '                   draggable-column-names="draggableColumnNames" \n' +
             '                   mobile-layout="mobileConfig"\n' +
             '                   height="12em" \n' +
-            '                   refresh-grid="refreshGrid">\n' +
+            '                   refresh-grid="refreshGrid" >\n' +
             '    </xe-table-grid>\n' +
             '</div> ' +
             '</popup-content>  <popup-buttons>\n' +
@@ -683,7 +681,6 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
                 if(scope.options.id == 'extendsPage') {
                     scope.options.excludePage = scope.pageName;
                 }
-                console.log("onClickData");
                 scope.loadPopup(scope.options)
             }
 
@@ -713,7 +710,6 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
 
             }
             function onLoadEventData(){
-                console.log('On load Event trigger');
                 var pbDataOptions = $parse(attrs.pbPopupDataGrid)() || {};
                 var searchParams = window.location.search;
                 var reqParams = {};
@@ -738,6 +734,7 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
             element.on('keydown', scope.onClickData);
             element.on('change', changeData);
             element.on('click', scope.onClickData);
+            element.on('mousedown',scope.onClickData);
         }
     };
 }]);
