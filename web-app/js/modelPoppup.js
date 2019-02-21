@@ -8,12 +8,9 @@
     angular.module('modalPopup',['xe-ui-components'])
         .directive('dataGridModalPopup', function () {
             return {
-                require: '?ngModel',
                 restrict: 'C',
-                scope: false,
                 link: function (scope, ele) {
                     ele.on('keydown', function (event) {
-                        console.log(document.activeElement.className);
                         if(event.keyCode === 13 && document.activeElement.className === 'width-animate ng-scope sortable focus-ring'){
                             angular.element('#goToPageButton').trigger('click');
                             event.preventDefault();
@@ -53,12 +50,11 @@
 
             $scope.draggableColumnNames = [$scope.nameHeader, 'dateCreated', 'lastUpdated'];
 
-            $scope.mobileConfig = {
-                term: 2,
-                crn: 2,
-                subject: 2,
-                status: 2
-            };
+           /* $scope.mobileConfig = {
+                constantName : 2,
+                dateCreated: 2,
+                lastUpdated: 2
+            };*/
 
             $scope.paginationConfig = {
                 pageLengths : [10, 25, 50, 100],
@@ -175,25 +171,19 @@
                 return $scope.resultsFound == 0;
             }
             $scope.goToPage = function () {
-                console.log('my go to page');
                 var name = "";
                 var value= "";
                 $scope.modalShown = !$scope.modalShown;
                 var element =  angular.element('tr.active-row');
                 var nameIndex = element.index();
                 if(nameIndex == -1){
-                    console.log('My row selection is not empty !!')
                     nameIndex = 0;
                 }
 
                 if(nameIndex != -1 && !$scope.isResponseEmpty()) {
-                    console.log('My row selection is not empty, so pick top one !!')
-                    console.log($scope.content[nameIndex]);
-                    console.log($scope.content[nameIndex][$scope.nameHeader])
                     name = $scope.content[nameIndex][$scope.nameHeader]
                     value = name;
                 }
-                console.log(name)
                 element.removeClass('active-row');
 
                 if($scope.inputTypeFieldID == 'constantName'){

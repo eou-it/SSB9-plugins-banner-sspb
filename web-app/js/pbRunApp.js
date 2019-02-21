@@ -574,8 +574,6 @@ function initlizePopUp(params){
 };
 
 function dialogPopUp(params) {
-
-    console.log("dialogPopUp");
     var dataFetch = false;
     var dialogDiv = document.getElementById('popupContainerDiv');
     dialogDiv.setAttribute("ng-app","modalPopup");
@@ -683,7 +681,6 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
                 if(scope.options.id == 'extendsPage') {
                     scope.options.excludePage = scope.pageName;
                 }
-                console.log("onClickData");
                 scope.loadPopup(scope.options)
             }
 
@@ -713,7 +710,6 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
 
             }
             function onLoadEventData(){
-                console.log('On load Event trigger');
                 var pbDataOptions = $parse(attrs.pbPopupDataGrid)() || {};
                 var searchParams = window.location.search;
                 var reqParams = {};
