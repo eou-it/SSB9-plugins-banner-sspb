@@ -1010,7 +1010,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.load.label" /> </label>
         <select id="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'constantName'}" name="constantName"
                 ng-model="pageName"
-                ng-change="getPageSource();saveAs=false;">
+                ng-change="getPageSource();saveAs=false;resetPageNameData();">
             <option label="{{pageName}}" value="{{pageName}}">{{pageName}}</option>
 
         </select>
@@ -1034,7 +1034,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.extends.label" /></label>
         <select id="extendsPage" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'extendsPage'}" name="extendsPage"
                 ng-model="extendsPageName"
-                ng-change="getExtendsPage();saveAs=false;">
+                ng-change="getExtendsPage();saveAs=false;resetPageNameData();">
             <option label="{{extendsPageName}}" value="{{extendsPageName}}">{{extendsPageName}}</option>
         </select>
 
