@@ -685,14 +685,11 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
             }
 
             function changeData(){
-                if(Object.keys(scope.options).length != 0 ){
+                if(scope.options.isPbPage== 'true'){
                     var selectedValue = document.getElementById(attrs.id).value;
                     var selectedText = $("#"+attrs.id+" option:selected").text();
+                    $("#"+attrs.id+" option:selected").remove();
                     pbPagesChangeEvent(scope.options.id,selectedText,selectedValue);
-                    if(attrs.id != 'vdServiceName') {
-                        $("#" + attrs.id + " option").remove();
-                        $("#" + attrs.id).append("<option label='" + selectedText + "' selected='selected' value=" + selectedValue + ">" + selectedText + "</option>");
-                    }
                 }
             }
 
