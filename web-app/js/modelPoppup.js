@@ -45,7 +45,7 @@
                     $scope.cssSearchConfig.searchString = '';
                     $scope.getData({excludePage:$scope.excludePage,pageSize:5,offset:0,searchString:''});
                 }
-                $scope.modalShown = !$scope.modalShown;
+                $scope.modalShown = true;
             };
 
             $scope.draggableColumnNames = [$scope.nameHeader, 'dateCreated', 'lastUpdated'];
@@ -175,7 +175,7 @@
             $scope.goToPage = function () {
                 var name = "";
                 var value= "";
-                $scope.modalShown = !$scope.modalShown;
+                $scope.modalShown = false;
                 var element =  angular.element('tr.active-row');
                 var nameIndex = element.index();
                 if(nameIndex == -1){
