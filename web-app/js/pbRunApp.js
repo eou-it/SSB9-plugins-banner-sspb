@@ -690,7 +690,7 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
                     var selectedText = $("#"+attrs.id+" option:selected").text();
                     pbPagesChangeEvent(scope.options.id,selectedText,selectedValue);
                     if(attrs.id != 'vdServiceName') {
-                        $("#" + attrs.id + " option:selected").remove();
+                        $("#" + attrs.id + " option").remove();
                         $("#" + attrs.id).append("<option label='" + selectedText + "' selected='selected' value=" + selectedValue + ">" + selectedText + "</option>");
                     }
                 }
