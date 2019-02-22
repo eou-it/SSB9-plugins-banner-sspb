@@ -197,7 +197,20 @@
                     $scope.inputTypeFieldID = 'pbid-'+$scope.inputTypeFieldID;
                 }
 
-                if($scope.inputTypeFieldID == 'constantName'){
+                $("#"+$scope.inputTypeFieldID+" option").each(function() {
+                    $(this).text(name);
+                    $(this).val(value);
+                    $(this).attr('label', name);
+                    $(this).attr('selected', 'selected');
+                });
+
+               /* if($scope.inputTypeFieldID == 'constantName' && $scope.content[nameIndex]['extendsPage']) {
+                    $("#extendsPage").append("<option label='"+$scope.content[nameIndex]['extendsPage']+"' selected='selected' value="+$scope.content[nameIndex]['extendsPage']+">"+$scope.content[nameIndex]['extendsPage']+"</option>");
+                    var input = angular.element(document.getElementById('extendsPage'))
+                    input.trigger('change');
+                }
+
+               if($scope.inputTypeFieldID == 'constantName'){
                     $("#extendsPage  option:selected").remove();
                 }
                 if($scope.inputTypeFieldID == 'constantName' && $scope.content[nameIndex]['extendsPage']) {
@@ -207,7 +220,7 @@
                 }
 
                 $("#"+$scope.inputTypeFieldID+" option:selected").remove();
-                $("#"+$scope.inputTypeFieldID).append("<option label='"+name+"' selected='selected' value="+value+">"+name+"</option>");
+                $("#"+$scope.inputTypeFieldID).append("<option label='"+name+"' selected='selected' value="+value+">"+name+"</option>");*/
 
                 var selectInput = angular.element(document.getElementById($scope.inputTypeFieldID))
                 selectInput.trigger('change');
