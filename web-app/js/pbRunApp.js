@@ -688,7 +688,7 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
                 if(scope.options.isPbPage== 'true'){
                     var selectedValue = document.getElementById(attrs.id).value;
                     var selectedText = $("#"+attrs.id+" option:selected").text();
-                    $("#"+attrs.id+" option:selected").remove();
+                    $("#"+attrs.id+" option").remove();
                     pbPagesChangeEvent(scope.options.id,selectedText,selectedValue);
                 }
             }
