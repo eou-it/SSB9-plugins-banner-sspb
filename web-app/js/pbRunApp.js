@@ -675,21 +675,25 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
 
         link : function (scope,element,attrs) {
             onLoadEventData();
-            scope.onClickData = function () {
+            scope.onClickData = function (event) {
                 //scope.pageName = null;
                 scope.options = $parse(attrs.pbPopupDataGrid)() || {};
                 if(scope.options.id == 'extendsPage') {
                     scope.options.excludePage = scope.pageName;
                 }
                 scope.loadPopup(scope.options)
+                event.preventDefault();
+                event.stopPropagation();
             }
 
-            function changeData(){
+            scope.changeData = function(event){
                 if(scope.options.isPbPage== 'true'){
                     var selectedValue = document.getElementById(attrs.id).value;
                     var selectedText = $("#"+attrs.id+" option:selected").text();
                     pbPagesChangeEvent(scope.options.id,selectedText,selectedValue);
                 }
+                event.preventDefault();
+                event.stopPropagation();
             }
 
             function pbPagesChangeEvent(id,name,value) {
@@ -732,7 +736,7 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
             element.on('enter',scope.onClickData);
             element.on('keyup', scope.onClickData);
             element.on('keydown', scope.onClickData);
-            element.on('change', changeData);
+            element.on('change', scope.changeData);
             element.on('click', scope.onClickData);
             element.on('mousedown',scope.onClickData);
         }
