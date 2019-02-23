@@ -724,7 +724,6 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                          $scope.pageOneSource = JSON.parse(data.modelView);
                          $scope.pageSource[0] = $scope.pageOneSource;
                          $scope.resetSelected();
-                         $scope.resetPageNameData();
                          //$scope.handlePageTreeChange();
                          $scope.pageCurName = $scope.pageName;
                          $scope.extendsPage = data.extendsPage;
