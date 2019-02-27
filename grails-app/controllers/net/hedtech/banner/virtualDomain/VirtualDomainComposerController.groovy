@@ -1,7 +1,9 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ * Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
+
+import javax.servlet.http.HttpSession
 
 class VirtualDomainComposerController {
     static defaultAction = "loadVirtualDomain"
@@ -37,6 +39,8 @@ class VirtualDomainComposerController {
         if (pageInstance.vdServiceName) {
            if (validateInput(params)) {
                def loadResult = virtualDomainResourceService.loadVirtualDomain(pageInstance.vdServiceName)
+               HttpSession session = request.getSession()
+               session.setAttribute("pageId", loadResult.virtualDomain.id.toString())
                pageInstance.loadSuccess = loadResult.success
                pageInstance.error = loadResult.error
                pageInstance.loadSubmitted = true
@@ -45,6 +49,7 @@ class VirtualDomainComposerController {
                    pageInstance.vdPostView = loadResult.virtualDomain.codePost
                    pageInstance.vdPutView = loadResult.virtualDomain.codePut
                    pageInstance.vdDeleteView = loadResult.virtualDomain.codeDelete
+                   pageInstance.id = loadResult.virtualDomain.id
                }
            } else {
                pageInstance.error = message(code:"sspb.virtualdomain.invalid.service.message", args:[pageInstance.vdServiceName])
@@ -63,6 +68,7 @@ class VirtualDomainComposerController {
         }
         render (view:"virtualDomainComposer", model: [pageInstance: null])
     }
+
 
     private def filter(params) {
         def vo = [:]

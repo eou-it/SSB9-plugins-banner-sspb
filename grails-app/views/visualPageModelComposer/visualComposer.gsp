@@ -1,5 +1,5 @@
 <%--
-Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page import="net.hedtech.banner.sspb.PageComponent" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
@@ -98,6 +98,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         $scope.pageName = params.constantName?params.constantName:"";
         $scope.pageCurName = $scope.pageName;
         $scope.extendsPage = {};
+        $scope.extendsPageName = "";
         // top level page source container must be an array for tree view rendering consistency
         $scope.pageSource = [];
          // saved pageSource for dirty detection
@@ -633,6 +634,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 
          // load the list of pages
          $scope.pageList = [];
+         $scope.extendsPageList = [];
          $scope.loadPageNames = function() {
              Page.list({}, function(data) {
                  $scope.pageList = data;
@@ -644,7 +646,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
              });
          };
          // populate the page list initially
-         $scope.loadPageNames();
+        // $scope.loadPageNames();
 
          // determine if current loaded page has changed since it was load
          $scope.isPageModified = function () {
@@ -684,6 +686,28 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         }, true);
 
 
+        $scope.getExtendsPage = function() {
+                Page.get({constantName: $scope.extendsPageName}, function (data) {
+                    try {
+                       $scope.extendsPage = data;
+                    } catch (ex) {
+                        $scope.alertError($scope.i18nGet("${message(code:'sspb.page.visualbuilder.parsing.error.message', encodeAs: 'JavaScript')}", [ex]));
+                    }
+                }, function (response) {
+                    var note = {
+                        type: noteType.error,
+                        message: "${message(code: 'sspb.page.visualcomposer.page.load.failed.message', encodeAs: 'JavaScript')}"
+                    };
+                    if (response.data != undefined && response.data.errors != undefined) {
+                        note.message = $scope.i18nGet(note.message, [response.data.errors[0].errorMessage]);
+                    } else {
+                        note.message = $scope.i18nGet(note.message, ['']);
+                    }
+                    $scope.alertNote(note);
+                });
+
+        };
+
          $scope.getPageSource = function(confirmed) {
              var load = confirmed || !$scope.isPageModified();
              if (!load) {
@@ -703,6 +727,8 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
                          //$scope.handlePageTreeChange();
                          $scope.pageCurName = $scope.pageName;
                          $scope.extendsPage = data.extendsPage;
+                         $("#pageRoleId").val(data.id);
+                         $scope.extendsPageName = $scope.extendsPage ? $scope.extendsPage.constantName : "";
                          $scope.statusHolder.isPageModified = false;
                          $scope.pagemodelform.$setUntouched();
                      } catch (ex) {
@@ -753,17 +779,41 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
               }
               var msg;
               if( ($scope.pageCurName !== $scope.pageName)) {
-                  if ($scope.pageList.some( function (page) { return page.constantName == $scope.pageCurName; })) {
-                      msg = "${message(code:'sspb.page.visualbuilder.page.name.edit.overwrite.existing', encodeAs: 'Javascript')}";
-                  } else if ($scope.pageCurName !== $scope.newPageName && $scope.pageName !== $scope.newPageName ) {
-                      msg = "${message(code:'sspb.page.visualbuilder.page.name.edit.check.message', encodeAs: 'Javascript')}";
+                  Page.get({constantName: $scope.pageCurName}, function (data) {
+                      try {
+                          if (data.constantName) {
+                              msg = "${message(code:'sspb.page.visualbuilder.page.name.edit.overwrite.existing', encodeAs: 'Javascript')}";
+                          } else if ($scope.pageCurName !== $scope.newPageName && $scope.pageName !== $scope.newPageName ) {
+                              msg = "${message(code:'sspb.page.visualbuilder.page.name.edit.check.message', encodeAs: 'Javascript')}";
+                          }
+
+                      } catch (ex) {
+                          $scope.alertError($scope.i18nGet("${message(code:'sspb.page.visualbuilder.parsing.error.message', encodeAs: 'JavaScript')}", [ex]));
+                      }
+                  }, function (response) {
+                      var note = {
+                          type: noteType.error,
+                          message: "${message(code: 'sspb.page.visualcomposer.page.load.failed.message', encodeAs: 'JavaScript')}"
+                      };
+                      if (response.data != undefined && response.data.errors != undefined) {
+                          note.message = $scope.i18nGet(note.message, [response.data.errors[0].errorMessage]);
+                      } else {
+                          note.message = $scope.i18nGet(note.message, ['']);
+                      }
+                      $scope.alertNote(note);
+                  });
+
+              }
+              setTimeout(function () {
+                  if (msg) {
+                      $scope.confirmPageAction(msg, $scope.submitPageSource);
+                  } else {
+                      $scope.submitPageSource();
                   }
-              }
-              if (msg) {
-                  $scope.confirmPageAction(msg, $scope.submitPageSource);
-              } else {
-                  $scope.submitPageSource();
-              }
+              },300);
+
+
+
           }
           $scope.submitPageSource = function () {
              var saveErrorId = "saveErrorId";
@@ -776,7 +826,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
              }
 
              //check if page name is set
-             if ($scope.pageCurName == undefined || $scope.pageCurName == '') {
+             if (!$scope.pageCurName) {
                  $scope.alertError("${message(code:'sspb.page.visualbuilder.page.name.prompt.message')}");
                  return;
              }
@@ -789,7 +839,8 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
                              $scope.pageStatus.message += response.pageValidationResult.warn;
                              note.type = noteType.success; //noteType.warning; warning needs an action
                          }
-                             $scope.statusHolder.isPageModified = false;
+                         $("#pageRoleId").val(response.page.id);
+                         $scope.statusHolder.isPageModified = false;
                      }
                      else {
                          var msg = "${message(code:'sspb.page.validation.error.message', encodeAs: 'JavaScript')}";
@@ -801,7 +852,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
                      $scope.alertNote(note);
                      $scope.pageStatus.message = $filter('date')(new Date(), 'medium') + ': ' + $scope.pageStatus.message;
                      // refresh the page list in case new page is added
-                     $scope.loadPageNames();
+                     //$scope.loadPageNames();
                      if ($scope.pageCurName) {
                         $scope.pageName = $scope.pageCurName;
                      }
@@ -820,13 +871,26 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 
           $scope.previewPageSource = function() {
               //check if page name is set
-              if ($scope.pageCurName== undefined || $scope.pageCurName == '') {
+              if (!$scope.pageCurName) {
                   $scope.alertError( "${message(code:'sspb.page.visualbuilder.page.name.prompt.message', encodeAs: 'JavaScript')}");
                   return;
               }
               window.open(rootWebApp+'customPage/page/'+ $scope.pageCurName, '_blank');
 
           };
+
+        $scope.showRolesPage = function() {
+            var pageId = document.getElementById('pageRoleId').value;
+            //check if page name is set
+            if (!$scope.pageCurName) {
+                $scope.alertError("${message(code:'sspb.page.visualbuilder.page.name.prompt.message', encodeAs: 'JavaScript')}");
+                return;
+            }
+
+            window.open(rootWebApp+'customPage/page/'+ 'pbadm.PageRoles?id=' +pageId+'&name='+$scope.pageCurName, '_self');
+        };
+
+
 
          $scope.deletePage = function () {
              Page.remove({constantName:$scope.pageCurName }, function() {
@@ -837,14 +901,16 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
                  $scope.pageCurName = "";
                  $scope.pageName = "";
                  $scope.extendsPage = {};
+                 $scope.extendsPageName = "";
                  $scope.resetSelected();
                  $scope.statusHolder.noDirtyCheck = true;
                  $scope.pageSource[0] = {};
                  $scope.pageOneSource= undefined;
                  $scope.statusHolder.isPageModified = false;
                  // refresh the page list after a page is deleted
-                 $scope.loadPageNames();
+                 //$scope.loadPageNames();
                  $scope.pagemodelform.$setUntouched();
+                 $scope.resetPageNameData();
              }, function(response) {
                  var note={type: noteType.error, message: "${message(code:'sspb.page.visualbuilder.deletion.error.message', encodeAs: 'JavaScript')}",flash:true};
                  if (response.data != undefined && response.data.errors != undefined) {
@@ -860,7 +926,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 
           $scope.deletePageSource = function () {
               //check if page name is set
-              if ($scope.pageCurName== undefined || $scope.pageCurName == '') {
+              if (!$scope.pageCurName) {
                   $scope.alertError("${message(code:'sspb.page.visualbuilder.page.name.prompt.message', encodeAs: 'JavaScript')}");
                   return;
               }
@@ -868,6 +934,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
               $scope.confirmPageAction("${message(code:'sspb.page.visualbuilder.page.delete.check.message', encodeAs: 'Javascript')}",$scope.deletePage);
 
           };
+
          /* tab controls */
          // show tree view initially
          $scope.showTree= true;
@@ -900,11 +967,37 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
              $scope.sourceEditEnabled = false;
          }
 
+         $scope.updatePageName = function(){
+             $("#constantName option").each(function() {
+                 $(this).text($scope.pageCurName);
+                 $(this).val($scope.pageCurName);
+                 $(this).attr('label', $scope.pageCurName);
+                 $(this).attr('selected', 'selected');
+
+             });
+
+         }
+
+        $scope.resetPageNameData = function(){
+            $("#constantName option").each(function() {
+                $(this).text($scope.pageName);
+                $(this).val($scope.pageName);
+                $(this).attr('label', $scope.pageName);
+                $(this).attr('selected', 'selected');
+
+            });
+            $("#extendsPage option").each(function() {
+                $(this).text($scope.extendsPageName);
+                $(this).val($scope.extendsPageName);
+                $(this).attr('label', $scope.extendsPageName);
+                $(this).attr('selected', 'selected');
+
+            });
+        }
         //run initialize when the controller is ready
         $scope.initialize();
 
      }
-
     </script>
 
 
@@ -915,13 +1008,15 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 
     <div class="btn-section">
         <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.load.label" /> </label>
-        <select class="vpc-name-input" name="constantName"
-                ng-options="page.constantName as page.constantName for page in pageList"
-                    ng-model="pageName"
-                    ng-change="getPageSource();saveAs=false;"></select>
+        <select id="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'constantName'}" name="constantName"
+                ng-model="pageName"
+                ng-change="getPageSource();saveAs=false;">
+            <option label="{{pageName}}" value="{{pageName}}">{{pageName}}</option>
+
+        </select>
 
         <button id="reload-btn" ng-click='loadPageNames(); saveAs=false;' title="${message( code:'sspb.page.visualbuilder.reload.pages.label')}" ng-show="false" /> </i> </button>
-        <button ng-click='newPageSource()' class="primary"><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
+        <button ng-click='newPageSource();resetPageNameData();' class="primary"><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
         <button ng-click='saveAs=true;' ng-show="pageName && pageName!=newPageName" class="secondary"> <g:message code="sspb.page.visualbuilder.save.as.label" /></button>
         <span ng-hide="pageCurName == pageName && !saveAs">
             <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.name.label" /></label>
@@ -937,18 +1032,18 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
     
     <div class="btn-section-2">
         <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.extends.label" /></label>
-        <select class="vpc-name-input" name="extendsPage"
-                ng-options="page as page.constantName disable when page.constantName==pageName for page in pageList track by page.id"
-                ng-model="extendsPage">
-            <option value=""> </option>
+        <select id="extendsPage" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'extendsPage'}" name="extendsPage"
+                ng-model="extendsPageName"
+                ng-change="getExtendsPage();saveAs=false;">
+            <option label="{{extendsPageName}}" value="{{extendsPageName}}">{{extendsPageName}}</option>
         </select>
 
-
-        <button ng-show="pageName && pageCurName && pageCurName != newPageName" ng-click='validateAndSubmitPageSource(); saveAs=false;'
+        <button ng-show="pageName && pageCurName && pageCurName != newPageName" ng-click='validateAndSubmitPageSource(); saveAs=false;updatePageName();'
                 ng-disabled='sourceEditEnabled || !pagemodelform.$valid' class="primary"><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
         <button ng-show="pageName && pageName != newPageName" ng-click="getPageSource(); saveAs=false;" class="secondary" ><g:message code="sspb.page.visualbuilder.reload.label" /></button>
         <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click="previewPageSource()" class="secondary" ><g:message code="sspb.page.visualbuilder.preview.label" /></button>
         <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click='deletePageSource(); saveAs=false;' class="secondary"><g:message code="sspb.page.visualbuilder.delete.label" /></button>
+        <button id="pageRoleId" value="" ng-show="pageName && pageName != newPageName" ng-click="showRolesPage(); saveAs=false;" class="secondary" ><g:message code="sspb.page.visualbuilder.roles.label" /></button>
     </div>
     <table style="height:80%; min-width: 60em">
         <tr>

@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2013-2018 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 
 /*
@@ -88,6 +88,7 @@ if (undefined == myCustomServices) {
     var myCustomServices = [];
 }
 
+myCustomServices.push('modalPopup')
 //noinspection JSUnusedAssignment
 var appModule = appModule||angular.module('BannerOnAngular', myCustomServices);
 
@@ -485,7 +486,7 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
                     u=this._keyStr.indexOf(e.charAt(f++));
                     a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);
                     if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);
-                return t},_utf8_encode:function(e){e=e.toString().replace(/rn/g,"n");var t="";for(var n=0;n<e.length;n++)
+                return t},_utf8_encode:function(e){e=e.toString().replace(/\r\n/g,"n");var t="";for(var n=0;n<e.length;n++)
                 {var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048)
                 {t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else
                     {t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);
@@ -557,3 +558,188 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
 
     return PBDataSetFactory;
 });
+
+function initlizePopUp(params){
+    try {
+        if (angular.module("modalPopup") && angular.module("xe-ui-components")) {
+            var popupContainerDiv = document.getElementById('popupContainerDiv');
+            if (null != popupContainerDiv && undefined != popupContainerDiv) {
+               dialogPopUp(params);
+            }
+        }
+    } catch (e) {
+        console.log(e)
+        document.getElementById('popupContainerDiv').style.display = 'none';
+    }
+};
+
+function dialogPopUp(params) {
+    var dataFetch = false;
+    var dialogDiv = document.getElementById('popupContainerDiv');
+    dialogDiv.setAttribute("ng-app","modalPopup");
+    dialogDiv.setAttribute("ng-controller","nameModalPopupCtrl");
+
+    var titleHeader = '';
+    var no_result_found = $.i18n.prop("nameDataTable.column.common.nodata");
+    var go_button_label = $.i18n.prop("nameDataTable.column.common.button.label");
+    var columnRefName = '';
+    var nameHeader = '';
+    var searchConfig = '';
+    if(params.serviceNameType == 'virtualdomains'){
+        searchConfig = 'virtualDomainSearchConfig';
+        nameHeader = 'serviceName';
+        titleHeader = $.i18n.prop("nameDataTable.popup.virtualDomain.pageheader");
+        columnRefName = 'virtualDomainColumns';
+    }else if(params.serviceNameType == 'pages'){
+        searchConfig = 'pageSearchConfig';
+        nameHeader = 'constantName';
+        titleHeader = $.i18n.prop("nameDataTable.column.page.name.heading");
+        columnRefName = 'pageColumns';
+    }else if(params.serviceNameType == 'csses'){
+        searchConfig = 'cssSearchConfig';
+        nameHeader = 'constantName';
+        titleHeader = $.i18n.prop("nameDataTable.popup.stylesheet.pageheader");
+        columnRefName = 'cssColumns';
+    }
+    params.excludePage = params.excludePage ? params.excludePage : "";
+    dialogDiv.setAttribute("ng-init","nameHeader='"+nameHeader+"';serviceNameType='"+params.serviceNameType+"';excludePage='"+ params.excludePage+"'");
+
+    var scope = angular.element(document.getElementById('popupContainerDiv')).scope();
+    if(!scope){
+        dialogDiv.innerHTML =
+            '<xe-popup-modal show="modalShown" focusbackelement="" ' +
+            'pageheader="'+titleHeader+'" class="custom-popup-landpage dataGridModalPopup" > '+
+            '<popup-content>' +
+            '<div id="namePopupGrid" class="demo-container"> \n' +
+            '    <xe-table-grid table-id="nameDataTable" \n'+
+             '                   header="'+columnRefName+'"  \n'+
+             '                   end-point="urlTest" \n' +
+            '                   fetch="getData(query)" on-row-click="onRowClick(data,index)"\n' +
+            '                   post-fetch="postFetch(response, oldResult)" \n' +
+            '                   content="content"  results-found="resultsFound" toolbar="true"\n' +
+            '                   paginate="true" \n' +
+            '                   continuous-scrolling="false" \n' +
+            '                   on-row-double-click="onDoubleClick(data,index)" \n' +
+            '                   no-data-msg="'+no_result_found+'"\n' +
+            '                   empty-table-msg="emptyTableMsg" \n' +
+            '                   search-config="'+searchConfig+'" \n' +
+            '                   pagination-config="paginationConfig"\n' +
+            '                   draggable-column-names="draggableColumnNames" \n' +
+            '                   mobile-layout="mobileConfig"\n' +
+            '                   height="12em" \n' +
+            '                   refresh-grid="refreshGrid" >\n' +
+            '    </xe-table-grid>\n' +
+            '</div> ' +
+            '</popup-content>  <popup-buttons>\n' +
+            '            <xe-button ng-click="goToPage()" id="goToPageButton" xe-disabled="isResponseEmpty()" xe-type="primary" xe-label="'+go_button_label+'" ></xe-button>\n' +
+            '        </popup-buttons>' +
+            '</xe-popup-modal>';
+        angular.element(document.getElementById('popupContainerDiv')).ready(function() {
+            angular.bootstrap(document.getElementById('popupContainerDiv'), ['modalPopup']);
+        });
+        angular.element(document.getElementsByClassName('column-filter-container ng-scope')).remove();
+        scope = angular.element(document.getElementById('popupContainerDiv')).scope();
+    }else{
+       $("th.constantName").removeClass("focus-ring ascending decending");
+       $("th.dateCreated").removeClass("focus-ring ascending decending");
+       $("th.lastUpdated").removeClass("focus-ring ascending decending");
+       $("th.serviceName").removeClass("focus-ring ascending decending");
+        angular.element(document.getElementsByClassName('secondary first')).click();
+        var perPageEle = angular.element(document.getElementsByClassName('per-page-select'));
+        if($($(perPageEle)[0]).attr("value") != 'number:5'){
+            $($(perPageEle)[0]).val("number:5");
+            perPageEle.trigger('change');
+        }
+            dataFetch = true;
+    }
+    scope.$apply(function(){
+        scope.excludePage = params.excludePage;
+        scope.inputTypeFieldID = params.id;
+        scope.isPbPage = params.isPbPage;
+        scope.nameToggleModal(dataFetch);
+    });
+
+};
+
+
+appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
+    return {
+        require: '?ngModel',
+        restrict: 'C',
+        scope: false,
+        controller: ['$scope', function ($scope) {
+            $scope.loadPopup = function (options) {
+                initlizePopUp(options);
+            };
+        }],
+
+        link : function (scope,element,attrs) {
+            onLoadEventData();
+            scope.onClickData = function (event) {
+                //scope.pageName = null;
+                scope.options = $parse(attrs.pbPopupDataGrid)() || {};
+                if(scope.options.id == 'extendsPage') {
+                    scope.options.excludePage = scope.pageName;
+                }
+                scope.loadPopup(scope.options)
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            scope.changeData = function(event){
+                if(scope.options.isPbPage== 'true'){
+                    var selectedValue = document.getElementById(attrs.id).value;
+                    var selectedText = $("#"+attrs.id+" option:selected").text();
+                    pbPagesChangeEvent(scope.options.id,selectedText,selectedValue);
+                }
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            function pbPagesChangeEvent(id,name,value) {
+                if(id == 'selectVirtualDomain'){
+                    scope.selectVirtualDomainDS = {};
+                    scope.selectVirtualDomainDS.data = [{'VID':value,'SERVICE_NAME':name}]
+                    scope.selectVirtualDomain = value;
+                    scope.CONSTANT_NAME = name;
+                    scope.selectVirtualDomain_onUpdate();
+                }
+                if(id == 'selectPage'){
+                    scope.selectPageDS = {};
+                    scope.selectPageDS.data = [{'PID':value,'CONSTANT_NAME':name}];
+                    scope.selectPage = value;
+                    scope.CONSTANT_NAME = name;
+                    scope.selectPage_onUpdate();
+                }
+
+            }
+            function onLoadEventData(){
+                var pbDataOptions = $parse(attrs.pbPopupDataGrid)() || {};
+                var searchParams = window.location.search;
+                var reqParams = {};
+                if(searchParams && (pbDataOptions.id == 'vdServiceName' || pbDataOptions.isPbPage== 'true')){
+                    searchParams = searchParams.replace('?','')
+                    reqParams = JSON.parse('{"' + searchParams.replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
+                }
+                if(Object.keys(reqParams).length != 0 && reqParams.name && pbDataOptions.isPbPage== 'true'){
+                    pbPagesChangeEvent(pbDataOptions.id,reqParams.name,reqParams.id)
+                }
+
+                if(Object.keys(reqParams).length != 0 && reqParams.name && pbDataOptions.isPbPage != 'true' && pbDataOptions.id == 'vdServiceName'){
+                    $("#"+pbDataOptions.id+" option:selected").remove();
+                    $("#"+pbDataOptions.id).append("<option label='"+reqParams.name+"' selected='selected' value="+reqParams.name+">"+reqParams.name+"</option>");
+                    $("#LoadVDForm").submit();
+                }
+
+            }
+
+            element.on('enter',scope.onClickData);
+            element.on('keyup', scope.onClickData);
+            element.on('keydown', scope.onClickData);
+            element.on('change', scope.changeData);
+            element.on('click', scope.onClickData);
+            element.on('mousedown',scope.onClickData);
+        }
+    };
+}]);
+

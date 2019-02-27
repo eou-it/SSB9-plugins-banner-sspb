@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.PageRoles",
    "extendsPage": null,
-   "fileTimestamp": "2018-11-13T11:51:36Z",
+   "fileTimestamp": "2019-02-12T06:14:28Z",
    "modelView": {
       "components": [
          {
@@ -40,18 +40,30 @@
                   "loadInitially": true,
                   "model": "selectPage",
                   "name": "selectPage",
+                  "onLoad": "$editPageRoles.$load();\n$EditRolesForm.$visible=$selectPage;\n$roleName.$populateSource();\n$ApplyRolesForm.$visible=$selectPage;\n$appliedPageRoles.$load();",
                   "onUpdate": "$editPageRoles.$load();\n$EditRolesForm.$visible=$selectPage;\n$roleName.$populateSource();\n$ApplyRolesForm.$visible=$selectPage;\n$appliedPageRoles.$load();",
                   "placeholder": "Select...",
                   "required": false,
-                  "sourceModel": "pageLookup",
+                  "sourceModel": "pageLookup1",
                   "sourceParameters": {},
+                  "style": "col-sm-6 rTableCell",
                   "type": "select",
-                  "valueKey": "PID"
+                  "valueKey": "PID",
+                  "valueStyle": "popupSelectBox pbListView pbPopupDataGrid:{'serviceNameType':'pages','id':'selectPage','isPbPage':'true'}"
+               },
+               {
+                  "label": "Visual Page Composer",
+                  "name": "visualPageComposerButton",
+                  "onClick": "var baseUrl = location.origin; \nvar path = \"/BannerExtensibility/visualPageModelComposer/loadComposerPage\";\nvar url = baseUrl + path;\nif($selectPage && $CONSTANT_NAME){\nurl = url+'?constantName='+$CONSTANT_NAME;\n}\nlocation.assign(url);",
+                  "style": "col-sm-6 rTableCell divAlignToRight",
+                  "type": "button",
+                  "valueStyle": "primary"
                }
             ],
             "label": "",
             "name": "SelectPageBlock",
             "showInitially": true,
+            "style": "col-sm-12 rTable",
             "type": "block"
          },
          {
@@ -159,7 +171,7 @@
                   "name": "appliedPageRoles",
                   "pageSize": 5,
                   "parameters": {
-                     "selected_url": "$selectPage.$selected?$selectPage.$selected.CONSTANT_NAME:null"
+                     "selected_url": "$CONSTANT_NAME"
                   },
                   "type": "detail"
                }

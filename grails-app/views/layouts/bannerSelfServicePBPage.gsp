@@ -9,6 +9,53 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 <!DOCTYPE html>
 <html lang="${message(code: 'default.language.locale')}" dir="${message(code:'default.language.direction')}">
     <head>
+        <script type="text/css">
+        custom-div-popup {
+          width: 664px;
+          height: 560px;
+          border-radius: 6px;
+          box-shadow: 0 19px 20px 0 rgba(0, 0, 0, 0.03), 0 3px 8px 0 rgba(0, 0, 0, 0.06);
+          background-color: #ffffff;
+        }
+
+        custom-popup-landpage {
+          width: 124px;
+          height: 32px;
+          font-family: Nunito;
+          font-size: 26px;
+          font-weight: normal;
+          font-style: normal;
+          font-stretch: normal;
+          line-height: 1.23;
+          letter-spacing: normal;
+          color: #151618;
+        }
+
+        custom-popup-div-box {
+              width: 335px;
+              height: 54px;
+              border-radius: 6px;
+              background-color: #ffffff;
+            }
+        custom-popup-input {width: 314px;
+                height: 22px;
+                font-family: OpenSans;
+                font-size: 16px;
+                font-weight: normal;
+                font-style: normal;
+                font-stretch: normal;
+                line-height: 1.38;
+                letter-spacing: normal;
+                color: #5b5e65;
+            }
+           custom-popup-button {
+                  width: 102px;
+                  height: 40px;
+                  background-color: #026bc8;
+                }
+
+
+</script>
         <script>
             var extensibilityInfo =
                     ${raw(net.hedtech.extensibility.InfoService.getJSON(controllerName, resource(plugin:'web-app-extensibility', dir:'html')))};
@@ -48,6 +95,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         <g:set var="aboutServiceUrl" value="${net.hedtech.banner.controllers.ControllerUtils.aboutServiceUrl()}" />
         <meta name="aboutUrl" content="${!aboutServiceUrl ? '' : aboutServiceUrl}"/>
         <meta name="aboutUrlContextPath" content="${request.contextPath}/ssb"/>
+        <meta name="contextPath" content="${request.contextPath}"/>
 
 
         <meta name="headerAttributes" content=""/>
@@ -130,6 +178,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         <div id="spinner" class="spinner spinner-img" style="display:none;">
 
         </div>
+
         <g:layoutBody />
 
         <r:layoutResources/>
@@ -170,5 +219,6 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         </g:if>--}%
         %{--<g:render template="/layouts/bannershortcuts" plugin="banner-ui-ss"/>--}%
 
+    <div id="popupContainerDiv"></div>
     </body>
 </html>

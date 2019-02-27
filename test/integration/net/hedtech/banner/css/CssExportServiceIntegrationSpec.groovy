@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2018 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 package net.hedtech.banner.css
 
@@ -46,5 +46,21 @@ class CssExportServiceIntegrationSpec extends IntegrationSpec {
         result.constantName == 'testExportCss'
         result.export == 1
         result.id != null
+    }
+
+    void "export css"(){
+        when: "css, page details"
+        def params = [constantName: "pbDefault"]
+        def cssExport = cssExportService.show(params)
+        then:
+        cssExport
+    }
+
+    void "page name like"(){
+        when:"page name"
+        String pageName = "pbadm.PageRoles"
+        def object = cssExportService.cssForPages(pageName)
+        then:
+        object.size()==0
     }
 }
