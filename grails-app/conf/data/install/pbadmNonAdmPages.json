@@ -30,7 +30,7 @@
          "version": null
       }
    ],
-   "codeGet": "select id pid, constant_name, cast(last_updated as date) last_updated from page\r\nwhere \r\nconstant_name like :filter or (:filter is null and constant_name not like 'pbadm%')\r\norder by lower(constant_name)",
+   "codeGet": "select id pid, constant_name, cast(last_updated as date) last_updated from page\r\nwhere \r\nupper(constant_name) like upper(:filter) or (:filter is null and constant_name not like 'pbadm%')\r\norder by lower(constant_name)",
    "codePost": null,
    "serviceName": "pbadmNonAdmPages",
    "version": null,
@@ -38,7 +38,7 @@
    "lastUpdated": null,
    "dateCreated": null,
    "id": null,
-   "fileTimestamp": "2016-11-16T13:19:07Z",
+   "fileTimestamp": "2019-02-12T13:19:07Z",
    "typeOfCode": "S",
    "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
 }

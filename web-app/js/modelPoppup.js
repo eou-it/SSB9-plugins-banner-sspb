@@ -6,12 +6,24 @@
     'use strict';
 
     angular.module('modalPopup',['xe-ui-components'])
+        .directive('dataGridModalPopup', function () {
+            return {
+                restrict: 'C',
+                link: function (scope, ele) {
+                    ele.on('keydown', function (event) {
+                        if(event.keyCode === 13 && document.activeElement.className === 'width-animate ng-scope sortable focus-ring'){
+                            angular.element('#goToPageButton').trigger('click');
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                    });
+                }
+            }
+        })
         .controller("nameModalPopupCtrl", ["$scope","$timeout","$http", "$q", "$filter",  function($scope, $timeout,$http, $q, $filter) {
-            $scope.nocolumnFilterMenu = true;
             $scope.rtl = "xe-ui-components.min";
             $scope.rtlText = "Switch to RTL";
             $scope.urlTest = getContextPath()+/internalPb/;
-            $scope.records = 1;
             $scope.content = {};
             $scope.resultsFound = 0;
             $scope.params = {};
@@ -28,26 +40,24 @@
 
             $scope.nameToggleModal = function(dataFetch) {
                 if(dataFetch){
-                    $scope.getData({excludePage:$scope.excludePage,max:5,offset:0});
+                    $scope.pageSearchConfig.searchString = '';
+                    $scope.virtualDomainSearchConfig.searchString = '';
+                    $scope.cssSearchConfig.searchString = '';
+                    $scope.getData({excludePage:$scope.excludePage,pageSize:5,offset:0,searchString:''});
                 }
-                $scope.modalShown = !$scope.modalShown;
-                $timeout(function () {
-                    angular.element('#nameDataTableSearch').focus();
-                },0);
-
+                $scope.modalShown = true;
             };
 
             $scope.draggableColumnNames = [$scope.nameHeader, 'dateCreated', 'lastUpdated'];
 
-            $scope.mobileConfig = {
-                term: 2,
-                crn: 2,
-                subject: 2,
-                status: 2
-            };
+           /* $scope.mobileConfig = {
+                constantName : 2,
+                dateCreated: 2,
+                lastUpdated: 2
+            };*/
 
             $scope.paginationConfig = {
-                pageLengths : [ 5, 10, 25, 50, 100],
+                pageLengths : [10, 25, 50, 100],
                 offset : 5,
                 recordsFoundLabel : $.i18n.prop("nameDataTable.column.common.pagination.recordsFoundLabel"),
                 pageTitle: "Go To Page (End)",
@@ -57,13 +67,35 @@
                 perPageLabel: $.i18n.prop("nameDataTable.column.common.pagination.perPageLabel")
             };
 
-            $scope.searchConfig = {
+            $scope.pageSearchConfig = {
                 id: 'nameDataTableSearch',
                 title: 'Search (Alt+Y)',
                 ariaLabel: 'Search for any Name',
                 delay: 300,
                 searchString : '',
-                placeholder : 'Search by Name',
+                placeholder : $.i18n.prop("nameDataTable.popup.page.search.placeholder"),
+                maxlength: 250,
+                minimumCharacters : 1
+            };
+
+            $scope.virtualDomainSearchConfig = {
+                id: 'nameDataTableSearch',
+                title: 'Search (Alt+Y)',
+                ariaLabel: 'Search for any Name',
+                delay: 300,
+                searchString : '',
+                placeholder : $.i18n.prop("nameDataTable.popup.virtualDomain.search.placeholder"),
+                maxlength: 250,
+                minimumCharacters : 1
+            };
+
+            $scope.cssSearchConfig = {
+                id: 'nameDataTableSearch',
+                title: 'Search (Alt+Y)',
+                ariaLabel: 'Search for any Name',
+                delay: 300,
+                searchString : '',
+                placeholder : $.i18n.prop("nameDataTable.popup.stylesheet.search.placeholder"),
                 maxlength: 250,
                 minimumCharacters : 1
             };
@@ -71,7 +103,7 @@
             $scope.getData = function(query) {
                 var deferred = $q.defer(),
                     url = "";
-                    query.max = '5';
+                    query.max = query.pageSize ? query.pageSize : 5;
                 url = getContextPath()+/internalPb/+$scope.serviceNameType+"/getGridData"
                     + "?getGridData=true&"
                     + "excludePage="+$scope.excludePage+"&"
@@ -84,9 +116,13 @@
                 $http.get(url)
                     .success(function(data) {
                         deferred.resolve(data);
-                        $scope.postFetch({response: data, oldResult: $scope.content});
+                       $scope.postFetch({response: data, oldResult: $scope.content});
                         $scope.content = data.result;
                         $scope.resultsFound = data.length;
+                        $timeout(function () {
+                            $scope.setFocusOnLoad();
+                            angular.element('#nameDataTableSearch').focus();
+                        },0);
                     })
                     .error(function(data) {
                         deferred.reject(data);
@@ -127,6 +163,8 @@
                 $scope.refreshGrid(true);
             };
 
+            $scope.model = {allRowsSelected: false};
+
             $scope.postFetch = function(response, oldResult) {
                // rows = response.result;
             };
@@ -134,37 +172,36 @@
             $scope.isResponseEmpty = function(){
                 return $scope.resultsFound == 0;
             }
-            $scope.goToPage = function () {
-                console.log('my go to page');
+            $scope.goToPage = function (event) {
                 var name = "";
                 var value= "";
-                $scope.modalShown = !$scope.modalShown;
+                $scope.modalShown = false;
                 var element =  angular.element('tr.active-row');
                 var nameIndex = element.index();
                 if(nameIndex == -1){
-                    console.log('My row selection is not empty !!')
                     nameIndex = 0;
                 }
 
                 if(nameIndex != -1 && !$scope.isResponseEmpty()) {
-                    console.log('My row selection is not empty, so pick top one !!')
-                    console.log($scope.content[nameIndex]);
-                    console.log($scope.content[nameIndex][$scope.nameHeader])
                     name = $scope.content[nameIndex][$scope.nameHeader]
                     value = name;
                 }
-                console.log(name)
                 element.removeClass('active-row');
+
+                if($scope.inputTypeFieldID == 'constantName'){
+                    $("#pageRoleId").val($scope.content[nameIndex]['id'])
+                }
 
                 if($scope.isPbPage== 'true'){
                     value =$scope.content[nameIndex]['id']
                     $scope.inputTypeFieldID = 'pbid-'+$scope.inputTypeFieldID;
                 }
 
-                if($scope.inputTypeFieldID == 'constantName' && $scope.content[nameIndex]['extendsPage']) {
+                if($scope.inputTypeFieldID == 'constantName'){
                     $("#extendsPage  option:selected").remove();
+                }
+                if($scope.inputTypeFieldID == 'constantName' && $scope.content[nameIndex]['extendsPage']) {
                     $("#extendsPage").append("<option label='"+$scope.content[nameIndex]['extendsPage']+"' selected='selected' value="+$scope.content[nameIndex]['extendsPage']+">"+$scope.content[nameIndex]['extendsPage']+"</option>");
-
                     var input = angular.element(document.getElementById('extendsPage'))
                     input.trigger('change');
                 }
@@ -172,10 +209,22 @@
                 $("#"+$scope.inputTypeFieldID+" option:selected").remove();
                 $("#"+$scope.inputTypeFieldID).append("<option label='"+name+"' selected='selected' value="+value+">"+name+"</option>");
 
-                var input = angular.element(document.getElementById($scope.inputTypeFieldID))
-                input.trigger('change');
-            }
+                var selectInput = angular.element(document.getElementById($scope.inputTypeFieldID))
+                selectInput.trigger('change');
+                event.preventDefault();
+                event.stopPropagation();
+            };
 
+            $scope.setFocusOnLoad = function () {
+                var FOCUSRING = 'focus-ring';
+                var ACTIVEROW = 'active-row';
+                var gridFirstRow = $("#nameDataTable").closest('.table-container').find('.tbody tbody tr:first');
+                var gridFirstRowFirstCell = $("#nameDataTable").closest('.table-container').find('.tbody tbody tr:first td:first');
+                $('tr.active-row').removeClass(ACTIVEROW);
+                $(gridFirstRow).addClass(ACTIVEROW);
+                //$(gridFirstRowFirstCell).focus();
+                $(gridFirstRowFirstCell).addClass(FOCUSRING);
+            }
 
         }]);
 })();

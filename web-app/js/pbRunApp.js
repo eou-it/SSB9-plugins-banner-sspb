@@ -574,8 +574,6 @@ function initlizePopUp(params){
 };
 
 function dialogPopUp(params) {
-
-    console.log("dialogPopUp");
     var dataFetch = false;
     var dialogDiv = document.getElementById('popupContainerDiv');
     dialogDiv.setAttribute("ng-app","modalPopup");
@@ -586,15 +584,19 @@ function dialogPopUp(params) {
     var go_button_label = $.i18n.prop("nameDataTable.column.common.button.label");
     var columnRefName = '';
     var nameHeader = '';
+    var searchConfig = '';
     if(params.serviceNameType == 'virtualdomains'){
+        searchConfig = 'virtualDomainSearchConfig';
         nameHeader = 'serviceName';
         titleHeader = $.i18n.prop("nameDataTable.popup.virtualDomain.pageheader");
         columnRefName = 'virtualDomainColumns';
     }else if(params.serviceNameType == 'pages'){
+        searchConfig = 'pageSearchConfig';
         nameHeader = 'constantName';
         titleHeader = $.i18n.prop("nameDataTable.column.page.name.heading");
         columnRefName = 'pageColumns';
     }else if(params.serviceNameType == 'csses'){
+        searchConfig = 'cssSearchConfig';
         nameHeader = 'constantName';
         titleHeader = $.i18n.prop("nameDataTable.popup.stylesheet.pageheader");
         columnRefName = 'cssColumns';
@@ -606,7 +608,7 @@ function dialogPopUp(params) {
     if(!scope){
         dialogDiv.innerHTML =
             '<xe-popup-modal show="modalShown" focusbackelement="" ' +
-            'pageheader="'+titleHeader+'" class="custom-popup-landpage" > '+
+            'pageheader="'+titleHeader+'" class="custom-popup-landpage dataGridModalPopup" > '+
             '<popup-content>' +
             '<div id="namePopupGrid" class="demo-container"> \n' +
             '    <xe-table-grid table-id="nameDataTable" \n'+
@@ -620,34 +622,41 @@ function dialogPopUp(params) {
             '                   on-row-double-click="onDoubleClick(data,index)" \n' +
             '                   no-data-msg="'+no_result_found+'"\n' +
             '                   empty-table-msg="emptyTableMsg" \n' +
-            '                   search-config="searchConfig" \n' +
+            '                   search-config="'+searchConfig+'" \n' +
             '                   pagination-config="paginationConfig"\n' +
             '                   draggable-column-names="draggableColumnNames" \n' +
             '                   mobile-layout="mobileConfig"\n' +
             '                   height="12em" \n' +
-            '                   refresh-grid="refreshGrid">\n' +
+            '                   refresh-grid="refreshGrid" >\n' +
             '    </xe-table-grid>\n' +
             '</div> ' +
             '</popup-content>  <popup-buttons>\n' +
-            '            <xe-button ng-click="goToPage()" id="saveLanguage" xe-disabled="isResponseEmpty()" xe-type="primary" xe-label="'+go_button_label+'" ></xe-button>\n' +
+            '            <xe-button ng-click="goToPage()" id="goToPageButton" xe-disabled="isResponseEmpty()" xe-type="primary" xe-label="'+go_button_label+'" ></xe-button>\n' +
             '        </popup-buttons>' +
             '</xe-popup-modal>';
         angular.element(document.getElementById('popupContainerDiv')).ready(function() {
             angular.bootstrap(document.getElementById('popupContainerDiv'), ['modalPopup']);
         });
         angular.element(document.getElementsByClassName('column-filter-container ng-scope')).remove();
-        angular.element(document.getElementsByClassName('xe-label ng-binding ng-isolate-scope')).remove();
-        angular.element(document.getElementsByClassName('per-page-select ng-pristine ng-untouched ng-valid ng-not-empty')).remove();
-       //angular.element(document.getElementsByClassName('tbody ng-isolate-scope')).removeAttr('style');
         scope = angular.element(document.getElementById('popupContainerDiv')).scope();
     }else{
-        dataFetch = true;
+       $("th.constantName").removeClass("focus-ring ascending decending");
+       $("th.dateCreated").removeClass("focus-ring ascending decending");
+       $("th.lastUpdated").removeClass("focus-ring ascending decending");
+       $("th.serviceName").removeClass("focus-ring ascending decending");
+        angular.element(document.getElementsByClassName('secondary first')).click();
+        var perPageEle = angular.element(document.getElementsByClassName('per-page-select'));
+        if($($(perPageEle)[0]).attr("value") != 'number:5'){
+            $($(perPageEle)[0]).val("number:5");
+            perPageEle.trigger('change');
+        }
+            dataFetch = true;
     }
     scope.$apply(function(){
         scope.excludePage = params.excludePage;
         scope.inputTypeFieldID = params.id;
         scope.isPbPage = params.isPbPage;
-        scope.nameToggleModal(dataFetch)
+        scope.nameToggleModal(dataFetch);
     });
 
 };
@@ -665,39 +674,71 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
         }],
 
         link : function (scope,element,attrs) {
-            scope.onClickData = function () {
+            onLoadEventData();
+            scope.onClickData = function (event) {
+                //scope.pageName = null;
                 scope.options = $parse(attrs.pbPopupDataGrid)() || {};
                 if(scope.options.id == 'extendsPage') {
                     scope.options.excludePage = scope.pageName;
                 }
-                console.log("onClickData");
                 scope.loadPopup(scope.options)
+                event.preventDefault();
+                event.stopPropagation();
             }
 
-            function changeData(){
+            scope.changeData = function(event){
                 if(scope.options.isPbPage== 'true'){
-                    scope.inputTypeFieldID = 'pbid-'+scope.options.id;
-                }else{
-                    scope.inputTypeFieldID = scope.options.id;
+                    var selectedValue = document.getElementById(attrs.id).value;
+                    var selectedText = $("#"+attrs.id+" option:selected").text();
+                    pbPagesChangeEvent(scope.options.id,selectedText,selectedValue);
                 }
-                var selectedValue = document.getElementById(scope.inputTypeFieldID).value;
-                var selectedText = $("#"+scope.inputTypeFieldID+" option:selected").text();
-                if(scope.options.id == 'selectVirtualDomain'){
-                    scope.selectVirtualDomain = selectedValue;
-                    scope.CONSTANT_NAME = selectedText;
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            function pbPagesChangeEvent(id,name,value) {
+                if(id == 'selectVirtualDomain'){
+                    scope.selectVirtualDomainDS = {};
+                    scope.selectVirtualDomainDS.data = [{'VID':value,'SERVICE_NAME':name}]
+                    scope.selectVirtualDomain = value;
+                    scope.CONSTANT_NAME = name;
                     scope.selectVirtualDomain_onUpdate();
                 }
-                if(scope.options.id == 'selectPage'){
-                    scope.selectPage = selectedValue;
-                    scope.CONSTANT_NAME = selectedText;
+                if(id == 'selectPage'){
+                    scope.selectPageDS = {};
+                    scope.selectPageDS.data = [{'PID':value,'CONSTANT_NAME':name}];
+                    scope.selectPage = value;
+                    scope.CONSTANT_NAME = name;
                     scope.selectPage_onUpdate();
                 }
+
             }
+            function onLoadEventData(){
+                var pbDataOptions = $parse(attrs.pbPopupDataGrid)() || {};
+                var searchParams = window.location.search;
+                var reqParams = {};
+                if(searchParams && (pbDataOptions.id == 'vdServiceName' || pbDataOptions.isPbPage== 'true')){
+                    searchParams = searchParams.replace('?','')
+                    reqParams = JSON.parse('{"' + searchParams.replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
+                }
+                if(Object.keys(reqParams).length != 0 && reqParams.name && pbDataOptions.isPbPage== 'true'){
+                    pbPagesChangeEvent(pbDataOptions.id,reqParams.name,reqParams.id)
+                }
+
+                if(Object.keys(reqParams).length != 0 && reqParams.name && pbDataOptions.isPbPage != 'true' && pbDataOptions.id == 'vdServiceName'){
+                    $("#"+pbDataOptions.id+" option:selected").remove();
+                    $("#"+pbDataOptions.id).append("<option label='"+reqParams.name+"' selected='selected' value="+reqParams.name+">"+reqParams.name+"</option>");
+                    $("#LoadVDForm").submit();
+                }
+
+            }
+
             element.on('enter',scope.onClickData);
             element.on('keyup', scope.onClickData);
             element.on('keydown', scope.onClickData);
-            element.on('change', changeData);
+            element.on('change', scope.changeData);
             element.on('click', scope.onClickData);
+            element.on('mousedown',scope.onClickData);
         }
     };
 }]);

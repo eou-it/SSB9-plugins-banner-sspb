@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2018 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2018-2019 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 
 package net.hedtech.banner.css
@@ -72,7 +72,7 @@ class CssExportService {
         def cr = Css.createCriteria()
         def result = cr.list (offset: offset, max: max)  {
             if  (params.constantName) {
-                like ("constantName",params.constantName )
+                ilike ("constantName","%${params.constantName}%" )
             }
             if (cssSet) {
                 'in'("constantName",cssSet)
@@ -112,7 +112,7 @@ class CssExportService {
     def cssForPages(pageNameLike) {
         def slurper = new groovy.json.JsonSlurper()
         Set cssSet = new HashSet()
-        def pages = Page.findAllByConstantNameLike(pageNameLike)
+        def pages = Page.findAllByConstantNameIlike("%${pageNameLike}%")
         pages.each{ p ->
             def jsonPage = p.getMergedModelMap(false)
             def css = jsonPage.importCSS

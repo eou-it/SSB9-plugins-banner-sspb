@@ -727,8 +727,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                          //$scope.handlePageTreeChange();
                          $scope.pageCurName = $scope.pageName;
                          $scope.extendsPage = data.extendsPage;
-                        // $scope.pageList = [data];
-                        // $scope.extendsPageList = [$scope.extendsPage];
+                         $("#pageRoleId").val(data.id);
                          $scope.extendsPageName = $scope.extendsPage ? $scope.extendsPage.constantName : "";
                          $scope.statusHolder.isPageModified = false;
                          $scope.pagemodelform.$setUntouched();
@@ -840,7 +839,8 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                              $scope.pageStatus.message += response.pageValidationResult.warn;
                              note.type = noteType.success; //noteType.warning; warning needs an action
                          }
-                             $scope.statusHolder.isPageModified = false;
+                         $("#pageRoleId").val(response.page.id);
+                         $scope.statusHolder.isPageModified = false;
                      }
                      else {
                          var msg = "${message(code:'sspb.page.validation.error.message', encodeAs: 'JavaScript')}";
@@ -880,21 +880,14 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
           };
 
         $scope.showRolesPage = function() {
+            var pageId = document.getElementById('pageRoleId').value;
             //check if page name is set
-            var pages = {};
-            var pageId;
             if (!$scope.pageCurName) {
                 $scope.alertError("${message(code:'sspb.page.visualbuilder.page.name.prompt.message', encodeAs: 'JavaScript')}");
                 return;
             }
 
-            $scope.pageList.forEach(function(ele){
-                pages[ele.constantName] = ele.id;
-            });
-
-            pageId = pages[$scope.pageCurName];
-
-            window.open(rootWebApp+'customPage/page/'+ 'pbadm.PageRoles?pageId=' + pageId, '_self');
+            window.open(rootWebApp+'customPage/page/'+ 'pbadm.PageRoles?id=' +pageId+'&name='+$scope.pageCurName, '_self');
         };
 
 
@@ -908,6 +901,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                  $scope.pageCurName = "";
                  $scope.pageName = "";
                  $scope.extendsPage = {};
+                 $scope.extendsPageName = "";
                  $scope.resetSelected();
                  $scope.statusHolder.noDirtyCheck = true;
                  $scope.pageSource[0] = {};
@@ -916,6 +910,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                  // refresh the page list after a page is deleted
                  //$scope.loadPageNames();
                  $scope.pagemodelform.$setUntouched();
+                 $scope.resetPageNameData();
              }, function(response) {
                  var note={type: noteType.error, message: "${message(code:'sspb.page.visualbuilder.deletion.error.message', encodeAs: 'JavaScript')}",flash:true};
                  if (response.data != undefined && response.data.errors != undefined) {
@@ -976,21 +971,25 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
              $("#constantName option").each(function() {
                  $(this).text($scope.pageCurName);
                  $(this).val($scope.pageCurName);
+                 $(this).attr('label', $scope.pageCurName);
                  $(this).attr('selected', 'selected');
 
              });
+
          }
 
         $scope.resetPageNameData = function(){
             $("#constantName option").each(function() {
-                $(this).text('');
-                $(this).val('');
+                $(this).text($scope.pageName);
+                $(this).val($scope.pageName);
+                $(this).attr('label', $scope.pageName);
                 $(this).attr('selected', 'selected');
 
             });
             $("#extendsPage option").each(function() {
-                $(this).text('');
-                $(this).val('');
+                $(this).text($scope.extendsPageName);
+                $(this).val($scope.extendsPageName);
+                $(this).attr('label', $scope.extendsPageName);
                 $(this).attr('selected', 'selected');
 
             });
@@ -1011,10 +1010,13 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.load.label" /> </label>
         <select id="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'constantName'}" name="constantName"
                 ng-model="pageName"
-                ng-change="getPageSource();saveAs=false;"></select>
+                ng-change="getPageSource();saveAs=false;">
+            <option label="{{pageName}}" value="{{pageName}}">{{pageName}}</option>
+
+        </select>
 
         <button id="reload-btn" ng-click='loadPageNames(); saveAs=false;' title="${message( code:'sspb.page.visualbuilder.reload.pages.label')}" ng-show="false" /> </i> </button>
-        <button ng-click='newPageSource()' class="primary"><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
+        <button ng-click='newPageSource();resetPageNameData();' class="primary"><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
         <button ng-click='saveAs=true;' ng-show="pageName && pageName!=newPageName" class="secondary"> <g:message code="sspb.page.visualbuilder.save.as.label" /></button>
         <span ng-hide="pageCurName == pageName && !saveAs">
             <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.name.label" /></label>
@@ -1033,14 +1035,15 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         <select id="extendsPage" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'extendsPage'}" name="extendsPage"
                 ng-model="extendsPageName"
                 ng-change="getExtendsPage();saveAs=false;">
+            <option label="{{extendsPageName}}" value="{{extendsPageName}}">{{extendsPageName}}</option>
         </select>
 
         <button ng-show="pageName && pageCurName && pageCurName != newPageName" ng-click='validateAndSubmitPageSource(); saveAs=false;updatePageName();'
                 ng-disabled='sourceEditEnabled || !pagemodelform.$valid' class="primary"><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
         <button ng-show="pageName && pageName != newPageName" ng-click="getPageSource(); saveAs=false;" class="secondary" ><g:message code="sspb.page.visualbuilder.reload.label" /></button>
         <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click="previewPageSource()" class="secondary" ><g:message code="sspb.page.visualbuilder.preview.label" /></button>
-        <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click='deletePageSource(); saveAs=false;resetPageNameData();' class="secondary"><g:message code="sspb.page.visualbuilder.delete.label" /></button>
-        <button ng-show="pageName && pageName != newPageName" ng-click="showRolesPage(); saveAs=false;" class="secondary" ><g:message code="sspb.page.visualbuilder.roles.label" /></button>
+        <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click='deletePageSource(); saveAs=false;' class="secondary"><g:message code="sspb.page.visualbuilder.delete.label" /></button>
+        <button id="pageRoleId" value="" ng-show="pageName && pageName != newPageName" ng-click="showRolesPage(); saveAs=false;" class="secondary" ><g:message code="sspb.page.visualbuilder.roles.label" /></button>
     </div>
     <table style="height:80%; min-width: 60em">
         <tr>

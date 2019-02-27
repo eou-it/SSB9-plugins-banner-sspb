@@ -6,6 +6,9 @@ package net.hedtech.banner.virtualDomain
 import net.hedtech.banner.sspb.CommonService
 import org.hibernate.criterion.CriteriaSpecification
 
+import org.hibernate.criterion.Order
+import org.springframework.context.i18n.LocaleContextHolder
+
 class VirtualDomainService {
 
     static transactional = false //Getting error connection closed without this
@@ -22,7 +25,12 @@ class VirtualDomainService {
             if (params.serviceName) {
                 ilike("serviceName", params.serviceName)
             }
-            order(params.sort ?: 'serviceName', params.order ?: 'asc')
+            if(params.order && "desc".equalsIgnoreCase(params.order) ){
+                order(Order.desc('serviceName').ignoreCase())
+            }else{
+                order(Order.asc('serviceName').ignoreCase())
+            }
+            //order(params.sort ?: 'serviceName', params.order ?: 'asc')
             if (params.noData=="TRUE") {
                 resultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP)
                 projections {
@@ -37,8 +45,15 @@ class VirtualDomainService {
 
         if(params.containsKey('getGridData')){
             def listResult = []
+            Locale locale = LocaleContextHolder.getLocale()
+            String date_format = "dd/MM/yyyy"
+            if(locale && ['ar','fr_CA'].contains(locale.toString())){
+                date_format = "yyyy/MM/dd"
+            } else if("en_US".equals(locale.toString())){
+                date_format = "MM/dd/YYYY"
+            }
             result.each {
-                listResult << [serviceName : it.serviceName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format("dd/MM/yyyy"), lastUpdated:it.lastUpdated?.format("dd/MM/yyyy")]
+                listResult << [serviceName : it.serviceName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format(date_format), lastUpdated:it.lastUpdated?.format(date_format)]
             }
             log.trace "VirtualDomainService.list is returning a ${listResult.getClass().simpleName} containing ${listResult.size()} rows"
 
@@ -125,7 +140,7 @@ class VirtualDomainService {
     def extractReqPrams(Map reqParams) {
         Map params = [:]
         if(reqParams && reqParams.searchString){
-            params.serviceName = "$reqParams.searchString%"
+            params.serviceName = "%$reqParams.searchString%"
         }
 
         if(reqParams && reqParams.sortColumnName){
