@@ -50,19 +50,9 @@ class PageService {
         }
 
         def listResult = []
-       Locale locale = LocaleContextHolder.getLocale()
-       String date_format = messageSource.getMessage("default.date.format", null, locale)
-
-        if(locale.toString().equals("ar")){
-            result.each{
-                listResult << [constantName : it.constantName,extendsPage:  it.extendsPage?.constantName, id: it.id, version: it.version, dateCreated:dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated), lastUpdated:dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated)]
-            }
-        }else{
-            result.each{
-                listResult << [constantName : it.constantName,extendsPage:  it.extendsPage?.constantName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format(date_format), lastUpdated:it.lastUpdated?.format(date_format)]
-            }
+        result.each{
+            listResult << [constantName : it.constantName,extendsPage:  it.extendsPage?.constantName, id: it.id, version: it.version, dateCreated:dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated), lastUpdated:dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated)]
         }
-
         log.trace "PageService.list is returning a ${result.getClass().simpleName} containing ${result.size()} pages"
         listResult
     }

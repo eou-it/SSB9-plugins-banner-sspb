@@ -47,21 +47,11 @@ class VirtualDomainService {
 
         def listResult = []
         if(params.containsKey('getGridData')){
-
-            Locale locale = LocaleContextHolder.getLocale()
-            String date_format = messageSource.getMessage("default.date.format", null, locale)
-            if(locale.toString().equals("ar")) {
-                result.each {
-                    listResult << [serviceName: it.serviceName, id: it.id, version: it.version, dateCreated: dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated), lastUpdated: dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated)]
-                }
-            }else{
-                result.each {
-                    listResult << [serviceName : it.serviceName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format(date_format), lastUpdated:it.lastUpdated?.format(date_format)]
-                }
+            result.each {
+                listResult << [serviceName: it.serviceName, id: it.id, version: it.version, dateCreated: dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated), lastUpdated: dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated)]
             }
         }
         log.trace "VirtualDomainService.list is returning a ${listResult.getClass().simpleName} containing ${listResult.size()} rows"
-
         return listResult
     }
 
