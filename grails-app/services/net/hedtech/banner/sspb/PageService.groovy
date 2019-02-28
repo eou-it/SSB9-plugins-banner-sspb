@@ -13,6 +13,8 @@ class PageService {
     def groovyPagesTemplateEngine
     def pageSecurityService
     def springSecurityService
+    def messageSource
+    def dateConverterService
 
     def get(String constantName) {
         Page.findByConstantName(constantName)
@@ -49,17 +51,16 @@ class PageService {
 
         def listResult = []
        Locale locale = LocaleContextHolder.getLocale()
-        String date_format = "dd/MM/yyyy"
-        if(locale && ['ar','fr_CA'].contains(locale.toString())){
-            date_format = "yyyy/MM/dd"
-        } else if("en_US".equals(locale.toString())){
-            date_format = "MM/dd/YYYY"
-        }
-        result.each {
-            //supplementPage( it )
-            // trim the object since we only need to return the constantName properties for listing
-            //listResult << [page : [constantName : it.constantName, id: it.id, version: it.version]]
-            listResult << [constantName : it.constantName,extendsPage:  it.extendsPage?.constantName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format(date_format), lastUpdated:it.lastUpdated?.format(date_format)]
+       String date_format = messageSource.getMessage("default.date.format", null, locale)
+
+        if(locale.toString().equals("ar")){
+            result.each{
+                listResult << [constantName : it.constantName,extendsPage:  it.extendsPage?.constantName, id: it.id, version: it.version, dateCreated:dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated), lastUpdated:dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated)]
+            }
+        }else{
+            result.each{
+                listResult << [constantName : it.constantName,extendsPage:  it.extendsPage?.constantName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format(date_format), lastUpdated:it.lastUpdated?.format(date_format)]
+            }
         }
 
         log.trace "PageService.list is returning a ${result.getClass().simpleName} containing ${result.size()} pages"
