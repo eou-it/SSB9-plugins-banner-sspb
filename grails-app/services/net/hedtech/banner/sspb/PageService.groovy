@@ -13,7 +13,6 @@ class PageService {
     def groovyPagesTemplateEngine
     def pageSecurityService
     def springSecurityService
-    def messageSource
     def dateConverterService
 
     def get(String constantName) {

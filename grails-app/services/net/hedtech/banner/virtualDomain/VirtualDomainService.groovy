@@ -12,7 +12,6 @@ import org.springframework.context.i18n.LocaleContextHolder
 class VirtualDomainService {
 
     static transactional = false //Getting error connection closed without this
-    def messageSource
     def dateConverterService
 
     def list(Map params) {

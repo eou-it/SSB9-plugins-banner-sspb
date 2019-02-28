@@ -13,7 +13,6 @@ import org.springframework.context.i18n.LocaleContextHolder
 class CssService extends ServiceBase {
 
     static transactional = true
-    def messageSource
     def dateConverterService
 
     def list(Map params) {
