@@ -13,6 +13,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 class CssService extends ServiceBase {
 
     static transactional = true
+    def dateConverterService
 
     def list(Map params) {
 
@@ -39,23 +40,15 @@ class CssService extends ServiceBase {
         }
 
         def listResult = []
-        Locale locale = LocaleContextHolder.getLocale()
-        String date_format = "dd/MM/yyyy"
-        if(locale && ['ar','fr_CA'].contains(locale.toString())){
-            date_format = "yyyy/MM/dd"
-        } else if("en_US".equals(locale.toString())){
-            date_format = "MM/dd/YYYY"
-        }
         result.each {
             //supplementCss( it )
             // trim the object since we only need to return the constantName properties for listing
-            if(params.containsKey('getGridData')){
-                listResult << [constantName : it.constantName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format(date_format), lastUpdated:it.lastUpdated?.format(date_format)]
-            }else {
-                listResult << [css : [constantName : it.constantName, id: it.id, version: it.version]]
+            if (params.containsKey('getGridData')) {
+                listResult << [constantName: it.constantName, id: it.id, version: it.version, dateCreated: dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated), lastUpdated: dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated)]
+            } else {
+                listResult << [css: [constantName: it.constantName, id: it.id, version: it.version]]
             }
         }
-
         log.trace "CssService.list is returning a ${result.getClass().simpleName} containing ${result.size()} style sheets"
         listResult
     }

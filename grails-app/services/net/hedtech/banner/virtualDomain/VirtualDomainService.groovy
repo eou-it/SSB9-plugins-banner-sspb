@@ -12,6 +12,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 class VirtualDomainService {
 
     static transactional = false //Getting error connection closed without this
+    def dateConverterService
 
     def list(Map params) {
         Map parameter = CommonService.decodeBase64(params)
@@ -43,25 +44,14 @@ class VirtualDomainService {
             }
         }
 
+        def listResult = []
         if(params.containsKey('getGridData')){
-            def listResult = []
-            Locale locale = LocaleContextHolder.getLocale()
-            String date_format = "dd/MM/yyyy"
-            if(locale && ['ar','fr_CA'].contains(locale.toString())){
-                date_format = "yyyy/MM/dd"
-            } else if("en_US".equals(locale.toString())){
-                date_format = "MM/dd/YYYY"
-            }
             result.each {
-                listResult << [serviceName : it.serviceName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format(date_format), lastUpdated:it.lastUpdated?.format(date_format)]
+                listResult << [serviceName: it.serviceName, id: it.id, version: it.version, dateCreated: dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated), lastUpdated: dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated)]
             }
-            log.trace "VirtualDomainService.list is returning a ${listResult.getClass().simpleName} containing ${listResult.size()} rows"
-
-            return listResult
         }
-
-        log.trace "VirtualDomainService.list is returning a ${result.getClass().simpleName} containing ${result.size()} rows"
-        result
+        log.trace "VirtualDomainService.list is returning a ${listResult.getClass().simpleName} containing ${listResult.size()} rows"
+        return listResult
     }
 
     def count(Map params) {
