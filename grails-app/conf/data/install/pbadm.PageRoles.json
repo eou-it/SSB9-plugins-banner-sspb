@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.PageRoles",
    "extendsPage": null,
-   "fileTimestamp": "2019-02-12T06:14:28Z",
+   "fileTimestamp": "2019-03-11T06:57:33Z",
    "modelView": {
       "components": [
          {
@@ -13,11 +13,13 @@
          {
             "name": "pageLookup",
             "resource": "virtualDomains.pbadmPageLookup",
+            "staticData": [],
             "type": "resource"
          },
          {
             "name": "webTailorRolesLookup",
             "resource": "virtualDomains.pbadmWebTailorRoles",
+            "staticData": [],
             "type": "resource"
          },
          {
@@ -54,7 +56,7 @@
                {
                   "label": "Visual Page Composer",
                   "name": "visualPageComposerButton",
-                  "onClick": "var baseUrl = location.origin; \nvar path = \"/BannerExtensibility/visualPageModelComposer/loadComposerPage\";\nvar url = baseUrl + path;\nif($selectPage && $CONSTANT_NAME){\nurl = url+'?constantName='+$CONSTANT_NAME;\n}\nlocation.assign(url);",
+                  "onClick": "var baseUrl = location.origin; \nvar path = \"/BannerExtensibility/visualPageModelComposer/loadComposerPage\";\nvar url = baseUrl + path;\nif($selectPage && $CONSTANT_NAME){\nupdateLocalStorage($CONSTANT_NAME, $selectPage);\n}\nlocation.assign(url);",
                   "style": "col-sm-6 rTableCell divAlignToRight",
                   "type": "button",
                   "valueStyle": "primary"

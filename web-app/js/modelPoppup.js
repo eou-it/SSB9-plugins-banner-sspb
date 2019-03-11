@@ -172,7 +172,7 @@
             $scope.isResponseEmpty = function(){
                 return $scope.resultsFound == 0;
             }
-            $scope.goToPage = function (event) {
+            $scope.goToPage = function () {
                 var name = "";
                 var value= "";
                 $scope.modalShown = false;
@@ -211,8 +211,7 @@
 
                 var selectInput = angular.element(document.getElementById($scope.inputTypeFieldID))
                 selectInput.trigger('change');
-                event.preventDefault();
-                event.stopPropagation();
+
             };
 
             $scope.setFocusOnLoad = function () {
