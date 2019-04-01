@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.LandingPage",
    "extendsPage": null,
-   "fileTimestamp": "2019-03-28T08:44:30Z",
+   "fileTimestamp": "2019-04-01T05:06:31Z",
    "modelView": {
       "components": [
          {
@@ -223,7 +223,7 @@
                               "name": "devSecureBlock_child_1",
                               "replaceView": true,
                               "type": "link",
-                              "url": "{{$$contextRoot}}customPage/page/pbadm.developerPageSecurity"
+                              "url": "{{$$contextRoot}}customPage/page/pbadm.DeveloperPageSecurity"
                            }
                         ],
                         "label": "",
