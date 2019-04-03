@@ -214,9 +214,9 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         </script>
         </div>
         <div id="dialogAppDiv"></div>
-        %{--<g:if test="${grails.util.Holders.config.locale_userPreferenceEnable}">
+        <g:if test="${grails.util.Holders.config.locale_userPreferenceEnable}">
             <g:render template="/layouts/userPreference" plugin="banner-ui-ss"/>
-        </g:if>--}%
+        </g:if>
         %{--<g:render template="/layouts/bannershortcuts" plugin="banner-ui-ss"/>--}%
 
     <div id="popupContainerDiv"></div>
