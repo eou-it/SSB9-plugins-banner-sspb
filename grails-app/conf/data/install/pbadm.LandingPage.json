@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.LandingPage",
    "extendsPage": null,
-   "fileTimestamp": "2018-11-13T11:51:35Z",
+   "fileTimestamp": "2019-04-01T05:06:31Z",
    "modelView": {
       "components": [
          {
@@ -217,10 +217,18 @@
                         "type": "block"
                      },
                      {
-                        "components": [],
+                        "components": [
+                           {
+                              "description": "Developer Security",
+                              "name": "devSecureBlock_child_1",
+                              "replaceView": true,
+                              "type": "link",
+                              "url": "{{$$contextRoot}}customPage/page/pbadm.DeveloperPageSecurity"
+                           }
+                        ],
                         "label": "",
-                        "name": "dummyBlock",
-                        "showInitially": false,
+                        "name": "devSecureBlock",
+                        "showInitially": true,
                         "style": "admin-menu-section-sub col-lg-12 col-md-12 icon-cta",
                         "type": "block"
                      }
@@ -228,7 +236,7 @@
                   "label": "",
                   "name": "AdminExtraBlock",
                   "showInitially": true,
-                  "style": "admin-menu-section col-lg-3 icon-cta",
+                  "style": "admin-menu-section col-lg-3",
                   "type": "block"
                }
             ],
