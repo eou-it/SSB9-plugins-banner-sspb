@@ -1,0 +1,211 @@
+{
+  "constantName": "pbadm.AdminSecurity",
+  "extendsPage": null,
+  "fileTimestamp": "2019-03-28T10:05:29Z",
+  "modelView": {
+    "components": [
+      {
+        "name": "artifactsData",
+        "resource": "virtualDomains.pbadmArtifactDetails",
+        "staticData": [],
+        "type": "resource"
+      },
+      {
+        "name": "sourceTypeData",
+        "staticData": [
+          {
+            "label": "Page",
+            "value": "P"
+          },
+          {
+            "label": "Virtual Domain",
+            "value": "V"
+          },
+          {
+            "label": "CSS Manager",
+            "value": "C"
+          }
+        ],
+        "type": "resource"
+      },
+      {
+        "name": "userDetails",
+        "resource": "virtualDomains.pbadmUserDetails",
+        "staticData": [],
+        "type": "resource"
+      },
+      {
+        "components": [
+          {
+            "components": [
+              {
+                "components": [
+                  {
+                    "label": "Production mode (Page Builder developers read-only)",
+                    "loadInitially": true,
+                    "model": "",
+                    "name": "isReadOnlyToAll",
+                    "onLoad": "",
+                    "onUpdate": "",
+                    "readonly": false,
+                    "type": "boolean",
+                    "value": ""
+                  },
+                  {
+                    "label": "Prevent import by Page Builder Developers",
+                    "loadInitially": true,
+                    "name": "isImportPrevent",
+                    "readonly": false,
+                    "type": "boolean"
+                  },
+                  {
+                    "label": "Enable Page Builder security",
+                    "loadInitially": true,
+                    "name": "isSecurityEnabled",
+                    "readonly": false,
+                    "type": "boolean"
+                  }
+                ],
+                "name": "pbadmAdminSecurityConfiguration",
+                "showInitially": true,
+                "style": "div-float-right",
+                "type": "block"
+              },
+              {
+                "components": [
+                  {
+                    "label": "Type",
+                    "labelKey": "label",
+                    "loadInitially": true,
+                    "name": "sourceType",
+                    "onLoad": "",
+                    "onUpdate": "if ($sourceType){\n$filters_visible= true;\n$data_visible=true;\n}else {\n$filters_visible= false;\n$data_visible=false;\n}\n\n$dataGrid.$load();",
+                    "placeholder": "Select",
+                    "required": false,
+                    "sourceModel": "sourceTypeData",
+                    "sourceParameters": {},
+                    "style": "",
+                    "type": "select",
+                    "valueKey": "value",
+                    "valueStyle": "source-type"
+                  }
+                ],
+                "name": "TypeBlock",
+                "showInitially": true,
+                "type": "block"
+              },
+              {
+                "components": [
+                  {
+                    "label": "Name",
+                    "loadInitially": true,
+                    "name": "nameFilter",
+                    "onUpdate": "$dataGrid.$load();",
+                    "parameters": {},
+                    "readonly": false,
+                    "required": false,
+                    "type": "text",
+                    "validation": {},
+                    "valueStyle": "name-filter"
+                  },
+                  {
+                    "label": "Owner",
+                    "loadInitially": true,
+                    "name": "ownerFilter",
+                    "onUpdate": "$dataGrid.$load();",
+                    "parameters": {},
+                    "readonly": false,
+                    "required": false,
+                    "type": "text",
+                    "validation": {},
+                    "valueStyle": "owner-filter"
+                  }
+                ],
+                "label": "Search By :",
+                "name": "filters",
+                "showInitially": false,
+                "type": "block"
+              },
+              {
+                "components": [
+                  {
+                    "allowDelete": false,
+                    "allowModify": true,
+                    "allowNew": false,
+                    "allowReload": true,
+                    "components": [
+                      {
+                        "asHtml": false,
+                        "label": "Name",
+                        "loadInitially": true,
+                        "model": "NAME",
+                        "name": "name",
+                        "type": "display"
+                      },
+                      {
+                        "label": "Owner",
+                        "labelKey": "USER_ID",
+                        "loadInitially": true,
+                        "model": "TYPE_OWNER",
+                        "name": "owner",
+                        "required": false,
+                        "sourceModel": "userDetails",
+                        "sourceParameters": {},
+                        "type": "select",
+                        "valueKey": "USER_ID"
+                      },
+                      {
+                        "loadInitially": true,
+                        "model": "SOURCE_TYPE",
+                        "name": "type",
+                        "type": "hidden"
+                      },
+                      {
+                        "loadInitially": true,
+                        "model": "id",
+                        "name": "id",
+                        "type": "hidden"
+                      }
+                    ],
+                    "loadInitially": true,
+                    "model": "artifactsData",
+                    "name": "dataGrid",
+                    "pageSize": 5,
+                    "parameters": {
+                      "name": "$nameFilter?\"%\"+$nameFilter+\"%\":\"\"",
+                      "owner": "$ownerFilter?\"%\"+$ownerFilter+\"%\":\"\"",
+                      "type": "$sourceType?$sourceType:\"\""
+                    },
+                    "type": "grid"
+                  }
+                ],
+                "name": "data",
+                "showInitially": false,
+                "style": "div-append-top",
+                "type": "block"
+              }
+            ],
+            "name": "pbadmAdminSecurityForm",
+            "showInitially": true,
+            "type": "block"
+          }
+        ],
+        "label": "",
+        "name": "pbadmAdminSecurityBlock",
+        "showInitially": true,
+        "type": "block"
+      }
+    ],
+    "importCSS": "pbadm.AdminSecurityCss",
+    "label": "Page Builder Configurations",
+    "name": "pbadmAdminSecurity",
+    "title": "Page Builder Configurations",
+    "type": "page"
+  },
+  "pageRoles": [
+    {
+      "roleName": "ADMIN-GPBADMA",
+      "allow": true
+    }
+  ]
+}

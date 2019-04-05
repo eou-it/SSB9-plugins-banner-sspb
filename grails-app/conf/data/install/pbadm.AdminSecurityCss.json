@@ -1,0 +1,6 @@
+{
+   "constantName": "pbadm.AdminSecurityCss",
+   "css": ".div-float-right {\nfloat: right;\n}\n\n.div-append-top {\npadding-top: 20px;\n}\n\n.source-type {\nmargin-left: 27px;\n    width: 157px;\n}\n\n.name-filter {\nmargin-left: 17px;\n}\n\n.owner-filter {\nmargin-left: 13px;\n}",
+   "description": "securityAdminPage",
+   "fileTimestamp": "2019-03-28T10:05:29Z"
+}
