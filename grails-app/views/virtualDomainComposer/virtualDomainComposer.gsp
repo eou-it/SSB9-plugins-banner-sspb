@@ -44,6 +44,11 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 
         }
 
+        function getDeveloperSecurityPage(id, name){
+            //updateLocalStorage(name,  id)
+            window.open(rootWebApp+'customPage/page/'+ 'pbadm.DeveloperPageSecurity', '_self');
+        }
+
     </Script>
 <!-- g:set var="pageSource" value="test test" scope="page" /-->
 </head>
@@ -77,6 +82,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         <g:actionSubmit action="deleteVirtualDomain" class="secondary" value="${message(code:"sspb.page.virtualdomain.delete.label")}" />
        <g:if test="${pageInstance?.vdServiceName}">
         <input type="button" class="secondary" value="${message(code:"sspb.page.virtualdomain.roles.label")}" onclick="showDomainRoles('${pageInstance?.id}','${pageInstance?.vdServiceName}')"/>
+           <input type="button" class="secondary" value="${message(code:"sspb.css.cssManager.developer.label")}" onclick="getDeveloperSecurityPage('${pageInstance?.id}','${pageInstance?.vdServiceName}')"/>
        </g:if>
     </div>
 

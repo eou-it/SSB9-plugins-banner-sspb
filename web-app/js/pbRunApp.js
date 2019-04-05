@@ -665,6 +665,15 @@ function updateLocalStorage(name,id) {
     window.localStorage['pageName'] = name;
     window.localStorage['pageId'] = id;
 }
+function updateDeveloperSecurityPage(pageName, id){
+    window.localStorage['pageName'] = pageName;
+    window.localStorage['pageId'] = id;
+
+    //$scope.ownerPagesBlock_genericData = pageName;
+    //console.log($scope.ownerPagesBlock_genericData)
+   // alert($scope.ownerPagesBlock_genericData);
+
+}
 
 appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
     return {

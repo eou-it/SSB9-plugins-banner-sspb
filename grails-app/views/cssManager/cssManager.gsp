@@ -193,6 +193,12 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                 });
 
             }
+
+            $scope.getDeveloperSecurityPage = function(){
+                window.open(rootWebApp+'customPage/page/'+ 'pbadm.DeveloperPageSecurity', '_self');
+
+            }
+
             $scope.pageNamePoppup = function(params) {
                 console.log("Model Popup");
                 initlizePopUp(params);
@@ -221,6 +227,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
             <pb-Upload label='Upload Stylesheet' status='cssStatus' pb-change=''></pb-Upload>
             <button class="secondary" ng-click="getCssSource()"><g:message code="sspb.css.cssManager.reload.label" /></button>
             <button class="secondary" ng-click='deleteCssSource()'><g:message code="sspb.css.cssManager.delete.label" /></button>
+            <button class="secondary" ng-click='getDeveloperSecurityPage()'><g:message code="sspb.css.cssManager.developer.label" /></button>
         </div>
         <div class="form-horizontal" ng-form="cssform">
             <div class="control-group">
