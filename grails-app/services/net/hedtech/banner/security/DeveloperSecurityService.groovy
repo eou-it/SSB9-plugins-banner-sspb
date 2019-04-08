@@ -43,7 +43,7 @@ class DeveloperSecurityService {
          return false
     }
 
-     static boolean checkUserHasPrivilage(Long id, String type, boolean isModify){
+     static boolean checkUserHasPrivilage(String constantName, String type, boolean isModify){
          def userIn = SecurityContextHolder?.context?.authentication?.principal
          String oracleUserId
          if (userIn?.class?.name?.endsWith('BannerUser')) {
@@ -52,13 +52,15 @@ class DeveloperSecurityService {
              return false
          }
          boolean found = false
+         String id
         if("P".equalsIgnoreCase(type)){
-            def page = Page.findById(id)
+            def page = Page.findByConstantName(constantName)
+            id=page.id
             if((page && page.pageOwner?.equalsIgnoreCase(oracleUserId)) || "Y".equalsIgnoreCase(page.pageAllowAllInd)){
                 return true
             }else{
                 if(isModify){
-                    def secList = PageSecurity.findById(id.toString())
+                    def secList = PageSecurity.findById(id)
                     secList.each{
                         if("INDIVIDUAL".equalsIgnoreCase(it.type)){
                             if(oracleUserId.equals(it.pageSecKey.developerUserId)){
@@ -78,12 +80,13 @@ class DeveloperSecurityService {
             return false
         }
         else if("V".equalsIgnoreCase(type)){
-            def domain = VirtualDomain.findById(id)
+            def domain = VirtualDomain.findByServiceName(constantName)
+            id = domain.id
             if((domain && domain.virtualDomainOwner?.equalsIgnoreCase(oracleUserId)) || "Y".equalsIgnoreCase(domain.virtualDomainAllowAllInd)){
                 return true
             }else{
                 if(isModify){
-                    def secList = VirtualDomainSecurity.findById(id.toString())
+                    def secList = VirtualDomainSecurity.findById(id)
                     secList.each{
                         if("INDIVIDUAL".equalsIgnoreCase(it.type)){
                             if(oracleUserId.equals(it.domainSecKey.developerUserId)){
@@ -102,12 +105,13 @@ class DeveloperSecurityService {
             }
             return false
         }else if("C".equalsIgnoreCase(type)){
-            def css = Css.findById(id.toString())
+            def css = Css.fetchByConstantName(constantName)
+            id = css.id
             if((css && css.cssOwner?.equalsIgnoreCase(oracleUserId)) || "Y".equalsIgnoreCase(css.cssAllowAll)){
                 return true
             }else{
                 if(isModify){
-                    def secList = CssSecurity.findById(id.toString())
+                    def secList = CssSecurity.findById(id)
                     secList.each{
                         if("INDIVIDUAL".equalsIgnoreCase(it.type)){
                             if(oracleUserId.equals(it.cssSecKey.developerUserId)){
@@ -130,7 +134,7 @@ class DeveloperSecurityService {
         }
     }
 
-     static boolean allowImport(Long constantName, String type){
+     static boolean allowImport(String constantName, String type){
         if(isSuperUser()){
             return true
         }else if(preventImportByDeveloper){
@@ -144,7 +148,7 @@ class DeveloperSecurityService {
         }
     }
 
-    static boolean allowModify(Long constantName, String type){
+    static boolean allowModify(String constantName, String type){
         if(isSuperUser()){
             return true
         }else if(productionMode){
@@ -158,7 +162,7 @@ class DeveloperSecurityService {
         }
     }
 
-    static boolean allowUpdateOwner(Long constantName, String type){
+    static boolean allowUpdateOwner(String constantName, String type){
         if(isSuperUser()){
             return true
         }else if(productionMode){

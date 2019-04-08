@@ -95,8 +95,8 @@ class PageService {
         if (page) {
             String model = page.getMergedModelText(true) //Get the merged model with merge Info
             result = [constantName: page.constantName, id: page.id, extendsPage: page.extendsPage, version: page.version,
-                      modelView: model, allowModify:DeveloperSecurityService.allowModify(page.id,'P') ,
-                      allowUpdateOwner: DeveloperSecurityService.allowUpdateOwner(page.id, 'P')]
+                      modelView: model, allowModify:DeveloperSecurityService.allowModify(page.constantName,'P') ,
+                      allowUpdateOwner: DeveloperSecurityService.allowUpdateOwner(page.constantName, 'P')]
         }
         result
     }
