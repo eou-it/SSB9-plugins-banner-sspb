@@ -96,10 +96,10 @@ class CssSecurity implements Serializable{
                 '}';
     }
 
-    public static def findById(Long id) {
+    public static def findById(String id) {
         List cssSecurity = []
         cssSecurity = CssSecurity.withSession {session ->
-            cssSecurity = session.getNamedQuery('Gbrcsec.fetchById').setString('cssId', id).list()}
+            cssSecurity = session.getNamedQuery('Gbrcsec.fetchByCssId').setString('cssId', id).list()}
         def result = cssSecurity?.size()>0?cssSecurity:null
         return result
     }

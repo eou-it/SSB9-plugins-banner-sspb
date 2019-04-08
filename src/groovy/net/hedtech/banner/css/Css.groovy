@@ -139,7 +139,7 @@ class Css implements Serializable{
         return result
     }
 
-    public static Css findById(Long id) {
+    public static Css findById(String id) {
         List css = []
         css = Css.withSession {session ->
             css = session.getNamedQuery('Css.fetchById').setString('id', id).list()}

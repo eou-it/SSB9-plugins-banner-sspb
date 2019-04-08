@@ -10,7 +10,7 @@ import java.sql.Date
 @Entity
 @Table(name = "GBRVSEC")
 @NamedQueries(value = [
-        @NamedQuery(name = "Gbrvsec.fetchByCssId",
+        @NamedQuery(name = "Gbrvsec.fetchById",
                 query = """FROM   VirtualDomainSecurity a
 		   WHERE  a.domainSecKey.domainId = :domainId
 		  """
@@ -95,10 +95,10 @@ class VirtualDomainSecurity implements Serializable{
                 '}';
     }
 
-    public static def findById(Long id) {
+    public static def findById(String id) {
         List domainsec = []
         domainsec = VirtualDomainSecurity.withSession {session ->
-            domainsec = session.getNamedQuery('Gbrvpsec.fetchById').setString('domainId', id).list()}
+            domainsec = session.getNamedQuery('Gbrvsec.fetchById').setString('domainId', id).list()}
         def result = domainsec?.size()>0?domainsec:null
         return result
     }

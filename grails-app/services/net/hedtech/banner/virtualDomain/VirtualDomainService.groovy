@@ -54,7 +54,9 @@ class VirtualDomainService {
                 date_format = "MM/dd/YYYY"
             }
             result.each {
-                listResult << [serviceName : it.serviceName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format(date_format), lastUpdated:it.lastUpdated?.format(date_format)]
+                listResult << [serviceName : it.serviceName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format(date_format),
+                               lastUpdated:it.lastUpdated?.format(date_format),  allowModify: DeveloperSecurityService.allowModify(it.id,'V'),
+                               allowUpdateOwner: DeveloperSecurityService.allowUpdateOwner(it.id, 'V')]
             }
             log.trace "VirtualDomainService.list is returning a ${listResult.getClass().simpleName} containing ${listResult.size()} rows"
 
@@ -99,8 +101,6 @@ class VirtualDomainService {
         if (result) {
             log.trace "VirtualDomainService.show returning Service: ${result.serviceName}, id: ${result.id}"
         }
-        result << [ allowModify: DeveloperSecurityService.allowModify(result.id,'V'),
-                    allowUpdateOwner: DeveloperSecurityService.allowUpdateOwner(result.id, 'V')]
         result
     }
 
