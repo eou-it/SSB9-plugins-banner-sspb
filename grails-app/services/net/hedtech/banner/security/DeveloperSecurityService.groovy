@@ -1,3 +1,6 @@
+/*******************************************************************************
+ Copyright 2019 Ellucian Company L.P. and its affiliates.
+ *******************************************************************************/
 package net.hedtech.banner.security
 
 import net.hedtech.banner.css.Css
