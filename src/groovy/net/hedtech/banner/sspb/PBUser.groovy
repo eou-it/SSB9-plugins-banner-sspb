@@ -15,6 +15,7 @@ class PBUser {
 
     static def userNameCache
     static def userCache
+    static final String SUPERUSER = "GPBADMA"
 
     private def static localizer = { mapToLocalize ->
         new ValidationTagLib().message( mapToLocalize )
@@ -55,12 +56,24 @@ class PBUser {
         def user = PBUser.get()
         def userInfo =
                 [authenticated:  user.authenticated,
-                 loginName: user.loginName, fullName: user.fullName ]
+                 loginName: user.loginName, fullName: user.fullName , isSuperUser:isSuperUser()]
         boolean isEnabled = Holders.config?.pageBuilder?.development?.authorities?.enabled
         if(isEnabled){
             userInfo<<[authorities: user.authorities]
         }
         return userInfo
+    }
+
+    static boolean isSuperUser() {
+        def userIn = SecurityContextHolder?.context?.authentication?.principal
+        if (userIn?.class?.name?.endsWith('BannerUser')) {
+            userIn.authorities.each {
+                if (SUPERUSER.equalsIgnoreCase(it.objectName)) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 
 }

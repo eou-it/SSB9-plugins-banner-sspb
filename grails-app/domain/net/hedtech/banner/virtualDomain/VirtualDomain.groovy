@@ -18,6 +18,9 @@ class VirtualDomain {
     Date lastUpdated
     String lastModifiedBy // Transient to work around banner-core issue
     Date fileTimestamp
+    String virtualDomainOwner
+    String virtualDomainAllowAllInd
+    String virtualDomainTag
 
     static constraints = {
         serviceName nullable: false, unique: true, maxSize: 60
@@ -29,6 +32,9 @@ class VirtualDomain {
         //dateCreated     nullable:true
         //lastUpdated     nullabel:true
         fileTimestamp   nullable:true
+        virtualDomainOwner      nullable:true
+        virtualDomainAllowAllInd   nullable:true
+        virtualDomainTag        nullable:true
     }
     static transients = ['lastModifiedBy']
 }

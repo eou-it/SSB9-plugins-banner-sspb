@@ -5,6 +5,7 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
+import net.hedtech.banner.security.DeveloperSecurityService
 import org.springframework.context.i18n.LocaleContextHolder
 
 
@@ -103,7 +104,9 @@ class PageService {
         def result = null
         if (page) {
             String model = page.getMergedModelText(true) //Get the merged model with merge Info
-            result = [constantName: page.constantName, id: page.id, extendsPage: page.extendsPage, version: page.version, modelView: model]
+            result = [constantName: page.constantName, id: page.id, extendsPage: page.extendsPage, version: page.version,
+                      modelView: model, allowModify:DeveloperSecurityService.allowModify(page.id,'P') ,
+                      allowUpdateOwner: DeveloperSecurityService.allowUpdateOwner(page.id, 'P')]
         }
         result
     }

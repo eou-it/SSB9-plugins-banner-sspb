@@ -3,6 +3,7 @@
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
+import net.hedtech.banner.security.DeveloperSecurityService
 import net.hedtech.banner.sspb.CommonService
 import org.hibernate.criterion.CriteriaSpecification
 
@@ -98,6 +99,8 @@ class VirtualDomainService {
         if (result) {
             log.trace "VirtualDomainService.show returning Service: ${result.serviceName}, id: ${result.id}"
         }
+        result << [ allowModify: DeveloperSecurityService.allowModify(result.id,'V'),
+                    allowUpdateOwner: DeveloperSecurityService.allowUpdateOwner(result.id, 'V')]
         result
     }
 

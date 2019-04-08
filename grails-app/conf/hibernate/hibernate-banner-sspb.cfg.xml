@@ -17,5 +17,10 @@ there is no concept of an 'entity manager' within this project.
     <session-factory>
         <property name="dialect">org.hibernate.dialect.Oracle10gDialect</property>
         <mapping class="net.hedtech.banner.css.Css"/>
+        <mapping class="net.hedtech.banner.security.CssSecurity"/>
+        <mapping class="net.hedtech.banner.security.PageSecurity"/>
+        <mapping class="net.hedtech.banner.security.VirtualDomainSecurity"/>
+        <mapping class="net.hedtech.banner.security.BusinessProfile"/>
+
     </session-factory>
 </hibernate-configuration>
