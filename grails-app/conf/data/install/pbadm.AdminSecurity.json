@@ -1,7 +1,7 @@
 {
   "constantName": "pbadm.AdminSecurity",
   "extendsPage": null,
-  "fileTimestamp": "2019-03-28T10:05:29Z",
+  "fileTimestamp": "2019-04-09T13:38:09Z",
   "modelView": {
     "components": [
       {
@@ -35,35 +35,77 @@
         "type": "resource"
       },
       {
+        "name": "securityConfigDetails",
+        "resource": "virtualDomains.pbadmSecurityConfigDetails",
+        "staticData": [],
+        "type": "resource"
+      },
+      {
         "components": [
           {
             "components": [
               {
                 "components": [
                   {
+                    "loadInitially": true,
+                    "model": "securityConfigDetails",
+                    "name": "securityConfigData",
+                    "onError": "",
+                    "onLoad": "var enableDeveloperSecurityData =  data.find(configData => configData.GUROCFG_NAME === 'pagebuilder.security.enableDeveloperSecurity');\nif(enableDeveloperSecurityData && enableDeveloperSecurityData.GUROCFG_VALUE\n && enableDeveloperSecurityData.GUROCFG_VALUE.trim() ===  'true') {\n$enableDeveloperSecurity='Y';\n} else {\n$enableDeveloperSecurity = 'N';\n}\nvar preventImportByDeveloperData =  data.find(configData => configData.GUROCFG_NAME === 'pagebuilder.security.preventImportByDeveloper');\nif(preventImportByDeveloperData && preventImportByDeveloperData.GUROCFG_VALUE\n && preventImportByDeveloperData.GUROCFG_VALUE.trim() ===  'true') {\n$preventImportByDeveloper='Y';\n} else {\n$preventImportByDeveloper = 'N';\n}\n\nvar developerReadOnlyData =  data.find(configData => configData.GUROCFG_NAME === 'pagebuilder.security.developerReadOnly');\nif(developerReadOnlyData && developerReadOnlyData.GUROCFG_VALUE\n && developerReadOnlyData.GUROCFG_VALUE.trim() ===  'true') {\n$developerReadOnly='Y';\n} else {\n$developerReadOnly = 'N';\n}",
+                    "onSave": "",
+                    "onSaveSuccess": "",
+                    "parameters": {},
+                    "type": "data"
+                  },
+                  {
+                    "booleanFalseValue": "N",
+                    "booleanTrueValue": "Y",
                     "label": "Production mode (Page Builder developers read-only)",
                     "loadInitially": true,
-                    "model": "",
-                    "name": "isReadOnlyToAll",
+                    "model": "enableDeveloperSecurity",
+                    "name": "enableDeveloperSecurity",
                     "onLoad": "",
                     "onUpdate": "",
                     "readonly": false,
                     "type": "boolean",
-                    "value": ""
+                    "value": "N"
                   },
                   {
+                    "booleanFalseValue": "N",
+                    "booleanTrueValue": "Y",
                     "label": "Prevent import by Page Builder Developers",
                     "loadInitially": true,
-                    "name": "isImportPrevent",
+                    "model": "preventImportByDeveloper",
+                    "name": "preventImportByDeveloper",
                     "readonly": false,
-                    "type": "boolean"
+                    "type": "boolean",
+                    "value": "N"
                   },
                   {
+                    "booleanFalseValue": "N",
+                    "booleanTrueValue": "Y",
                     "label": "Enable Page Builder security",
                     "loadInitially": true,
-                    "name": "isSecurityEnabled",
+                    "model": "developerReadOnly",
+                    "name": "developerReadOnly",
                     "readonly": false,
-                    "type": "boolean"
+                    "type": "boolean",
+                    "value": "N"
+                  },
+                  {
+                    "label": "Save",
+                    "name": "pbadmAdminSecurityConfiguration_Save",
+                    "onClick": "$securityConfigDetails.$post({'enableDeveloperSecurity':$enableDeveloperSecurity, 'preventImportByDeveloper':$preventImportByDeveloper,'developerReadOnly':$developerReadOnly});",
+                    "style": "rTableCell",
+                    "type": "button",
+                    "valueStyle": ""
+                  },
+                  {
+                    "label": "Refresh",
+                    "name": "pbadmAdminSecurityConfiguration_Refersh",
+                    "onClick": "$securityConfigData.$load();",
+                    "style": "rTableCell",
+                    "type": "button"
                   }
                 ],
                 "name": "pbadmAdminSecurityConfiguration",
