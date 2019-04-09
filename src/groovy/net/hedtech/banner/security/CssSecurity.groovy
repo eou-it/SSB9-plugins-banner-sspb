@@ -12,7 +12,7 @@ import java.sql.Date
 @NamedQueries(value = [
         @NamedQuery(name = "Gbrcsec.fetchByCssId",
                 query = """FROM   CssSecurity a
-		   WHERE  a.cssSecKey.cssId = :cssId
+		   WHERE  a.id.cssId = :cssId
 		  """
         )
 ])
@@ -20,7 +20,7 @@ import java.sql.Date
 class CssSecurity implements Serializable{
 
     @EmbeddedId
-    CssSecKey cssSecKey
+    CssSecurityId id
 
     @Column(name="GBRCSEC_SURROGATE_ID")
     @SequenceGenerator(name = 'GBRCSEC_SEQ_GENERATOR', sequenceName = 'SSPBMGR.GBRCSEC_SURROGATE_ID_SEQUENCE')
@@ -56,8 +56,8 @@ class CssSecurity implements Serializable{
 
         if (activityDate != that.activityDate) return false
         if (allowModifyInd != that.allowModifyInd) return false
-        if (cssSecKey != that.cssSecKey) return false
         if (dataOrigin != that.dataOrigin) return false
+        if (id != that.id) return false
         if (surrogateId != that.surrogateId) return false
         if (type != that.type) return false
         if (userId != that.userId) return false
@@ -69,7 +69,7 @@ class CssSecurity implements Serializable{
 
     int hashCode() {
         int result
-        result = (cssSecKey != null ? cssSecKey.hashCode() : 0)
+        result = (id != null ? id.hashCode() : 0)
         result = 31 * result + (surrogateId != null ? surrogateId.hashCode() : 0)
         result = 31 * result + (type != null ? type.hashCode() : 0)
         result = 31 * result + (allowModifyInd != null ? allowModifyInd.hashCode() : 0)
@@ -81,10 +81,18 @@ class CssSecurity implements Serializable{
         return result
     }
 
+    public static def findById(String id) {
+        List cssSecurity = []
+        cssSecurity = CssSecurity.withSession {session ->
+            cssSecurity = session.getNamedQuery('Gbrcsec.fetchByCssId').setString('cssId', id).list()}
+        def result = cssSecurity?.size()>0?cssSecurity:null
+        return result
+    }
+
     @Override
     public String toString() {
         return "CssSecurity{" +
-                "cssSecKey=" + cssSecKey +
+                "id=" + id +
                 ", surrogateId=" + surrogateId +
                 ", type='" + type + '\'' +
                 ", allowModifyInd='" + allowModifyInd + '\'' +
@@ -94,13 +102,5 @@ class CssSecurity implements Serializable{
                 ", version=" + version +
                 ", vpdiCode=" + vpdiCode +
                 '}';
-    }
-
-    public static def findById(String id) {
-        List cssSecurity = []
-        cssSecurity = CssSecurity.withSession {session ->
-            cssSecurity = session.getNamedQuery('Gbrcsec.fetchByCssId').setString('cssId', id).list()}
-        def result = cssSecurity?.size()>0?cssSecurity:null
-        return result
     }
 }

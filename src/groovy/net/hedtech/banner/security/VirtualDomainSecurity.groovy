@@ -12,14 +12,14 @@ import java.sql.Date
 @NamedQueries(value = [
         @NamedQuery(name = "Gbrvsec.fetchById",
                 query = """FROM   VirtualDomainSecurity a
-		   WHERE  a.domainSecKey.domainId = :domainId
+		   WHERE  a.id.domainId = :domainId
 		  """
         )
 ])
 class VirtualDomainSecurity implements Serializable{
 
     @EmbeddedId
-    DomainSecKey domainSecKey
+    VirtualDomainSecurityId id
 
     @Column(name="GBRVSEC_SURROGATE_ID")
     @SequenceGenerator(name = 'GBRVSEC_SEQ_GENERATOR', sequenceName = 'SSPBMGR.GBRVSEC_SURROGATE_ID_SEQUENCE')
@@ -47,6 +47,14 @@ class VirtualDomainSecurity implements Serializable{
     @Column( name="GBRVSEC_VPDI_CODE", length = 19)
     Long vpdiCode
 
+    public static def findById(String id) {
+        List domainsec = []
+        domainsec = VirtualDomainSecurity.withSession {session ->
+            domainsec = session.getNamedQuery('Gbrvsec.fetchById').setString('domainId', id).list()}
+        def result = domainsec?.size()>0?domainsec:null
+        return result
+    }
+
     boolean equals(o) {
         if (this.is(o)) return true
         if (getClass() != o.class) return false
@@ -56,7 +64,7 @@ class VirtualDomainSecurity implements Serializable{
         if (activityDate != that.activityDate) return false
         if (allowModifyInd != that.allowModifyInd) return false
         if (dataOrigin != that.dataOrigin) return false
-        if (domainSecKey != that.domainSecKey) return false
+        if (id != that.id) return false
         if (surrogateId != that.surrogateId) return false
         if (type != that.type) return false
         if (userId != that.userId) return false
@@ -68,7 +76,7 @@ class VirtualDomainSecurity implements Serializable{
 
     int hashCode() {
         int result
-        result = (domainSecKey != null ? domainSecKey.hashCode() : 0)
+        result = (id != null ? id.hashCode() : 0)
         result = 31 * result + (surrogateId != null ? surrogateId.hashCode() : 0)
         result = 31 * result + (type != null ? type.hashCode() : 0)
         result = 31 * result + (allowModifyInd != null ? allowModifyInd.hashCode() : 0)
@@ -83,7 +91,7 @@ class VirtualDomainSecurity implements Serializable{
     @Override
     public String toString() {
         return "VirtualDomainSecurity{" +
-                "domainSecKey=" + domainSecKey +
+                "id=" + id +
                 ", surrogateId=" + surrogateId +
                 ", type='" + type + '\'' +
                 ", allowModifyInd='" + allowModifyInd + '\'' +
@@ -93,13 +101,5 @@ class VirtualDomainSecurity implements Serializable{
                 ", version=" + version +
                 ", vpdiCode=" + vpdiCode +
                 '}';
-    }
-
-    public static def findById(String id) {
-        List domainsec = []
-        domainsec = VirtualDomainSecurity.withSession {session ->
-            domainsec = session.getNamedQuery('Gbrvsec.fetchById').setString('domainId', id).list()}
-        def result = domainsec?.size()>0?domainsec:null
-        return result
     }
 }

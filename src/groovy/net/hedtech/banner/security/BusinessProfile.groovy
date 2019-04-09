@@ -13,13 +13,13 @@ import java.sql.Date
         @NamedQuery(
                 name = "getAllBusinessProfile",
                 query = """ FROM BusinessProfile g 
-                        where g.profileKey.profileCode= :profile
+                        where g.id.profileCode= :profile
                         """ )
 ])
 class BusinessProfile implements Serializable{
 
     @EmbeddedId
-    ProfileKey profileKey
+    BuisnessProfileId id
 
     @Column(name="GORFBPR_ACTIVITY_DATE", nullable= false )
     Date activityDate
@@ -36,6 +36,15 @@ class BusinessProfile implements Serializable{
     @Column( name="GORFBPR_VPDI_CODE", length = 19)
     Long vpdiCode
 
+
+    public static def findByProfile(String profile) {
+        def profiles
+        profiles = BusinessProfile.withSession {session ->
+            profiles = session.getNamedQuery('getAllBusinessProfile').setString('profile', profile).list()}
+        def result = profiles?.size()>0?profiles:null
+        return result
+    }
+
     boolean equals(o) {
         if (this.is(o)) return true
         if (getClass() != o.class) return false
@@ -43,7 +52,7 @@ class BusinessProfile implements Serializable{
         BusinessProfile that = (BusinessProfile) o
 
         if (activityDate != that.activityDate) return false
-        if (profileKey != that.profileKey) return false
+        if (id != that.id) return false
         if (surrogateId != that.surrogateId) return false
         if (userId != that.userId) return false
         if (version != that.version) return false
@@ -54,7 +63,7 @@ class BusinessProfile implements Serializable{
 
     int hashCode() {
         int result
-        result = (profileKey != null ? profileKey.hashCode() : 0)
+        result = (id != null ? id.hashCode() : 0)
         result = 31 * result + (activityDate != null ? activityDate.hashCode() : 0)
         result = 31 * result + (userId != null ? userId.hashCode() : 0)
         result = 31 * result + (surrogateId != null ? surrogateId.hashCode() : 0)
@@ -63,18 +72,10 @@ class BusinessProfile implements Serializable{
         return result
     }
 
-    public static def findByProfile(String profile) {
-        def profiles
-        profiles = BusinessProfile.withSession {session ->
-            profiles = session.getNamedQuery('getAllBusinessProfile').setString('profile', profile).list()}
-        def result = profiles?.size()>0?profiles:null
-        return result
-    }
-
     @Override
     public String toString() {
         return "BusinessProfile{" +
-                "profileKey=" + profileKey +
+                "id=" + id +
                 ", activityDate=" + activityDate +
                 ", userId='" + userId + '\'' +
                 ", surrogateId=" + surrogateId +

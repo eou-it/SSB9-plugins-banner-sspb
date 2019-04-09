@@ -12,14 +12,14 @@ import java.sql.Date
 @NamedQueries(value = [
         @NamedQuery(name = "Gbrpsec.fetchById",
                 query = """FROM   PageSecurity a
-		   WHERE  a.pageSecKey.pageId = :pageId
+		   WHERE  a.id.pageId = :pageId
 		  """
         )
 ])
 class PageSecurity implements Serializable{
 
     @EmbeddedId
-    PageSecKey pageSecKey
+    PageSecurityId id
 
     @Column(name="GBRPSEC_SURROGATE_ID")
     @SequenceGenerator(name = 'GBRPSEC_SEQ_GENERATOR', sequenceName = 'SSPBMGR.GBRPSEC_SURROGATE_ID_SEQUENCE')
@@ -47,6 +47,16 @@ class PageSecurity implements Serializable{
     @Column( name="GBRPSEC_VPDI_CODE", length = 19)
     Long vpdiCode
 
+
+
+    public static def findById(String id) {
+        List pageSecurity = []
+        pageSecurity = PageSecurity.withSession {session ->
+            pageSecurity = session.getNamedQuery('Gbrpsec.fetchById').setString('pageId', id).list()}
+        def result = pageSecurity?.size()>0?pageSecurity:null
+        return result
+    }
+
     boolean equals(o) {
         if (this.is(o)) return true
         if (getClass() != o.class) return false
@@ -56,7 +66,7 @@ class PageSecurity implements Serializable{
         if (acitivityDate != that.acitivityDate) return false
         if (allowModifyInd != that.allowModifyInd) return false
         if (dataOrigin != that.dataOrigin) return false
-        if (pageSecKey != that.pageSecKey) return false
+        if (id != that.id) return false
         if (surrogateId != that.surrogateId) return false
         if (type != that.type) return false
         if (userId != that.userId) return false
@@ -68,7 +78,7 @@ class PageSecurity implements Serializable{
 
     int hashCode() {
         int result
-        result = (pageSecKey != null ? pageSecKey.hashCode() : 0)
+        result = (id != null ? id.hashCode() : 0)
         result = 31 * result + (surrogateId != null ? surrogateId.hashCode() : 0)
         result = 31 * result + (type != null ? type.hashCode() : 0)
         result = 31 * result + (allowModifyInd != null ? allowModifyInd.hashCode() : 0)
@@ -83,7 +93,7 @@ class PageSecurity implements Serializable{
     @Override
     public String toString() {
         return "PageSecurity{" +
-                "pageSecKey=" + pageSecKey +
+                "id=" + id +
                 ", surrogateId=" + surrogateId +
                 ", type='" + type + '\'' +
                 ", allowModifyInd='" + allowModifyInd + '\'' +
@@ -93,13 +103,5 @@ class PageSecurity implements Serializable{
                 ", version=" + version +
                 ", vpdiCode=" + vpdiCode +
                 '}';
-    }
-
-    public static def findById(String id) {
-        List pageSecurity = []
-        pageSecurity = PageSecurity.withSession {session ->
-            pageSecurity = session.getNamedQuery('Gbrpsec.fetchById').setString('pageId', id).list()}
-        def result = pageSecurity?.size()>0?pageSecurity:null
-        return result
     }
 }

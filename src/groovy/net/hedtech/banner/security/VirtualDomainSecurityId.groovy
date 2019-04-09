@@ -7,7 +7,7 @@ import javax.persistence.Column
 import javax.persistence.Embeddable
 
 @Embeddable
-class DomainSecKey implements Serializable{
+class VirtualDomainSecurityId implements Serializable{
 
 
     @Column(name="GBRVSEC_DOMAIN_ID", nullable= false ,length = 19)

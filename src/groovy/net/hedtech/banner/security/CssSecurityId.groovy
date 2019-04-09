@@ -7,11 +7,11 @@ import javax.persistence.Column
 import javax.persistence.Embeddable
 
 @Embeddable
-class PageSecKey implements Serializable{
+class CssSecurityId implements Serializable{
 
-    @Column(name="GBRPSEC_PAGE_ID", nullable= false ,length = 19)
-    Long pageId
+    @Column(name="GBRCSEC_CSS_ID", nullable= false ,length = 19)
+    Long cssId
 
-    @Column(name="GBRPSEC_DEVELOPER_USER_ID", nullable= false ,length = 30)
+    @Column(name="GBRCSEC_DEVELOPER_USER_ID", nullable= false ,length = 30)
     String developerUserId
 }
