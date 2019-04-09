@@ -13,3 +13,4 @@ pbadmGenericData.json
 pbadmPageDetails.json
 pbadmArtifactDetails.json
 pbadmUserDetails.json
+pbadmSecurityConfigDetails.json
