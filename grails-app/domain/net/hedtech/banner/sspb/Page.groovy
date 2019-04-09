@@ -35,9 +35,9 @@ class Page {
 
     String deltaVersion
 
-    String pageOwner
-    String pageAllowAllInd
-    String pageTag
+    String owner
+    String allowAllInd
+    String tag
 
     static constraints = {
         constantName       nullable: false , unique: true, maxSize: 60
@@ -48,9 +48,9 @@ class Page {
         //dateCreated     nullable:true
         lastUpdated     nullable: true
         fileTimestamp   nullable: true
-        pageOwner       nullable: true
-        pageAllowAllInd    nullable: true
-        pageTag         nullable: true
+        owner       nullable: true
+        allowAllInd    nullable: true
+        tag         nullable: true
     }
 
     static transients = ['mergedModelText', 'mergedModelMap', 'modelMap', 'deltaVersion', 'lastModifiedBy']
@@ -547,5 +547,11 @@ class Page {
         }
         components.each { it.remove(KEYS.meta) }
         components
+    }
+
+    static mapping = {
+        owner column: "PAGE_OWNER"
+        allowAllInd column: "PAGE_ALLOW_ALL_IND"
+        tag column: "PAGE_TAG"
     }
 }

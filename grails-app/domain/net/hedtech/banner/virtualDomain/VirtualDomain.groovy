@@ -18,9 +18,9 @@ class VirtualDomain {
     Date lastUpdated
     String lastModifiedBy // Transient to work around banner-core issue
     Date fileTimestamp
-    String virtualDomainOwner
-    String virtualDomainAllowAllInd
-    String virtualDomainTag
+    String owner
+    String allowAllInd
+    String tag
 
     static constraints = {
         serviceName nullable: false, unique: true, maxSize: 60
@@ -32,9 +32,15 @@ class VirtualDomain {
         //dateCreated     nullable:true
         //lastUpdated     nullabel:true
         fileTimestamp   nullable:true
-        virtualDomainOwner      nullable:true
-        virtualDomainAllowAllInd   nullable:true
-        virtualDomainTag        nullable:true
+        owner      nullable:true
+        allowAllInd   nullable:true
+        tag        nullable:true
     }
     static transients = ['lastModifiedBy']
+
+    static mapping = {
+        owner column: "VIRTUAL_DOMAIN_OWNER"
+        allowAllInd column: "VIRTUAL_DOMAIN_ALLOW_ALL_IND"
+        tag column: "VIRTUAL_DOMAIN_TAG"
+    }
 }

@@ -21,7 +21,7 @@ import javax.persistence.*
 		  """),
         @NamedQuery(name = "Css.fetchAllByCssOwnerLike",
                 query = """FROM   Css a
-		   WHERE  a.cssOwner like :owner
+		   WHERE  a.owner like :owner
 		  """),
         @NamedQuery(name = "Css.fetchById",
                 query = """FROM   Css a
@@ -65,13 +65,13 @@ class Css implements Serializable{
     Date fileTimestamp
 
     @Column(name="CSS_OWNER", nullable= true ,length = 30)
-    String cssOwner
+    String owner
 
     @Column(name="CSS_ALLOW_ALL_IND", nullable= true ,length = 1)
-    String cssAllowAll
+    String allowAllInd
 
     @Column(name="CSS_TAG", nullable= true ,length = 60)
-    String cssTag
+    String tag
 
     @Transient
     String lastModifiedBy // Transient to work around banner-core issue
@@ -84,9 +84,9 @@ class Css implements Serializable{
 
         if (constantName != css1.constantName) return false
         if (css != css1.css) return false
-        if (cssAllowAll != css1.cssAllowAll) return false
-        if (cssOwner != css1.cssOwner) return false
-        if (cssTag != css1.cssTag) return false
+        if (allowAllInd != css1.allowAllInd) return false
+        if (owner != css1.owner) return false
+        if (tag != css1.tag) return false
         if (dateCreated != css1.dateCreated) return false
         if (description != css1.description) return false
         if (fileTimestamp != css1.fileTimestamp) return false
@@ -108,9 +108,9 @@ class Css implements Serializable{
         result = 31 * result + (dateCreated != null ? dateCreated.hashCode() : 0)
         result = 31 * result + (lastUpdated != null ? lastUpdated.hashCode() : 0)
         result = 31 * result + (fileTimestamp != null ? fileTimestamp.hashCode() : 0)
-        result = 31 * result + (cssOwner != null ? cssOwner.hashCode() : 0)
-        result = 31 * result + (cssAllowAll != null ? cssAllowAll.hashCode() : 0)
-        result = 31 * result + (cssTag != null ? cssTag.hashCode() : 0)
+        result = 31 * result + (owner != null ? owner.hashCode() : 0)
+        result = 31 * result + (allowAllInd != null ? allowAllInd.hashCode() : 0)
+        result = 31 * result + (tag != null ? tag.hashCode() : 0)
         result = 31 * result + (lastModifiedBy != null ? lastModifiedBy.hashCode() : 0)
         return result
     }
@@ -134,7 +134,7 @@ class Css implements Serializable{
     public static Css fetchAllByCSSOwnerLike(String owner) {
         List css = []
         css = Css.withSession {session ->
-            css = session.getNamedQuery('Css.fetchAllByCssOwnerLike').setString('cssOwner', owner).list()}
+            css = session.getNamedQuery('Css.fetchAllByCssOwnerLike').setString('owner', owner).list()}
         Css result = css?.size()>0?css.get(0):null
         return result
     }
@@ -158,9 +158,9 @@ class Css implements Serializable{
                 ", dateCreated=" + dateCreated +
                 ", lastUpdated=" + lastUpdated +
                 ", fileTimestamp=" + fileTimestamp +
-                ", cssOwner='" + cssOwner + '\'' +
-                ", cssAllowAll='" + cssAllowAll + '\'' +
-                ", cssTag='" + cssTag + '\'' +
+                ", cssOwner='" + owner + '\'' +
+                ", cssAllowAll='" + allowAllInd + '\'' +
+                ", cssTag='" + tag + '\'' +
                 ", lastModifiedBy='" + lastModifiedBy + '\'' +
                 '}';
     }

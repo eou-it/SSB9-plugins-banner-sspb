@@ -16,7 +16,7 @@ class DeveloperSecurityService {
     static preventImportByDeveloper = false
     static productionMode = false
     def private static appId = "EXTZ"
-    static final String SUPERUSER = "GPBADMA"
+    static final String SUPER_USER = "GPBADMA"
 
     DeveloperSecurityService(){
         getGlobalSecurityValue()
@@ -37,7 +37,7 @@ class DeveloperSecurityService {
         def userIn = SecurityContextHolder?.context?.authentication?.principal
         if (userIn?.class?.name?.endsWith('BannerUser')) {
             userIn.authorities.each {
-                if (SUPERUSER.equalsIgnoreCase(it.objectName)) {
+                if (SUPER_USER.equals(it.objectName)) {
                     return true
                 }
             }
@@ -59,7 +59,7 @@ class DeveloperSecurityService {
         if("P".equalsIgnoreCase(type)){
             def page = Page.findByConstantName(constantName)
             id=page.id
-            if((page && page.pageOwner?.equalsIgnoreCase(oracleUserId)) || "Y".equalsIgnoreCase(page.pageAllowAllInd)){
+            if((page && page.owner?.equalsIgnoreCase(oracleUserId)) || "Y".equalsIgnoreCase(page.allowAllInd)){
                 return true
             }else{
                 if(isModify){
@@ -85,7 +85,7 @@ class DeveloperSecurityService {
         else if("V".equalsIgnoreCase(type)){
             def domain = VirtualDomain.findByServiceName(constantName)
             id = domain.id
-            if((domain && domain.virtualDomainOwner?.equalsIgnoreCase(oracleUserId)) || "Y".equalsIgnoreCase(domain.virtualDomainAllowAllInd)){
+            if((domain && domain.owner?.equalsIgnoreCase(oracleUserId)) || "Y".equalsIgnoreCase(domain.allowAllInd)){
                 return true
             }else{
                 if(isModify){
@@ -110,7 +110,7 @@ class DeveloperSecurityService {
         }else if("C".equalsIgnoreCase(type)){
             def css = Css.fetchByConstantName(constantName)
             id = css.id
-            if((css && css.cssOwner?.equalsIgnoreCase(oracleUserId)) || "Y".equalsIgnoreCase(css.cssAllowAll)){
+            if((css && css.owner?.equalsIgnoreCase(oracleUserId)) || "Y".equalsIgnoreCase(css.allowAllInd)){
                 return true
             }else{
                 if(isModify){
