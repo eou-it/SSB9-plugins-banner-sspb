@@ -87,9 +87,10 @@ class CssService extends ServiceBase {
         if (result) {
             //supplementCss( result )
             log.trace "CssService.show returning ${result}"
+            DeveloperSecurityService.getGlobalSecurityValue()
             showResult = [constantName : result.constantName, id: result.id, version: result.version, css: result.css,
-                          description: result.description,  allowModify: DeveloperSecurityService.allowModify(result.constantName,'C'),
-                          allowUpdateOwner: DeveloperSecurityService.allowUpdateOwner(result.constantName, 'C')]
+                          description: result.description,  allowModify: DeveloperSecurityService.isAllowModify(result.constantName,DeveloperSecurityService.CSS_IND),
+                          allowUpdateOwner: DeveloperSecurityService.isAllowUpdateOwner(result.constantName, DeveloperSecurityService.CSS_IND)]
         }
         showResult
     }

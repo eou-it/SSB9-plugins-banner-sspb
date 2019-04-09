@@ -13,7 +13,8 @@ import java.sql.Date
         @NamedQuery(
                 name = "getAllBusinessProfile",
                 query = """ FROM BusinessProfile g 
-                        where g.id.profileCode= :profile
+                        where g.id.profileCode= :profile 
+                        and  g.id.profileUserId =:userId
                         """ )
 ])
 class BusinessProfile implements Serializable{
@@ -37,10 +38,10 @@ class BusinessProfile implements Serializable{
     Long vpdiCode
 
 
-    public static def findByProfile(String profile) {
+    public static def findByProfile(String profile, String userId) {
         def profiles
         profiles = BusinessProfile.withSession {session ->
-            profiles = session.getNamedQuery('getAllBusinessProfile').setString('profile', profile).list()}
+            profiles = session.getNamedQuery('getAllBusinessProfile').setString('profile', profile).setString('userId', userId).list()}
         def result = profiles?.size()>0?profiles:null
         return result
     }

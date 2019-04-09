@@ -12,25 +12,28 @@ import org.springframework.security.core.context.SecurityContextHolder
 
 class DeveloperSecurityService {
 
-    static enableDeveloperSecurity = true
+    static enableDeveloperSecurity = false
     static preventImportByDeveloper = false
     static productionMode = false
-    def private static appId = "EXTZ"
+    static final String APP_ID = "EXTZ"
     static final String SUPER_USER = "GPBADMA"
+    static final String PAGE_IND = "P"
+    static final String CSS_IND = "C"
+    static final String VIRTUAL_DOMAIN_IND = "V"
+    static final String USER_GROUP = "INDIVIDUAL"
 
-    DeveloperSecurityService(){
-        getGlobalSecurityValue()
-    }
 
     static getGlobalSecurityValue(){
-        def results = ConfigurationData.fetchByType("boolean",appId)
-        enableDeveloperSecurity = (results && results.get('pagebuilder.security.enableDeveloperSecurity'))?
-                results.get('pagebuilder.security.enableDeveloperSecurity'):enableDeveloperSecurity
-        preventImportByDeveloper = (results && results.get('pagebuilder.security.preventImportByDeveloper'))?
-                results.get('pagebuilder.security.enableDeveloperSecurity'):preventImportByDeveloper
-        productionMode = (results && results.get('pagebuilder.security.developerReadOnly'))?
-                results.get('pagebuilder.security.developerReadOnly'):productionMode
-
+        List<ConfigurationData> results = ConfigurationData.fetchByType("boolean",APP_ID)
+        results.each{
+            if(it.name.equals('pagebuilder.security.enableDeveloperSecurity')){
+                enableDeveloperSecurity = it.value
+            }else if(it.name.equals('pagebuilder.security.preventImportByDeveloper')){
+                preventImportByDeveloper = it.value
+            }else if(it.name.equals('pagebuilder.security.developerReadOnly')){
+                productionMode = it.value
+            }
+        }
     }
 
      static boolean isSuperUser() {
@@ -56,7 +59,7 @@ class DeveloperSecurityService {
          }
          boolean found = false
          String id
-        if("P".equalsIgnoreCase(type)){
+        if(PAGE_IND.equalsIgnoreCase(type)){
             def page = Page.findByConstantName(constantName)
             id=page.id
             if((page && page.owner?.equalsIgnoreCase(oracleUserId)) || "Y".equalsIgnoreCase(page.allowAllInd)){
@@ -65,16 +68,14 @@ class DeveloperSecurityService {
                 if(isModify){
                     def secList = PageSecurity.findById(id)
                     secList.each{
-                        if("INDIVIDUAL".equalsIgnoreCase(it.type)){
+                        if(USER_GROUP.equalsIgnoreCase(it.type)){
                             if(oracleUserId.equals(it.pageSecKey.developerUserId)){
                                 return true
                             }
                         }else{
-                            def userList = BusinessProfile.findByProfile(it.pageSecKey.developerUserId)
-                            userList.each{
-                                if(oracleUserId.equalsIgnoreCase(it.profileUserId)){
-                                    return true
-                                }
+                            def userList = BusinessProfile.findByProfile(it.pageSecKey.developerUserId, oracleUserId)
+                            if(userList){
+                                return true
                             }
                         }
                     }
@@ -82,7 +83,7 @@ class DeveloperSecurityService {
             }
             return false
         }
-        else if("V".equalsIgnoreCase(type)){
+        else if(VIRTUAL_DOMAIN_IND.equalsIgnoreCase(type)){
             def domain = VirtualDomain.findByServiceName(constantName)
             id = domain.id
             if((domain && domain.owner?.equalsIgnoreCase(oracleUserId)) || "Y".equalsIgnoreCase(domain.allowAllInd)){
@@ -91,23 +92,20 @@ class DeveloperSecurityService {
                 if(isModify){
                     def secList = VirtualDomainSecurity.findById(id)
                     secList.each{
-                        if("INDIVIDUAL".equalsIgnoreCase(it.type)){
+                        if(USER_GROUP.equalsIgnoreCase(it.type)){
                             if(oracleUserId.equals(it.domainSecKey.developerUserId)){
                                 return true
                             }
                         }else{
-                            def userList = BusinessProfile.findByProfile(it.domainSecKey.developerUserId)
-                            userList.each{
-                                if(oracleUserId.equalsIgnoreCase(it.profileUserId)){
-                                    return true
-                                }
-                            }
+                            def userList = BusinessProfile.findByProfile(it.domainSecKey.developerUserId ,oracleUserId )
+                            if(userList)
+                                return true
                         }
                     }
                 }
             }
             return false
-        }else if("C".equalsIgnoreCase(type)){
+        }else if(CSS_IND.equalsIgnoreCase(type)){
             def css = Css.fetchByConstantName(constantName)
             id = css.id
             if((css && css.owner?.equalsIgnoreCase(oracleUserId)) || "Y".equalsIgnoreCase(css.allowAllInd)){
@@ -116,17 +114,14 @@ class DeveloperSecurityService {
                 if(isModify){
                     def secList = CssSecurity.findById(id)
                     secList.each{
-                        if("INDIVIDUAL".equalsIgnoreCase(it.type)){
+                        if(USER_GROUP.equalsIgnoreCase(it.type)){
                             if(oracleUserId.equals(it.cssSecKey.developerUserId)){
                                 return true
                             }
                         }else{
-                            def userList = BusinessProfile.findByProfile(it.cssSecKey.developerUserId)
-                            userList.each{
-                                if(oracleUserId.equalsIgnoreCase(it.profileUserId)){
-                                    return true
-                                }
-                            }
+                            def userList = BusinessProfile.findByProfile(it.cssSecKey.developerUserId, oracleUserId)
+                            if(userList)
+                                return true
                         }
                     }
                 }
@@ -137,7 +132,9 @@ class DeveloperSecurityService {
         }
     }
 
-     static boolean allowImport(String constantName, String type){
+     static boolean isAllowImport(String constantName, String type){
+
+         getGlobalSecurityValue()
         if(isSuperUser()){
             return true
         }else if(preventImportByDeveloper){
@@ -151,7 +148,7 @@ class DeveloperSecurityService {
         }
     }
 
-    static boolean allowModify(String constantName, String type){
+    static boolean isAllowModify(String constantName, String type){
         if(isSuperUser()){
             return true
         }else if(productionMode){
@@ -165,7 +162,7 @@ class DeveloperSecurityService {
         }
     }
 
-    static boolean allowUpdateOwner(String constantName, String type){
+    static boolean isAllowUpdateOwner(String constantName, String type){
         if(isSuperUser()){
             return true
         }else if(productionMode){
@@ -178,11 +175,5 @@ class DeveloperSecurityService {
             return false
         }
     }
-
-    def static getSecurityData(def id, def type){
-        return ["allowImport": allowImport(id, type), "allowModify": allowModify(id, type),
-                "allowUpdateOwner":allowUpdateOwner(id, type)]
-    }
-
 
 }
