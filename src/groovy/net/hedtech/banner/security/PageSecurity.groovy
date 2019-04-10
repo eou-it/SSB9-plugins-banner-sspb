@@ -18,6 +18,8 @@ import java.sql.Date
 ])
 class PageSecurity implements Serializable{
 
+    public static final long serialVersionUID = 2102468661415084360L
+
     @EmbeddedId
     PageSecurityId id
 

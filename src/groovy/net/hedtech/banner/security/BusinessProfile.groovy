@@ -18,6 +18,7 @@ import java.sql.Date
                         """ )
 ])
 class BusinessProfile implements Serializable{
+    public static final long serialVersionUID = 8240815446214088510L
 
     @EmbeddedId
     BuisnessProfileId id

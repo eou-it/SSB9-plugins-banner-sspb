@@ -17,6 +17,7 @@ import java.sql.Date
         )
 ])
 class VirtualDomainSecurity implements Serializable{
+    public static final long serialVersionUID = 3295104932444629379L
 
     @EmbeddedId
     VirtualDomainSecurityId id

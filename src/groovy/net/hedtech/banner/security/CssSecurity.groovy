@@ -19,6 +19,8 @@ import java.sql.Date
 
 class CssSecurity implements Serializable{
 
+    public static final long serialVersionUID = 7474581258174177299L
+
     @EmbeddedId
     CssSecurityId id
 
