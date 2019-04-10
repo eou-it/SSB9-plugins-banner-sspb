@@ -1,11 +1,12 @@
 /*******************************************************************************
- Copyright 2017 Ellucian Company L.P. and its affiliates.
+ Copyright 2017-2019 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 package net.hedtech.banner.sspb
 
+import difflib.DiffUtils
+import difflib.Patch
 import grails.converters.JSON
 import groovy.util.logging.Log4j
-import difflib.*
 
 @Log4j
 class Page {
@@ -34,6 +35,10 @@ class Page {
 
     String deltaVersion
 
+    String owner
+    String allowAllInd
+    String tag
+
     static constraints = {
         constantName       nullable: false , unique: true, maxSize: 60
         modelView          nullable: false , maxSize: 1000000, widget: 'textarea'
@@ -43,6 +48,9 @@ class Page {
         //dateCreated     nullable:true
         lastUpdated     nullable: true
         fileTimestamp   nullable: true
+        owner       nullable: true
+        allowAllInd    nullable: true
+        tag         nullable: true
     }
 
     static transients = ['mergedModelText', 'mergedModelMap', 'modelMap', 'deltaVersion', 'lastModifiedBy']
@@ -539,5 +547,11 @@ class Page {
         }
         components.each { it.remove(KEYS.meta) }
         components
+    }
+
+    static mapping = {
+        owner column: "PAGE_OWNER"
+        allowAllInd column: "PAGE_ALLOW_ALL_IND"
+        tag column: "PAGE_TAG"
     }
 }

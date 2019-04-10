@@ -3,6 +3,7 @@
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
+import net.hedtech.banner.security.DeveloperSecurityService
 import net.hedtech.banner.sspb.CommonService
 import org.hibernate.criterion.CriteriaSpecification
 
@@ -45,10 +46,14 @@ class VirtualDomainService {
         }
 
         def listResult = []
+        DeveloperSecurityService.getGlobalSecurityValue()
         if(params.containsKey('getGridData')){
             result.each {
-                listResult << [serviceName: it.serviceName, id: it.id, version: it.version, dateCreated: dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated), lastUpdated: dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated)]
-            }
+                listResult << [serviceName : it.serviceName, id: it.id, version: it.version, dateCreated:dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated),
+                               lastUpdated:dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated),
+                               allowModify: DeveloperSecurityService.isAllowModify(it.serviceName,DeveloperSecurityService.VIRTUAL_DOMAIN_IND),
+                               allowUpdateOwner: DeveloperSecurityService.isAllowUpdateOwner(it.serviceName, DeveloperSecurityService.VIRTUAL_DOMAIN_IND)]
+           }
         }
         log.trace "VirtualDomainService.list is returning a ${listResult.getClass().simpleName} containing ${listResult.size()} rows"
         return listResult

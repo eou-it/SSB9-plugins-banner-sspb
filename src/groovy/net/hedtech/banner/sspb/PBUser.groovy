@@ -1,9 +1,10 @@
 /*******************************************************************************
- * Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
+ * Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
 import grails.util.Holders
+import net.hedtech.banner.security.DeveloperSecurityService
 import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
@@ -55,7 +56,7 @@ class PBUser {
         def user = PBUser.get()
         def userInfo =
                 [authenticated:  user.authenticated,
-                 loginName: user.loginName, fullName: user.fullName ]
+                 loginName: user.loginName, fullName: user.fullName , isSuperUser: DeveloperSecurityService.isSuperUser()]
         boolean isEnabled = Holders.config?.pageBuilder?.development?.authorities?.enabled
         if(isEnabled){
             userInfo<<[authorities: user.authorities]

@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <!-- *****************************************************************************
-Copyright 2010-2017 Ellucian Company L.P. and its affiliates.
+Copyright 2010-2019 Ellucian Company L.P. and its affiliates.
 ****************************************************************************** -->
 
 <!--
@@ -17,5 +17,10 @@ there is no concept of an 'entity manager' within this project.
     <session-factory>
         <property name="dialect">org.hibernate.dialect.Oracle10gDialect</property>
         <mapping class="net.hedtech.banner.css.Css"/>
+        <mapping class="net.hedtech.banner.security.CssSecurity"/>
+        <mapping class="net.hedtech.banner.security.PageSecurity"/>
+        <mapping class="net.hedtech.banner.security.VirtualDomainSecurity"/>
+        <mapping class="net.hedtech.banner.security.BusinessProfile"/>
+
     </session-factory>
 </hibernate-configuration>
