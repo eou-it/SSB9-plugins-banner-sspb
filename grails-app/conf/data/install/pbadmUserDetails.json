@@ -14,6 +14,19 @@
       "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
       "roleName": "ADMIN-GPBADMA",
       "allowDelete": false
+    },
+    {
+      "id": null,
+      "allowGet": true,
+      "allowPost": false,
+      "allowPut": false,
+      "virtualDomain": {
+        "_ref": "../..",
+        "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+      },
+      "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
+      "roleName": "ADMIN-GPBADMN",
+      "allowDelete": false
     }
   ],
   "lastUpdated": null,

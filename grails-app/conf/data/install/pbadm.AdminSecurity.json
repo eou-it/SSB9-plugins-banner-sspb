@@ -1,7 +1,7 @@
 {
   "constantName": "pbadm.AdminSecurity",
   "extendsPage": null,
-  "fileTimestamp": "2019-04-09T13:38:09Z",
+  "fileTimestamp": "2019-04-10T10:05:30Z",
   "modelView": {
     "components": [
       {
@@ -52,7 +52,7 @@
                     "name": "securityConfigData",
                     "onError": "",
                     "onLoad": "var enableDeveloperSecurityData =  data.find(configData => configData.GUROCFG_NAME === 'pagebuilder.security.enableDeveloperSecurity');\nif(enableDeveloperSecurityData && enableDeveloperSecurityData.GUROCFG_VALUE\n && enableDeveloperSecurityData.GUROCFG_VALUE.trim() ===  'true') {\n$enableDeveloperSecurity='Y';\n} else {\n$enableDeveloperSecurity = 'N';\n}\nvar preventImportByDeveloperData =  data.find(configData => configData.GUROCFG_NAME === 'pagebuilder.security.preventImportByDeveloper');\nif(preventImportByDeveloperData && preventImportByDeveloperData.GUROCFG_VALUE\n && preventImportByDeveloperData.GUROCFG_VALUE.trim() ===  'true') {\n$preventImportByDeveloper='Y';\n} else {\n$preventImportByDeveloper = 'N';\n}\n\nvar developerReadOnlyData =  data.find(configData => configData.GUROCFG_NAME === 'pagebuilder.security.developerReadOnly');\nif(developerReadOnlyData && developerReadOnlyData.GUROCFG_VALUE\n && developerReadOnlyData.GUROCFG_VALUE.trim() ===  'true') {\n$developerReadOnly='Y';\n} else {\n$developerReadOnly = 'N';\n}",
-                    "onSave": "",
+                    "onSave": "$securityConfigDetails.$post({'enableDeveloperSecurity':$enableDeveloperSecurity, 'preventImportByDeveloper':$preventImportByDeveloper,'developerReadOnly':$developerReadOnly}, null, \nfunction(){\n\talert('Security Settings saved ', {type:\"success\", flash:true}); \n});\n \nreturn true;",
                     "onSaveSuccess": "",
                     "parameters": {},
                     "type": "data"
@@ -95,22 +95,15 @@
                   {
                     "label": "Save",
                     "name": "pbadmAdminSecurityConfiguration_Save",
-                    "onClick": "$securityConfigDetails.$post({'enableDeveloperSecurity':$enableDeveloperSecurity, 'preventImportByDeveloper':$preventImportByDeveloper,'developerReadOnly':$developerReadOnly});",
-                    "style": "rTableCell",
+                    "onClick": "$securityConfigData.$save();",
+                    "style": "",
                     "type": "button",
-                    "valueStyle": ""
-                  },
-                  {
-                    "label": "Refresh",
-                    "name": "pbadmAdminSecurityConfiguration_Refersh",
-                    "onClick": "$securityConfigData.$load();",
-                    "style": "rTableCell",
-                    "type": "button"
+                    "valueStyle": "primary"
                   }
                 ],
                 "name": "pbadmAdminSecurityConfiguration",
                 "showInitially": true,
-                "style": "div-float-right",
+                "style": "div-float",
                 "type": "block"
               },
               {
@@ -129,7 +122,7 @@
                     "style": "",
                     "type": "select",
                     "valueKey": "value",
-                    "valueStyle": "source-type"
+                    "valueStyle": ""
                   }
                 ],
                 "name": "TypeBlock",
@@ -148,7 +141,7 @@
                     "required": false,
                     "type": "text",
                     "validation": {},
-                    "valueStyle": "name-filter"
+                    "valueStyle": ""
                   },
                   {
                     "label": "Owner",
@@ -160,10 +153,10 @@
                     "required": false,
                     "type": "text",
                     "validation": {},
-                    "valueStyle": "owner-filter"
+                    "valueStyle": ""
                   }
                 ],
-                "label": "Search By :",
+                "label": "Search By",
                 "name": "filters",
                 "showInitially": false,
                 "type": "block"
@@ -212,18 +205,20 @@
                     "loadInitially": true,
                     "model": "artifactsData",
                     "name": "dataGrid",
+                    "onSaveSuccess": "alert('Saved sucess');",
                     "pageSize": 5,
                     "parameters": {
                       "name": "$nameFilter?\"%\"+$nameFilter+\"%\":\"\"",
                       "owner": "$ownerFilter?\"%\"+$ownerFilter+\"%\":\"\"",
                       "type": "$sourceType?$sourceType:\"\""
                     },
+                    "style": "div-data-grid",
                     "type": "grid"
                   }
                 ],
                 "name": "data",
                 "showInitially": false,
-                "style": "div-append-top",
+                "style": "",
                 "type": "block"
               }
             ],
@@ -238,15 +233,20 @@
         "type": "block"
       }
     ],
-    "importCSS": "pbadm.AdminSecurityCss",
+    "importCSS": "xeStyle,pbadmAdminSecurityCss",
     "label": "Page Builder Configurations",
     "name": "pbadmAdminSecurity",
+    "style": "",
     "title": "Page Builder Configurations",
     "type": "page"
   },
   "pageRoles": [
     {
       "roleName": "ADMIN-GPBADMA",
+      "allow": true
+    },
+    {
+      "roleName": "ADMIN-GPBADMN",
       "allow": true
     }
   ]

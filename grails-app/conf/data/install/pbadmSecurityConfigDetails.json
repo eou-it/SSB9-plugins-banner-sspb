@@ -7,6 +7,13 @@
       "allowPut": false,
       "roleName": "ADMIN-GPBADMA",
       "allowDelete": false
+    },
+    {
+      "allowGet": true,
+      "allowPost": true,
+      "allowPut": false,
+      "roleName": "ADMIN-GPBADMN",
+      "allowDelete": false
     }
   ],
   "codePut": null,

@@ -1,6 +1,0 @@
-{
-   "constantName": "pbadm.AdminSecurityCss",
-   "css": ".div-float-right {\nfloat: right;\nborder:1px solid black;\npadding-top: 10px;\npadding-left: 10px;\npadding-bottom: 10px;\npadding-right: 10px;\n}\n\n.rTableCell {\n    float: left;\n    overflow: hidden;\n    width: 17%;\n}\n.div-append-top {\npadding-top: 20px;\n}\n\n.source-type {\nmargin-left: 27px;\n    width: 157px;\n}\n\n.name-filter {\nmargin-left: 17px;\n}\n\n.owner-filter {\nmargin-left: 13px;\n}",
-   "description": "securityAdminPage",
-   "fileTimestamp": "2019-04-09T13:38:09Z"
-}
