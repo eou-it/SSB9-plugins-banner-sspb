@@ -70,6 +70,7 @@ modules = {
         resource url:[plugin: 'banner-ui-ss',file: 'js/angular/hotkeys.js']
         resource url: [plugin: 'banner-ui-ss', file: 'js/about/about.js']
         resource url: [plugin: 'banner-ui-ss', file: 'js/preference/userpreference.js']
+        resource url:[plugin: 'banner-sspb', file:'js/pb-tools-menu.js']
     }
 
     'pageBuilderLTR' {

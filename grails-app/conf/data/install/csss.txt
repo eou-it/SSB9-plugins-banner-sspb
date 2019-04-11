@@ -3,3 +3,4 @@ pbDefault.json
 xeStyle.json
 pbadm.adminTasksCss.json
 pbadmVirtualDomainComposerCss.json
+pbadmAdminSecurityCss.json

@@ -17,11 +17,11 @@
    }],
    "codePut": null,
    "lastUpdated": null,
-   "fileTimestamp": "2018-06-19T02:25:51Z",
+   "fileTimestamp": "2019-03-28T10:05:29Z",
    "dateCreated": null,
    "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
    "codeDelete": null,
-   "codeGet": "select TWTVROLE_CODE code,  TWTVROLE_DESC description \r\nfrom twtvrole\r\nwhere\r\n (:virtual_domain_id is null or\r\n   TWTVROLE_CODE not in \r\n  (select role_name from virtual_domain_role where virtual_domain_id=:virtual_domain_id)\r\n)\r\nunion\r\nselect 'GUEST', '*Guest (no authentication)' from dual \r\nwhere :virtual_domain_id is null or\r\n   'GUEST' not in \r\n  (select role_name from virtual_domain_role where virtual_domain_id=:virtual_domain_id)\r\nunion\r\nselect 'ALLROLES', '*Authenticated Self Service user (with PIDM)' from dual\r\nwhere :virtual_domain_id is null or\r\n   'ALLROLES' not in \r\n  (select role_name from virtual_domain_role where virtual_domain_id=:virtual_domain_id)\r\nunion\r\nselect 'ADMIN-'||gubobjs_name, '*'||gubobjs_desc\r\nfrom gubobjs\r\nwhere (:virtual_domain_id is null or\r\n   gubobjs_name not in (select role_name from virtual_domain_role where virtual_domain_id=:virtual_domain_id)\r\n  ) \r\n and gubobjs_name in (:object_name, 'GPBADMN')\r\norder by 2",
+   "codeGet": "select TWTVROLE_CODE code,  TWTVROLE_DESC description \r\nfrom twtvrole\r\nwhere\r\n (:virtual_domain_id is null or\r\n   TWTVROLE_CODE not in \r\n  (select role_name from virtual_domain_role where virtual_domain_id=:virtual_domain_id)\r\n)\r\nunion\r\nselect 'GUEST', '*Guest (no authentication)' from dual \r\nwhere :virtual_domain_id is null or\r\n   'GUEST' not in \r\n  (select role_name from virtual_domain_role where virtual_domain_id=:virtual_domain_id)\r\nunion\r\nselect 'ALLROLES', '*Authenticated Self Service user (with PIDM)' from dual\r\nwhere :virtual_domain_id is null or\r\n   'ALLROLES' not in \r\n  (select role_name from virtual_domain_role where virtual_domain_id=:virtual_domain_id)\r\nunion\r\nselect 'ADMIN-'||gubobjs_name, '*'||gubobjs_desc\r\nfrom gubobjs\r\nwhere (:virtual_domain_id is null or\r\n   gubobjs_name not in (select role_name from virtual_domain_role where virtual_domain_id=:virtual_domain_id)\r\n  ) \r\n and gubobjs_name in (:object_name, 'GPBADMN','GPBADMA')\r\norder by 2",
    "typeOfCode": "S",
    "serviceName": "pbadmWebTailorRoles",
    "version": null
