@@ -918,6 +918,23 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                 window.open(rootWebApp+'customPage/page/'+ 'pbadm.PageRoles', '_self');
             };
 
+            $scope.getDeveloperSecurityPage = function(){
+
+                var pageId = document.getElementById('pageRoleId').value;
+                var pageName = $scope.pageName;
+                // var currentPage = $scope.pageCurName;
+                console.log(pageId);
+                console.log(pageName)
+                // alert(pageId +":"+pageName);
+                if (!$scope.pageCurName) {
+                    $scope.alertError("${message(code:'sspb.page.visualbuilder.page.name.prompt.message', encodeAs: 'JavaScript')}");
+                    return;
+                }
+
+                // updateDeveloperSecurityPage(pageName,pageId)
+                window.open(rootWebApp+'customPage/page/'+ 'pbadm.DeveloperPageSecurity', '_self');
+            };
+
 
 
             $scope.deletePage = function () {

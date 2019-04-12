@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.DeveloperPageSecurity",
    "extendsPage": null,
-   "fileTimestamp": "2019-04-03T07:11:31Z",
+   "fileTimestamp": "2019-04-05T08:51:19Z",
    "modelView": {
       "components": [
          {
@@ -37,7 +37,7 @@
          {
             "components": [
                {
-                  "label": "Page Builder Item Type",
+                  "label": "Type",
                   "labelKey": "label",
                   "loadInitially": true,
                   "name": "ownerPagesBlock_options",
@@ -51,7 +51,7 @@
                   "valueKey": "value"
                },
                {
-                  "label": "Page Builder Item Name",
+                  "label": "Name",
                   "labelKey": "CONSTANT_NAME",
                   "loadInitially": true,
                   "name": "ownerPagesBlock_genericData",
@@ -66,7 +66,7 @@
                   "valueKey": "pagenames"
                },
                {
-                  "label": "Page Builder Item Owner",
+                  "label": "Owner",
                   "loadInitially": true,
                   "name": "ownerPagesBlock_child_3",
                   "parameters": {},
@@ -84,7 +84,7 @@
          {
             "components": [
                {
-                  "label": "Assign Privileges All Developers",
+                  "label": "Assign Maintenance Privileges to All Developers",
                   "loadInitially": true,
                   "name": "assigningPrivileges",
                   "readonly": false,

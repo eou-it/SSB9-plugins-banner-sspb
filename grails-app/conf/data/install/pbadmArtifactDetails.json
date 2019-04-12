@@ -1,0 +1,42 @@
+{
+  "codePost": null,
+  "id": null,
+  "virtualDomainRoles": [
+    {
+      "allowGet": true,
+      "id": null,
+      "allowPost": false,
+      "allowPut": true,
+      "virtualDomain": {
+        "_ref": "../..",
+        "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+      },
+      "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
+      "roleName": "ADMIN-GPBADMA",
+      "allowDelete": false
+    },
+    {
+      "allowGet": true,
+      "id": null,
+      "allowPost": false,
+      "allowPut": true,
+      "virtualDomain": {
+        "_ref": "../..",
+        "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+      },
+      "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
+      "roleName": "ADMIN-GPBADMN",
+      "allowDelete": false
+    }
+  ],
+  "lastUpdated": null,
+  "dateCreated": null,
+  "codePut": "BEGIN\r\nIF :SOURCE_TYPE = 'P' THEN\r\nUPDATE page SET PAGE_OWNER = :TYPE_OWNER WHERE CONSTANT_NAME = :NAME;\r\nEND IF;\r\nIF :SOURCE_TYPE = 'V' THEN\r\nUPDATE virtual_domain SET VIRTUAL_DOMAIN_OWNER = :TYPE_OWNER WHERE SERVICE_NAME = :NAME;\r\nEND IF;\r\nIF :SOURCE_TYPE = 'C' THEN\r\nUPDATE css SET CSS_OWNER = :TYPE_OWNER WHERE CONSTANT_NAME = :NAME;\r\nEND IF;\r\nEND;\r\n",
+  "fileTimestamp": "2019-03-28T10:05:29Z",
+  "codeDelete": null,
+  "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
+  "codeGet": "select * from (\r\nselect id, CONSTANT_NAME AS NAME,nvl(PAGE_OWNER,' ') as TYPE_OWNER, 'P' AS SOURCE_TYPE FROM page \r\nunion\r\nselect id, SERVICE_NAME as NAME, nvl(VIRTUAL_DOMAIN_OWNER,' ') AS TYPE_OWNER , 'V' AS SOURCE_TYPE from virtual_domain\r\nunion\r\nselect id , CONSTANT_NAME AS NAME,nvl(CSS_OWNER,' ') AS OWNER, 'C' AS SOURCE_TYPE from css ) WHERE \r\nSOURCE_TYPE = :type and upper(NAME) like upper(decode(:name,'',NAME,:name)) \r\nand upper(TYPE_OWNER) like upper(decode(:owner,'',TYPE_OWNER,:owner)) order by NAME",
+  "typeOfCode": "S",
+  "serviceName": "pbadmArtifactDetails",
+  "version": null
+}
