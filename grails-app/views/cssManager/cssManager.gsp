@@ -100,6 +100,8 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                         //$scope.cssSource = JSON.parse(data.css);
                         $scope.cssSource = data.css;
                         $scope.description = data.description;
+                        $scope.cssOwner = data.owner;
+                        $scope.allowUpdateOwner = data.allowUpdateOwner;
                     } catch(ex) {
                         alert($scope.i18nGet("${message(code:'sspb.css.cssManager.parsing.error.message')}",[ex]),{type:"error"});
                     }
@@ -114,6 +116,30 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                 });
             };
 
+            // Fetch Page ownersList
+            // declare the virtual domain lookup resource  and functions for loading the resourse combo box
+            var VDOwnersList = $resource(resourceBase+'virtualDomains.pbadmUserDetails',{},{
+                list: {
+                    method:"GET",
+                    isArray:true,
+                    headers:{'Content-Type':'application/json', 'Accept':'application/json'}
+                }
+            });
+            $scope.pbUserList = [];
+            $scope.loadVdOwnersList = function() {
+                console.log("==== In loadVDOwnerList====");
+                VDOwnersList.list({}, function(data) {
+                    // only need the service_name
+                    $scope.pbUserList = [];
+
+                    //console.log("vdList = " + data);
+                    angular.forEach(data, function(vd){
+                        $scope.pbUserList.push(vd.USER_ID);
+                    });
+                });
+            };
+            $scope.loadVdOwnersList();
+
             /* page operations */
             $scope.newCssSource = function() {
                 if ($scope.cssSource != undefined) {
@@ -125,6 +151,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                 $scope.cssName= "${message( code:'sspb.css.cssManager.newCss.default', encodeAs: 'JavaScript')}";
                 $scope.cssSource = "";
                 $scope.description="";
+                $scope.cssOwner = user.loginName;
             };
 
 
@@ -135,7 +162,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                     return;
                 }
 
-                Css.save({cssName:$scope.cssName, source:$scope.cssSource, description:$scope.description }, function(response) {
+                Css.save({cssName:$scope.cssName, source:$scope.cssSource, description:$scope.description, owner:$scope.cssOwner }, function(response) {
                     //console.log("save response = " + response.statusCode + ", " +response.statusMessage);
                     var note = {type:"error"};
                     if (response.statusCode == 0) {
@@ -221,6 +248,13 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
             <pb-Upload label='Upload Stylesheet' status='cssStatus' pb-change=''></pb-Upload>
             <button class="secondary" ng-click="getCssSource()"><g:message code="sspb.css.cssManager.reload.label" /></button>
             <button class="secondary" ng-click='deleteCssSource()'><g:message code="sspb.css.cssManager.delete.label" /></button>
+            <span ng-show="cssName" class="alignRight">
+                <label class="vpc-name-label dispInline"><g:message code="sspb.css.visualbuilder.cssowner.label" /></label>
+                <input style="display: none" ng-model="allowUpdateOwner"/>
+                <select class="owner-select alignRight" ng-model="cssOwner"  ng-disabled="!allowUpdateOwner">
+                    <option ng-repeat="owner in pbUserList" value="{{owner}}" ng-selected="{{owner == pageOwner}}">{{owner}}</option>
+                </select>
+            </span>
         </div>
         <div class="form-horizontal" ng-form="cssform">
             <div class="control-group">

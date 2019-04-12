@@ -44,6 +44,32 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 
         }
 
+        $(document).ready(function () {
+            $.get( resourceBase+"virtualDomains.pbadmUserDetails", function( data ) {
+                var option = '<option style="display:none"> </option>';
+                var vdOwner ="${pageInstance?.owner}"
+                angular.forEach(data, function(vd){
+                    if(vd.USER_ID==vdOwner) {
+                        option += '<option value="'+ vd.USER_ID +'" selected>' + vd.USER_ID + '</option>';
+                        $("input[name=owner]").val(vd.USER_ID)
+                    }else
+                        option += '<option value="'+ vd.USER_ID +'">' + vd.USER_ID + '</option>'
+                });
+                $("#pageOwner").append(option)
+                var isAllowOwnerUpdate = eval("${pageInstance.allowUpdateOwner}")
+                if(isAllowOwnerUpdate){
+                    $("#pageOwner").prop('disabled', false);
+                }else{
+                    $("#pageOwner").prop('disabled', 'disabled');
+                }
+            });
+
+        });
+        function onChangeOfOwner(){
+            var selectedVal = $("#pageOwner :selected").val()
+            $("input[name=owner]").val(selectedVal)
+        }
+
     </Script>
 <!-- g:set var="pageSource" value="test test" scope="page" /-->
 </head>
@@ -76,7 +102,13 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         <g:actionSubmit action="saveVirtualDomain" class="primary" value="${message(code:"sspb.page.virtualdomain.save.label")}" />
         <g:actionSubmit action="deleteVirtualDomain" class="secondary" value="${message(code:"sspb.page.virtualdomain.delete.label")}" />
        <g:if test="${pageInstance?.vdServiceName}">
-        <input type="button" class="secondary" value="${message(code:"sspb.page.virtualdomain.roles.label")}" onclick="showDomainRoles('${pageInstance?.id}','${pageInstance?.vdServiceName}')"/>
+            <input type="button" class="secondary" value="${message(code:"sspb.page.virtualdomain.roles.label")}" onclick="showDomainRoles('${pageInstance?.id}','${pageInstance?.vdServiceName}')"/>
+           <span class="alignRight">
+               <label class="vpc-name-label dispInline"><g:message code="sspb.vd.visualbuilder.vdowner.label" /></label>
+               <select class="owner-select alignRight" id="pageOwner" onchange="onChangeOfOwner()">
+               </select>
+           </span>
+           <g:textField name="owner" id="vdowner"  style="display:none;" />
        </g:if>
     </div>
 

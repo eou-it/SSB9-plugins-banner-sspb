@@ -45,9 +45,10 @@ class CssService extends ServiceBase {
             //supplementCss( it )
             // trim the object since we only need to return the constantName properties for listing
             if (params.containsKey('getGridData')) {
-                listResult << [constantName: it.constantName, id: it.id, version: it.version, dateCreated: dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated), lastUpdated: dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated)]
+                listResult << [constantName: it.constantName, id: it.id, version: it.version, owner: it.owner ,
+                               dateCreated: dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated), lastUpdated: dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated)]
             } else {
-                listResult << [css: [constantName: it.constantName, id: it.id, version: it.version]]
+                listResult << [css: [constantName: it.constantName, id: it.id, version: it.version, owner: it.owner ]]
             }
         }
         log.trace "CssService.list is returning a ${result.getClass().simpleName} containing ${result.size()} style sheets"
@@ -88,7 +89,7 @@ class CssService extends ServiceBase {
             //supplementCss( result )
             log.trace "CssService.show returning ${result}"
             DeveloperSecurityService.getGlobalSecurityValue()
-            showResult = [constantName : result.constantName, id: result.id, version: result.version, css: result.css,
+            showResult = [constantName : result.constantName, id: result.id, version: result.version, css: result.css, owner: result.owner ,
                           description: result.description,  allowModify: DeveloperSecurityService.isAllowModify(result.constantName,DeveloperSecurityService.CSS_IND),
                           allowUpdateOwner: DeveloperSecurityService.isAllowUpdateOwner(result.constantName, DeveloperSecurityService.CSS_IND)]
         }
@@ -106,7 +107,7 @@ class CssService extends ServiceBase {
             throw new ApplicationException( CssService, "generic failure" )
         }
 
-        def result = compileCss(content.cssName, content.source, content.description)
+        def result = compileCss(content.cssName, content.source, content.description, content.owner)
         //supplementCss( result )
         log.trace "CssService.create returning $result"
         result
@@ -118,13 +119,13 @@ class CssService extends ServiceBase {
 
         //checkForExceptionRequest()
 
-        def result = compileCss(content.cssName, content.source, content.description)
+        def result = compileCss(content.cssName, content.source, content.description, content.owner)
 
         //supplementCss( result )
         result
     }
 
-    def compileCss( cssName, cssSource, description) {
+    def compileCss( cssName, cssSource, description, owner) {
         log.trace "in compileCss: \ncssSource=$cssSource"
 
         description = description?:""
@@ -141,9 +142,10 @@ class CssService extends ServiceBase {
                 if (cssInstance) {
                     cssInstance.css = cssSource
                     cssInstance.description = description
+                    cssInstance.owner = owner
                     super.update(cssInstance)
                 } else {
-                    cssInstance = new Css([constantName: cssName, description: description, css: cssSource])
+                    cssInstance = new Css([constantName: cssName, description: description, css: cssSource, owner:owner])
                     super.create(cssInstance)
                 }
                 ret = [statusCode:0, statusMessage:"${message(code:'sspb.css.cssManager.saved.message')}"]

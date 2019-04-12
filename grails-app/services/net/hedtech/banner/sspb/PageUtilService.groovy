@@ -202,7 +202,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 associateRoles(page, json.pageRoles)
                 page=page.merge()
                 if (result.statusCode == statusOk) {
-                    result = pageService.compileAndSavePage(page.constantName, page.mergedModelText, page.extendsPage)
+                    result = pageService.compileAndSavePage(page.constantName, page.mergedModelText, page.extendsPage, page.owner)
                     result.loaded = result.page?1:0
                     if (page) {
                         if (result.loaded) {
@@ -251,7 +251,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         def errors =[]
         pages.each { page ->
             def model=page.extendsPage?page.mergedModelText:page.modelView
-            def result = pageService.compileAndSavePage(page.constantName, model, page.extendsPage)
+            def result = pageService.compileAndSavePage(page.constantName, model, page.extendsPage, page.owner)
             if (result.statusCode>0)
                 errors << result
             log.info result
