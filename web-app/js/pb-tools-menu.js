@@ -21,7 +21,7 @@ $(function(){
                 }
             );
         } catch (e) {
-            log.error('Failed to initiate Upload Properties and Theme Editor Tools menu. Exception: ' + e);
+            log.error('Failed to Admin Security Configuration Tools menu. Exception: ' + e);
         }
     }
 });
