@@ -134,7 +134,7 @@ class VirtualDomainResourceServiceTest extends Specification{
         def virtualDomain = new VirtualDomainResourceService()
         virtualDomain.virtualDomainSqlService = virtualDomainSqlService
         when:
-        def res =virtualDomain.saveVirtualDomain('integrationTest',false, false, false, false)
+        def res =virtualDomain.saveVirtualDomain('integrationTest',false, false, false, false,null)
         then:
         res.success== true
     }

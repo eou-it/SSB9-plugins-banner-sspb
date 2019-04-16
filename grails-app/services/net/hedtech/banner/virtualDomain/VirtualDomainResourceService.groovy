@@ -4,7 +4,9 @@
 package net.hedtech.banner.virtualDomain
 
 import groovy.util.logging.Log4j
+import net.hedtech.banner.security.DeveloperSecurityService
 import net.hedtech.banner.sspb.CommonService
+import net.hedtech.banner.sspb.PBUser
 import org.apache.commons.codec.binary.Base64
 import org.hibernate.HibernateException
 
@@ -105,7 +107,7 @@ class VirtualDomainResourceService {
 
     // Services to retrieve and save a VirtualDomain
 
-    def saveVirtualDomain(vdServiceName, vdQuery, vdPost, vdPut, vdDelete) {
+    def saveVirtualDomain(vdServiceName, vdQuery, vdPost, vdPut, vdDelete, vdOwner) {
 
         log.info "---------- Save $vdServiceName (VirtualDomainResourceService)-------------"
         def updateVD = true
@@ -118,8 +120,15 @@ class VirtualDomainResourceService {
             if (!vd)   {
                 vd = new VirtualDomain([serviceName:vdServiceName])
                 updateVD = false
+                if(!vdOwner)
+                    vd.owner= PBUser.userCache.loginName
+                else
+                    vd.owner=vdOwner
             }
             if (vd) {
+                if(updateVD && vdOwner){
+                    vd.owner=vdOwner
+                }
                 vd.codeGet=vdQuery
                 vd.codePost=vdPost
                 vd.codePut=vdPut
@@ -152,6 +161,8 @@ class VirtualDomainResourceService {
             error = ex.getMessage()
             log.error ex
         }
-        return [success:success, virtualDomain:vd, error:error]
+        return [success:success, virtualDomain:vd, error:error,
+                allowModify: DeveloperSecurityService.isAllowModify(vdServiceName,DeveloperSecurityService.VIRTUAL_DOMAIN_IND),
+                allowUpdateOwner: DeveloperSecurityService.isAllowUpdateOwner(vdServiceName, DeveloperSecurityService.VIRTUAL_DOMAIN_IND)]
     }
 }

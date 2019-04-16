@@ -97,7 +97,8 @@ class PageService {
             String model = page.getMergedModelText(true) //Get the merged model with merge Info
             result = [constantName: page.constantName, id: page.id, extendsPage: page.extendsPage, version: page.version,
                       modelView: model, allowModify:DeveloperSecurityService.isAllowModify(page.constantName,DeveloperSecurityService.PAGE_IND) ,
-                      allowUpdateOwner: DeveloperSecurityService.isAllowUpdateOwner(page.constantName, DeveloperSecurityService.PAGE_IND)]
+                      allowUpdateOwner: DeveloperSecurityService.isAllowUpdateOwner(page.constantName, DeveloperSecurityService.PAGE_IND),
+                    owner: page.owner]
         }
         result
     }
@@ -110,7 +111,7 @@ class PageService {
         def result
         Page.withTransaction {
             // compile first
-            result = compileAndSavePage(content.pageName, content.source, content.extendsPage)
+            result = compileAndSavePage(content.pageName, content.source, content.extendsPage , content.pageOwner)
         }
         log.trace "PageService.create returning $result"
         result
@@ -122,7 +123,7 @@ class PageService {
         create(content, params)
     }
 
-    def compileAndSavePage( pageName, pageSource, extendsPage) {
+    def compileAndSavePage( pageName, pageSource, extendsPage, pageOwner) {
         log.trace "in compileAndSavePage: pageName=$pageName"
         def pageInstance  = Page.findByConstantName(pageName)
         boolean isUpdated = updateConfigAttr(pageName, pageSource,pageInstance)
@@ -144,8 +145,9 @@ class PageService {
 
                 if (pageInstance) {
                     pageInstance.extendsPage = extendsPage ? Page.findByConstantName(extendsPage.constantName) : null
+                    pageInstance.owner = pageOwner
                 } else {
-                    pageInstance = new Page([constantName :pageName, extendsPage :extendsPage])
+                    pageInstance = new Page([constantName :pageName, extendsPage :extendsPage, owner: pageOwner])
                 }
                 pageInstance.modelView = pageSource
                 //remove merge Info if page is not extended

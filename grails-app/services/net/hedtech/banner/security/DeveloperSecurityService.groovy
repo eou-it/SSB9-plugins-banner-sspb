@@ -26,27 +26,30 @@ class DeveloperSecurityService {
     static getGlobalSecurityValue(){
         List<ConfigurationData> results = ConfigurationData.fetchByType("boolean",APP_ID)
         results.each{
+            Boolean loopValue = new Boolean(it.value)
             if(it.name.equals('pagebuilder.security.enableDeveloperSecurity')){
-                enableDeveloperSecurity = it.value
+                enableDeveloperSecurity = loopValue
             }else if(it.name.equals('pagebuilder.security.preventImportByDeveloper')){
-                preventImportByDeveloper = it.value
+                preventImportByDeveloper = loopValue
             }else if(it.name.equals('pagebuilder.security.developerReadOnly')){
-                productionMode = it.value
+                productionMode = loopValue
             }
         }
     }
 
      static boolean isSuperUser() {
+         boolean isSupUser=false
         def userIn = SecurityContextHolder?.context?.authentication?.principal
         if (userIn?.class?.name?.endsWith('BannerUser')) {
             userIn.authorities.each {
                 if (SUPER_USER.equals(it.objectName)) {
-                    return true
+                    isSupUser = true
+                    return isSupUser
                 }
             }
 
         }
-         return false
+         return isSupUser
     }
 
      static boolean checkUserHasPrivilage(String constantName, String type, boolean isModify){
@@ -57,7 +60,7 @@ class DeveloperSecurityService {
          }else{
              return false
          }
-         boolean found = false
+         boolean hasPrivilage=false
          String id
         if(PAGE_IND.equalsIgnoreCase(type)){
             def page = Page.findByConstantName(constantName)
@@ -70,18 +73,20 @@ class DeveloperSecurityService {
                     secList.each{
                         if(USER_GROUP.equalsIgnoreCase(it.type)){
                             if(oracleUserId.equals(it.pageSecKey.developerUserId)){
-                                return true
+                                hasPrivilage = true
+                                return hasPrivilage
                             }
                         }else{
                             def userList = BusinessProfile.findByProfile(it.pageSecKey.developerUserId, oracleUserId)
                             if(userList){
-                                return true
+                                hasPrivilage = true
+                                return hasPrivilage
                             }
                         }
                     }
                 }
             }
-            return false
+            return hasPrivilage
         }
         else if(VIRTUAL_DOMAIN_IND.equalsIgnoreCase(type)){
             def domain = VirtualDomain.findByServiceName(constantName)
@@ -94,17 +99,20 @@ class DeveloperSecurityService {
                     secList.each{
                         if(USER_GROUP.equalsIgnoreCase(it.type)){
                             if(oracleUserId.equals(it.domainSecKey.developerUserId)){
-                                return true
+                                hasPrivilage = true
+                                return hasPrivilage
                             }
                         }else{
                             def userList = BusinessProfile.findByProfile(it.domainSecKey.developerUserId ,oracleUserId )
-                            if(userList)
-                                return true
+                            if(userList) {
+                                hasPrivilage = true
+                                return hasPrivilage
+                            }
                         }
                     }
                 }
             }
-            return false
+            return hasPrivilage
         }else if(CSS_IND.equalsIgnoreCase(type)){
             def css = Css.fetchByConstantName(constantName)
             id = css.id
@@ -116,19 +124,22 @@ class DeveloperSecurityService {
                     secList.each{
                         if(USER_GROUP.equalsIgnoreCase(it.type)){
                             if(oracleUserId.equals(it.cssSecKey.developerUserId)){
-                                return true
+                                hasPrivilage = true
+                                return hasPrivilage
                             }
                         }else{
                             def userList = BusinessProfile.findByProfile(it.cssSecKey.developerUserId, oracleUserId)
-                            if(userList)
-                                return true
+                            if(userList) {
+                                hasPrivilage = true
+                                return hasPrivilage
+                            }
                         }
                     }
                 }
             }
-            return false
+            return hasPrivilage
         }else{
-            return false
+            return hasPrivilage
         }
     }
 
@@ -175,5 +186,4 @@ class DeveloperSecurityService {
             return false
         }
     }
-
 }
