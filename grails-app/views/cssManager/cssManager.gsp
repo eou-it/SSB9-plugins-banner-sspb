@@ -254,6 +254,10 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         <pb-Upload label='Upload Stylesheet' status='cssStatus' pb-change=''></pb-Upload>
         <button class="secondary" ng-click="getCssSource()"><g:message code="sspb.css.cssManager.reload.label" /></button>
         <button class="secondary" ng-click='deleteCssSource()'><g:message code="sspb.css.cssManager.delete.label" /></button>
+        <span  ng-show="cssName.length>0">
+            <button class="secondary" ng-click='getDeveloperSecurityPage()'><g:message code="sspb.css.cssManager.developer.label" /></button>
+        </span>
+
         <span ng-show="cssName" class="alignRight">
             <label class="vpc-name-label dispInline"><g:message code="sspb.css.visualbuilder.cssowner.label" /></label>
             <input style="display: none" ng-model="allowUpdateOwner"/>
