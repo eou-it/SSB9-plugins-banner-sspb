@@ -107,6 +107,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
             <g:actionSubmit action="deleteVirtualDomain" class="secondary" value="${message(code:"sspb.page.virtualdomain.delete.label")}" />
             <g:if test="${pageInstance?.vdServiceName}">
                 <input type="button" class="secondary" value="${message(code:"sspb.page.virtualdomain.roles.label")}" onclick="showDomainRoles('${pageInstance?.id}','${pageInstance?.vdServiceName}')"/>
+                <input type="button" class="secondary" value="${message(code:"sspb.css.cssManager.developer.label")}" onclick="getDeveloperSecurityPage('${pageInstance?.id}','${pageInstance?.vdServiceName}')"/>
                 <span class="alignRight">
                     <label class="vpc-name-label dispInline"><g:message code="sspb.vd.visualbuilder.vdowner.label" /></label>
                     <select class="owner-select alignRight" id="pageOwner" onchange="onChangeOfOwner()">

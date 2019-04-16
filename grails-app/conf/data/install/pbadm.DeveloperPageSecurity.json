@@ -1,12 +1,12 @@
 {
    "constantName": "pbadm.DeveloperPageSecurity",
    "extendsPage": null,
-   "fileTimestamp": "2019-04-05T08:51:19Z",
+   "fileTimestamp": "2019-04-16T10:28:22Z",
    "modelView": {
       "components": [
          {
             "name": "genericData",
-            "resource": "virtualDomains.pbadmGenericData",
+            "resource": "virtualDomains.pbadmDPSArtifactDetails",
             "staticData": [],
             "type": "resource"
          },
@@ -29,8 +29,8 @@
             "type": "resource"
          },
          {
-            "name": "pageDetails",
-            "resource": "virtualDomains.pbadmPageDetails",
+            "name": "userDetails",
+            "resource": "virtualDomains.pbadmUserDetails",
             "staticData": [],
             "type": "resource"
          },
@@ -39,46 +39,49 @@
                {
                   "label": "Type",
                   "labelKey": "label",
-                  "loadInitially": true,
+                  "loadInitially": false,
                   "name": "ownerPagesBlock_options",
-                  "onUpdate": "$ownerPagesBlock_genericData.$load()",
+                  "onLoad": "",
+                  "onUpdate": "$ownerPagesBlock_genericData.$load();",
                   "placeholder": "Select...",
                   "required": false,
                   "sourceModel": "selectOptions",
                   "sourceParameters": {},
-                  "style": "col-md-2",
+                  "style": "",
                   "type": "select",
                   "valueKey": "value"
                },
                {
                   "label": "Name",
-                  "labelKey": "CONSTANT_NAME",
-                  "loadInitially": true,
+                  "labelKey": "NAME",
+                  "loadInitially": false,
                   "name": "ownerPagesBlock_genericData",
+                  "onLoad": "",
+                  "onUpdate": "$privilegesForm.$visible = $ownerPagesBlock_genericData;",
                   "placeholder": "Select...",
                   "required": false,
                   "sourceModel": "genericData",
                   "sourceParameters": {
+                     "owner": "user.isSuperUser?\"\":user.loginName",
                      "type": "$ownerPagesBlock_options"
                   },
-                  "style": "col-md-3",
+                  "style": "",
                   "type": "select",
-                  "valueKey": "pagenames"
+                  "value": "",
+                  "valueKey": "TYPE_OWNER"
                },
                {
+                  "asHtml": false,
                   "label": "Owner",
                   "loadInitially": true,
-                  "name": "ownerPagesBlock_child_3",
-                  "parameters": {},
-                  "readonly": false,
-                  "required": false,
-                  "type": "text",
-                  "validation": {}
+                  "name": "ownerPagesBlock_owner",
+                  "type": "display",
+                  "value": "$ownerPagesBlock_genericData"
                }
             ],
             "name": "ownerPagesBlock",
             "showInitially": true,
-            "style": "row",
+            "style": "",
             "type": "block"
          },
          {
@@ -87,6 +90,7 @@
                   "label": "Assign Maintenance Privileges to All Developers",
                   "loadInitially": true,
                   "name": "assigningPrivileges",
+                  "onUpdate": "",
                   "readonly": false,
                   "style": "col-md-4",
                   "type": "boolean"
@@ -107,14 +111,15 @@
                   "components": [
                      {
                         "label": "User",
-                        "labelKey": "CONSTANT_NAME",
+                        "labelKey": "USER_ID",
                         "loadInitially": true,
                         "name": "privilegesForm_userGrid_user",
                         "required": false,
-                        "sourceModel": "pageDetails",
+                        "sourceModel": "userDetails",
                         "sourceParameters": {},
                         "type": "select",
-                        "valueKey": "pagenames"
+                        "value": "",
+                        "valueKey": "USER_ID"
                      },
                      {
                         "label": "Maintenance",
@@ -124,10 +129,15 @@
                         "type": "boolean"
                      }
                   ],
-                  "label": "Assign Privileges to Users:",
+                  "label": "Assign Privileges to Users",
                   "loadInitially": true,
-                  "model": "pageDetails",
+                  "model": "userDetails",
                   "name": "privilegesForm_userGrid",
+                  "newRecordLabel": "",
+                  "onClick": "",
+                  "onLoad": "",
+                  "onSave": "",
+                  "onSaveSuccess": "",
                   "pageSize": 5,
                   "parameters": {},
                   "type": "grid"
@@ -157,9 +167,9 @@
                         "type": "boolean"
                      }
                   ],
-                  "label": "Assign Privileges to Group of Users:",
+                  "label": "Assign Privileges to Group of Users",
                   "loadInitially": true,
-                  "model": "pageDetails",
+                  "model": "userDetails",
                   "name": "privilegesForm_child_2",
                   "pageSize": 5,
                   "parameters": {},
@@ -168,12 +178,14 @@
             ],
             "name": "privilegesForm",
             "nextButtonLabel": "Next",
-            "showInitially": true,
+            "showInitially": false,
             "type": "form"
          }
       ],
+      "importCSS": "xeStyle",
       "label": "Developer Page Security",
       "name": "pbadmDeveloperPageSecurity",
+      "style": "",
       "title": "Developer Page Security",
       "type": "page"
    },
