@@ -4,6 +4,7 @@
 
 package net.hedtech.banner.virtualDomain
 
+import net.hedtech.banner.security.VirtualDomainSecurity
 import net.hedtech.banner.sspb.CommonService
 import net.hedtech.banner.sspb.Page
 import net.hedtech.banner.sspb.PageComponent
@@ -39,6 +40,11 @@ class VirtualDomainExportService {
     def show(params) {
         Map parameter = CommonService.decodeBase64(params)
         params.putAll(parameter);
+        if(params.id && !params.id.matches("[0-9]+")){
+            params.isAllowExportDSPermission = params.id?.substring(params.id?.length()-1,params.id?.length())
+            params.id = params.id?.substring(0,params.id?.length()-2)
+        }
+
         def vd
         if (params.id && params.id.matches("[0-9]+")) {
             vd = VirtualDomain.get(params.id )
@@ -54,6 +60,14 @@ class VirtualDomainExportService {
         vdExport = vd.properties['serviceName', 'typeOfCode', 'dataSource',
                 'codeGet', 'codePost', 'codePut', 'codeDelete', 'fileTimestamp']
         vdExport.virtualDomainRoles = vdRoles
+        vdExport.owner = vd.owner
+        vdExport.virtualDomainSecurity = []
+        if(vd && params.isAllowExportDSPermission && "Y".equalsIgnoreCase(params.isAllowExportDSPermission)){
+            VirtualDomainSecurity.fetchAllByDomainId(vd.id)?.each{ vs ->
+                vdExport.virtualDomainSecurity << [securityType:vs.type, user:vs.id.developerUserId,allowModifyInd:vs.allowModifyInd]
+            }
+        }
+
         vdExport
     }
 
@@ -95,8 +109,13 @@ class VirtualDomainExportService {
                 property("lastUpdated","lastUpdated")
                 property("fileTimestamp","fileTimestamp")
                 property("version","version")
+                property("owner","owner")
             }
         }
+        result?.each{
+            it.isAllowExportDSPermission = 'N'
+        }
+
         result
     }
 

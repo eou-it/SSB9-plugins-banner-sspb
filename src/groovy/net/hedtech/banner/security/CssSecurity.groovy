@@ -10,7 +10,7 @@ import java.sql.Date
 @Entity
 @Table(name = "GBRCSEC")
 @NamedQueries(value = [
-        @NamedQuery(name = "Gbrcsec.fetchByCssId",
+        @NamedQuery(name = "CssSecurity.fetchAllByCssId",
                 query = """FROM   CssSecurity a
 		   WHERE  a.id.cssId = :cssId
 		  """
@@ -83,12 +83,8 @@ class CssSecurity implements Serializable{
         return result
     }
 
-    public static def findById(String id) {
-        List cssSecurity = []
-        cssSecurity = CssSecurity.withSession {session ->
-            cssSecurity = session.getNamedQuery('Gbrcsec.fetchByCssId').setString('cssId', id).list()}
-        def result = cssSecurity?.size()>0?cssSecurity:null
-        return result
+    public static def fetchAllByCssId(Long id) {
+        return CssSecurity.withSession {session -> session.getNamedQuery('CssSecurity.fetchAllByCssId').setLong('cssId', id).list()}
     }
 
     @Override

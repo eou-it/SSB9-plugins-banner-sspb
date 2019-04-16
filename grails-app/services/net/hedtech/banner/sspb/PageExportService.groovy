@@ -35,7 +35,7 @@ class PageExportService {
     def show(params) {
         Map parameter = CommonService.decodeBase64(params)
         params.putAll(parameter);
-        if(params.id){
+        if(params.id && !params.id.matches("[0-9]+")){
             params.isAllowExportDSPermission = params.id?.substring(params.id?.length()-1,params.id?.length())
             params.id = params.id?.substring(0,params.id?.length()-2)
         }
