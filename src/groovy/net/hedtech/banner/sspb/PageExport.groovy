@@ -15,7 +15,8 @@ class PageExport  {
     def modelView
 
     def pageRoles = []
-    def pageSecuirty = []
+
+    def pageSecurity = []
 
     Date fileTimestamp
 

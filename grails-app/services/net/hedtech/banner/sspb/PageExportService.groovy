@@ -52,7 +52,7 @@ class PageExportService {
 
         if(page && params.isAllowExportDSPermission && "Y".equalsIgnoreCase(params.isAllowExportDSPermission)){
             PageSecurity.fetchAllByPageId(page.id)?.each{ ps ->
-                pageExport.pageSecuirty << [securityType:ps.type, user:ps.id.developerUserId,allowModifyInd:ps.allowModifyInd]
+                pageExport.pageSecurity << [securityType:ps.type, user:ps.id.developerUserId,allowModifyInd:ps.allowModifyInd]
             }
         }
 
