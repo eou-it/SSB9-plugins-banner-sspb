@@ -63,7 +63,7 @@ class VirtualDomainExportService {
         vdExport.owner = vd.owner
         vdExport.virtualDomainSecurity = []
         if(vd && params.isAllowExportDSPermission && "Y".equalsIgnoreCase(params.isAllowExportDSPermission)){
-            VirtualDomainSecurity.fetchAllByDomainId(vd.id)?.each{ vs ->
+            VirtualDomainSecurity.fetchAllByVirtualDomainId(vd.id)?.each{ vs ->
                 vdExport.virtualDomainSecurity << [securityType:vs.type, user:vs.id.developerUserId,allowModifyInd:vs.allowModifyInd]
             }
         }

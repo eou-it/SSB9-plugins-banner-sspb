@@ -10,7 +10,7 @@ import java.sql.Date
 @Entity
 @Table(name = "GBRVSEC")
 @NamedQueries(value = [
-        @NamedQuery(name = "VirtualDomainSecurity.fetchAllByDomainId",
+        @NamedQuery(name = "VirtualDomainSecurity.fetchAllByVirtualDomainId",
                 query = """FROM   VirtualDomainSecurity a
 		   WHERE  a.id.domainId = :domainId
 		  """
@@ -48,8 +48,8 @@ class VirtualDomainSecurity implements Serializable{
     @Column( name="GBRVSEC_VPDI_CODE", length = 19)
     Long vpdiCode
 
-    public static def fetchAllByDomainId(Long id) {
-        return VirtualDomainSecurity.withSession {session -> session.getNamedQuery('VirtualDomainSecurity.fetchAllByDomainId').setLong('domainId', id).list()}
+    public static def fetchAllByVirtualDomainId(Long id) {
+        return VirtualDomainSecurity.withSession {session -> session.getNamedQuery('VirtualDomainSecurity.fetchAllByVirtualDomainId').setLong('domainId', id).list()}
     }
 
     boolean equals(o) {
