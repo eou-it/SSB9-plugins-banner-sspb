@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.DeveloperPageSecurity",
    "extendsPage": null,
-   "fileTimestamp": "2019-04-17T09:46:07Z",
+   "fileTimestamp": "2019-04-17T11:18:50Z",
    "modelView": {
       "components": [
          {
@@ -183,7 +183,7 @@
             "type": "form"
          }
       ],
-      "importCSS": "pbadmdeveloperSecurity,xeStyle",
+      "importCSS": "pbadmDeveloperSecurity,xeStyle",
       "label": "Developer Page Security",
       "name": "pbadmDeveloperPageSecurity",
       "style": "",
