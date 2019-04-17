@@ -4,4 +4,4 @@ xeStyle.json
 pbadm.adminTasksCss.json
 pbadmVirtualDomainComposerCss.json
 pbadmAdminSecurityCss.json
-developerSecurity.json
+pbadmdeveloperSecurity.json

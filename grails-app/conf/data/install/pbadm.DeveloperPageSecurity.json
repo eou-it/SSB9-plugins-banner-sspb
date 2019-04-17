@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.DeveloperPageSecurity",
    "extendsPage": null,
-   "fileTimestamp": "2019-04-17T06:59:03Z",
+   "fileTimestamp": "2019-04-17T09:46:07Z",
    "modelView": {
       "components": [
          {
@@ -183,17 +183,19 @@
             "type": "form"
          }
       ],
-      "importCSS": "developerSecurity,xeStyle",
+      "importCSS": "pbadmdeveloperSecurity,xeStyle",
       "label": "Developer Page Security",
       "name": "pbadmDeveloperPageSecurity",
       "style": "",
       "title": "Developer Page Security",
       "type": "page"
    },
+   "owner": null,
    "pageRoles": [
       {
          "roleName": "ADMIN-GPBADMN",
          "allow": true
       }
-   ]
+   ],
+   "pageSecurity": []
 }
