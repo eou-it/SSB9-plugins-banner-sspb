@@ -1,7 +1,7 @@
 {
   "constantName": "pbadm.AdminSecurity",
   "extendsPage": null,
-  "fileTimestamp": "2019-04-10T10:05:30Z",
+  "fileTimestamp": "2019-04-16T11:38:01Z",
   "modelView": {
     "components": [
       {
@@ -51,7 +51,7 @@
                     "model": "securityConfigDetails",
                     "name": "securityConfigData",
                     "onError": "",
-                    "onLoad": "var enableDeveloperSecurityData =  data.find(configData => configData.GUROCFG_NAME === 'pagebuilder.security.enableDeveloperSecurity');\nif(enableDeveloperSecurityData && enableDeveloperSecurityData.GUROCFG_VALUE\n && enableDeveloperSecurityData.GUROCFG_VALUE.trim() ===  'true') {\n$enableDeveloperSecurity='Y';\n} else {\n$enableDeveloperSecurity = 'N';\n}\nvar preventImportByDeveloperData =  data.find(configData => configData.GUROCFG_NAME === 'pagebuilder.security.preventImportByDeveloper');\nif(preventImportByDeveloperData && preventImportByDeveloperData.GUROCFG_VALUE\n && preventImportByDeveloperData.GUROCFG_VALUE.trim() ===  'true') {\n$preventImportByDeveloper='Y';\n} else {\n$preventImportByDeveloper = 'N';\n}\n\nvar developerReadOnlyData =  data.find(configData => configData.GUROCFG_NAME === 'pagebuilder.security.developerReadOnly');\nif(developerReadOnlyData && developerReadOnlyData.GUROCFG_VALUE\n && developerReadOnlyData.GUROCFG_VALUE.trim() ===  'true') {\n$developerReadOnly='Y';\n} else {\n$developerReadOnly = 'N';\n}",
+                    "onLoad": "data.forEach(function(configData){\n\nif(configData.GUROCFG_NAME === 'pagebuilder.security.enableDeveloperSecurity'){\n\t\n\tif(configData.GUROCFG_VALUE \n\t && configData.GUROCFG_VALUE.trim() ===  'true') {\n\t     $enableDeveloperSecurity='Y';\n\t} else {\n\t    $enableDeveloperSecurity = 'N';\n\t}\n}\n\n\nif(configData.GUROCFG_NAME === 'pagebuilder.security.preventImportByDeveloper'){\n\t\n\tif(configData.GUROCFG_VALUE \n\t && configData.GUROCFG_VALUE.trim() ===  'true') {\n\t     $preventImportByDeveloper='Y';\n\t} else {\n\t    $preventImportByDeveloper = 'N';\n\t}\n}\n\nif(configData.GUROCFG_NAME === 'pagebuilder.security.developerReadOnly'){\n\t\n\tif(configData.GUROCFG_VALUE \n\t && configData.GUROCFG_VALUE.trim() ===  'true') {\n\t     $developerReadOnly='Y';\n\t} else {\n\t    $developerReadOnly = 'N';\n\t}\n}\n\n});",
                     "onSave": "$securityConfigDetails.$post({'enableDeveloperSecurity':$enableDeveloperSecurity, 'preventImportByDeveloper':$preventImportByDeveloper,'developerReadOnly':$developerReadOnly}, null, \nfunction(){\n\talert('Security Settings saved ', {type:\"success\", flash:true}); \n});\n \nreturn true;",
                     "onSaveSuccess": "",
                     "parameters": {},
@@ -114,7 +114,7 @@
                     "loadInitially": true,
                     "name": "sourceType",
                     "onLoad": "",
-                    "onUpdate": "if ($sourceType){\n$filters_visible= true;\n$data_visible=true;\n}else {\n$filters_visible= false;\n$data_visible=false;\n}\n\n$dataGrid.$load();",
+                    "onUpdate": "if ($sourceType){\n$filters_visible= true;\n$data_visible=true;\n}else {\n$filters_visible= false;\n$data_visible=false;\n}\n$nameFilter='';\n$ownerFilter='';\n$dataGrid.$load();",
                     "placeholder": "Select",
                     "required": false,
                     "sourceModel": "sourceTypeData",

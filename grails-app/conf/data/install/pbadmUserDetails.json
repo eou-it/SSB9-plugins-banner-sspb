@@ -32,10 +32,10 @@
   "lastUpdated": null,
   "dateCreated": null,
   "codePut": null,
-  "fileTimestamp": "2019-03-28T10:05:29Z",
+  "fileTimestamp": "2019-04-16T11:38:01Z",
   "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
   "codeDelete": null,
-  "codeGet": " select guruobj_userid as USER_ID from bansecr.GURUOBJ where guruobj_OBJECT in('GPBADMN','GPBADMNA')  and GURUOBJ_USERID not like 'BAN_%'\r\nunion\r\nselect GURUCLS_userid as USER_ID from bansecr.gurucls\r\nwhere gurucls_class_code in (select GURUOBJ_USERID from bansecr.GURUOBJ where guruobj_OBJECT in('GPBADMN','GPBADMNA')  and GURUOBJ_USERID like 'BAN_%')",
+  "codeGet": " select guruobj_userid as USER_ID from bansecr.GURUOBJ where guruobj_OBJECT in('GPBADMN','GPBADMA')  and GURUOBJ_USERID not like 'BAN_%'\r\nunion\r\nselect GURUCLS_userid as USER_ID from bansecr.gurucls\r\nwhere gurucls_class_code in (select GURUOBJ_USERID from bansecr.GURUOBJ where guruobj_OBJECT in('GPBADMN','GPBADMA')  and GURUOBJ_USERID like 'BAN_%')",
   "typeOfCode": "S",
   "serviceName": "pbadmUserDetails",
   "version": null
