@@ -1,0 +1,18 @@
+{
+   "codePut": "BEGIN\r\nIF :SOURCE_TYPE = 'P' THEN\r\nUPDATE page SET PAGE_OWNER = :TYPE_OWNER WHERE CONSTANT_NAME = :NAME;\r\nEND IF;\r\nIF :SOURCE_TYPE = 'V' THEN\r\nUPDATE virtual_domain SET VIRTUAL_DOMAIN_OWNER = :TYPE_OWNER WHERE SERVICE_NAME = :NAME;\r\nEND IF;\r\nIF :SOURCE_TYPE = 'C' THEN\r\nUPDATE css SET CSS_OWNER = :TYPE_OWNER WHERE CONSTANT_NAME = :NAME;\r\nEND IF;\r\nEND;\r\n",
+   "codeDelete": null,
+   "virtualDomainRoles": [
+      {
+         "allowDelete": false,
+         "allowPost": false,
+         "allowPut": false,
+         "roleName": "ADMIN-GPBADMN",
+         "allowGet": true
+      }
+   ],
+   "codeGet": "select * from (\r\nselect id, CONSTANT_NAME AS NAME,nvl(PAGE_OWNER,' ') as TYPE_OWNER, 'P' AS SOURCE_TYPE FROM page \r\nunion\r\nselect id, SERVICE_NAME as NAME, nvl(VIRTUAL_DOMAIN_OWNER,' ') AS TYPE_OWNER , 'V' AS SOURCE_TYPE from virtual_domain\r\nunion\r\nselect id , CONSTANT_NAME AS NAME,nvl(CSS_OWNER,' ') AS OWNER, 'C' AS SOURCE_TYPE from css ) WHERE \r\nSOURCE_TYPE = :type and upper(NAME) like upper(decode(:name,'',NAME,:name)) \r\nand upper(TYPE_OWNER) like upper(decode(:owner,'',TYPE_OWNER,:owner)) order by NAME",
+   "typeOfCode": "S",
+   "fileTimestamp": null,
+   "serviceName": "pbadmDPSArtifactDetails",
+   "codePost": null
+}

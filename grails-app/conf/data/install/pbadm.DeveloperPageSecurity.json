@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.DeveloperPageSecurity",
    "extendsPage": null,
-   "fileTimestamp": "2019-04-16T10:28:22Z",
+   "fileTimestamp": "2019-04-17T11:18:50Z",
    "modelView": {
       "components": [
          {
@@ -47,7 +47,7 @@
                   "required": false,
                   "sourceModel": "selectOptions",
                   "sourceParameters": {},
-                  "style": "",
+                  "style": "col-md-3",
                   "type": "select",
                   "valueKey": "value"
                },
@@ -65,7 +65,7 @@
                      "owner": "user.isSuperUser?\"\":user.loginName",
                      "type": "$ownerPagesBlock_options"
                   },
-                  "style": "",
+                  "style": "col-md-3",
                   "type": "select",
                   "value": "",
                   "valueKey": "TYPE_OWNER"
@@ -75,13 +75,14 @@
                   "label": "Owner",
                   "loadInitially": true,
                   "name": "ownerPagesBlock_owner",
+                  "style": "col-md-2",
                   "type": "display",
                   "value": "$ownerPagesBlock_genericData"
                }
             ],
             "name": "ownerPagesBlock",
             "showInitially": true,
-            "style": "",
+            "style": "row",
             "type": "block"
          },
          {
@@ -182,17 +183,19 @@
             "type": "form"
          }
       ],
-      "importCSS": "xeStyle",
+      "importCSS": "pbadmDeveloperSecurity,xeStyle",
       "label": "Developer Page Security",
       "name": "pbadmDeveloperPageSecurity",
       "style": "",
       "title": "Developer Page Security",
       "type": "page"
    },
+   "owner": null,
    "pageRoles": [
       {
          "roleName": "ADMIN-GPBADMN",
          "allow": true
       }
-   ]
+   ],
+   "pageSecurity": []
 }
