@@ -50,9 +50,12 @@ class PageSecurity implements Serializable{
     Long vpdiCode
 
 
-
     public static def fetchAllByPageId(Long id) {
-       return  PageSecurity.withSession {session -> session.getNamedQuery('PageSecurity.fetchAllByPageId').setLong('pageId', id).list()}
+        if (id) {
+            return PageSecurity.withSession { session -> session.getNamedQuery('PageSecurity.fetchAllByPageId').setLong('pageId', id).list() }
+        } else {
+            return []
+        }
     }
 
     boolean equals(o) {
