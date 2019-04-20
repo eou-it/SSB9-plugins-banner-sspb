@@ -61,15 +61,13 @@ class DeveloperSecurityService {
              return false
          }
          boolean hasPrivilage=false
-         String id
         if(PAGE_IND.equalsIgnoreCase(type)){
             def page = Page.findByConstantName(constantName)
-            id=page.id
             if((page && page.owner?.equalsIgnoreCase(oracleUserId)) || "Y".equalsIgnoreCase(page.allowAllInd)){
                 return true
             }else{
                 if(isModify){
-                    def secList = PageSecurity.findById(id)
+                    def secList = PageSecurity.fetchAllByPageId(page?.id)
                     secList.each{
                         if(USER_GROUP.equalsIgnoreCase(it.type)){
                             if(oracleUserId.equals(it.pageSecKey.developerUserId)){
@@ -90,12 +88,11 @@ class DeveloperSecurityService {
         }
         else if(VIRTUAL_DOMAIN_IND.equalsIgnoreCase(type)){
             def domain = VirtualDomain.findByServiceName(constantName)
-            id = domain.id
             if((domain && domain.owner?.equalsIgnoreCase(oracleUserId)) || "Y".equalsIgnoreCase(domain.allowAllInd)){
                 return true
             }else{
                 if(isModify){
-                    def secList = VirtualDomainSecurity.findById(id)
+                    def secList = VirtualDomainSecurity.fetchAllByVirtualDomainId(domain?.id)
                     secList.each{
                         if(USER_GROUP.equalsIgnoreCase(it.type)){
                             if(oracleUserId.equals(it.domainSecKey.developerUserId)){
@@ -115,12 +112,11 @@ class DeveloperSecurityService {
             return hasPrivilage
         }else if(CSS_IND.equalsIgnoreCase(type)){
             def css = Css.fetchByConstantName(constantName)
-            id = css.id
             if((css && css.owner?.equalsIgnoreCase(oracleUserId)) || "Y".equalsIgnoreCase(css.allowAllInd)){
                 return true
             }else{
                 if(isModify){
-                    def secList = CssSecurity.findById(id)
+                    def secList = CssSecurity.fetchAllByCssId(css?.id)
                     secList.each{
                         if(USER_GROUP.equalsIgnoreCase(it.type)){
                             if(oracleUserId.equals(it.cssSecKey.developerUserId)){
