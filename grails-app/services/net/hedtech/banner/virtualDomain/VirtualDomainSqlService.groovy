@@ -196,9 +196,6 @@ class VirtualDomainSqlService {
             throw new AccessDeniedException("user.not.authorized.get",["${parameters.parm_user_loginName} "]);
             //throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
         }
-        if(params.checkEncoding){
-            parameters.id = urlPathDecode(parameters.id)
-        }
         def sql = getSql()
         def errorMessage = ""
         def statement = vd.codeGet
