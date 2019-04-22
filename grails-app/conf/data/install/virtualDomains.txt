@@ -14,3 +14,6 @@ pbadmPageDetails.json
 pbadmArtifactDetails.json
 pbadmUserDetails.json
 pbadmSecurityConfigDetails.json
+pbadmDeveloperSecurityDetails.json
+pbadmDPSArtifactDetails.json
+pbadmGetBusinessProfile.json

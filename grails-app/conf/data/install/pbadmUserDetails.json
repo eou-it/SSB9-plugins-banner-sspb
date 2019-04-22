@@ -1,42 +1,25 @@
 {
-  "codePost": null,
-  "id": null,
-  "virtualDomainRoles": [
-    {
-      "id": null,
-      "allowGet": true,
-      "allowPost": false,
-      "allowPut": false,
-      "virtualDomain": {
-        "_ref": "../..",
-        "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+   "codePut": null,
+   "codeDelete": null,
+   "virtualDomainRoles": [
+      {
+         "allowDelete": false,
+         "allowPost": false,
+         "allowPut": false,
+         "roleName": "ADMIN-GPBADMN",
+         "allowGet": true
       },
-      "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
-      "roleName": "ADMIN-GPBADMA",
-      "allowDelete": false
-    },
-    {
-      "id": null,
-      "allowGet": true,
-      "allowPost": false,
-      "allowPut": false,
-      "virtualDomain": {
-        "_ref": "../..",
-        "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
-      },
-      "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
-      "roleName": "ADMIN-GPBADMN",
-      "allowDelete": false
-    }
-  ],
-  "lastUpdated": null,
-  "dateCreated": null,
-  "codePut": null,
-  "fileTimestamp": "2019-03-28T10:05:29Z",
-  "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
-  "codeDelete": null,
-  "codeGet": " select guruobj_userid as USER_ID from bansecr.GURUOBJ where guruobj_OBJECT in('GPBADMN','GPBADMNA')  and GURUOBJ_USERID not like 'BAN_%'\r\nunion\r\nselect GURUCLS_userid as USER_ID from bansecr.gurucls\r\nwhere gurucls_class_code in (select GURUOBJ_USERID from bansecr.GURUOBJ where guruobj_OBJECT in('GPBADMN','GPBADMNA')  and GURUOBJ_USERID like 'BAN_%')",
-  "typeOfCode": "S",
-  "serviceName": "pbadmUserDetails",
-  "version": null
+      {
+         "allowDelete": false,
+         "allowPost": false,
+         "allowPut": false,
+         "roleName": "GUEST",
+         "allowGet": true
+      }
+   ],
+   "codeGet": " select guruobj_userid as USER_ID from bansecr.GURUOBJ where guruobj_OBJECT in('GPBADMN','GPBADMNA')  and GURUOBJ_USERID not like 'BAN_%'\r\nunion\r\nselect GURUCLS_userid as USER_ID from bansecr.gurucls\r\nwhere gurucls_class_code in (select GURUOBJ_USERID from bansecr.GURUOBJ where guruobj_OBJECT in('GPBADMN','GPBADMNA')  and GURUOBJ_USERID like 'BAN_%')",
+   "typeOfCode": "S",
+   "fileTimestamp": "2019-04-15T11:31:29Z",
+   "serviceName": "pbadmUserDetails",
+   "codePost": null
 }

@@ -3,6 +3,7 @@
  *******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
+import groovy.json.JsonSlurper
 import groovy.sql.Sql
 import groovy.transform.*
 import groovy.util.logging.Log4j
@@ -63,6 +64,19 @@ class VirtualDomainSqlService {
         }
     }
 
+    private def addParams(params){
+        def paramData = params.item
+        def parser = new JsonSlurper()
+        def json = parser.parseText(paramData)
+        json.each{k,v ->
+            try {
+                params.put(k, v)
+            }
+            catch (RuntimeException e) {
+                log.error "Exception adding params:", e
+            }
+        }
+    }
     /* Check the user roles against the virtual domain roles
      */
     @Memoized
@@ -182,6 +196,9 @@ class VirtualDomainSqlService {
             throw new AccessDeniedException("user.not.authorized.get",["${parameters.parm_user_loginName} "]);
             //throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
         }
+        if(params.checkEncoding){
+            parameters.id = urlPathDecode(parameters.id)
+        }
         def sql = getSql()
         def errorMessage = ""
         def statement = vd.codeGet
@@ -299,6 +316,9 @@ class VirtualDomainSqlService {
     def create(vd, params, data) {
         def parameters = params
         addUser(parameters)
+        if(data.ID){
+            data.id = data.ID
+        }
         data = prepareData(data, parameters)
         def privs=userAccessRights(vd, parameters.parm_user_authorities)
         if (!privs.post){
@@ -327,6 +347,9 @@ class VirtualDomainSqlService {
         if (!privs.delete){
             throw new AccessDeniedException("user.not.authorized.delete",["${parameters.parm_user_loginName} "])
             //throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
+        }
+        if(params.item){
+            addParams(params)
         }
         parameters.id = urlPathDecode(parameters.id)
         def sql
