@@ -84,7 +84,11 @@ class CssSecurity implements Serializable{
     }
 
     public static def fetchAllByCssId(Long id) {
-        return CssSecurity.withSession {session -> session.getNamedQuery('CssSecurity.fetchAllByCssId').setLong('cssId', id).list()}
+        if (id) {
+            return CssSecurity.withSession { session -> session.getNamedQuery('CssSecurity.fetchAllByCssId').setLong('cssId', id).list() }
+        } else {
+            return []
+        }
     }
 
     @Override

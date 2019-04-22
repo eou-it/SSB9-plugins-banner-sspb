@@ -49,7 +49,11 @@ class VirtualDomainSecurity implements Serializable{
     Long vpdiCode
 
     public static def fetchAllByVirtualDomainId(Long id) {
-        return VirtualDomainSecurity.withSession {session -> session.getNamedQuery('VirtualDomainSecurity.fetchAllByVirtualDomainId').setLong('domainId', id).list()}
+        if (id) {
+            return VirtualDomainSecurity.withSession { session -> session.getNamedQuery('VirtualDomainSecurity.fetchAllByVirtualDomainId').setLong('domainId', id).list() }
+        } else {
+            return []
+        }
     }
 
     boolean equals(o) {
