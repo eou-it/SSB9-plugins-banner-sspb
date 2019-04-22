@@ -3,7 +3,7 @@
    "extendsPage": {
       "constantName": "pbadm.ExportBase"
    },
-   "fileTimestamp": "2019-04-16T14:42:06Z",
+   "fileTimestamp": "2019-04-22T09:16:02Z",
    "modelView": {
       "baseRoot": "pbadmExportBase",
       "deltaVersion": "1.0",
@@ -116,6 +116,10 @@
    "pageRoles": [
       {
          "roleName": "ADMIN-GPBADMN",
+         "allow": true
+      },
+      {
+         "roleName": "ADMIN-GPBADMA",
          "allow": true
       }
    ]

@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.PageRoles",
    "extendsPage": null,
-   "fileTimestamp": "2019-03-11T06:57:33Z",
+   "fileTimestamp": "2019-04-22T09:16:02Z",
    "modelView": {
       "components": [
          {
@@ -196,6 +196,10 @@
    "pageRoles": [
       {
          "roleName": "ADMIN-GPBADMN",
+         "allow": true
+      },
+      {
+         "roleName": "ADMIN-GPBADMA",
          "allow": true
       }
    ]
