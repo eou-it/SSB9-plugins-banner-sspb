@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
+ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 
 package net.hedtech.banner.sspb
@@ -11,6 +11,7 @@ class CustomPageController {
     def compileService
     def grailsApplication
     def pageService
+    def developerSecurityService
 
     def page() {
         if (params.id=="menu") {    //Work around aurora issue calling this 'page'. Todo: analyse and provide better fix
@@ -21,6 +22,11 @@ class CustomPageController {
             if (params.url) {
                 redirect(uri: params.url)
             }
+        }
+        if (params.id == "pbadm.AdminTasks") {
+           if(!developerSecurityService.isAllowImport(params.id, developerSecurityService.getPAGE_IND())) {
+             redirect(uri: '/login/denied')
+           }
         }
         if (grailsApplication.config.pageBuilder?.enabled) {
             // render view page.gsp which will be including getHTML
