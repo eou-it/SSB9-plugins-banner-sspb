@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.DeveloperPageSecurity",
    "extendsPage": null,
-   "fileTimestamp": "2019-04-22T10:39:06Z",
+   "fileTimestamp": "2019-04-23T10:32:15Z",
    "modelView": {
       "components": [
          {
@@ -59,7 +59,7 @@
                   "required": false,
                   "sourceModel": "selectOptions",
                   "sourceParameters": {},
-                  "style": "",
+                  "style": "col-md-3",
                   "type": "select",
                   "valueKey": "value"
                },
@@ -69,7 +69,7 @@
                   "loadInitially": false,
                   "name": "ownerPagesBlock_genericData",
                   "onLoad": "",
-                  "onUpdate": "$securityBlock.$visible = $ownerPagesBlock_genericData;\ndebugger;\n$ownerPagesBlock_owner=this.currentRecord.TYPE_OWNER\n$assigningPrivileges=this.currentRecord.ALLOW_MODIFY\n$userRoleGrid.$load()\n$profileGrid.$load()",
+                  "onUpdate": "$securityBlock.$visible = $ownerPagesBlock_genericData;\n$ownerPagesBlock_owner=this.currentRecord.TYPE_OWNER\n$assigningPrivileges=this.currentRecord.ALLOW_MODIFY\n$userRoleGrid.$load()\n$profileGrid.$load()",
                   "placeholder": "Select...",
                   "required": false,
                   "sourceModel": "genericData",
@@ -77,7 +77,7 @@
                      "owner": "user.isSuperUser?\"\":user.loginName",
                      "type": "$ownerPagesBlock_options"
                   },
-                  "style": "",
+                  "style": "col-md-3",
                   "type": "select",
                   "value": "",
                   "valueKey": "id"
@@ -85,6 +85,7 @@
                {
                   "label": "Owner",
                   "name": "ownerPagesBlock_owner",
+                  "style": "col-md-2",
                   "type": "literal",
                   "value": "$ownerPagesBlock_owner"
                }
@@ -103,7 +104,7 @@
                   "loadInitially": true,
                   "model": "",
                   "name": "assigningPrivileges",
-                  "onUpdate": "debugger;\n$ownerPagesBlock_genericDataDS.data.filter(x=> x.id==$ownerPagesBlock_genericData)[0].ALLOW_MODIFY=$assigningPrivileges \n$genericData.$put({'id':$ownerPagesBlock_genericData, 'SOURCE_TYPE':$ownerPagesBlock_options, 'ALLOW_ALL':$assigningPrivileges }, null, function(){\n        \nif($assigningPrivileges=='Y'){\nalert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.enableall')}\", {type:\"success\", flash:true}); \n}else{\n\talert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.disableall')}\", {type:\"success\", flash:true}); \n}\n});",
+                  "onUpdate": "$ownerPagesBlock_genericDataDS.data.filter(x=> x.id==$ownerPagesBlock_genericData)[0].ALLOW_MODIFY=$assigningPrivileges \n$genericData.$put({'id':$ownerPagesBlock_genericData, 'SOURCE_TYPE':$ownerPagesBlock_options, 'ALLOW_ALL':$assigningPrivileges }, null, function(){\n        \nif($assigningPrivileges=='Y'){\nalert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.enableall')}\", {type:\"success\", flash:true}); \n}else{\n\talert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.disableall')}\", {type:\"success\", flash:true}); \n}\n});",
                   "readonly": false,
                   "style": "col-md-4",
                   "type": "boolean",
@@ -283,17 +284,19 @@
             "type": "block"
          }
       ],
-      "importCSS": "developerSecurity,xeStyle",
+      "importCSS": "pbadmDeveloperSecurity,xeStyle",
       "label": "Developer Page Security",
       "name": "pbadmDeveloperPageSecurity",
       "style": "",
       "title": "Developer Page Security",
       "type": "page"
    },
+   "owner": null,
    "pageRoles": [
       {
          "roleName": "ADMIN-GPBADMN",
          "allow": true
       }
-   ]
+   ],
+   "pageSecurity": []
 }
