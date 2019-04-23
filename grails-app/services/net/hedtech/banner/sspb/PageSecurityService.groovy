@@ -136,8 +136,10 @@ class PageSecurityService {
             result = "IS_AUTHENTICATED_ANONYMOUSLY"
         } else if ( roleName.startsWith(admin) ) {
             def adminRoles = grails.util.Holders.config.pageBuilder.adminRoles.split(',')
+            def superAdminRoles =  grails.util.Holders.config.pageBuilder.superAdminRoles.split(',')
             def r = "ROLE_${roleName.minus(admin)}"
             result = adminRoles.find { it.startsWith(r) }
+            result = result?:superAdminRoles.find { it.startsWith(r) }
             result = result?"$result": "${r}_BAN_DEFAULT_M"
         } else {
             result = "ROLE_SELFSERVICE-${roleName}_BAN_DEFAULT_M"
