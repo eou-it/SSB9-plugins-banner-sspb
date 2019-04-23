@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2017 Ellucian Company L.P. and its affiliates.
+ Copyright 2017-2019 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
@@ -135,6 +135,7 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
                     }
                 }
                 vd.fileTimestamp = json.fileTimestamp? json2date(json.fileTimestamp) : new Date()
+                vd.owner = json.owner ? json.owner: null
                 if (file)
                     vd.fileTimestamp = new Date(file.lastModified())
                 vd = saveObject(vd)

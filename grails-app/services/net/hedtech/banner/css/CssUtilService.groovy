@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2013-2017 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 package net.hedtech.banner.css
 
@@ -119,6 +119,7 @@ class CssUtilService extends PBUtilServiceBase {
             if (doLoad) {
                 css.css = json.css
                 css.description = json.description
+                css.owner = json.owner ? json.owner: null
                 css.fileTimestamp = json2date(json.fileTimestamp)
                 if (file)
                     css.fileTimestamp = new Date(file.lastModified())

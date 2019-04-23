@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 
 package net.hedtech.banner.sspb
@@ -189,6 +189,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 // if the json has a modelView the json is a marshaled page, otherwise it is just the modelView
                 page.modelView = json.has('modelView') ? json.modelView: jsonString
                 page.fileTimestamp = file?new Date(file.lastModified()):json2date(json.fileTimestamp)
+                page.owner = json.has('owner') ? json.owner: null
                 //Check to see if parent page exists
                 if (json.has('extendsPage') && json.extendsPage && json.extendsPage.constantName) {
                     page.extendsPage = pageService.get(json.extendsPage.constantName)
