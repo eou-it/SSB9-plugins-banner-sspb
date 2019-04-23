@@ -65,7 +65,7 @@ class VirtualDomainSqlService {
 
     /* Check the user roles against the virtual domain roles
      */
-    @Memoized
+   // @Memoized
     private def userAccessRights (vd, userRoles) {
         def result=[get: false, put: false, post: false, delete: false, debug: false ]
         String debugRoles = grailsApplication.config.pageBuilder.debugRoles?:""
