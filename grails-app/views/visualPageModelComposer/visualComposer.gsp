@@ -793,6 +793,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                     $scope.pageOneSource = $scope.pageSource[0];
                     $scope.resetSelected();
                     $scope.pageOwner = user.loginName;
+                    $scope.allowUpdateOwner = true;
                     //$scope.handlePageTreeChange();
                     $scope.statusHolder.isPageModified = false;
                 }
