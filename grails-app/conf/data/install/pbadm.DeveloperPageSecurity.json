@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.DeveloperPageSecurity",
    "extendsPage": null,
-   "fileTimestamp": "2019-04-17T11:18:50Z",
+   "fileTimestamp": "2019-04-23T10:32:15Z",
    "modelView": {
       "components": [
          {
@@ -35,6 +35,18 @@
             "type": "resource"
          },
          {
+            "name": "pbadmDeveloperSecurityDetails",
+            "resource": "virtualDomains.pbadmDeveloperSecurityDetails",
+            "staticData": [],
+            "type": "resource"
+         },
+         {
+            "name": "getBusinessProfile",
+            "resource": "virtualDomains.pbadmGetBusinessProfile",
+            "staticData": [],
+            "type": "resource"
+         },
+         {
             "components": [
                {
                   "label": "Type",
@@ -57,7 +69,7 @@
                   "loadInitially": false,
                   "name": "ownerPagesBlock_genericData",
                   "onLoad": "",
-                  "onUpdate": "$privilegesForm.$visible = $ownerPagesBlock_genericData;",
+                  "onUpdate": "$securityBlock.$visible = $ownerPagesBlock_genericData;\n$ownerPagesBlock_owner=this.currentRecord.TYPE_OWNER\n$assigningPrivileges=this.currentRecord.ALLOW_MODIFY\n$userRoleGrid.$load()\n$profileGrid.$load()",
                   "placeholder": "Select...",
                   "required": false,
                   "sourceModel": "genericData",
@@ -68,16 +80,14 @@
                   "style": "col-md-3",
                   "type": "select",
                   "value": "",
-                  "valueKey": "TYPE_OWNER"
+                  "valueKey": "id"
                },
                {
-                  "asHtml": false,
                   "label": "Owner",
-                  "loadInitially": true,
                   "name": "ownerPagesBlock_owner",
                   "style": "col-md-2",
-                  "type": "display",
-                  "value": "$ownerPagesBlock_genericData"
+                  "type": "literal",
+                  "value": "$ownerPagesBlock_owner"
                }
             ],
             "name": "ownerPagesBlock",
@@ -88,13 +98,17 @@
          {
             "components": [
                {
+                  "booleanFalseValue": "N",
+                  "booleanTrueValue": "Y",
                   "label": "Assign Maintenance Privileges to All Developers",
                   "loadInitially": true,
+                  "model": "",
                   "name": "assigningPrivileges",
-                  "onUpdate": "",
+                  "onUpdate": "$ownerPagesBlock_genericDataDS.data.filter(x=> x.id==$ownerPagesBlock_genericData)[0].ALLOW_MODIFY=$assigningPrivileges \n$genericData.$put({'id':$ownerPagesBlock_genericData, 'SOURCE_TYPE':$ownerPagesBlock_options, 'ALLOW_ALL':$assigningPrivileges }, null, function(){\n        \nif($assigningPrivileges=='Y'){\nalert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.enableall')}\", {type:\"success\", flash:true}); \n}else{\n\talert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.disableall')}\", {type:\"success\", flash:true}); \n}\n});",
                   "readonly": false,
                   "style": "col-md-4",
-                  "type": "boolean"
+                  "type": "boolean",
+                  "value": "N"
                }
             ],
             "name": "developerPrivilegesBlock",
@@ -108,13 +122,14 @@
                   "allowDelete": true,
                   "allowModify": true,
                   "allowNew": true,
-                  "allowReload": false,
+                  "allowReload": true,
                   "components": [
                      {
                         "label": "User",
                         "labelKey": "USER_ID",
                         "loadInitially": true,
-                        "name": "privilegesForm_userGrid_user",
+                        "model": "USER",
+                        "name": "USERDETAILS",
                         "required": false,
                         "sourceModel": "userDetails",
                         "sourceParameters": {},
@@ -123,64 +138,150 @@
                         "valueKey": "USER_ID"
                      },
                      {
+                        "booleanFalseValue": "N",
+                        "booleanTrueValue": "Y",
                         "label": "Maintenance",
                         "loadInitially": true,
-                        "name": "privilegesForm_userGrid_maintenance",
+                        "model": "ALLOW_MODIFY",
+                        "name": "ALLOW_MODIFY",
                         "readonly": false,
-                        "type": "boolean"
+                        "type": "boolean",
+                        "value": "N"
+                     },
+                     {
+                        "loadInitially": true,
+                        "model": "SOURCE_TYPE",
+                        "name": "SOURCE_TYPE",
+                        "type": "hidden",
+                        "value": "$ownerPagesBlock_options"
+                     },
+                     {
+                        "loadInitially": true,
+                        "model": "USER_TYPE",
+                        "name": "USER_TYPE",
+                        "type": "hidden",
+                        "value": "\"INDIVIDUAL\""
+                     },
+                     {
+                        "loadInitially": true,
+                        "model": "ID",
+                        "name": "OBJECTID",
+                        "type": "hidden",
+                        "value": "$ownerPagesBlock_genericData"
+                     },
+                     {
+                        "loadInitially": true,
+                        "model": "OWNER",
+                        "name": "OWNER",
+                        "type": "hidden",
+                        "value": "user.loginName"
+                     },
+                     {
+                        "loadInitially": true,
+                        "model": "SURR_ID",
+                        "name": "id",
+                        "type": "hidden"
                      }
                   ],
                   "label": "Assign Privileges to Users",
-                  "loadInitially": true,
-                  "model": "userDetails",
-                  "name": "privilegesForm_userGrid",
+                  "loadInitially": false,
+                  "model": "pbadmDeveloperSecurityDetails",
+                  "name": "userRoleGrid",
                   "newRecordLabel": "",
                   "onClick": "",
                   "onLoad": "",
                   "onSave": "",
-                  "onSaveSuccess": "",
+                  "onSaveSuccess": "if (action == 'D')\n  {\n   alert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.individual.delete')}\", {type:\"success\", flash:true});\n  }\n\nelse if (action == 'U')\n  {\n    alert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.individual.updated')}\", {type:\"success\", flash:true});\n  }\nelse{\nalert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.individual.save')}\", {type:\"success\", flash:true});\n}",
                   "pageSize": 5,
-                  "parameters": {},
+                  "parameters": {
+                     "id": "$ownerPagesBlock_genericData",
+                     "owner": "user.loginName",
+                     "type": "$ownerPagesBlock_options",
+                     "usertype": "\"INDIVIDUAL\""
+                  },
                   "type": "grid"
                },
                {
                   "allowDelete": true,
                   "allowModify": true,
                   "allowNew": true,
-                  "allowReload": false,
+                  "allowReload": true,
                   "components": [
                      {
                         "label": "Business Profile",
-                        "labelKey": "CONSTANT_NAME",
+                        "labelKey": "PROFILE",
                         "loadInitially": true,
-                        "name": "privilegesForm_child_2_child_1",
+                        "model": "USER",
+                        "name": "profileGridAllowSelect",
                         "required": false,
-                        "sourceModel": "pageDetails",
+                        "sourceModel": "getBusinessProfile",
                         "sourceParameters": {},
                         "type": "select",
-                        "valueKey": "pagenames"
+                        "valueKey": "PROFILE"
                      },
                      {
-                        "label": "Maintenance",
+                        "booleanFalseValue": "N",
+                        "booleanTrueValue": "Y",
                         "loadInitially": true,
-                        "name": "privilegesForm_child_2_child_2",
+                        "model": "ALLOW_MODIFY",
+                        "name": "profileGridAllowModify",
                         "readonly": false,
-                        "type": "boolean"
+                        "type": "boolean",
+                        "value": "N"
+                     },
+                     {
+                        "loadInitially": true,
+                        "model": "SOURCE_TYPE",
+                        "name": "profileGrid_child_3",
+                        "type": "hidden",
+                        "value": "$ownerPagesBlock_options"
+                     },
+                     {
+                        "loadInitially": true,
+                        "model": "USER_TYPE",
+                        "name": "profileGrid_child_4",
+                        "type": "hidden",
+                        "value": "\"PROFILE\""
+                     },
+                     {
+                        "loadInitially": true,
+                        "model": "ID",
+                        "name": "profileGrid_child_5",
+                        "type": "hidden",
+                        "value": "$ownerPagesBlock_genericData"
+                     },
+                     {
+                        "loadInitially": true,
+                        "model": "OWNER",
+                        "name": "profileGrid_child_6",
+                        "type": "hidden",
+                        "value": "user.loginName"
+                     },
+                     {
+                        "loadInitially": true,
+                        "model": "SURR_ID",
+                        "name": "profSURRID",
+                        "type": "hidden"
                      }
                   ],
                   "label": "Assign Privileges to Group of Users",
-                  "loadInitially": true,
-                  "model": "userDetails",
-                  "name": "privilegesForm_child_2",
+                  "loadInitially": false,
+                  "model": "pbadmDeveloperSecurityDetails",
+                  "name": "profileGrid",
+                  "onSaveSuccess": "if (action == 'D')\n  {\n   alert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.group.delete')}\" ,{type:\"success\", flash:true});\n  }\n\nelse if (action == 'U')\n  {\n    alert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.group.updated')}\", {type:\"success\", flash:true});\n  }\nelse{\nalert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.group.save')}\", {type:\"success\", flash:true});\n}",
                   "pageSize": 5,
-                  "parameters": {},
+                  "parameters": {
+                     "id": "$ownerPagesBlock_genericData",
+                     "owner": "user.loginName",
+                     "type": "$ownerPagesBlock_options",
+                     "usertype": "\"PROFILE\""
+                  },
                   "type": "grid"
                }
             ],
-            "name": "privilegesForm",
-            "nextButtonLabel": "Next",
+            "name": "securityBlock",
             "showInitially": false,
-            "type": "form"
+            "type": "block"
          }
       ],
       "importCSS": "pbadmDeveloperSecurity,xeStyle",
