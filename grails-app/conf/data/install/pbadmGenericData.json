@@ -8,11 +8,17 @@
          "allowPut": false,
          "roleName": "ADMIN-GPBADMN",
          "allowGet": true
+      },{
+         "allowDelete": false,
+         "allowPost": false,
+         "allowPut": false,
+         "roleName": "ADMIN-GPBADMA",
+         "allowGet": true
       }
    ],
    "codeGet": "select * from (\r\nselect CONSTANT_NAME AS CONSTANT_NAME ,'OWNER' as OWNER, 'P' AS SOURCE_TYPE FROM page\r\nunion\r\nselect SERVICE_NAME as CONSTANT_NAME, 'OWNER' AS OWNER , 'V' AS SOURCE_TYPE from virtual_domain\r\nunion\r\nselect CONSTANT_NAME AS CONSTANT_NAME ,'OWNER' AS OWNER, 'C' AS SOURCE_TYPE from css ) WHERE SOURCE_TYPE = :type",
    "typeOfCode": "S",
-   "fileTimestamp": "2019-03-28T08:40:19Z",
+   "fileTimestamp": "2019-04-23T11:32:15Z",
    "serviceName": "pbadmGenericData",
    "codePost": null
 }

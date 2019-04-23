@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.DeveloperPageSecurity",
    "extendsPage": null,
-   "fileTimestamp": "2019-04-23T10:32:15Z",
+   "fileTimestamp": "2019-04-23T11:32:15Z",
    "modelView": {
       "components": [
          {
@@ -295,6 +295,9 @@
    "pageRoles": [
       {
          "roleName": "ADMIN-GPBADMN",
+         "allow": true
+      },{
+         "roleName": "ADMIN-GPBADMA",
          "allow": true
       }
    ],
