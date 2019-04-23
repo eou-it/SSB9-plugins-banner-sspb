@@ -10,7 +10,7 @@ import java.sql.Date
 @Entity
 @Table(name = "GBRPSEC")
 @NamedQueries(value = [
-        @NamedQuery(name = "Gbrpsec.fetchById",
+        @NamedQuery(name = "PageSecurity.fetchAllByPageId",
                 query = """FROM   PageSecurity a
 		   WHERE  a.id.pageId = :pageId
 		  """
@@ -50,13 +50,12 @@ class PageSecurity implements Serializable{
     Long vpdiCode
 
 
-
-    public static def findById(String id) {
-        List pageSecurity = []
-        pageSecurity = PageSecurity.withSession {session ->
-            pageSecurity = session.getNamedQuery('Gbrpsec.fetchById').setString('pageId', id).list()}
-        def result = pageSecurity?.size()>0?pageSecurity:null
-        return result
+    public static def fetchAllByPageId(Long id) {
+        if (id) {
+            return PageSecurity.withSession { session -> session.getNamedQuery('PageSecurity.fetchAllByPageId').setLong('pageId', id).list() }
+        } else {
+            return []
+        }
     }
 
     boolean equals(o) {

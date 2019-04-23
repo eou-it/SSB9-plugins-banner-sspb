@@ -7,7 +7,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 
     <meta name="layout" content="bannerSelfServicePBPage"/>
 
-  <title><g:message code="sspb.css.cssManager.pagetitle" /></title>
+    <title><g:message code="sspb.css.cssManager.pagetitle" /></title>
 
     <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
         <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pbDeveloper-rtl.css')}">
@@ -86,7 +86,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                 });
             };
             // populate the css list initially
-          //  $scope.loadCssNames();
+            //  $scope.loadCssNames();
 
             $scope.getCssSource = function() {
                 //TODO prompt for unsaved data
@@ -100,6 +100,8 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                         //$scope.cssSource = JSON.parse(data.css);
                         $scope.cssSource = data.css;
                         $scope.description = data.description;
+                        $scope.cssOwner = data.owner;
+                        $scope.allowUpdateOwner = data.allowUpdateOwner;
                     } catch(ex) {
                         alert($scope.i18nGet("${message(code:'sspb.css.cssManager.parsing.error.message')}",[ex]),{type:"error"});
                     }
@@ -114,6 +116,30 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                 });
             };
 
+            // Fetch Page ownersList
+            // declare the virtual domain lookup resource  and functions for loading the resourse combo box
+            var VDOwnersList = $resource(resourceBase+'virtualDomains.pbadmUserDetails',{},{
+                list: {
+                    method:"GET",
+                    isArray:true,
+                    headers:{'Content-Type':'application/json', 'Accept':'application/json'}
+                }
+            });
+            $scope.pbUserList = [];
+            $scope.loadVdOwnersList = function() {
+                console.log("==== In loadVDOwnerList====");
+                VDOwnersList.list({}, function(data) {
+                    // only need the service_name
+                    $scope.pbUserList = [];
+
+                    //console.log("vdList = " + data);
+                    angular.forEach(data, function(vd){
+                        $scope.pbUserList.push(vd.USER_ID);
+                    });
+                });
+            };
+            $scope.loadVdOwnersList();
+
             /* page operations */
             $scope.newCssSource = function() {
                 if ($scope.cssSource != undefined) {
@@ -125,6 +151,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                 $scope.cssName= "${message( code:'sspb.css.cssManager.newCss.default', encodeAs: 'JavaScript')}";
                 $scope.cssSource = "";
                 $scope.description="";
+                $scope.cssOwner = user.loginName;
             };
 
 
@@ -135,7 +162,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                     return;
                 }
 
-                Css.save({cssName:$scope.cssName, source:$scope.cssSource, description:$scope.description }, function(response) {
+                Css.save({cssName:$scope.cssName, source:$scope.cssSource, description:$scope.description, owner:$scope.cssOwner }, function(response) {
                     //console.log("save response = " + response.statusCode + ", " +response.statusMessage);
                     var note = {type:"error"};
                     if (response.statusCode == 0) {
@@ -151,7 +178,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                     alert($scope.cssStatus.message, note );
 
                     // refresh the page list in case new page is added
-                  //  $scope.loadCssNames();
+                    //  $scope.loadCssNames();
                 }, function(response) {
                     var msg ="${message(code: 'sspb.css.cssManager.stylesheet.submit.failed.message', encodeAs: 'JavaScript')}";;
                     if (response.data != undefined && response.data.errors!=undefined)
@@ -178,7 +205,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                     $scope.cssName = "";
                     $scope.description = "";
                     $scope.cssSource= undefined;
-                   // $scope.loadCssNames();
+                    // $scope.loadCssNames();
 
                 }, function(response) {
                     var msg="${message(code:'sspb.css.cssManager.deletion.error.message')}";
@@ -210,53 +237,63 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
     </script>
 </head>
 <body>
-    <div id="content" ng-controller="CssManagerController" class="customPage container-fluid cssPage">
+<div id="content" ng-controller="CssManagerController" class="customPage container-fluid cssPage">
 
-        <div class="btn-section">
-            <label><g:message code="sspb.css.cssManager.load.label" /></label>
-            <select id="cssConstantName" name="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'csses','id':'cssConstantName'}"
-                    ng-model="cssName"
-                    ng-change="getCssSource()">
-            </select>
+    <div class="btn-section">
+        <label><g:message code="sspb.css.cssManager.load.label" /></label>
+        <select id="cssConstantName" name="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'csses','id':'cssConstantName'}"
+                ng-model="cssName"
+                ng-change="getCssSource()">
+        </select>
 
-            <button class="secondary" ng-click='loadCssNames()' ng-show="false" ><g:message code="sspb.css.cssManager.reload.pages.label" /></button>
-        </div>
-        <div class="btn-section-2">
-            <button class="primary" ng-click='newCssSource()'><g:message code="sspb.css.cssManager.newCss.label" /></button>
-            <button class="secondary" ng-click='submitCssSource()'><g:message code="sspb.css.cssManager.save.label" /></button>
-            <pb-Upload label='Upload Stylesheet' status='cssStatus' pb-change=''></pb-Upload>
-            <button class="secondary" ng-click="getCssSource()"><g:message code="sspb.css.cssManager.reload.label" /></button>
-            <button class="secondary" ng-click='deleteCssSource()'><g:message code="sspb.css.cssManager.delete.label" /></button>
-            <button class="secondary" ng-click='getDeveloperSecurityPage()'><g:message code="sspb.css.cssManager.developer.label" /></button>
-        </div>
-        <div class="form-horizontal" ng-form="cssform">
-            <div class="control-group">
-                <label class="col-sm-3 control-label"  for='cssName'><g:message code="sspb.css.cssManager.cssName.label" /></label>
-                <div class="col-sm-9">
-                    <input name="cssName" id='cssName' class="form-control" ng-model='cssName' required maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/" />
-                    <span ng-messages="cssform.cssName.$error" role="alert" class="fieldValidationMessage">
-                        <span ng-message="pattern" ><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" /></span>
-                        <span ng-message="required" > <g:message code="sspb.page.visualbuilder.name.required.message" /></span>
-                    </span>
-                </div>
-            </div>
-            <div class="control-group">
-                <label class="col-sm-3 control-label"  for='desc'><g:message code="sspb.css.cssManager.description.label" /></label>
-                <div class="col-sm-9">
-                    <input name="description" id='desc' class="form-control" ng-model='description' maxlength="255"/>
-                </div>
-            </div>
-
-            <div class="control-group">
-                <label class="col-sm-3 control-label" for='source'><g:message code="sspb.css.cssManager.cssSource.label" /></label>
-                <div class="col-sm-9">
-                    <textarea ng-model='cssSource' class="form-control" rows="9" id='source'></textarea>
-                </div>
-            </div>
-        </div>
-        <textArea name="statusMessage" readonly="true" ng-model="cssStatus.message"
-                  rows="3" cols="120" style="width:99%; height:10%"></textArea>
+        <button class="secondary" ng-click='loadCssNames()' ng-show="false" ><g:message code="sspb.css.cssManager.reload.pages.label" /></button>
     </div>
+    <div class="btn-section-2">
+        <button class="primary" ng-click='newCssSource()'><g:message code="sspb.css.cssManager.newCss.label" /></button>
+        <button class="secondary" ng-click='submitCssSource()'><g:message code="sspb.css.cssManager.save.label" /></button>
+        <pb-Upload label='Upload Stylesheet' status='cssStatus' pb-change=''></pb-Upload>
+        <button class="secondary" ng-click="getCssSource()"><g:message code="sspb.css.cssManager.reload.label" /></button>
+        <button class="secondary" ng-click='deleteCssSource()'><g:message code="sspb.css.cssManager.delete.label" /></button>
+        <span  ng-show="cssName.length>0">
+            <button class="secondary" ng-click='getDeveloperSecurityPage()'><g:message code="sspb.css.cssManager.developer.label" /></button>
+        </span>
+
+        <span ng-show="cssName" class="alignRight">
+            <label class="vpc-name-label dispInline"><g:message code="sspb.css.visualbuilder.cssowner.label" /></label>
+            <input style="display: none" ng-model="allowUpdateOwner"/>
+            <select class="owner-select alignRight" ng-model="cssOwner"  ng-disabled="!allowUpdateOwner">
+                <option ng-repeat="owner in pbUserList" value="{{owner}}" ng-selected="{{owner == pageOwner}}">{{owner}}</option>
+            </select>
+        </span>
+    </div>
+    <div class="form-horizontal" ng-form="cssform">
+        <div class="control-group">
+            <label class="col-sm-3 control-label"  for='cssName'><g:message code="sspb.css.cssManager.cssName.label" /></label>
+            <div class="col-sm-9">
+                <input name="cssName" id='cssName' class="form-control" ng-model='cssName' required maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/" />
+                <span ng-messages="cssform.cssName.$error" role="alert" class="fieldValidationMessage">
+                    <span ng-message="pattern" ><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" /></span>
+                    <span ng-message="required" > <g:message code="sspb.page.visualbuilder.name.required.message" /></span>
+                </span>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="col-sm-3 control-label"  for='desc'><g:message code="sspb.css.cssManager.description.label" /></label>
+            <div class="col-sm-9">
+                <input name="description" id='desc' class="form-control" ng-model='description' maxlength="255"/>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="col-sm-3 control-label" for='source'><g:message code="sspb.css.cssManager.cssSource.label" /></label>
+            <div class="col-sm-9">
+                <textarea ng-model='cssSource' class="form-control" rows="9" id='source'></textarea>
+            </div>
+        </div>
+    </div>
+    <textArea name="statusMessage" readonly="true" ng-model="cssStatus.message"
+              rows="3" cols="120" style="width:99%; height:10%"></textArea>
+</div>
 
 </body>
 </html>

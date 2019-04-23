@@ -3,7 +3,7 @@
    "extendsPage": {
       "constantName": "pbadm.ExportBase"
    },
-   "fileTimestamp": "2018-11-13T11:51:35Z",
+   "fileTimestamp": "2019-04-22T09:16:02Z",
    "modelView": {
       "baseRoot": "pbadmExportBase",
       "deltaVersion": "1.0",
@@ -33,6 +33,18 @@
                "patch": "--- original\n+++ revised\n@@ -1,13 +1,17 @@\n function download(p){\n     if(!p) return;\n-    var theAnchor = $('<a />')\n+     var blob = new Blob([decodeURIComponent(p.data)],{type: \"text/csv;charset=utf-8;\"});\n+\n+if (window.navigator.msSaveBlob) { // IE 10+\n+window.navigator.msSaveBlob(blob, p.fileName)\n+    } else {\n+        var theAnchor = $('<a />')\n         .attr('href', p.header+p.data)\n         .attr('download', p.fileName)\n-        // Firefox does not fires click if the link is outside\n-        // the DOM\n         .appendTo('body');\n     \n     theAnchor[0].click(); \n     theAnchor.remove();\n+    }\n }\n \n@@ -26,5 +30,5 @@\n if (data && data.serviceName){\n     var params = {\n-          fileName: 'objects.'+data.serviceName+'.json',\n+          fileName: 'virtualDomains.'+data.serviceName+'.json',\n           header: 'data:text/csv;charset=utf8,',\n           data: encodeURIComponent(JSON.stringify(data,jsonFilter,3))"
             }
          },
+         "isAllowExportDSPermission": {
+            "label": {
+               "base": "isAllowExportDSPermission",
+               "ext": "Export Current Permissions"
+            }
+         },
+         "owner": {
+            "label": {
+               "base": "owner",
+               "ext": "Virtual Domain Owner"
+            }
+         },
          "pbadmExportBase": {
             "_name": {
                "base": "pbadmExportBase",
@@ -56,6 +68,10 @@
    "pageRoles": [
       {
          "roleName": "ADMIN-GPBADMN",
+         "allow": true
+      },
+      {
+         "roleName": "ADMIN-GPBADMA",
          "allow": true
       }
    ]
