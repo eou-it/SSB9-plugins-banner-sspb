@@ -1,6 +1,6 @@
 {
    "lastUpdated": null,
-   "css": "#paging-container-artifacts {\n  visibility: hidden;\n}\n#pbid-securityBlock {\nmargin-top: 25px;\n}\n#pbid-copyOwner-container {\nmargin-bottom:15px;\n}\n#pbid-copyOwner-container .pb-literal{\nmargin-bottom:3px;\n}",
+   "css": "#paging-container-artifacts {\n  visibility: hidden;\n}\n#pbid-securityBlock {\nmargin-top: 25px;\nmargin-bottom: 20px;\n}\n#pbid-copyOwner-container {\nmargin-bottom:15px;\n}\n#pbid-copyOwner-container .pb-literal{\nmargin-bottom:3px;\n}",
    "dateCreated": null,
    "constantName": "pbadm.adminTasksCss",
    "description": "CSS for Admin tasks page",

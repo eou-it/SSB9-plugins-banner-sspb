@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.AdminTasks",
    "extendsPage": null,
-   "fileTimestamp": "2019-04-23T09:16:02Z",
+   "fileTimestamp": "2019-04-23T07:58:33Z",
    "modelView": {
       "components": [
          {
@@ -40,7 +40,7 @@
                      {
                         "name": "txtDispOwner",
                         "type": "literal",
-                        "value": "Check copy owner box to copy the owner from exported artifact. To set the user to current user, uncheck box <br/>"
+                        "value": "Check copy owner box to copy the owner from exported artifact. To set the user to current user, uncheck box"
                      },
                      {
                         "label": "Copy Owner on Import",
@@ -53,7 +53,7 @@
                      {
                         "name": "textDispDevSec",
                         "type": "literal",
-                        "value": "Check copy Developer permission box to copy the developer permission from the exported page. To copy no permission, uncheck box."
+                        "value": "Check copy Developer permission box to copy the developer permission from the exported artifact. To copy no permission, uncheck box."
                      },
                      {
                         "label": "Copy all Developers permissions on import",
@@ -72,12 +72,12 @@
                {
                   "name": "helpText",
                   "type": "literal",
-                  "value": "<br/>Select files from local directories for import"
+                  "value": "Select files from local directories for import"
                },
                {
                   "name": "uploadFileSelect",
                   "type": "literal",
-                  "value": "<input type=\"file\" id=\"filesElem\" name=\"files[]\" multiple accept=\".json\"/><br/>\n\n<script>\nvar test = \"hghghgh\";\n  function handleFileSelect(evt) {\n  \tvar files = evt.target.files;\n        var scope = getControllerScopeById(controllerId);\n        var count = files.length;\n        //scope.artifactsGrid.enablePaging = false;\n               \n        scope.artifactsDS.data.removeAll();\n        scope.\\$apply();\n  \t\n\tfunction addFile(event, file) {\n  \t\tfile.domain =event.target.result;\n                file.owner = JSON.parse(event.target.result).owner;\n                test  =\"TEST\";\n                if(file.owner === user.loginName) {\n                  file.ownerList = [{\"name\": file.owner, \"id\": file.owner}]\n                } else {\n                  file.ownerList = [{\"name\": file.owner, \"id\": file.owner}, {\"name\": user.loginName, \"id\": user.loginName}]\n                  file.newList=[{\"ROW_NUMBER\":1,\"NAME\":\"test3\",\"id\":\"3135353233\"},{\"ROW_NUMBER\":2,\"NAME\":\"test2\",\"id\":\"3135353232\"},{\"ROW_NUMBER\":3,\"NAME\":\"test4\",\"id\":\"3135353234\"},{\"ROW_NUMBER\":4,\"NAME\":\"integrationTestPage\",\"id\":\"3135353036\"},{\"ROW_NUMBER\":5,\"NAME\":\"test5\",\"id\":\"3135353235\"}];\n               }\n              console.log(file.ownerList)\n  \t\tscope.artifactsDS.data.push(file);\n \t\tscope.\\$apply(); //Update the UI\t\n\t}\n\tfor (var i = 0, f; f = files[i]; i++) {\n                f.index = i;\n                f.count = count;\n  \t\tvar reader = new FileReader();\n\t\treader.onloadend = (function(file) {\n\t\t  return function(evt) {\n\t\t\taddFile(evt, file);\n\t\t  };\n\t\t})(f);\t\t\n  \t\treader.readAsText(f);\n  \t}\n  }\n  document.getElementById('filesElem').addEventListener('change', handleFileSelect, false);\n</script>"
+                  "value": "<input type=\"file\" id=\"filesElem\" name=\"files[]\" multiple accept=\".json\"/><br/>\n\n<script>\n\n  function handleFileSelect(evt) {\n  \tvar files = evt.target.files;\n        var scope = getControllerScopeById(controllerId);\n        var count = files.length;\n        //scope.artifactsGrid.enablePaging = false;\n\n        scope.artifactsDS.data.removeAll();\n        scope.\\$apply();\n  \t\n\tfunction addFile(event, file) {\n  \t\tfile.domain =event.target.result;  \n                if(scope.copyOwner) {\n                     file.owner = JSON.parse(event.target.result).owner;\n                }else{\n                    file.owner = user.loginName\n                 }\n  \t\tscope.artifactsDS.data.push(file);\n \t\tscope.\\$apply(); //Update the UI\t\n\t}\n\tfor (var i = 0, f; f = files[i]; i++) {\n                f.index = i;\n                f.count = count;\n  \t\tvar reader = new FileReader();\n\t\treader.onloadend = (function(file) {\n\t\t  return function(evt) {\n\t\t\taddFile(evt, file);\n\t\t  };\n\t\t})(f);\t\t\n  \t\treader.readAsText(f);\n  \t}\n  }\n  document.getElementById('filesElem').addEventListener('change', handleFileSelect, false);\n\n</script>"
                },
                {
                   "allowDelete": false,
@@ -101,7 +101,7 @@
                         "name": "owner",
                         "style": "",
                         "type": "display",
-                        "value": "$$user.loginName"
+                        "value": ""
                      },
                      {
                         "label": "Modified",
@@ -437,6 +437,7 @@
       "title": "Admin tasks",
       "type": "page"
    },
+   "owner": null,
    "pageRoles": [
       {
          "roleName": "ADMIN-GPBADMN",
@@ -446,5 +447,6 @@
          "roleName": "ADMIN-GPBADMA",
          "allow": true
       }
-   ]
+   ],
+   "pageSecurity": []
 }
