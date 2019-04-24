@@ -8,7 +8,6 @@ import net.hedtech.banner.security.VirtualDomainSecurity
 import net.hedtech.banner.sspb.CommonService
 import net.hedtech.banner.sspb.Page
 import net.hedtech.banner.sspb.PageComponent
-import org.apache.commons.codec.binary.Base64
 import org.hibernate.criterion.CriteriaSpecification
 
 class VirtualDomainExportService {
@@ -61,10 +60,10 @@ class VirtualDomainExportService {
                 'codeGet', 'codePost', 'codePut', 'codeDelete', 'fileTimestamp']
         vdExport.virtualDomainRoles = vdRoles
         vdExport.owner = vd.owner
-        vdExport.virtualDomainSecurity = []
+        vdExport.developerSecurity = []
         if(vd && params.isAllowExportDSPermission && "Y".equalsIgnoreCase(params.isAllowExportDSPermission)){
             VirtualDomainSecurity.fetchAllByVirtualDomainId(vd.id)?.each{ vs ->
-                vdExport.virtualDomainSecurity << [securityType:vs.type, user:vs.id.developerUserId,allowModifyInd:vs.allowModifyInd]
+                vdExport.developerSecurity << [type:vs.type, name:vs.id.developerUserId,allowModify:vs.allowModifyInd]
             }
         }
 

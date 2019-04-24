@@ -1,7 +1,7 @@
 {
   "constantName": "pbadm.AdminSecurity",
   "extendsPage": null,
-  "fileTimestamp": "2019-04-20T09:16:02Z",
+  "fileTimestamp": "2019-04-24T10:01:07Z",
   "modelView": {
     "components": [
       {
@@ -60,12 +60,12 @@
                   {
                     "booleanFalseValue": "N",
                     "booleanTrueValue": "Y",
+                    "documentation": "",
                     "label": "Production mode (Page Builder developers read-only)",
                     "loadInitially": true,
-                    "model": "enableDeveloperSecurity",
-                    "name": "enableDeveloperSecurity",
-                    "onLoad": "",
-                    "onUpdate": "$securityConfigDetails.$post({'enableDeveloperSecurity':$enableDeveloperSecurity}, null, \nfunction(){\n\nif($enableDeveloperSecurity === 'Y'){\nalert(\"${message(code:'pbadmAdminSecurity.enableDeveloperSecurity')}\", {type:\"success\", flash:true});\n}\n\nif($enableDeveloperSecurity === 'N'){\nalert(\"${message(code:'pbadmAdminSecurity.disableDeveloperSecurity')}\", {type:\"success\", flash:true});\n}\n});\n\n return true;",
+                    "model": "developerReadOnly",
+                    "name": "developerReadOnly",
+                    "onUpdate": "$securityConfigDetails.$post({'developerReadOnly':$developerReadOnly}, null, \nfunction(){\n\nif($developerReadOnly=== 'Y'){\nalert(\"${message(code:'pbadmAdminSecurity.enableDeveloperReadOnly')}\", {type:\"success\", flash:true});\n}\n\nif($developerReadOnly=== 'N'){\nalert(\"${message(code:'pbadmAdminSecurity.disableDeveloperReadOnly')}\", {type:\"success\", flash:true});\n}\n});\n\n return true;",
                     "readonly": false,
                     "type": "boolean",
                     "value": "N"
@@ -87,9 +87,10 @@
                     "booleanTrueValue": "Y",
                     "label": "Enable Page Builder security",
                     "loadInitially": true,
-                    "model": "developerReadOnly",
-                    "name": "developerReadOnly",
-                    "onUpdate": "$securityConfigDetails.$post({'developerReadOnly':$developerReadOnly}, null, \nfunction(){\n\nif($developerReadOnly=== 'Y'){\nalert(\"${message(code:'pbadmAdminSecurity.enableDeveloperReadOnly')}\", {type:\"success\", flash:true});\n}\n\nif($developerReadOnly=== 'N'){\nalert(\"${message(code:'pbadmAdminSecurity.disableDeveloperReadOnly')}\", {type:\"success\", flash:true});\n}\n});\n\n return true;",
+                    "model": "enableDeveloperSecurity",
+                    "name": "enableDeveloperSecurity",
+                    "onLoad": "",
+                    "onUpdate": "$securityConfigDetails.$post({'enableDeveloperSecurity':$enableDeveloperSecurity}, null, \nfunction(){\n\nif($enableDeveloperSecurity === 'Y'){\nalert(\"${message(code:'pbadmAdminSecurity.enableDeveloperSecurity')}\", {type:\"success\", flash:true});\n}\n\nif($enableDeveloperSecurity === 'N'){\nalert(\"${message(code:'pbadmAdminSecurity.disableDeveloperSecurity')}\", {type:\"success\", flash:true});\n}\n});\n\n return true;",
                     "readonly": false,
                     "type": "boolean",
                     "value": "N"
