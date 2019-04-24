@@ -12,9 +12,9 @@ import org.springframework.security.core.context.SecurityContextHolder
 
 class DeveloperSecurityService {
 
-    def enableDeveloperSecurity = false
-    def preventImportByDeveloper = false
-    def productionMode = false
+    boolean enableDeveloperSecurity = false
+    boolean preventImportByDeveloper = false
+    boolean productionMode = false
     static final String APP_ID = "EXTZ"
     static final String SUPER_USER = "GPBADMA"
     static final String PAGE_IND = "P"
