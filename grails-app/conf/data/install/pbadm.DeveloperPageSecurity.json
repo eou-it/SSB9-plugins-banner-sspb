@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.DeveloperPageSecurity",
    "extendsPage": null,
-   "fileTimestamp": "2019-04-24T06:06:15Z",
+   "fileTimestamp": "2019-04-24T07:29:42Z",
    "modelView": {
       "components": [
          {
@@ -69,7 +69,7 @@
                   "loadInitially": false,
                   "name": "ownerPagesBlock_genericData",
                   "onLoad": "",
-                  "onUpdate": "$securityBlock.$visible = $ownerPagesBlock_genericData;\n$ownerPagesBlock_owner=this.currentRecord.TYPE_OWNER\n$assigningPrivileges=this.currentRecord.ALLOW_MODIFY\n$userRoleGrid.$load()\n$profileGrid.$load()",
+                  "onUpdate": "$securityBlock.$visible = $ownerPagesBlock_genericData;\nif(this.currentRecord){\n$ownerPagesBlock_owner=this.currentRecord.TYPE_OWNER\n$assigningPrivileges=this.currentRecord.ALLOW_MODIFY\n}\n$userRoleGrid.$load()\n$profileGrid.$load()",
                   "placeholder": "Select...",
                   "required": false,
                   "sourceModel": "genericData",

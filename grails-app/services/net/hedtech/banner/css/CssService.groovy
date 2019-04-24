@@ -15,6 +15,7 @@ class CssService extends ServiceBase {
 
     static transactional = true
     def dateConverterService
+    def developerSecurityService
 
     def list(Map params) {
 
@@ -88,10 +89,9 @@ class CssService extends ServiceBase {
         if (result) {
             //supplementCss( result )
             log.trace "CssService.show returning ${result}"
-            DeveloperSecurityService.getGlobalSecurityValue()
             showResult = [constantName : result.constantName, id: result.id, version: result.version, css: result.css, owner: result.owner ,
-                          description: result.description,  allowModify: DeveloperSecurityService.isAllowModify(result.constantName,DeveloperSecurityService.CSS_IND),
-                          allowUpdateOwner: DeveloperSecurityService.isAllowUpdateOwner(result.constantName, DeveloperSecurityService.CSS_IND)]
+                          description: result.description,  allowModify: developerSecurityService.isAllowModify(result.constantName,DeveloperSecurityService.CSS_IND),
+                          allowUpdateOwner: developerSecurityService.isAllowUpdateOwner(result.constantName, DeveloperSecurityService.CSS_IND)]
         }
         showResult
     }

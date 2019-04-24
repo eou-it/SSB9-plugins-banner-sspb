@@ -14,6 +14,7 @@ import org.hibernate.HibernateException
 class VirtualDomainResourceService {
 
     def virtualDomainSqlService
+    def developerSecurityService
 
     final static String vdPrefix = "virtualDomains."
 
@@ -120,10 +121,7 @@ class VirtualDomainResourceService {
             if (!vd)   {
                 vd = new VirtualDomain([serviceName:vdServiceName])
                 updateVD = false
-                if(!vdOwner)
-                    vd.owner= PBUser.userCache.loginName
-                else
-                    vd.owner=vdOwner
+                vd.owner= PBUser.userCache.loginName
             }
             if (vd) {
                 if(updateVD && vdOwner){
@@ -162,7 +160,7 @@ class VirtualDomainResourceService {
             log.error ex
         }
         return [success:success, virtualDomain:vd, error:error,
-                allowModify: DeveloperSecurityService.isAllowModify(vdServiceName,DeveloperSecurityService.VIRTUAL_DOMAIN_IND),
-                allowUpdateOwner: DeveloperSecurityService.isAllowUpdateOwner(vdServiceName, DeveloperSecurityService.VIRTUAL_DOMAIN_IND)]
+                allowModify: developerSecurityService.isAllowModify(vdServiceName,DeveloperSecurityService.VIRTUAL_DOMAIN_IND),
+                allowUpdateOwner: developerSecurityService.isAllowUpdateOwner(vdServiceName, DeveloperSecurityService.VIRTUAL_DOMAIN_IND)]
     }
 }

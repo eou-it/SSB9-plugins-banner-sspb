@@ -12,9 +12,9 @@ import org.springframework.security.core.context.SecurityContextHolder
 
 class DeveloperSecurityService {
 
-    static enableDeveloperSecurity = false
-    static preventImportByDeveloper = false
-    static productionMode = false
+    def enableDeveloperSecurity = false
+    def preventImportByDeveloper = false
+    def productionMode = false
     static final String APP_ID = "EXTZ"
     static final String SUPER_USER = "GPBADMA"
     static final String PAGE_IND = "P"
@@ -23,7 +23,7 @@ class DeveloperSecurityService {
     static final String USER_GROUP = "INDIVIDUAL"
 
 
-    static getGlobalSecurityValue(){
+    DeveloperSecurityService(){
         List<ConfigurationData> results = ConfigurationData.fetchByType("boolean",APP_ID)
         results.each{
             Boolean loopValue = new Boolean(it.value)
@@ -52,7 +52,7 @@ class DeveloperSecurityService {
          return isSupUser
     }
 
-     static boolean checkUserHasPrivilage(String constantName, String type, boolean isModify){
+     boolean checkUserHasPrivilage(String constantName, String type, boolean isModify){
          def userIn = SecurityContextHolder?.context?.authentication?.principal
          String oracleUserId
          if (userIn?.class?.name?.endsWith('BannerUser')) {
@@ -139,7 +139,7 @@ class DeveloperSecurityService {
         }
     }
 
-     static boolean isAllowImport(String constantName, String type){
+      boolean isAllowImport(String constantName, String type){
 
          getGlobalSecurityValue()
         if(isSuperUser()){
@@ -155,7 +155,7 @@ class DeveloperSecurityService {
         }
     }
 
-    static boolean isAllowModify(String constantName, String type){
+    boolean isAllowModify(String constantName, String type){
         if(isSuperUser()){
             return true
         }else if(productionMode){
@@ -169,7 +169,7 @@ class DeveloperSecurityService {
         }
     }
 
-    static boolean isAllowUpdateOwner(String constantName, String type){
+    boolean isAllowUpdateOwner(String constantName, String type){
         if(isSuperUser()){
             return true
         }else if(productionMode){

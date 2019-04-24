@@ -61,7 +61,8 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                 });
                 $("#pageOwner").append(option)
                 var isAllowOwnerUpdate = "${pageInstance?.allowUpdateOwner}"
-                if(isAllowOwnerUpdate){
+                debugger;
+                if(isAllowOwnerUpdate=='true'){
                     $("#pageOwner").prop('disabled', false);
                 }else{
                     $("#pageOwner").prop('disabled', 'disabled');
