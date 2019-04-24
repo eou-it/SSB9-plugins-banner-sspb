@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.DeveloperPageSecurity",
    "extendsPage": null,
-   "fileTimestamp": "2019-04-24T07:29:42Z",
+   "fileTimestamp": "2019-04-24T09:38:36Z",
    "modelView": {
       "components": [
          {
@@ -22,7 +22,7 @@
                   "value": "V"
                },
                {
-                  "label": "CSS Manager",
+                  "label": "CSS",
                   "value": "C"
                }
             ],
