@@ -141,7 +141,7 @@ class VirtualDomainResourceService {
             error = ex.getMessage()
             log.error ex
         }
-        return [success:success, updated:updateVD, error:error, id:vd?.id, version:vd?.version]
+        return [success:success, updated:updateVD, error:error, id:vd?.id, version:vd?.version, owner:vd?.owner]
     }
 
     def loadVirtualDomain(vdServiceName) {

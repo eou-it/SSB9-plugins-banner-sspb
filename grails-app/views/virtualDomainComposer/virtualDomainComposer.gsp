@@ -60,7 +60,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                         option += '<option value="'+ vd.USER_ID +'">' + vd.USER_ID + '</option>'
                 });
                 $("#pageOwner").append(option)
-                var isAllowOwnerUpdate = eval("${pageInstance.allowUpdateOwner}")
+                var isAllowOwnerUpdate = "${pageInstance?.allowUpdateOwner}"
                 if(isAllowOwnerUpdate){
                     $("#pageOwner").prop('disabled', false);
                 }else{

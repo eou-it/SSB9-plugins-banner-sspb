@@ -27,6 +27,7 @@ class VirtualDomainComposerController {
                 pageInstance.error = saveResult.error
                 pageInstance.id = saveResult.id
                 pageInstance.version = saveResult.version
+                pageInstance.owner=saveResult.owner
                 pageInstance.submitted = true
                 pageInstance.allowModify = DeveloperSecurityService.isAllowModify(params.vdServiceName,DeveloperSecurityService.VIRTUAL_DOMAIN_IND )
                 pageInstance.allowUpdateOwner = DeveloperSecurityService.isAllowUpdateOwner(params.vdServiceName,DeveloperSecurityService.VIRTUAL_DOMAIN_IND )
