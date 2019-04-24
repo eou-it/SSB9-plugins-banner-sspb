@@ -6,6 +6,8 @@ package net.hedtech.banner.sspb
 
 import grails.converters.JSON
 import groovy.util.logging.Log4j
+import net.hedtech.banner.security.PageSecurity
+import net.hedtech.banner.security.PageSecurityId
 import org.codehaus.groovy.grails.web.context.ServletContextHolder
 import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
 import org.springframework.context.ApplicationContext
@@ -201,6 +203,9 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                     }
                 }
                 associateRoles(page, json.pageRoles)
+                if(json.developerSecurity) {
+                    associateDeveloperSecurity(page.Id, json.developerSecurity)
+                }
                 page=page.merge()
                 if (result.statusCode == statusOk) {
                     result = pageService.compileAndSavePage(page.constantName, page.mergedModelText, page.extendsPage, page.owner)
@@ -244,6 +249,30 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 }
             }
         }
+    }
+
+
+    //Associate Developer security
+    private def associateDeveloperSecurity(pageId, developerSecurity) {
+        developerSecurity.each { securityEntry ->
+            if ( securityEntry.name ) {
+                try {
+                    PageSecurity pageSecurityInstance = new PageSecurity()
+                    PageSecurityId pageSecurityIdInstance = new PageSecurityId()
+                    pageSecurityIdInstance.pageId = pageId
+                    pageSecurityIdInstance.developerUserId = securityEntry.name
+                    pageSecurityInstance.id = pageSecurityIdInstance
+                    pageSecurityInstance.type = securityEntry.type
+                    pageSecurityInstance.allowModifyInd = securityEntry.allowModify
+                    pageSecurityInstance.userId = securityEntry.name
+                    pageSecurityInstance.acitivityDate = new Date()
+                    pageSecurityInstance.save()
+                } catch(e) {
+                    log.error "Exception associating Developer security: ${e.message}"
+                }
+            }
+        }
+
     }
 
     def compileAll(String pattern) {

@@ -5,6 +5,8 @@ package net.hedtech.banner.css
 
 import grails.converters.JSON
 import groovy.util.logging.Log4j
+import net.hedtech.banner.security.CssSecurity
+import net.hedtech.banner.security.CssSecurityId
 import net.hedtech.banner.tools.PBUtilServiceBase
 @Log4j
 class CssUtilService extends PBUtilServiceBase {
@@ -124,6 +126,9 @@ class CssUtilService extends PBUtilServiceBase {
                 if (file)
                     css.fileTimestamp = new Date(file.lastModified())
                 css = cssService.create(css)
+                if(json.developerSecurity) {
+                    associateDeveloperSecurity(css.id, json.developerSecurity)
+                }
                 if (file && css && !css.hasErrors()) {
                     file.renameTo(file.getCanonicalPath() + '.' + nowAsIsoInFileName() + ".imp")
                 }
@@ -132,5 +137,29 @@ class CssUtilService extends PBUtilServiceBase {
             }
         }
         result
+    }
+
+    //Associate Developer security
+    private def associateDeveloperSecurity(cssId, developerSecurity) {
+        developerSecurity.each { securityEntry ->
+            if ( securityEntry.name ) {
+                try {
+                    CssSecurityId cssSecurityIdInstance = new CssSecurityId()
+                    cssSecurityIdInstance.cssId = cssId
+                    cssSecurityIdInstance.developerUserId = securityEntry.name
+
+                    CssSecurity cssSecurityInstance = new CssSecurity()
+                    cssSecurityInstance.id = cssSecurityIdInstance
+                    cssSecurityInstance.type = securityEntry.type
+                    cssSecurityInstance.allowModifyInd = securityEntry.allowModify
+                    cssSecurityInstance.userId = securityEntry.name
+                    cssSecurityInstance.activityDate = new Date()
+                    cssSecurityInstance.save()
+                } catch(e) {
+                    log.error "Exception associating Developer security: ${e.message}"
+                }
+            }
+        }
+
     }
 }

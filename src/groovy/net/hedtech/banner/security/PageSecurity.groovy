@@ -5,7 +5,7 @@ package net.hedtech.banner.security
 
 
 import javax.persistence.*
-import java.sql.Date
+import javax.persistence.TemporalType
 
 @Entity
 @Table(name = "GBRPSEC")
@@ -34,6 +34,7 @@ class PageSecurity implements Serializable{
     @Column(name="GBRPSEC_ALLOW_MODIFY_IND", nullable= false ,length = 1)
     String allowModifyInd
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name="GBRPSEC_ACTIVITY_DATE", nullable= false )
     Date acitivityDate
 

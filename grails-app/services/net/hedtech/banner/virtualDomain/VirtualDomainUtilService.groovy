@@ -5,6 +5,8 @@ package net.hedtech.banner.virtualDomain
 
 import grails.converters.JSON
 import groovy.util.logging.Log4j
+import net.hedtech.banner.security.VirtualDomainSecurity
+import net.hedtech.banner.security.VirtualDomainSecurityId
 
 @Log4j
 class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
@@ -139,6 +141,9 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
                 if (file)
                     vd.fileTimestamp = new Date(file.lastModified())
                 vd = saveObject(vd)
+                if(json.developerSecurity) {
+                    associateDeveloperSecurity(vd.id, json.developerSecurity)
+                }
                 if (file && !vd.hasErrors()) {
                     file.renameTo(file.getCanonicalPath() + '.' + nowAsIsoInFileName() + ".imp")
                 }
@@ -146,5 +151,29 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
             }
         }
         result
+    }
+
+    //Associate Developer security
+    private def associateDeveloperSecurity(vdId, developerSecurity) {
+        developerSecurity.each { securityEntry ->
+            if ( securityEntry.name ) {
+                try {
+                    VirtualDomainSecurityId vdSecurityIdInstance = new VirtualDomainSecurityId()
+                    vdSecurityIdInstance.virtualDomainId = vdId
+                    vdSecurityIdInstance.developerUserId = securityEntry.name
+
+                    VirtualDomainSecurity vdSecurityInstance = new VirtualDomainSecurity()
+                    vdSecurityInstance.id = vdSecurityIdInstance
+                    vdSecurityInstance.type = securityEntry.type
+                    vdSecurityInstance.allowModifyInd = securityEntry.allowModify
+                    vdSecurityInstance.userId = securityEntry.name
+                    vdSecurityInstance.activityDate = new Date()
+                    vdSecurityInstance.save()
+                } catch(e) {
+                    log.error "Exception associating Developer security: ${e.message}"
+                }
+            }
+        }
+
     }
 }
