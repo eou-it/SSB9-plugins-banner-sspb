@@ -291,7 +291,6 @@
       "title": "Developer Page Security",
       "type": "page"
    },
-   "owner": "null",
    "pageRoles": [
       {
          "roleName": "ADMIN-GPBADMA",
@@ -301,6 +300,5 @@
          "roleName": "ADMIN-GPBADMN",
          "allow": true
       }
-   ],
-   "pageSecurity": []
+   ]
 }
