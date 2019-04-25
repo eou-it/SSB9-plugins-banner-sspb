@@ -126,9 +126,7 @@ class CssUtilService extends PBUtilServiceBase {
                 if (file)
                     css.fileTimestamp = new Date(file.lastModified())
                 css = cssService.create(css)
-                if(json.developerSecurity) {
-                    associateDeveloperSecurity(css.id, json.developerSecurity)
-                }
+                associateDeveloperSecurity(css, json.developerSecurity)
                 if (file && css && !css.hasErrors()) {
                     file.renameTo(file.getCanonicalPath() + '.' + nowAsIsoInFileName() + ".imp")
                 }
@@ -140,21 +138,26 @@ class CssUtilService extends PBUtilServiceBase {
     }
 
     //Associate Developer security
-    private def associateDeveloperSecurity(cssId, developerSecurity) {
+    private def associateDeveloperSecurity(css, developerSecurity) {
+        def cssDevEntries = CssSecurity.fetchAllByCssId(css.id)
+        if(cssDevEntries) {
+            cssDevEntries.each {CssSecurity cssObj ->
+                cssObj.delete(flush:true)
+            }
+        }
         developerSecurity.each { securityEntry ->
             if ( securityEntry.name ) {
                 try {
-                    CssSecurityId cssSecurityIdInstance = new CssSecurityId()
-                    cssSecurityIdInstance.cssId = cssId
-                    cssSecurityIdInstance.developerUserId = securityEntry.name
-
                     CssSecurity cssSecurityInstance = new CssSecurity()
+                    CssSecurityId cssSecurityIdInstance = new CssSecurityId()
+                    cssSecurityIdInstance.cssId = css.id
+                    cssSecurityIdInstance.developerUserId = securityEntry.name
                     cssSecurityInstance.id = cssSecurityIdInstance
                     cssSecurityInstance.type = securityEntry.type
                     cssSecurityInstance.allowModifyInd = securityEntry.allowModify
                     cssSecurityInstance.userId = securityEntry.name
                     cssSecurityInstance.activityDate = new Date()
-                    cssSecurityInstance.save()
+                    cssSecurityInstance.save(flush: true)
                 } catch(e) {
                     log.error "Exception associating Developer security: ${e.message}"
                 }

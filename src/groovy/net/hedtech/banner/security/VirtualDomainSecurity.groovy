@@ -12,7 +12,7 @@ import javax.persistence.TemporalType
 @NamedQueries(value = [
         @NamedQuery(name = "VirtualDomainSecurity.fetchAllByVirtualDomainId",
                 query = """FROM   VirtualDomainSecurity a
-		   WHERE  a.id.virtualDomainId = :domainId
+		   WHERE  a.id.virtualDomainId = :virtualDomainId
 		  """
         )
 ])
