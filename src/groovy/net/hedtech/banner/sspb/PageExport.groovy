@@ -16,7 +16,7 @@ class PageExport  {
 
     def pageRoles = []
 
-    def pageSecurity = []
+    def developerSecurity = []
 
     Date fileTimestamp
 

@@ -56,10 +56,10 @@ class CssExportService {
         cssExport.description = css.description
         cssExport.fileTimestamp = css.fileTimestamp
         cssExport.owner = css.owner
-        cssExport.cssSecurity = []
+        cssExport.developerSecurity = []
         if(css && params.isAllowExportDSPermission && "Y".equalsIgnoreCase(params.isAllowExportDSPermission)){
             CssSecurity.fetchAllByCssId(css.id)?.each{ cs ->
-                cssExport.cssSecurity << [securityType:cs.type, user:cs.id.developerUserId,allowModifyInd:cs.allowModifyInd]
+                cssExport.developerSecurity << [type:cs.type, name:cs.id.developerUserId,allowModify:cs.allowModifyInd]
             }
         }
 
