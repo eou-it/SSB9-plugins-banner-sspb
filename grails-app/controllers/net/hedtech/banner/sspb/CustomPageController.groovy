@@ -24,7 +24,7 @@ class CustomPageController {
             }
         }
         if (params.id == "pbadm.AdminTasks") {
-           if(!developerSecurityService.isAllowImport(params.id, developerSecurityService.getPAGE_IND())) {
+           if(!developerSecurityService.isAllowImport(params.id, DeveloperSecurityService.getPAGE_IND())) {
              redirect(uri: '/login/denied')
            }
         }

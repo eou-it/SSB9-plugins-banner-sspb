@@ -3,7 +3,6 @@
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
-import net.hedtech.banner.security.DeveloperSecurityService
 import net.hedtech.banner.sspb.CommonService
 import org.hibernate.criterion.CriteriaSpecification
 

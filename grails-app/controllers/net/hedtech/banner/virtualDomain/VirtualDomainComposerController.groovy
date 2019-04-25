@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession
 class VirtualDomainComposerController {
     static defaultAction = "loadVirtualDomain"
     def virtualDomainResourceService
+    def developerSecurityService
 
     def composeVirtualDomain = {
         def pageInstance = filter(params)
@@ -27,9 +28,10 @@ class VirtualDomainComposerController {
                 pageInstance.error = saveResult.error
                 pageInstance.id = saveResult.id
                 pageInstance.version = saveResult.version
+                pageInstance.owner=saveResult.owner
                 pageInstance.submitted = true
-                pageInstance.allowModify = DeveloperSecurityService.isAllowModify(params.vdServiceName,DeveloperSecurityService.VIRTUAL_DOMAIN_IND )
-                pageInstance.allowUpdateOwner = DeveloperSecurityService.isAllowUpdateOwner(params.vdServiceName,DeveloperSecurityService.VIRTUAL_DOMAIN_IND )
+                pageInstance.allowModify = developerSecurityService.isAllowModify(params.vdServiceName,DeveloperSecurityService.VIRTUAL_DOMAIN_IND )
+                pageInstance.allowUpdateOwner = developerSecurityService.isAllowUpdateOwner(params.vdServiceName,DeveloperSecurityService.VIRTUAL_DOMAIN_IND )
             } else {
                 pageInstance.error = message(code:"sspb.virtualdomain.invalid.service.message", args:[pageInstance.vdServiceName])
                 render (status: 400, text:  pageInstance.error)

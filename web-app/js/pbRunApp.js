@@ -527,7 +527,7 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
             });
             this.modified = [];
             this.deleted.forEach( function(item)  {
-               item.$delete({id: item.id, item}, successHandler('D'), post.error);
+               item.$delete({id: item.id, item:item}, successHandler('D'), post.error);
             });
             this.deleted = [];
             this.cache.removeAll();

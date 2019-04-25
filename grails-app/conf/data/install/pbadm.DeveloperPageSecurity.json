@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.DeveloperPageSecurity",
    "extendsPage": null,
-   "fileTimestamp": "2019-04-23T11:32:15Z",
+   "fileTimestamp": "2019-04-24T09:38:36Z",
    "modelView": {
       "components": [
          {
@@ -22,7 +22,7 @@
                   "value": "V"
                },
                {
-                  "label": "CSS Manager",
+                  "label": "CSS",
                   "value": "C"
                }
             ],
@@ -69,7 +69,7 @@
                   "loadInitially": false,
                   "name": "ownerPagesBlock_genericData",
                   "onLoad": "",
-                  "onUpdate": "$securityBlock.$visible = $ownerPagesBlock_genericData;\n$ownerPagesBlock_owner=this.currentRecord.TYPE_OWNER\n$assigningPrivileges=this.currentRecord.ALLOW_MODIFY\n$userRoleGrid.$load()\n$profileGrid.$load()",
+                  "onUpdate": "$securityBlock.$visible = $ownerPagesBlock_genericData;\nif(this.currentRecord){\n$ownerPagesBlock_owner=this.currentRecord.TYPE_OWNER\n$assigningPrivileges=this.currentRecord.ALLOW_MODIFY\n}\n$userRoleGrid.$load()\n$profileGrid.$load()",
                   "placeholder": "Select...",
                   "required": false,
                   "sourceModel": "genericData",
@@ -104,7 +104,7 @@
                   "loadInitially": true,
                   "model": "",
                   "name": "assigningPrivileges",
-                  "onUpdate": "$ownerPagesBlock_genericDataDS.data.filter(x=> x.id==$ownerPagesBlock_genericData)[0].ALLOW_MODIFY=$assigningPrivileges \n$genericData.$put({'id':$ownerPagesBlock_genericData, 'SOURCE_TYPE':$ownerPagesBlock_options, 'ALLOW_ALL':$assigningPrivileges }, null, function(){\n        \nif($assigningPrivileges=='Y'){\nalert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.enableall')}\", {type:\"success\", flash:true}); \n}else{\n\talert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.disableall')}\", {type:\"success\", flash:true}); \n}\n});",
+                  "onUpdate": "$ownerPagesBlock_genericDataDS.data.filter(function(x){ return x.id==$ownerPagesBlock_genericData})[0].ALLOW_MODIFY=$assigningPrivileges \n$genericData.$put({'id':$ownerPagesBlock_genericData, 'SOURCE_TYPE':$ownerPagesBlock_options, 'ALLOW_ALL':$assigningPrivileges }, null, function(){\n        \nif($assigningPrivileges=='Y'){\nalert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.enableall')}\", {type:\"success\", flash:true}); \n}else{\n\talert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.disableall')}\", {type:\"success\", flash:true}); \n}\n});",
                   "readonly": false,
                   "style": "col-md-4",
                   "type": "boolean",
@@ -291,15 +291,14 @@
       "title": "Developer Page Security",
       "type": "page"
    },
-   "owner": null,
    "pageRoles": [
+      {
+         "roleName": "ADMIN-GPBADMA",
+         "allow": true
+      },
       {
          "roleName": "ADMIN-GPBADMN",
          "allow": true
-      },{
-         "roleName": "ADMIN-GPBADMA",
-         "allow": true
       }
-   ],
-   "pageSecurity": []
+   ]
 }
