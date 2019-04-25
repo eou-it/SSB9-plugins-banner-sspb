@@ -3,11 +3,15 @@
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
+import net.hedtech.banner.security.DeveloperSecurityService
+
 class VisualPageModelComposerController {
     static defaultAction = "loadComposerPage"
 
+    DeveloperSecurityService developerSecurityService
+
     def loadComposerPage = {
-        render (view:"visualComposer")
+        render (view:"visualComposer", model: [isProductionReadOnlyMode : developerSecurityService.isProductionReadOnlyMode()])
     }
 
     // TODO replace with REST API

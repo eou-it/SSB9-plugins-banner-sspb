@@ -26,20 +26,24 @@ class DeveloperSecurityService {
 
 
     DeveloperSecurityService(){
-        List<ConfigurationData> results = ConfigurationData.fetchByType("boolean",APP_ID)
-        results.each{
+        loadSecurityConfiguration()
+    }
+
+    void loadSecurityConfiguration() {
+        List<ConfigurationData> results = ConfigurationData.fetchByType("boolean", APP_ID)
+        results.each {
             Boolean loopValue = new Boolean(it.value)
-            if(it.name.equals('pagebuilder.security.enableDeveloperSecurity')){
+            if (it.name.equals('pagebuilder.security.enableDeveloperSecurity')) {
                 enableDeveloperSecurity = loopValue
-            }else if(it.name.equals('pagebuilder.security.preventImportByDeveloper')){
+            } else if (it.name.equals('pagebuilder.security.preventImportByDeveloper')) {
                 preventImportByDeveloper = loopValue
-            }else if(it.name.equals('pagebuilder.security.developerReadOnly')){
+            } else if (it.name.equals('pagebuilder.security.developerReadOnly')) {
                 productionMode = loopValue
             }
         }
     }
 
-     static boolean isSuperUser() {
+    static boolean isSuperUser() {
          boolean isSupUser=false
         def userIn = SecurityContextHolder?.context?.authentication?.principal
         if (userIn?.class?.name?.endsWith('BannerUser')) {
@@ -142,8 +146,6 @@ class DeveloperSecurityService {
     }
 
       boolean isAllowImport(String constantName, String type){
-
-         getGlobalSecurityValue()
         if(isSuperUser()){
             return true
         }else if(preventImportByDeveloper){
@@ -183,5 +185,10 @@ class DeveloperSecurityService {
         }else{
             return false
         }
+    }
+
+    boolean isProductionReadOnlyMode(){
+        loadSecurityConfiguration()
+        return isSuperUser() || !productionMode
     }
 }
