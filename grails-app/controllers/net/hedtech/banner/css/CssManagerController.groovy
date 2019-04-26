@@ -1,19 +1,20 @@
 /*******************************************************************************
- * Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
+ * Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 package net.hedtech.banner.css
 
 import groovy.json.JsonOutput
 import org.springframework.web.multipart.MultipartFile
-import grails.converters.JSON
 
 class CssManagerController {
     static defaultAction = "loadCssManagerPage"
 
     def cssService
+    def developerSecurityService
+
 
     def loadCssManagerPage = {
-        render (view:"cssManager")
+        render (view:"cssManager",model: [isProductionReadOnlyMode : developerSecurityService.isProductionReadOnlyMode()])
     }
 
     // TODO use REST API

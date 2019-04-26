@@ -102,6 +102,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                         $scope.description = data.description;
                         $scope.cssOwner = data.owner;
                         $scope.allowUpdateOwner = data.allowUpdateOwner;
+                        $scope.allowModify = data.allowModify;
                     } catch(ex) {
                         alert($scope.i18nGet("${message(code:'sspb.css.cssManager.parsing.error.message')}",[ex]),{type:"error"});
                     }
@@ -152,6 +153,8 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                 $scope.cssSource = "";
                 $scope.description="";
                 $scope.cssOwner = user.loginName;
+                $scope.allowUpdateOwner = true;
+                $scope.allowModify = true;
             };
 
 
@@ -249,11 +252,13 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         <button class="secondary" ng-click='loadCssNames()' ng-show="false" ><g:message code="sspb.css.cssManager.reload.pages.label" /></button>
     </div>
     <div class="btn-section-2">
-        <button class="primary" ng-click='newCssSource()'><g:message code="sspb.css.cssManager.newCss.label" /></button>
-        <button class="secondary" ng-click='submitCssSource()'><g:message code="sspb.css.cssManager.save.label" /></button>
-        <pb-Upload label='Upload Stylesheet' status='cssStatus' pb-change=''></pb-Upload>
+        <button class="primary" ng-click='newCssSource()' ng-disabled="${!isProductionReadOnlyMode}" ><g:message code="sspb.css.cssManager.newCss.label" /></button>
+        <button class="secondary" ng-click='submitCssSource()' ng-disabled="${!isProductionReadOnlyMode} || !allowModify"><g:message code="sspb.css.cssManager.save.label" /></button>
+        <span ng-show="${isProductionReadOnlyMode}">
+            <pb-Upload label='Upload Stylesheet' status='cssStatus' pb-change=''></pb-Upload>
+        </span>
         <button class="secondary" ng-click="getCssSource()"><g:message code="sspb.css.cssManager.reload.label" /></button>
-        <button class="secondary" ng-click='deleteCssSource()'><g:message code="sspb.css.cssManager.delete.label" /></button>
+        <button class="secondary" ng-click='deleteCssSource()' ng-disabled="${!isProductionReadOnlyMode} || !allowModify"><g:message code="sspb.css.cssManager.delete.label" /></button>
         <span  ng-show="cssName.length>0">
             <button class="secondary" ng-click='getDeveloperSecurityPage()'><g:message code="sspb.css.cssManager.developer.label" /></button>
         </span>

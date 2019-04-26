@@ -16,14 +16,13 @@ class PageExport  {
 
     def pageRoles = []
 
-    def pageSecurity = []
+    def developerSecurity = []
 
     Date fileTimestamp
 
     //Constructor
     PageExport (Page page) {
         this.constantName = page.constantName
-        this.owner = page.owner
         this.modelView = page.modelMap
         this.extendsPage = page.extendsPage ? [constantName: page.extendsPage.constantName] : null
         this.fileTimestamp = new Date()

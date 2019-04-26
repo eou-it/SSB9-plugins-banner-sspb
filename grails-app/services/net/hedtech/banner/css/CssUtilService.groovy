@@ -5,6 +5,8 @@ package net.hedtech.banner.css
 
 import grails.converters.JSON
 import groovy.util.logging.Log4j
+import net.hedtech.banner.security.CssSecurity
+import net.hedtech.banner.security.CssSecurityId
 import net.hedtech.banner.tools.PBUtilServiceBase
 @Log4j
 class CssUtilService extends PBUtilServiceBase {
@@ -124,6 +126,7 @@ class CssUtilService extends PBUtilServiceBase {
                 if (file)
                     css.fileTimestamp = new Date(file.lastModified())
                 css = cssService.create(css)
+                associateDeveloperSecurity(css, json.developerSecurity)
                 if (file && css && !css.hasErrors()) {
                     file.renameTo(file.getCanonicalPath() + '.' + nowAsIsoInFileName() + ".imp")
                 }
@@ -132,5 +135,34 @@ class CssUtilService extends PBUtilServiceBase {
             }
         }
         result
+    }
+
+    //Associate Developer security
+    private def associateDeveloperSecurity(css, developerSecurity) {
+        def cssDevEntries = CssSecurity.fetchAllByCssId(css.id)
+        if(cssDevEntries) {
+            cssDevEntries.each {CssSecurity cssObj ->
+                cssObj.delete(flush:true)
+            }
+        }
+        developerSecurity.each { securityEntry ->
+            if ( securityEntry.name ) {
+                try {
+                    CssSecurity cssSecurityInstance = new CssSecurity()
+                    CssSecurityId cssSecurityIdInstance = new CssSecurityId()
+                    cssSecurityIdInstance.cssId = css.id
+                    cssSecurityIdInstance.developerUserId = securityEntry.name
+                    cssSecurityInstance.id = cssSecurityIdInstance
+                    cssSecurityInstance.type = securityEntry.type
+                    cssSecurityInstance.allowModifyInd = securityEntry.allowModify
+                    cssSecurityInstance.userId = securityEntry.name
+                    cssSecurityInstance.activityDate = new Date()
+                    cssSecurityInstance.save(flush: true)
+                } catch(e) {
+                    log.error "Exception associating Developer security: ${e.message}"
+                }
+            }
+        }
+
     }
 }

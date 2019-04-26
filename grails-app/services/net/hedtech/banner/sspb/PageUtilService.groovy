@@ -6,6 +6,8 @@ package net.hedtech.banner.sspb
 
 import grails.converters.JSON
 import groovy.util.logging.Log4j
+import net.hedtech.banner.security.PageSecurity
+import net.hedtech.banner.security.PageSecurityId
 import org.codehaus.groovy.grails.web.context.ServletContextHolder
 import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
 import org.springframework.context.ApplicationContext
@@ -204,6 +206,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 page=page.merge()
                 if (result.statusCode == statusOk) {
                     result = pageService.compileAndSavePage(page.constantName, page.mergedModelText, page.extendsPage, page.owner)
+                    associateDeveloperSecurity(page, json.developerSecurity)
                     result.loaded = result.page?1:0
                     if (page) {
                         if (result.loaded) {
@@ -244,6 +247,35 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 }
             }
         }
+    }
+
+    //Associate Developer security
+    private def associateDeveloperSecurity(page, developerSecurity) {
+        def pageDevEntries = PageSecurity.fetchAllByPageId(page.id)
+        if(pageDevEntries) {
+            pageDevEntries.each {PageSecurity psObj ->
+                psObj.delete(flush:true)
+            }
+        }
+        developerSecurity.each { securityEntry ->
+            if ( securityEntry.name ) {
+                try {
+                    PageSecurity pageSecurityInstance = new PageSecurity()
+                    PageSecurityId pageSecurityIdInstance = new PageSecurityId()
+                    pageSecurityIdInstance.pageId = page.id
+                    pageSecurityIdInstance.developerUserId = securityEntry.name
+                    pageSecurityInstance.id = pageSecurityIdInstance
+                    pageSecurityInstance.type = securityEntry.type
+                    pageSecurityInstance.allowModifyInd = securityEntry.allowModify
+                    pageSecurityInstance.userId = securityEntry.name
+                    pageSecurityInstance.acitivityDate = new Date()
+                    pageSecurityInstance.save(flush: true)
+                } catch(e) {
+                    log.error "Exception associating Developer security: ${e.message}"
+                }
+            }
+        }
+
     }
 
     def compileAll(String pattern) {

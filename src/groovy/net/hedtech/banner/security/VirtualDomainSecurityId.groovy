@@ -11,7 +11,7 @@ class VirtualDomainSecurityId implements Serializable{
 
 
     @Column(name="GBRVSEC_DOMAIN_ID", nullable= false ,length = 19)
-    Long domainId
+    Long virtualDomainId
 
     @Column(name="GBRVSEC_DEVELOPER_USER_ID", nullable= false ,length = 30)
     String developerUserId

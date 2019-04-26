@@ -5,14 +5,14 @@ package net.hedtech.banner.security
 
 
 import javax.persistence.*
-import java.sql.Date
+import javax.persistence.TemporalType
 
 @Entity
 @Table(name = "GBRVSEC")
 @NamedQueries(value = [
         @NamedQuery(name = "VirtualDomainSecurity.fetchAllByVirtualDomainId",
                 query = """FROM   VirtualDomainSecurity a
-		   WHERE  a.id.domainId = :domainId
+		   WHERE  a.id.virtualDomainId = :virtualDomainId
 		  """
         )
 ])
@@ -33,6 +33,7 @@ class VirtualDomainSecurity implements Serializable{
     @Column(name="GBRVSEC_ALLOW_MODIFY_IND", nullable= false ,length = 1)
     String allowModifyInd
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name="GBRVSEC_ACTIVITY_DATE", nullable= false )
     Date activityDate
 
@@ -50,7 +51,7 @@ class VirtualDomainSecurity implements Serializable{
 
     public static def fetchAllByVirtualDomainId(Long id) {
         if (id) {
-            return VirtualDomainSecurity.withSession { session -> session.getNamedQuery('VirtualDomainSecurity.fetchAllByVirtualDomainId').setLong('domainId', id).list() }
+            return VirtualDomainSecurity.withSession { session -> session.getNamedQuery('VirtualDomainSecurity.fetchAllByVirtualDomainId').setLong('virtualDomainId', id).list() }
         } else {
             return []
         }

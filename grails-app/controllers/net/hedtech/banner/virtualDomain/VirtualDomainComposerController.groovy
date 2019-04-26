@@ -65,7 +65,7 @@ class VirtualDomainComposerController {
                render (status: 400, text:  pageInstance.error)
            }
         }
-        render (view:"virtualDomainComposer", model: [pageInstance: pageInstance])
+        render (view:"virtualDomainComposer", model: [pageInstance: pageInstance,isProductionReadOnlyMode : developerSecurityService.isProductionReadOnlyMode()])
     }
 
     def deleteVirtualDomain = {

@@ -35,7 +35,7 @@ class PageExportService {
     def show(params) {
         Map parameter = CommonService.decodeBase64(params)
         params.putAll(parameter);
-        if(params.id && !params.id.matches("[0-9]+")){
+        if(params.id && params.id.contains('^')){
             params.isAllowExportDSPermission = params.id?.substring(params.id?.length()-1,params.id?.length())
             params.id = params.id?.substring(0,params.id?.length()-2)
         }
@@ -51,8 +51,9 @@ class PageExportService {
         }
 
         if(page && params.isAllowExportDSPermission && "Y".equalsIgnoreCase(params.isAllowExportDSPermission)){
+            pageExport.owner = page.owner
             PageSecurity.fetchAllByPageId(page.id)?.each{ ps ->
-                pageExport.pageSecurity << [securityType:ps.type, user:ps.id.developerUserId,allowModifyInd:ps.allowModifyInd]
+                pageExport.developerSecurity << [type:ps.type, name:ps.id.developerUserId,allowModify:ps.allowModifyInd]
             }
         }
 

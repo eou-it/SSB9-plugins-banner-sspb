@@ -5,6 +5,8 @@ package net.hedtech.banner.virtualDomain
 
 import grails.converters.JSON
 import groovy.util.logging.Log4j
+import net.hedtech.banner.security.VirtualDomainSecurity
+import net.hedtech.banner.security.VirtualDomainSecurityId
 
 @Log4j
 class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
@@ -139,6 +141,7 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
                 if (file)
                     vd.fileTimestamp = new Date(file.lastModified())
                 vd = saveObject(vd)
+                associateDeveloperSecurity(vd, json.developerSecurity)
                 if (file && !vd.hasErrors()) {
                     file.renameTo(file.getCanonicalPath() + '.' + nowAsIsoInFileName() + ".imp")
                 }
@@ -146,5 +149,34 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
             }
         }
         result
+    }
+
+    //Associate Developer security
+    private def associateDeveloperSecurity(vd, developerSecurity) {
+        def vdDevEntries = VirtualDomainSecurity.fetchAllByVirtualDomainId(vd.id)
+        if(vdDevEntries) {
+            vdDevEntries.each {VirtualDomainSecurity vdObj ->
+                vdObj.delete(flush:true)
+            }
+        }
+        developerSecurity.each { securityEntry ->
+            if ( securityEntry.name ) {
+                try {
+                    VirtualDomainSecurity vdSecurityInstance = new VirtualDomainSecurity()
+                    VirtualDomainSecurityId vdSecurityIdInstance = new VirtualDomainSecurityId()
+                    vdSecurityIdInstance.virtualDomainId = vd.id
+                    vdSecurityIdInstance.developerUserId = securityEntry.name
+                    vdSecurityInstance.id = vdSecurityIdInstance
+                    vdSecurityInstance.type = securityEntry.type
+                    vdSecurityInstance.allowModifyInd = securityEntry.allowModify
+                    vdSecurityInstance.userId = securityEntry.name
+                    vdSecurityInstance.activityDate = new Date()
+                    vdSecurityInstance.save(flush: true)
+                } catch(e) {
+                    log.error "Exception associating Developer security: ${e.message}"
+                }
+            }
+        }
+
     }
 }

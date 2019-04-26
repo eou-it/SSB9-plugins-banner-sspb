@@ -5,7 +5,7 @@ package net.hedtech.banner.security
 
 
 import javax.persistence.*
-import java.sql.Date
+import javax.persistence.TemporalType
 
 @Entity
 @Table(name = "GBRCSEC")
@@ -35,6 +35,7 @@ class CssSecurity implements Serializable{
     @Column(name="GBRCSEC_ALLOW_MODIFY_IND", nullable= false ,length = 1)
     String allowModifyInd
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name="GBRCSEC_ACTIVITY_DATE", nullable= false )
     Date activityDate
 
