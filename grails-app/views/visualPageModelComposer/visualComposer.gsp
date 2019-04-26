@@ -752,6 +752,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                             $scope.pageCurName = $scope.pageName;
                             $scope.pageOwner = data.owner;
                             $scope.allowUpdateOwner = data.allowUpdateOwner;
+                            $scope.allowModify = data.allowModify;
                             $scope.extendsPage = data.extendsPage;
                             $("#pageRoleId").val(data.id);
                             $scope.extendsPageName = $scope.extendsPage ? $scope.extendsPage.constantName : "";
@@ -794,6 +795,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                     $scope.resetSelected();
                     $scope.pageOwner = user.loginName;
                     $scope.allowUpdateOwner = true;
+                    $scope.allowModify = true;
                     //$scope.handlePageTreeChange();
                     $scope.statusHolder.isPageModified = false;
                 }
@@ -1062,8 +1064,8 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         </select>
 
         <button id="reload-btn" ng-click='loadPageNames(); saveAs=false;' title="${message( code:'sspb.page.visualbuilder.reload.pages.label')}" ng-show="false" /> </i> </button>
-        <button ng-click='newPageSource();resetPageNameData();' class="primary"><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
-        <button ng-click='saveAs=true;' ng-show="pageName && pageName!=newPageName" class="secondary"> <g:message code="sspb.page.visualbuilder.save.as.label" /></button>
+        <button ng-click='newPageSource();resetPageNameData();' ng-disabled="${!isProductionReadOnlyMode}" class="primary"><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
+        <button ng-click='saveAs=true;' ng-show="pageName && pageName!=newPageName" ng-disabled="${!isProductionReadOnlyMode}" class="secondary"> <g:message code="sspb.page.visualbuilder.save.as.label" /></button>
         <span ng-hide="pageCurName == pageName && !saveAs">
             <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.name.label" /></label>
             <input id="saveAsInput" class="vpc-name-input" type="text" name="constantNameEdit" ng-model="pageCurName" required maxlength="60"
@@ -1085,10 +1087,10 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         </select>
 
         <button ng-show="pageName && pageCurName && pageCurName != newPageName" ng-click='validateAndSubmitPageSource(); saveAs=false;updatePageName();'
-                ng-disabled='sourceEditEnabled || !pagemodelform.$valid' class="primary"><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
+                ng-disabled='sourceEditEnabled || !pagemodelform.$valid || !allowModify' class="primary"><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
         <button ng-show="pageName && pageName != newPageName" ng-click="getPageSource(); saveAs=false;" class="secondary" ><g:message code="sspb.page.visualbuilder.reload.label" /></button>
         <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click="previewPageSource()" class="secondary" ><g:message code="sspb.page.visualbuilder.preview.label" /></button>
-        <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click='deletePageSource(); saveAs=false;' class="secondary"><g:message code="sspb.page.visualbuilder.delete.label" /></button>
+        <button ng-show="pageName && pageCurName && pageName != newPageName"  ng-disabled="!allowModify"  ng-click='deletePageSource(); saveAs=false;' class="secondary"><g:message code="sspb.page.visualbuilder.delete.label" /></button>
         <button id="pageRoleId" value="" ng-show="pageName && pageName != newPageName" ng-click="showRolesPage(); saveAs=false;" class="secondary" ><g:message code="sspb.page.visualbuilder.roles.label" /></button>
         <button value="" ng-show="pageName && pageName != newPageName" ng-click="getDeveloperSecurityPage(); saveAs=false;" class="secondary" ><g:message code="sspb.css.cssManager.developer.label" /></button>
         <span ng-show="pageName && pageCurName && pageName != newPageName" class="alignRight">

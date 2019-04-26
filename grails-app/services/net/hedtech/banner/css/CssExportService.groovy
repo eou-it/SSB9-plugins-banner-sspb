@@ -38,7 +38,7 @@ class CssExportService {
     def show(params) {
         Map parameter = CommonService.decodeBase64(params)
         params.putAll(parameter);
-        if(params.id && !params.id.matches("[0-9]+")){
+        if(params.id && params.id.contains('^')){
             params.isAllowExportDSPermission = params.id?.substring(params.id?.length()-1,params.id?.length())
             params.id = params.id?.substring(0,params.id?.length()-2)
         }
@@ -55,9 +55,10 @@ class CssExportService {
         cssExport.css = css.css
         cssExport.description = css.description
         cssExport.fileTimestamp = css.fileTimestamp
-        cssExport.owner = css.owner
         cssExport.developerSecurity = []
+        cssExport.owner = null
         if(css && params.isAllowExportDSPermission && "Y".equalsIgnoreCase(params.isAllowExportDSPermission)){
+            cssExport.owner = css.owner
             CssSecurity.fetchAllByCssId(css.id)?.each{ cs ->
                 cssExport.developerSecurity << [type:cs.type, name:cs.id.developerUserId,allowModify:cs.allowModifyInd]
             }

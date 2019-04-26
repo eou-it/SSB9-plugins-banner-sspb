@@ -39,7 +39,7 @@ class VirtualDomainExportService {
     def show(params) {
         Map parameter = CommonService.decodeBase64(params)
         params.putAll(parameter);
-        if(params.id && !params.id.matches("[0-9]+")){
+        if(params.id && params.id.contains('^')){
             params.isAllowExportDSPermission = params.id?.substring(params.id?.length()-1,params.id?.length())
             params.id = params.id?.substring(0,params.id?.length()-2)
         }
@@ -59,9 +59,10 @@ class VirtualDomainExportService {
         vdExport = vd.properties['serviceName', 'typeOfCode', 'dataSource',
                 'codeGet', 'codePost', 'codePut', 'codeDelete', 'fileTimestamp']
         vdExport.virtualDomainRoles = vdRoles
-        vdExport.owner = vd.owner
         vdExport.developerSecurity = []
+        vdExport.owner = null
         if(vd && params.isAllowExportDSPermission && "Y".equalsIgnoreCase(params.isAllowExportDSPermission)){
+            vdExport.owner = vd.owner
             VirtualDomainSecurity.fetchAllByVirtualDomainId(vd.id)?.each{ vs ->
                 vdExport.developerSecurity << [type:vs.type, name:vs.id.developerUserId,allowModify:vs.allowModifyInd]
             }

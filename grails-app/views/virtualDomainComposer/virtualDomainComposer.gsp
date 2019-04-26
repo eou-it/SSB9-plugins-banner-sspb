@@ -103,8 +103,8 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
             <label><g:message code="sspb.page.virtualdomain.servicename.label" /></label>
             <input maxlength="60"  pattern="^[a-zA-Z]+[a-zA-Z0-9_-]*$" type="text" name="vdServiceName" value="${pageInstance?.vdServiceName}" required />
 
-            <g:actionSubmit action="saveVirtualDomain" class="primary" value="${message(code:"sspb.page.virtualdomain.save.label")}" />
-            <g:actionSubmit action="deleteVirtualDomain" class="secondary" value="${message(code:"sspb.page.virtualdomain.delete.label")}" />
+            <g:actionSubmit action="saveVirtualDomain" ng-disabled="${!isProductionReadOnlyMode || !(pageInstance?.allowModify==null ? true: pageInstance?.allowModify)}" class="primary" value="${message(code:"sspb.page.virtualdomain.save.label")}" />
+            <g:actionSubmit action="deleteVirtualDomain" ng-disabled="${!isProductionReadOnlyMode || !(pageInstance?.allowModify==null ? true: pageInstance?.allowModify)}"  class="secondary" value="${message(code:"sspb.page.virtualdomain.delete.label")}" />
             <g:if test="${pageInstance?.vdServiceName}">
                 <input type="button" class="secondary" value="${message(code:"sspb.page.virtualdomain.roles.label")}" onclick="showDomainRoles('${pageInstance?.id}','${pageInstance?.vdServiceName}')"/>
                 <input type="button" class="secondary" value="${message(code:"sspb.css.cssManager.developer.label")}" onclick="getDeveloperSecurityPage('${pageInstance?.id}','${pageInstance?.vdServiceName}')"/>
