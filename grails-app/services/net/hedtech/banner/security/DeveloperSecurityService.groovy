@@ -23,6 +23,9 @@ class DeveloperSecurityService {
     static final String CSS_IND = "C"
     static final String VIRTUAL_DOMAIN_IND = "V"
     static final String USER_GROUP = "INDIVIDUAL"
+    static final String ENABLE_DEVELOPER_SECURITY = 'pagebuilder.security.enableDeveloperSecurity'
+    static final String PREVENT_IMPORT_BY_DEVELOPER = 'pagebuilder.security.preventImportByDeveloper'
+    static final String DEVELOPER_READONLY='pagebuilder.security.developerReadOnly'
 
 
     DeveloperSecurityService(){
@@ -32,13 +35,15 @@ class DeveloperSecurityService {
     void loadSecurityConfiguration() {
         List<ConfigurationData> results = ConfigurationData.fetchByType("boolean", APP_ID)
         results.each {
-            Boolean loopValue = new Boolean(it.value)
-            if (it.name.equals('pagebuilder.security.enableDeveloperSecurity')) {
-                enableDeveloperSecurity = loopValue
-            } else if (it.name.equals('pagebuilder.security.preventImportByDeveloper')) {
-                preventImportByDeveloper = loopValue
-            } else if (it.name.equals('pagebuilder.security.developerReadOnly')) {
-                productionMode = loopValue
+            switch (it.name){
+                case ENABLE_DEVELOPER_SECURITY :
+                    enableDeveloperSecurity = new Boolean(it.value)
+                    break
+                case PREVENT_IMPORT_BY_DEVELOPER :
+                    preventImportByDeveloper = new Boolean(it.value)
+                    break
+                case DEVELOPER_READONLY :
+                    productionMode = new Boolean(it.value)
             }
         }
     }
