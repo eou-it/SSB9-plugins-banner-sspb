@@ -151,7 +151,7 @@ class DeveloperSecurityService {
     }
 
       boolean isAllowImport(String constantName, String type){
-        if(isSuperUser()){
+         if(isSuperUser()){
             return true
         }else if(preventImportByDeveloper){
             return false

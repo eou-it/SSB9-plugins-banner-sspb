@@ -4,6 +4,7 @@
 
 package net.hedtech.banner.sspb
 
+
 class CustomPageController {
 
     static defaultAction = "page"
@@ -24,7 +25,7 @@ class CustomPageController {
             }
         }
         if (params.id == "pbadm.AdminTasks") {
-           if(!developerSecurityService.isAllowImport(params.id, DeveloperSecurityService.getPAGE_IND())) {
+           if(!developerSecurityService.isAllowImport(params.id, developerSecurityService.PAGE_IND)) {
              redirect(uri: '/login/denied')
            }
         }
