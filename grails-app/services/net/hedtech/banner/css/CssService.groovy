@@ -7,6 +7,7 @@ package net.hedtech.banner.css
 import net.hedtech.banner.exceptions.ApplicationException
 import net.hedtech.banner.security.DeveloperSecurityService
 import net.hedtech.banner.sspb.CommonService
+import net.hedtech.banner.sspb.PBUser
 import org.codehaus.groovy.grails.web.util.WebUtils
 import net.hedtech.banner.service.ServiceBase
 import org.springframework.context.i18n.LocaleContextHolder
@@ -145,7 +146,7 @@ class CssService extends ServiceBase {
                     cssInstance.owner = owner
                     super.update(cssInstance)
                 } else {
-                    cssInstance = new Css([constantName: cssName, description: description, css: cssSource, owner:owner])
+                    cssInstance = new Css([constantName: cssName, description: description, css: cssSource, owner: PBUser.userCache.loginName])
                     super.create(cssInstance)
                 }
                 ret = [statusCode:0, statusMessage:"${message(code:'sspb.css.cssManager.saved.message')}"]
