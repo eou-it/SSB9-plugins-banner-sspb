@@ -1042,6 +1042,12 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 
                 });
             }
+
+            $scope.resetOwner = function (){
+                $scope.pageOwner = user.loginName;
+                $scope.allowUpdateOwner = true;
+                $scope.allowModify = true;
+            }
             //run initialize when the controller is ready
             $scope.initialize();
 
@@ -1065,7 +1071,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 
         <button id="reload-btn" ng-click='loadPageNames(); saveAs=false;' title="${message( code:'sspb.page.visualbuilder.reload.pages.label')}" ng-show="false" /> </i> </button>
         <button ng-click='newPageSource();resetPageNameData();' ng-disabled="${!isProductionReadOnlyMode}" class="primary"><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
-        <button ng-click='saveAs=true;' ng-show="pageName && pageName!=newPageName" ng-disabled="${!isProductionReadOnlyMode}" class="secondary"> <g:message code="sspb.page.visualbuilder.save.as.label" /></button>
+        <button ng-click='resetOwner(); saveAs=true;' ng-show="pageName && pageName!=newPageName" ng-disabled="${!isProductionReadOnlyMode}" class="secondary"> <g:message code="sspb.page.visualbuilder.save.as.label" /></button>
         <span ng-hide="pageCurName == pageName && !saveAs">
             <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.name.label" /></label>
             <input id="saveAsInput" class="vpc-name-input" type="text" name="constantNameEdit" ng-model="pageCurName" required maxlength="60"
