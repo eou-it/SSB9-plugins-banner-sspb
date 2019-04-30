@@ -46,8 +46,8 @@ class VirtualDomainSecurity implements Serializable{
     @Column(name="GBRVSEC_VERSION" ,length = 19)
     Long version
 
-    @Column( name="GBRVSEC_VPDI_CODE", length = 19)
-    Long vpdiCode
+    @Column( name="GBRVSEC_VPDI_CODE")
+    String vpdiCode
 
     public static def fetchAllByVirtualDomainId(Long id) {
         if (id) {

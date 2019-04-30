@@ -147,7 +147,7 @@ class PageService {
                     pageInstance.extendsPage = extendsPage ? Page.findByConstantName(extendsPage.constantName) : null
                     pageInstance.owner = pageOwner
                 } else {
-                    pageInstance = new Page([constantName :pageName, extendsPage :extendsPage, owner: PBUser.userCache.loginName])
+                    pageInstance = new Page([constantName :pageName, extendsPage :extendsPage, owner: pageOwner])
                 }
                 pageInstance.modelView = pageSource
                 //remove merge Info if page is not extended

@@ -47,8 +47,8 @@ class PageSecurity implements Serializable{
     @Column(name="GBRPSEC_VERSION" ,length = 19)
     Long version
 
-    @Column( name="GBRPSEC_VPDI_CODE", length = 19)
-    Long vpdiCode
+    @Column( name="GBRPSEC_VPDI_CODE")
+    String vpdiCode
 
 
     public static def fetchAllByPageId(Long id) {
