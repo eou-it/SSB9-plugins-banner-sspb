@@ -721,6 +721,9 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
                 var pageName = window.localStorage['pageName'];
                 var pageId = window.localStorage['pageId'];
                 var pbDataOptions = $parse(attrs.pbPopupDataGrid)() || {};
+                if(pbDataOptions && pbDataOptions.id == 'selectPage' ){
+                    element.attr('disabled' ,pbDataOptions.productionReadOnlyMode);
+                }
 
                 if(pageName && pbDataOptions.isPbPage== 'true'){
                     pbPagesChangeEvent(pbDataOptions.id,pageName,pageId)
