@@ -31,7 +31,7 @@ class CustomPageController {
         }
         if (grailsApplication.config.pageBuilder?.enabled) {
             // render view page.gsp which will be including getHTML
-            render(view: "page", model: [id: params.id,isProductionReadOnlyMode : developerSecurityService.isProductionReadOnlyMode()])
+            render(view: "page", model: [id: params.id])
         } else {
             redirect(uri: '/themeEditor')
         }

@@ -916,7 +916,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                     $scope.alertError("${message(code:'sspb.page.visualbuilder.page.name.prompt.message', encodeAs: 'JavaScript')}");
                     return;
                 }
-
+                window.localStorage['allowModify'] = !$scope.allowModify;
                 updateLocalStorage($scope.pageCurName,pageId)
                 window.open(rootWebApp+'customPage/page/'+ 'pbadm.PageRoles', '_self');
             };
@@ -1097,7 +1097,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         <button ng-show="pageName && pageName != newPageName" ng-click="getPageSource(); saveAs=false;" class="secondary" ><g:message code="sspb.page.visualbuilder.reload.label" /></button>
         <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click="previewPageSource()" class="secondary" ><g:message code="sspb.page.visualbuilder.preview.label" /></button>
         <button ng-show="pageName && pageCurName && pageName != newPageName"  ng-disabled="!allowModify"  ng-click='deletePageSource(); saveAs=false;' class="secondary"><g:message code="sspb.page.visualbuilder.delete.label" /></button>
-        <button id="pageRoleId" value="" ng-show="pageName && pageName != newPageName" ng-disabled="!allowModify" ng-click="showRolesPage(); saveAs=false;" class="secondary" ><g:message code="sspb.page.visualbuilder.roles.label" /></button>
+        <button id="pageRoleId" value="" ng-show="pageName && pageName != newPageName"  ng-click="showRolesPage(); saveAs=false;" class="secondary" ><g:message code="sspb.page.visualbuilder.roles.label" /></button>
         <button value="" ng-show="pageName && pageName != newPageName" ng-click="getDeveloperSecurityPage(); saveAs=false;" class="secondary" ><g:message code="sspb.css.cssManager.developer.label" /></button>
         <span ng-show="pageName && pageCurName && pageName != newPageName" class="alignRight">
             <label class="vpc-name-label dispInline"><g:message code="sspb.page.visualbuilder.pageowner.label" /></label>
