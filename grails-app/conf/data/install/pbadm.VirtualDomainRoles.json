@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.VirtualDomainRoles",
    "extendsPage": null,
-   "fileTimestamp": "2019-04-23T09:16:02Z",
+   "fileTimestamp": "2019-05-02T07:38:08Z",
    "modelView": {
       "components": [
          {
@@ -31,7 +31,7 @@
                   "model": "selectVirtualDomain",
                   "name": "selectVirtualDomain",
                   "onLoad": "$editVirtualDomainRoles.$load();$EditRolesForm.$visible=$selectVirtualDomain; $roleName.$populateSource();",
-                  "onUpdate": "$editVirtualDomainRoles.$load();\n$EditRolesForm.$visible=$selectVirtualDomain;\n $roleName.$populateSource();",
+                  "onUpdate": "$editVirtualDomainRoles.$load();\n$EditRolesForm.$visible=$selectVirtualDomain;\n $roleName.$populateSource();\n\nsetTimeout(function(){ \nif(window.localStorage['allowModify'] === 'true'){\n$('#pbid-EditRolesForm :input').attr('disabled', true);\n}else {\n$('#pbid-EditRolesForm :input').attr('disabled', false);\n}\nwindow.localStorage['allowModify'] = \"\";\n }, 700);",
                   "placeholder": "Select...",
                   "required": false,
                   "sourceModel": "virtualDomainLookup1",
@@ -172,11 +172,11 @@
    },
    "pageRoles": [
       {
-         "roleName": "ADMIN-GPBADMN",
+         "roleName": "ADMIN-GPBADMA",
          "allow": true
       },
       {
-         "roleName": "ADMIN-GPBADMA",
+         "roleName": "ADMIN-GPBADMN",
          "allow": true
       }
    ]
