@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.DeveloperPageSecurity",
    "extendsPage": null,
-   "fileTimestamp": "2019-04-29T04:17:51Z",
+   "fileTimestamp": "2019-04-29T09:50:17Z",
    "modelView": {
       "components": [
          {
@@ -104,7 +104,7 @@
                   "loadInitially": true,
                   "model": "",
                   "name": "assigningPrivileges",
-                  "onUpdate": "$ownerPagesBlock_genericDataDS.data.filter(function(x){ return x.id==$ownerPagesBlock_genericData})[0].ALLOW_MODIFY=$assigningPrivileges \n$genericData.$put({'id':$ownerPagesBlock_genericData, 'SOURCE_TYPE':$ownerPagesBlock_options, 'ALLOW_ALL':$assigningPrivileges }, null, function(){\n        \nif($assigningPrivileges=='Y'){\nalert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.enableall')}\", {type:\"success\", flash:true}); \n}else{\n\talert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.disableall')}\", {type:\"success\", flash:true}); \n}\n});",
+                  "onUpdate": "if($ownerPagesBlock_genericData){\n$ownerPagesBlock_genericDataDS.data.filter(function(x){ return x.id==$ownerPagesBlock_genericData})[0].ALLOW_MODIFY=$assigningPrivileges \n\n$genericData.$put({'id':$ownerPagesBlock_genericData, 'SOURCE_TYPE':$ownerPagesBlock_options, 'ALLOW_ALL':$assigningPrivileges }, null, function(){\n        \nif($assigningPrivileges=='Y'){\nalert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.enableall')}\", {type:\"success\", flash:true}); \n}else{\n\talert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.disableall')}\", {type:\"success\", flash:true}); \n}\n});\n}",
                   "readonly": false,
                   "style": "col-md-4",
                   "type": "boolean",
