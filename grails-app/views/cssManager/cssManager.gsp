@@ -253,12 +253,12 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
     </div>
     <div class="btn-section-2">
         <button class="primary" ng-click='newCssSource()' ng-disabled="${!isProductionReadOnlyMode}" ><g:message code="sspb.css.cssManager.newCss.label" /></button>
-        <button class="secondary" ng-click='submitCssSource()' ng-disabled="${!isProductionReadOnlyMode} || !allowModify"><g:message code="sspb.css.cssManager.save.label" /></button>
+        <button class="secondary" ng-click='submitCssSource()' ng-disabled="${!isProductionReadOnlyMode} || !(allowModify == null ? true :allowModify)"><g:message code="sspb.css.cssManager.save.label" /></button>
         <span ng-show="${isProductionReadOnlyMode}">
             <pb-Upload label='Upload Stylesheet' status='cssStatus' pb-change=''></pb-Upload>
         </span>
         <button class="secondary" ng-click="getCssSource()"><g:message code="sspb.css.cssManager.reload.label" /></button>
-        <button class="secondary" ng-click='deleteCssSource()' ng-disabled="${!isProductionReadOnlyMode} || !allowModify"><g:message code="sspb.css.cssManager.delete.label" /></button>
+        <button class="secondary" ng-click='deleteCssSource()' ng-disabled="${!isProductionReadOnlyMode} || !(allowModify == null ? true :allowModify) "><g:message code="sspb.css.cssManager.delete.label" /></button>
         <span  ng-show="cssName.length>0">
             <button class="secondary" ng-click='getDeveloperSecurityPage()'><g:message code="sspb.css.cssManager.developer.label" /></button>
         </span>
