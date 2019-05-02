@@ -48,8 +48,8 @@ class CssSecurity implements Serializable{
     @Column(name="GBRCSEC_VERSION" ,length = 19)
     Long version
 
-    @Column( name="GBRCSEC_VPDI_CODE")
-    String vpdiCode
+    @Column( name="GBRCSEC_VPDI_CODE", length = 19)
+    Long vpdiCode
 
     boolean equals(o) {
         if (this.is(o)) return true

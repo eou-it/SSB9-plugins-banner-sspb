@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.DeveloperPageSecurity",
    "extendsPage": null,
-   "fileTimestamp": "2019-04-29T09:50:17Z",
+   "fileTimestamp": "2019-05-02T09:32:56Z",
    "modelView": {
       "components": [
          {
@@ -189,6 +189,7 @@
                   "name": "userRoleGrid",
                   "newRecordLabel": "",
                   "onClick": "",
+                  "onError": "var errorMessage =response.data.errors? response.data.errors.errorMessage: null;\nif(errorMessage&&errorMessage.indexOf(\"ORA-20000\") > -2){\n alert(response.data.errors.errorMessage, {type: \"error\"});\n}else \nif(errorMessage&&errorMessage){\n    alert(response.data.errors.errorMessage, {type: \"error\"});\n}else {\n    alert(errorMessage?errorMessage:response.data, {type:\"error\"});\n  }",
                   "onLoad": "",
                   "onSave": "",
                   "onSaveSuccess": "if (action == 'D')\n  {\n   alert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.individual.delete')}\"+\" \"+response.USER +\" \"+\"${message(code:'pbadmDeveloperPageSecurity.securityform.individual.deleted')}\", {type:\"success\", flash:true});\n  }\n\nelse if (action == 'U')\n  {\n    alert($selectedPage+\" \"+\"${message(code:'pbadmDeveloperPageSecurity.securityform.individual.updated')}\"+\" \"+response.USER, {type:\"success\", flash:true});\n  }\nelse{\nalert($selectedPage+\" \"+\"${message(code:'pbadmDeveloperPageSecurity.securityform.individual.save')}\"+\" \"+response.USER, {type:\"success\", flash:true});\n}",
@@ -268,6 +269,7 @@
                   "loadInitially": false,
                   "model": "pbadmDeveloperSecurityDetails",
                   "name": "profileGrid",
+                  "onError": "var errorMessage =response.data.errors? response.data.errors.errorMessage: null;\nif(errorMessage&&errorMessage.indexOf(\"ORA-20000\") > -2){\n alert(response.data.errors.errorMessage, {type: \"error\"});\n}else \nif(errorMessage&&errorMessage){\n    alert(response.data.errors.errorMessage, {type: \"error\"});\n}else {\n    alert(errorMessage?errorMessage:response.data, {type:\"error\"});\n  }",
                   "onSaveSuccess": "if (action == 'D')\n  {\n   alert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.group.delete')}\" +\" \"+response.USER+\" \"+\"${message(code:'pbadmDeveloperPageSecurity.securityform.group.deleted')}\",{type:\"success\", flash:true});\n  }\n\nelse if (action == 'U')\n  {\n    alert($selectedPage+\" \"+\"${message(code:'pbadmDeveloperPageSecurity.securityform.group.updated')}\"+\" \"+response.USER, {type:\"success\", flash:true});\n  }\nelse{\nalert($selectedPage+\" \"+\"${message(code:'pbadmDeveloperPageSecurity.securityform.group.save')}\"+\" \"+response.USER, {type:\"success\", flash:true});\n}",
                   "pageSize": 5,
                   "parameters": {

@@ -6,6 +6,8 @@ package net.hedtech.banner.sspb
 
 import grails.converters.JSON
 import net.hedtech.banner.security.DeveloperSecurityService
+import org.springframework.context.i18n.LocaleContextHolder
+
 
 class PageService {
     def compileService
@@ -50,11 +52,7 @@ class PageService {
 
         def listResult = []
         result.each{
-            listResult << [constantName : it.constantName,extendsPage:  it.extendsPage?.constantName, id: it.id, version: it.version,
-                           dateCreated:dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated),
-                           lastUpdated:dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated),
-                           allowModify:!developerSecurityService.isAllowModify(it.constantName,developerSecurityService.PAGE_IND)
-                          ]
+            listResult << [constantName : it.constantName,extendsPage:  it.extendsPage?.constantName, id: it.id, version: it.version, dateCreated:dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated), lastUpdated:dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated)]
         }
         log.trace "PageService.list is returning a ${result.getClass().simpleName} containing ${result.size()} pages"
         listResult
