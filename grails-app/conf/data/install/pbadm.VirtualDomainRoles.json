@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.VirtualDomainRoles",
    "extendsPage": null,
-   "fileTimestamp": "2019-05-02T07:38:08Z",
+   "fileTimestamp": "2019-05-02T12:56:55Z",
    "modelView": {
       "components": [
          {
@@ -31,7 +31,7 @@
                   "model": "selectVirtualDomain",
                   "name": "selectVirtualDomain",
                   "onLoad": "$editVirtualDomainRoles.$load();$EditRolesForm.$visible=$selectVirtualDomain; $roleName.$populateSource();",
-                  "onUpdate": "$editVirtualDomainRoles.$load();\n$EditRolesForm.$visible=$selectVirtualDomain;\n $roleName.$populateSource();\n\nsetTimeout(function(){ \nif(window.localStorage['allowModify'] === 'true'){\n$('#pbid-EditRolesForm :input').attr('disabled', true);\n}else {\n$('#pbid-EditRolesForm :input').attr('disabled', false);\n}\nwindow.localStorage['allowModify'] = \"\";\n }, 700);",
+                  "onUpdate": "$editVirtualDomainRoles.$load();\n$EditRolesForm.$visible=$selectVirtualDomain;\n $roleName.$populateSource();\n$allowModify = window.localStorage['allowModify'];",
                   "placeholder": "Select...",
                   "required": false,
                   "sourceModel": "virtualDomainLookup1",
@@ -150,6 +150,7 @@
                   "model": "virtualDomainRoles",
                   "name": "editVirtualDomainRoles",
                   "onError": "var errorMessage =response.data.errors? response.data.errors.errorMessage: null;\nif (errorMessage && errorMessage.indexOf(\"ORA-20000\") > -1) {\n  alert(\"An entry already exists for this virtual domain and role, cannot add a duplicate\", {type:\"error\"});\n} else {\n   alert( errorMessage?errorMessage:response.data, {type:\"error\"});\n}",
+                  "onLoad": "setTimeout(function(){ \nif($allowModify === 'true'){\n$('#pbid-EditRolesForm :input').attr('disabled', true);\n$editVirtualDomainRolesGrid.enableCellSelection=false;\n$editVirtualDomainRolesGrid.ngGrid.config.enableRowSelection=false;\n}else {\n$('#pbid-EditRolesForm :input').attr('disabled', false);\n$editVirtualDomainRolesGrid.enableCellSelection=true;\n$editVirtualDomainRolesGrid.ngGrid.config.enableRowSelection=true;\n}\n\n }, 0);",
                   "onSaveSuccess": "var saveAction = \"saved\";\n\nif (action == 'D')\n  {\n    saveAction = \"deleted\";\n  }\nalert( \"Virtual Domain role \" + response.ROLE_NAME  + ' ' + saveAction,{type:\"success\", flash:true});",
                   "pageSize": 5,
                   "parameters": {
