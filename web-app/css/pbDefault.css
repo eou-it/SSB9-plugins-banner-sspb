@@ -179,7 +179,7 @@ select.owner-select {
     height: 30px;
     box-shadow: inset 0px -2px #DEE5E7;
     width: 18.75em;
-    padding: 0.75em 0.75em;
+    padding: 0.5em 0.5em;
     font-size: 0.875em;
     -moz-border-radius       : 4px;
     -webkit-border-radius    : 4px;
@@ -204,4 +204,8 @@ select.owner-select:disabled {
 
 label.dispInline{
     display:inline;
+}
+
+select.vd-select-width{
+    width : 15em;
 }

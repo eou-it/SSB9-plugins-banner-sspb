@@ -113,7 +113,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                 <input type="button" class="secondary" value="${message(code:"sspb.css.cssManager.developer.label")}" onclick="getDeveloperSecurityPage('${pageInstance?.id}','${pageInstance?.vdServiceName}')"/>
                 <span class="alignRight">
                     <label class="vpc-name-label dispInline"><g:message code="sspb.vd.visualbuilder.vdowner.label" /></label>
-                    <select class="owner-select alignRight" id="pageOwner" onchange="onChangeOfOwner()">
+                    <select class="owner-select vd-select-width" id="pageOwner" onchange="onChangeOfOwner()">
                     </select>
                 </span>
                 <g:textField name="owner" id="vdowner"  style="display:none;" />
