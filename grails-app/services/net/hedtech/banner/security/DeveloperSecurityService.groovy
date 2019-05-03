@@ -74,7 +74,7 @@ class DeveloperSecurityService {
          boolean hasPrivilage=false
         if(PAGE_IND.equalsIgnoreCase(type)){
             def page = Page.findByConstantName(constantName)
-            if((page && page.owner?.equalsIgnoreCase(oracleUserId)) || "Y".equalsIgnoreCase(page?.allowAllInd)){
+            if(page && (page.owner?.equalsIgnoreCase(oracleUserId) || "Y".equalsIgnoreCase(page.allowAllInd))){
                 return true
             }else{
                 if(isModify){
@@ -99,7 +99,7 @@ class DeveloperSecurityService {
         }
         else if(VIRTUAL_DOMAIN_IND.equalsIgnoreCase(type)){
             def domain = VirtualDomain.findByServiceName(constantName)
-            if((domain && domain.owner?.equalsIgnoreCase(oracleUserId)) || "Y".equalsIgnoreCase(domain?.allowAllInd)){
+            if(domain && (domain.owner?.equalsIgnoreCase(oracleUserId) || "Y".equalsIgnoreCase(domain.allowAllInd))){
                 return true
             }else{
                 if(isModify){
@@ -123,7 +123,7 @@ class DeveloperSecurityService {
             return hasPrivilage
         }else if(CSS_IND.equalsIgnoreCase(type)){
             def css = Css.fetchByConstantName(constantName)
-            if((css && css.owner?.equalsIgnoreCase(oracleUserId)) || "Y".equalsIgnoreCase(css?.allowAllInd)){
+            if(css && (css.owner?.equalsIgnoreCase(oracleUserId) || "Y".equalsIgnoreCase(css.allowAllInd))){
                 return true
             }else{
                 if(isModify){
