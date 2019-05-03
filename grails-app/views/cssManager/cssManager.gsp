@@ -28,7 +28,6 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                 $scope.uploadResponse = content;
                 $scope.cssStatus.message = content.statusMessage;
             };
-            $scope.allowModify = true;
             $scope.i18nGet = function(key,args) {
                 var tr = [];
                 tr['sspb.css.cssManager.stylesheet.submit.failed.message']  =   "${message(code:'sspb.css.cssManager.stylesheet.submit.failed.message',encodeAs: 'JavaScript')}";
