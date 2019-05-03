@@ -75,7 +75,7 @@ class VirtualDomainComposerController {
                 vd.delete(failOnError:true)
             }
         }
-        render (view:"virtualDomainComposer", model: [pageInstance: null])
+        render (view:"virtualDomainComposer", model: [pageInstance: null, isProductionReadOnlyMode : developerSecurityService.isProductionReadOnlyMode()])
     }
 
 
