@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.DeveloperPageSecurity",
    "extendsPage": null,
-   "fileTimestamp": "2019-05-03T06:55:16Z",
+   "fileTimestamp": "2019-05-03T14:46:56Z",
    "modelView": {
       "components": [
          {
@@ -69,7 +69,7 @@
                   "loadInitially": false,
                   "name": "ownerPagesBlock_genericData",
                   "onLoad": "",
-                  "onUpdate": "$securityBlock.$visible = $ownerPagesBlock_genericData;\nif(this.currentRecord){\n$ownerPagesBlock_owner=this.currentRecord.TYPE_OWNER\n$assigningPrivileges=this.currentRecord.ALLOW_MODIFY\n$selectedPage = this.currentRecord.NAME\n}\n$userRoleGrid.$load()\n$profileGrid.$load()",
+                  "onUpdate": "if($ownerPagesBlock_genericData){\n$securityBlock.$visible = $ownerPagesBlock_genericData;\n$developerPrivilegesBlock.$visible = true;\nif(this.currentRecord){\n$ownerPagesBlock_owner=this.currentRecord.TYPE_OWNER\n$assigningPrivileges=this.currentRecord.ALLOW_MODIFY\n$selectedPage = this.currentRecord.NAME\n}\n$userRoleGrid.$load()\n$profileGrid.$load()\n}else{\n$ownerPagesBlock_owner='';\n$assigningPrivileges='N';\n$securityBlock.$visible = false;\n$developerPrivilegesBlock.$visible = false;\n}",
                   "placeholder": "Select...",
                   "required": false,
                   "sourceModel": "genericData",
@@ -112,7 +112,7 @@
                }
             ],
             "name": "developerPrivilegesBlock",
-            "showInitially": true,
+            "showInitially": false,
             "style": "row",
             "type": "block"
          },
