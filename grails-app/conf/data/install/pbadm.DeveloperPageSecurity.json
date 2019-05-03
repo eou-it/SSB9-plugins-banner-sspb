@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.DeveloperPageSecurity",
    "extendsPage": null,
-   "fileTimestamp": "2019-05-02T09:32:56Z",
+   "fileTimestamp": "2019-05-03T06:55:16Z",
    "modelView": {
       "components": [
          {
@@ -54,7 +54,7 @@
                   "loadInitially": false,
                   "name": "ownerPagesBlock_options",
                   "onLoad": "",
-                  "onUpdate": "$ownerPagesBlock_genericData.$load();",
+                  "onUpdate": "$ownerPagesBlock_genericData.$load();\n$ownerPagesBlock_owner='';\n$assigningPrivileges='N';",
                   "placeholder": "Select...",
                   "required": false,
                   "sourceModel": "selectOptions",
