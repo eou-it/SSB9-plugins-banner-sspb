@@ -38,6 +38,9 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 
     <Script type="text/javascript">
         function showDomainRoles(id, name){
+            var allowModify ="${!pageInstance?.allowModify}"
+
+            window.localStorage['allowModify'] = allowModify;
 
             updateLocalStorage(name,  id)
             window.open(rootWebApp+'customPage/page/'+ 'pbadm.VirtualDomainRoles', '_self');

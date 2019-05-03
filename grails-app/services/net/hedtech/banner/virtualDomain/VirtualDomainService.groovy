@@ -13,6 +13,7 @@ class VirtualDomainService {
 
     static transactional = false //Getting error connection closed without this
     def dateConverterService
+    def developerSecurityService
 
     def list(Map params) {
         Map parameter = CommonService.decodeBase64(params)
@@ -48,7 +49,8 @@ class VirtualDomainService {
         if(params.containsKey('getGridData')){
             result.each {
                 listResult << [serviceName : it.serviceName, id: it.id, version: it.version, dateCreated:dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated),
-                               lastUpdated:dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated)]
+                               lastUpdated:dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated),
+                               allowModify:!developerSecurityService.isAllowModify(it.serviceName,developerSecurityService.VIRTUAL_DOMAIN_IND)]
            }
         }
         log.trace "VirtualDomainService.list is returning a ${listResult.getClass().simpleName} containing ${listResult.size()} rows"

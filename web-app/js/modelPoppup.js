@@ -185,6 +185,7 @@
                 if(nameIndex != -1 && !$scope.isResponseEmpty()) {
                     name = $scope.content[nameIndex][$scope.nameHeader]
                     value = name;
+                    window.localStorage['allowModify'] = $scope.content[nameIndex]['allowModify'];
                 }
                 element.removeClass('active-row');
 
