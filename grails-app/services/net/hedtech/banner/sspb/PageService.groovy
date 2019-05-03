@@ -113,6 +113,8 @@ class PageService {
             // compile first
             result = compileAndSavePage(content.pageName, content.source, content.extendsPage , content.pageOwner)
         }
+        result <<[allowModify:developerSecurityService.isAllowModify(content.pageName,developerSecurityService.PAGE_IND) ,
+                  allowUpdateOwner: developerSecurityService.isAllowUpdateOwner(content.pageName, developerSecurityService.PAGE_IND)]
         log.trace "PageService.create returning $result"
         result
     }

@@ -165,12 +165,15 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                     return;
                 }
 
-                Css.save({cssName:$scope.cssName, source:$scope.cssSource, description:$scope.description, owner:$scope.cssOwner }, function(response) {
+                Css.save({cssName:$scope.cssName, source:$scope.cssSource, description:$scope.description,
+                    owner:$scope.cssOwner?$scope.cssOwner:user.loginName }, function(response) {
                     //console.log("save response = " + response.statusCode + ", " +response.statusMessage);
                     var note = {type:"error"};
                     if (response.statusCode == 0) {
                         $scope.cssStatus.message = $scope.i18nGet(response.statusMessage);
                         note = {type: "success", flash: true};
+                        $scope.allowUpdateOwner = response.allowUpdateOwner;
+                        $scope.allowModify = response.allowModify;
                     } else {
                         var msg="${message(code:'sspb.css.cssManager.validation.error.message', encodeAs: 'JavaScript')}";
                         if (response.cssValidationResult != undefined)

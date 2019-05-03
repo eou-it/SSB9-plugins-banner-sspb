@@ -871,6 +871,8 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                             }
                             $("#pageRoleId").val(response.page.id);
                             $scope.statusHolder.isPageModified = false;
+                            $scope.allowUpdateOwner = response.allowUpdateOwner;
+                            $scope.allowModify = response.allowModify;
                         }
                         else {
                             var msg = "${message(code:'sspb.page.validation.error.message', encodeAs: 'JavaScript')}";
