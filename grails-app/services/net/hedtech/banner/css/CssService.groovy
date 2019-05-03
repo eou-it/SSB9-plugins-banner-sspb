@@ -108,6 +108,8 @@ class CssService extends ServiceBase {
         }
 
         def result = compileCss(content.cssName, content.source, content.description, content.owner)
+        result <<[allowModify:developerSecurityService.isAllowModify(content.cssName,developerSecurityService.CSS_IND) ,
+                  allowUpdateOwner: developerSecurityService.isAllowUpdateOwner(content.cssName, developerSecurityService.CSS_IND)]
         //supplementCss( result )
         log.trace "CssService.create returning $result"
         result

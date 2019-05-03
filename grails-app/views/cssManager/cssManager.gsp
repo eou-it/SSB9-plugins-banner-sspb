@@ -171,6 +171,8 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                     if (response.statusCode == 0) {
                         $scope.cssStatus.message = $scope.i18nGet(response.statusMessage);
                         note = {type: "success", flash: true};
+                        $scope.allowUpdateOwner = response.allowUpdateOwner;
+                        $scope.allowModify = response.allowModify;
                     } else {
                         var msg="${message(code:'sspb.css.cssManager.validation.error.message', encodeAs: 'JavaScript')}";
                         if (response.cssValidationResult != undefined)
