@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.PageRoles",
    "extendsPage": null,
-   "fileTimestamp": "2019-04-23T09:16:02Z",
+   "fileTimestamp": "2019-05-03T12:51:59Z",
    "modelView": {
       "components": [
          {
@@ -43,7 +43,7 @@
                   "model": "selectPage",
                   "name": "selectPage",
                   "onLoad": "$editPageRoles.$load();\n$EditRolesForm.$visible=$selectPage;\n$roleName.$populateSource();\n$ApplyRolesForm.$visible=$selectPage;\n$appliedPageRoles.$load();",
-                  "onUpdate": "$editPageRoles.$load();\n$EditRolesForm.$visible=$selectPage;\n$roleName.$populateSource();\n$ApplyRolesForm.$visible=$selectPage;\n$appliedPageRoles.$load();",
+                  "onUpdate": "$editPageRoles.$load();\n$EditRolesForm.$visible=$selectPage;\n$roleName.$populateSource();\n$ApplyRolesForm.$visible=$selectPage;\n$appliedPageRoles.$load();\n$allowModify = window.localStorage['allowModify'];",
                   "placeholder": "Select...",
                   "required": false,
                   "sourceModel": "pageLookup1",
@@ -119,6 +119,7 @@
                   "model": "pageRoles",
                   "name": "editPageRoles",
                   "onError": "var errorMessage =response.data.errors? response.data.errors.errorMessage: null;\nif (errorMessage&&errorMessage.indexOf(\"ORA-20000\") > -1) {\n  alert(\"An entry already exists for this page and role, cannot add a duplicate\", {type:\"error\"});\n} else {\n  if (response.data.errors.errorMessage) {\n    alert(response.data.errors.errorMessage,{type:\"error\"});\n  }\n  else if (response.data.errors[0].errorMessage) {\n    alert(response.data.errors[0].errorMessage,{type:\"error\"});\n  } else {\n    alert(errorMessage?errorMessage:response.data, {type:\"error\"});\n  }\n}",
+                  "onLoad": "setTimeout(function(){ \nif($allowModify === 'true'){\n$('#pbid-EditRolesForm :input').attr('disabled', true);\n$editPageRolesGrid.enableCellSelection=false;\n$editPageRolesGrid.ngGrid.config.enableRowSelection=false;\n}else {\n$('#pbid-EditRolesForm :input').attr('disabled', false);\n$editPageRolesGrid.enableCellSelection=true;\n$editPageRolesGrid.ngGrid.config.enableRowSelection=true;\n}\n\n }, 0);",
                   "onSave": "",
                   "onSaveSuccess": "var saveAction = \"saved\";\n\nif (response.hasOwnProperty(\"id\") && !_.findWhere($editPageRolesDS.data,     {ROLE_NAME: response.ROLE_NAME}))\n  {\n    saveAction = \"deleted\";\n  }\nalert( \"Page role \" + response.ROLE_NAME + \" \" + saveAction,{type:\"success\", flash:true});\n\n$applyRolesButton.$style=\"visible\";",
                   "pageSize": 5,
@@ -195,11 +196,11 @@
    },
    "pageRoles": [
       {
-         "roleName": "ADMIN-GPBADMN",
+         "roleName": "ADMIN-GPBADMA",
          "allow": true
       },
       {
-         "roleName": "ADMIN-GPBADMA",
+         "roleName": "ADMIN-GPBADMN",
          "allow": true
       }
    ]
