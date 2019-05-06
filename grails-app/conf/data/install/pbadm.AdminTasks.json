@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.AdminTasks",
    "extendsPage": null,
-   "fileTimestamp": "2019-04-25T04:25:17Z",
+   "fileTimestamp": "2019-05-06T12:27:14Z",
    "modelView": {
       "components": [
          {
@@ -143,7 +143,7 @@
                {
                   "label": "Import",
                   "name": "startUpload",
-                  "onClick": "$artifacts.$data.forEach(function (a) {\n\tvar task = {\n\t\ttask: 'import',\n\t\tartifact: {\n\t\t\tfileName: a.name,\n\t\t\tdomain: a.domain,\n\t\t\tindex: a.index,\n\t\t\tcount: a.count,\n\t\t\tsize: a.size\n\t\t}\n\t};\n\t$adminTaskResource.$post(\n\t\ttask,\n\t\tnull, /*no params*/\n\t\tfunction (response) {\n\t\t\tif (response.imported == 1) {\n\t\t\t\talert('Imported ' + response.name + ' type: ' + response.type, {\n\t\t\t\t\tflash : true\n\t\t\t\t});\n\t\t\t}\n\t\t},\n\t\tfunction (response) {\n\t\t\tvar msg = \"Failed uploading artifacts.\\n\";  \n\t\t\tif (response.data.errors.errorMessage) {\n\t\t\t  msg += response.data.errors.errorMessage;\n\t\t\t} else if (response.data.errors[0].errorMessage) {\n\t\t\t  msg += response.data.errors[0].errorMessage;\n\t\t\t} else {\n\t\t\t  msg += response.statusText;\n\t\t\t}\n\t\t\tif (msg) {\n\t\t\t  alert(msg,{type:\"error\"});\n\t\t\t}\n\t\t}\n\t);\n});",
+                  "onClick": "$artifacts.$data.forEach(function (a) {\n\tvar task = {\n\t\ttask: 'import',\n\t\tartifact: {\n\t\t\tfileName: a.name,\n\t\t\tdomain: a.domain,\n\t\t\tindex: a.index,\n\t\t\tcount: a.count,\n\t\t\tsize: a.size\n\t\t}\n\t};\n\t$adminTaskResource.$post(\n\t\ttask,\n\t\tnull, /*no params*/\n\t\tfunction (response) {\n\t\t\tif (response.imported == 1) {\n\t\t\t\talert('Imported ' + response.name + ' type: ' + response.type, {\n\t\t\t\t\tflash : true\n\t\t\t\t});\n\t\t\t}\n                       if (response.accessError) {\n\t\t\t\t alert(response.accessError, {type:\"error\"});\n\t\t\t}\n\t\t},\n\t\tfunction (response) {\n\t\t\tvar msg = \"Failed uploading artifacts.\\n\";  \n\t\t\tif (response.data.errors.errorMessage) {\n\t\t\t  msg += response.data.errors.errorMessage;\n\t\t\t} else if (response.data.errors[0].errorMessage) {\n\t\t\t  msg += response.data.errors[0].errorMessage;\n\t\t\t} else {\n\t\t\t  msg += response.statusText;\n\t\t\t}\n\t\t\tif (msg) {\n\t\t\t  alert(msg,{type:\"error\"});\n\t\t\t}\n\t\t}\n\t);\n});",
                   "type": "button",
                   "valueStyle": "primary"
                }
@@ -427,6 +427,11 @@
             "name": "viewArtifactsSection",
             "showInitially": true,
             "type": "block"
+         },
+         {
+            "name": "jsCode",
+            "type": "literal",
+            "value": "<script>\nif(isImportPrevented && !user.isSuperUser) {\n$(\"input\", \"#pbid-securityBlock\").attr(\"disabled\", \"disabled\")\n$(\"input\", \"#pbid-uploadFileSelect-container\").attr(\"disabled\", \"disabled\")\n$(\"button\").attr(\"disabled\", \"disabled\")\n}\n</script>"
          }
       ],
       "documentation": "Miscellaneous tasks",
