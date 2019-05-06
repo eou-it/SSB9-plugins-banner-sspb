@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
@@ -11,6 +11,7 @@ class AdminTaskService {
     def pageUtilService
     def virtualDomainUtilService
     def cssUtilService
+    def developerSecurityService
 
     def nameLists = [:]
     def listCount = 0
@@ -19,6 +20,11 @@ class AdminTaskService {
 
     def create(Map content, ignore) {
         def result = [:]
+        def artificatName = JSON.parse(content.artifact.domain).constantName;
+        if(developerSecurityService.isAllowImport(artificatName, developerSecurityService.PAGE_IND)) {
+            result << [accessError: message(code: "sspb.renderer.page.deny.access", args: [artificatName])]
+            return result
+        }
         if (content.task == 'import') {
             if (content.virtualDomains) {
                 def count = virtualDomainUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.virtualDomain, PBUtilServiceBase.loadOverwriteExisting)

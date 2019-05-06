@@ -48,6 +48,10 @@ class DeveloperSecurityService {
         }
     }
 
+    static def getImportConfigValue(){
+        ConfigurationData.fetchByNameAndType(PREVENT_IMPORT_BY_DEVELOPER, "boolean", APP_ID).value
+    }
+
     static boolean isSuperUser() {
          boolean isSupUser=false
         def userIn = SecurityContextHolder?.context?.authentication?.principal
@@ -150,7 +154,7 @@ class DeveloperSecurityService {
         }
     }
 
-      boolean isAllowImport(String constantName, String type){
+    boolean isAllowImport(String constantName, String type){
          if(isSuperUser()){
             return true
         }else if(preventImportByDeveloper){
