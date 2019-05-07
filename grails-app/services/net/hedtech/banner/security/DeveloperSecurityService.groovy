@@ -71,7 +71,7 @@ class DeveloperSecurityService {
         def userIn = SecurityContextHolder?.context?.authentication?.principal
         String oracleUserId
         if (userIn?.class?.name?.endsWith('BannerUser')) {
-            oracleUserId = userIn?.getUserName()
+            oracleUserId = userIn.username
         } else {
             return false
         }
