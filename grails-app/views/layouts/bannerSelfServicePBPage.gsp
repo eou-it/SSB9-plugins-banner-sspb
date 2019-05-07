@@ -157,7 +157,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
             var resourceBase = "${createLink(uri: '/') + grails.util.Holders.config.sspb.apiPath +'/' }";
             var templatesLocation = "<g:resource plugin="banner-sspb" dir="template" />";
             var user = ${PBUser.getTrimmed()?.encodeAsJSON()};
-            var isImportPrevented = ${!DeveloperSecurityService?.getImportConfigValue()};
+            var isImportPrevented = ${DeveloperSecurityService?.getImportConfigValue()};
             var gridLocale = '${localeBrowserFull.toLowerCase()}';
             var params = ${params?.encodeAsJSON()};
             if (!window.console) {
