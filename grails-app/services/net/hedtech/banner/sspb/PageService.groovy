@@ -173,7 +173,7 @@ class PageService {
                         }
                     }
                     if (ret.statusCode == 0) {
-                        if (!ret.page.save()) {
+                        if (!ret.page.save(flush: true)) {
                             ret.page.errors.allErrors.each { ret.statusMessage += it +"\n" }
                             ret.statusCode = 3
                         }

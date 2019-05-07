@@ -17,6 +17,7 @@ import net.hedtech.banner.tools.i18n.SortedProperties
 class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     def pageService
     def pageSecurityService
+    def developerSecurityService
 
     def static final statusOk = 0
     def static final statusError = 1
@@ -69,7 +70,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         fileNames.eachLine {  fileName ->
             def pageName = fileName.substring(0,fileName.lastIndexOf(".json"))
             InputStream stream = PageUtilService.class.classLoader.getResourceAsStream( "data/install/$fileName" )
-            def loadResult = load(pageName, stream, mode, false )
+            def loadResult = load(pageName, stream, mode, false, true, true )
             needDeferred |= (loadResult.statusCode == statusDeferLoad)
             count += loadResult.loaded
 
@@ -87,11 +88,11 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     //Import/Install Utility
-    int importAllFromDir(String path=pbConfig.locations.page, mode=loadIfNew, ArrayList names = null, boolean updateSecurity = false) {
-        importAllFromDir(path, mode, false, names, updateSecurity)
+    int importAllFromDir(String path=pbConfig.locations.page, mode=loadIfNew, ArrayList names = null, boolean updateSecurity = false, boolean copyOwner = true, boolean copyDevSec = true) {
+        importAllFromDir(path, mode, false, names, updateSecurity, copyOwner, copyDevSec)
     }
 
-    int importAllFromDir(String path, mode, boolean deferred, ArrayList names, boolean updateSecurity) {
+    int importAllFromDir(String path, mode, boolean deferred, ArrayList names, boolean updateSecurity, boolean copyOwner, boolean copyDevSec) {
         def count=0
         def needDeferred = false
         if (!deferred) {
@@ -100,7 +101,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         try {
             new File(path).eachFileMatch(jsonExt) { file ->
                 if (!names || names.contains(file.name.take(file.name.lastIndexOf('.')))) {
-                    def loadResult = load(file, mode, updateSecurity)
+                    def loadResult = load(file, mode, updateSecurity, copyOwner, copyDevSec)
                     needDeferred |= (loadResult.statusCode == statusDeferLoad)
                     finalizeFileImport(file, loadResult)
                     count += loadResult.loaded
@@ -146,13 +147,13 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     //Load a page, save and compile it
-    private def load(String name, InputStream stream, int mode, boolean updateSecurity) {
-        load(name,stream, null, mode, updateSecurity)
+    private def load(String name, InputStream stream, int mode, boolean updateSecurity, boolean copyOwner, boolean copyDevSec) {
+        load(name,stream, null, mode, updateSecurity, copyOwner, copyDevSec)
     }
-    private def load(File file, int mode, boolean updateSecurity) {
-        load(null, null, file, mode, updateSecurity)
+    private def load(File file, int mode, boolean updateSecurity, copyOwner, copyDevSec) {
+        load(null, null, file, mode, updateSecurity, copyOwner, copyDevSec)
     }
-    private def load( String name, InputStream stream, File file, int mode, boolean updateSecurity ) {
+    private def load( String name, InputStream stream, File file, int mode, boolean updateSecurity, boolean copyOwner, boolean copyDevSec ) {
         // either name + stream is needed or file
         def pageName = name?name:file.name.substring(0,file.name.lastIndexOf(".json"))
         def page = pageService.get(pageName)
@@ -178,6 +179,13 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             JSON.use("deep") {
                 json = JSON.parse(jsonString)
             }
+           if(json.constantName && !developerSecurityService.isAllowImport(json.constantName, developerSecurityService.PAGE_IND) && !currentAction) {
+                result.statusCode = statusError
+                result.statusMessage = message(code: "sspb.renderer.page.deny.access", args: [json.constantName])
+                log.error "Insufficient privileges to import"
+                return result
+           }
+
             page = page ?: pageService.getNew(pageName)
             // when loading from resources (stream), check the file time stamp in the Json
             if ( stream && mode==loadIfNew ) {
@@ -191,7 +199,19 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 // if the json has a modelView the json is a marshaled page, otherwise it is just the modelView
                 page.modelView = json.has('modelView') ? json.modelView: jsonString
                 page.fileTimestamp = file?new Date(file.lastModified()):json2date(json.fileTimestamp)
-                page.owner = json.has('owner') ? json.owner: null
+
+                //Copy owner and Dev Security
+                if(copyOwner) {
+                    page.owner = json.owner ?: null
+                } else {
+                    page.owner = PBUser.userCache.loginName
+                }
+                if(copyDevSec) {
+                    json.developerSecurity = json.developerSecurity ?: null
+                } else {
+                    json.developerSecurity = null
+                }
+
                 //Check to see if parent page exists
                 if (json.has('extendsPage') && json.extendsPage && json.extendsPage.constantName) {
                     page.extendsPage = pageService.get(json.extendsPage.constantName)

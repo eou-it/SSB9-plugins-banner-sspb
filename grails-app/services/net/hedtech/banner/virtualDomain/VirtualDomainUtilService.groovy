@@ -7,9 +7,14 @@ import grails.converters.JSON
 import groovy.util.logging.Log4j
 import net.hedtech.banner.security.VirtualDomainSecurity
 import net.hedtech.banner.security.VirtualDomainSecurityId
+import net.hedtech.banner.sspb.PBUser
 
 @Log4j
 class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
+
+    def static final actionImportInitally = 1
+    def currentAction = null
+    def developerSecurityService
 
     //Used in integration test
     void exportAllToFile(String path) {
@@ -59,26 +64,27 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
 
     //Load virtual domains required for Page Builder administration
     void importInitially(mode = loadSkipExisting) {
+        currentAction = actionImportInitally
         def fileNames = VirtualDomainUtilService.class.classLoader.getResourceAsStream("data/install/virtualDomains.txt").text
         def count=0
         bootMsg "Checking/loading system required virtual domains."
         fileNames.eachLine { fileName ->
             def serviceName = fileName.substring(0, fileName.lastIndexOf(".json"))
             def stream = VirtualDomainUtilService.class.classLoader.getResourceAsStream("data/install/$fileName")
-            count+=loadStream(serviceName, stream, mode)
+            count+=loadStream(serviceName, stream, mode, true, true)
         }
         bootMsg "Finished checking/loading system required virtual domains. Virtual domains loaded: $count"
     }
 
 
     //Import/Install Utility
-    int importAllFromDir(String path=pbConfig.locations.virtualDomain, mode=loadIfNew, ArrayList names = null) {
+    int importAllFromDir(String path=pbConfig.locations.virtualDomain, mode=loadIfNew, ArrayList names = null, copyOwner = true, copyDevSec = true) {
         bootMsg "Importing updated or new virtual domains from $path."
         def count=0
         try {
             new File(path).eachFileMatch(jsonExt) { file ->
                 if (!names || names.contains(file.name.take(file.name.lastIndexOf('.')))) {
-                    count += loadFile(file, mode)
+                    count += loadFile(file, mode, copyOwner, copyDevSec)
                 }
             }
         }
@@ -89,15 +95,15 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
         count
     }
 
-    int loadStream(name, stream, mode) {
-        load(name, stream, null, mode)
+    int loadStream(name, stream, mode, copyOwner, copyDevSec) {
+        load(name, stream, null, mode, copyOwner, copyDevSec)
     }
-    int loadFile(file, mode) {
-        load(null, null, file, mode)
+    int loadFile(file, mode, copyOwner, copyDevSec) {
+        load(null, null, file, mode, copyOwner, copyDevSec)
     }
 
     //Load a virtual domain and save it
-    int load( name, stream, file, mode ) {
+    int load( name, stream, file, mode, copyOwner, copyDevSec) {
         // either name + stream is needed or file
         def vdName = name?name:file.name.substring(0,file.name.lastIndexOf(".json"))
         def vd = VirtualDomain.findByServiceName(vdName)
@@ -116,6 +122,10 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
             def json
             JSON.use("deep") {
                 json = JSON.parse(jsonString)
+            }
+            if(json.serviceName && !developerSecurityService.isAllowImport(json.serviceName, developerSecurityService.PAGE_IND) && !currentAction) {
+                log.error "Insufficient privileges to import"
+                return result
             }
             def doLoad = true
             // when loading from resources (stream), check the file time stamp in the Json
@@ -137,7 +147,19 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
                     }
                 }
                 vd.fileTimestamp = json.fileTimestamp? json2date(json.fileTimestamp) : new Date()
-                vd.owner = json.owner ? json.owner: null
+
+                //Copy owner and Dev Security
+                if(copyOwner) {
+                    vd.owner = json.has('owner') ?: null
+                } else {
+                    vd.owner = PBUser.userCache.loginName
+                }
+                if(copyDevSec) {
+                    json.developerSecurity = json.developerSecurity ?: null
+                } else {
+                    json.developerSecurity = null
+                }
+
                 if (file)
                     vd.fileTimestamp = new Date(file.lastModified())
                 vd = saveObject(vd)
