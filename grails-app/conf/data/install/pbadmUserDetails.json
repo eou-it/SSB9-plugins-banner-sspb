@@ -1,25 +1,27 @@
 {
-   "codePut": null,
-   "codeDelete": null,
+   "developerSecurity": [],
+   "codePost": null,
    "virtualDomainRoles": [
       {
-         "allowDelete": false,
+         "allowGet": true,
          "allowPost": false,
          "allowPut": false,
          "roleName": "ADMIN-GPBADMN",
-         "allowGet": true
+         "allowDelete": false
       },
       {
-         "allowDelete": false,
+         "allowGet": true,
          "allowPost": false,
          "allowPut": false,
-         "roleName": "GUEST",
-         "allowGet": true
+         "roleName": "ADMIN-GPBADMA",
+         "allowDelete": false
       }
    ],
-   "codeGet": " select guruobj_userid as USER_ID from bansecr.GURUOBJ where guruobj_OBJECT in('GPBADMN','GPBADMNA')  and GURUOBJ_USERID not like 'BAN_%'\r\nunion\r\nselect GURUCLS_userid as USER_ID from bansecr.gurucls\r\nwhere gurucls_class_code in (select GURUOBJ_USERID from bansecr.GURUOBJ where guruobj_OBJECT in('GPBADMN','GPBADMNA')  and GURUOBJ_USERID like 'BAN_%')",
+   "codePut": null,
+   "owner": null,
+   "fileTimestamp": "2019-05-07T11:38:01Z",
+   "codeDelete": null,
+   "codeGet": "select guruobj_userid as USER_ID from bansecr.GURUOBJ where guruobj_OBJECT in('GPBADMN','GPBADMA')  and GURUOBJ_USERID not like 'BAN_%'\r\nunion\r\nselect GURUCLS_userid as USER_ID from bansecr.gurucls\r\nwhere gurucls_class_code in (select GURUOBJ_USERID from bansecr.GURUOBJ where guruobj_OBJECT in('GPBADMN','GPBADMA')  and GURUOBJ_USERID like 'BAN_%')\r\nunion\r\nselect spriden_id as USER_ID from SPRIDEN where SPRIDEN_CHANGE_IND is null and \r\nspriden_pidm in (\r\nselect gobeacc_pidm from general.gobeacc where \r\ngobeacc_username in (select guruobj_userid as USER_ID from bansecr.GURUOBJ where guruobj_OBJECT in('GPBADMN','GPBADMA')  \r\nand GURUOBJ_USERID not like 'BAN_%'))",
    "typeOfCode": "S",
-   "fileTimestamp": "2019-04-15T11:31:29Z",
-   "serviceName": "pbadmUserDetails",
-   "codePost": null
+   "serviceName": "pbadmUserDetails"
 }
