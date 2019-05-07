@@ -67,91 +67,94 @@ class DeveloperSecurityService {
          return isSupUser
     }
 
-     boolean checkUserHasPrivilage(String constantName, String type, boolean isModify){
-         def userIn = SecurityContextHolder?.context?.authentication?.principal
-         String oracleUserId
-         if (userIn?.class?.name?.endsWith('BannerUser')) {
-             oracleUserId = userIn?.getOracleUserName()
-         }else{
-             return false
-         }
-         boolean hasPrivilage=false
-        if(PAGE_IND.equalsIgnoreCase(type)){
-            def page = Page.findByConstantName(constantName)
-            if(page && (page.owner?.equalsIgnoreCase(oracleUserId) || "Y".equalsIgnoreCase(page.allowAllInd))){
-                return true
-            }else{
-                if(isModify){
-                    def secList = PageSecurity.fetchAllByPageId(page?.id)
-                    secList.each{
-                        if(USER_GROUP.equalsIgnoreCase(it.type)){
-                            if(oracleUserId.equals(it.pageSecKey.developerUserId)){
-                                hasPrivilage = true
-                                return hasPrivilage
-                            }
-                        }else{
-                            def userList = BusinessProfile.findByProfile(it.pageSecKey.developerUserId, oracleUserId)
-                            if(userList){
-                                hasPrivilage = true
-                                return hasPrivilage
-                            }
-                        }
-                    }
-                }
-            }
-            return hasPrivilage
+    boolean checkUserHasPrivilage(String constantName, String type, boolean isModify = false) {
+        def userIn = SecurityContextHolder?.context?.authentication?.principal
+        String oracleUserId
+        if (userIn?.class?.name?.endsWith('BannerUser')) {
+            oracleUserId = userIn?.getOracleUserName()
+        } else {
+            return false
         }
-        else if(VIRTUAL_DOMAIN_IND.equalsIgnoreCase(type)){
-            def domain = VirtualDomain.findByServiceName(constantName)
-            if(domain && (domain.owner?.equalsIgnoreCase(oracleUserId) || "Y".equalsIgnoreCase(domain.allowAllInd))){
-                return true
-            }else{
-                if(isModify){
-                    def secList = VirtualDomainSecurity.fetchAllByVirtualDomainId(domain?.id)
-                    secList.each{
-                        if(USER_GROUP.equalsIgnoreCase(it.type)){
-                            if(oracleUserId.equals(it.domainSecKey.developerUserId)){
-                                hasPrivilage = true
-                                return hasPrivilage
-                            }
-                        }else{
-                            def userList = BusinessProfile.findByProfile(it.domainSecKey.developerUserId ,oracleUserId )
-                            if(userList) {
-                                hasPrivilage = true
-                                return hasPrivilage
-                            }
-                        }
-                    }
-                }
-            }
-            return hasPrivilage
-        }else if(CSS_IND.equalsIgnoreCase(type)){
-            def css = Css.fetchByConstantName(constantName)
-            if(css && (css.owner?.equalsIgnoreCase(oracleUserId) || "Y".equalsIgnoreCase(css.allowAllInd))){
-                return true
-            }else{
-                if(isModify){
-                    def secList = CssSecurity.fetchAllByCssId(css?.id)
-                    secList.each{
-                        if(USER_GROUP.equalsIgnoreCase(it.type)){
-                            if(oracleUserId.equals(it.cssSecKey.developerUserId)){
-                                hasPrivilage = true
-                                return hasPrivilage
-                            }
-                        }else{
-                            def userList = BusinessProfile.findByProfile(it.cssSecKey.developerUserId, oracleUserId)
-                            if(userList) {
-                                hasPrivilage = true
-                                return hasPrivilage
-                            }
-                        }
-                    }
-                }
-            }
-            return hasPrivilage
-        }else{
-            return hasPrivilage
+        Boolean hasPrivilage = false
+        if (PAGE_IND.equalsIgnoreCase(type)) {
+            hasPrivilage = isPageHasPrivilege(constantName, oracleUserId, isModify)
+        } else if (VIRTUAL_DOMAIN_IND.equalsIgnoreCase(type)) {
+            hasPrivilage = isVirtualDomainHasPrivilege(constantName, oracleUserId, isModify)
+        } else if (CSS_IND.equalsIgnoreCase(type)) {
+            hasPrivilage = isCssHasPrivilege(constantName, oracleUserId, isModify)
         }
+
+        return hasPrivilage
+
+    }
+
+    protected boolean isCssHasPrivilege(String constantName, String oracleUserId, boolean isModify) {
+        Boolean isCssHasPrivilege = false
+        Css css = Css.fetchByConstantName(constantName)
+        if (css && (css.owner?.equalsIgnoreCase(oracleUserId) || "Y".equalsIgnoreCase(css.allowAllInd))) {
+            isCssHasPrivilege = true
+        } else if (isModify) {
+            List<CssSecurity> secList = CssSecurity.fetchAllByCssId(css?.id)
+            for (CssSecurity cs : secList) {
+                if (USER_GROUP.equalsIgnoreCase(cs.type)) {
+                    if (oracleUserId.equals(cs.id.developerUserId)) {
+                        isCssHasPrivilege = true
+                    }
+                } else {
+                    def userList = BusinessProfile.findByProfile(cs.id.developerUserId, oracleUserId)
+                    if (userList) {
+                        isCssHasPrivilege = true
+                    }
+                }
+            }
+        }
+        return isCssHasPrivilege
+    }
+
+    protected boolean isVirtualDomainHasPrivilege(String constantName, String oracleUserId, boolean isModify) {
+        Boolean isVirtualDomainHasPrivilege = false
+        VirtualDomain domain = VirtualDomain.findByServiceName(constantName)
+        if (domain && (domain.owner?.equalsIgnoreCase(oracleUserId) || "Y".equalsIgnoreCase(domain.allowAllInd))) {
+            isVirtualDomainHasPrivilege = true
+        } else if (isModify) {
+                List<VirtualDomainSecurity> secList = VirtualDomainSecurity.fetchAllByVirtualDomainId(domain?.id)
+                for (VirtualDomainSecurity vs : secList) {
+                    if (USER_GROUP.equalsIgnoreCase(vs.type)) {
+                        if (oracleUserId.equals(vs.id.developerUserId)) {
+                            isVirtualDomainHasPrivilege = true
+                        }
+                    } else {
+                        def userList = BusinessProfile.findByProfile(vs.id.developerUserId, oracleUserId)
+                        if (userList) {
+                            isVirtualDomainHasPrivilege = true
+                        }
+                    }
+                }
+        }
+        return isVirtualDomainHasPrivilege
+    }
+
+    protected boolean isPageHasPrivilege(String constantName, String oracleUserId, boolean isModify) {
+        Boolean isPageHasPrivilege = false
+        Page page = Page.findByConstantName(constantName)
+        if (page && (page.owner?.equalsIgnoreCase(oracleUserId) || "Y".equalsIgnoreCase(page.allowAllInd))) {
+            isPageHasPrivilege = true
+        } else if (isModify) {
+            List<PageSecurity> secList = PageSecurity.fetchAllByPageId(page?.id)
+            for (PageSecurity ps : secList) {
+                if (USER_GROUP.equalsIgnoreCase(ps.type)) {
+                    if (oracleUserId.equals(ps.id.developerUserId)) {
+                        isPageHasPrivilege = true
+                    }
+                } else {
+                    def userList = BusinessProfile.findByProfile(ps.id.developerUserId, oracleUserId)
+                    if (userList) {
+                        isPageHasPrivilege = true
+                    }
+                }
+            }
+        }
+        return isPageHasPrivilege
     }
 
     boolean isAllowImport(String constantName, String type){
@@ -160,7 +163,7 @@ class DeveloperSecurityService {
         }else if(preventImportByDeveloper){
             return false
         }else if(enableDeveloperSecurity && !preventImportByDeveloper ){
-            return checkUserHasPrivilage(constantName, type, false)
+            return checkUserHasPrivilage(constantName, type)
         }else if (!preventImportByDeveloper){
             return true
         }else{
@@ -188,7 +191,7 @@ class DeveloperSecurityService {
         }else if(productionMode){
             return false
         }else if(enableDeveloperSecurity && !productionMode){
-            return checkUserHasPrivilage(constantName, type, false)
+            return checkUserHasPrivilage(constantName, type)
         }else if (!productionMode){
             return true
         }else{
