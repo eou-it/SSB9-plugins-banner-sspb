@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.AdminTasks",
    "extendsPage": null,
-   "fileTimestamp": "2019-05-06T12:27:14Z",
+   "fileTimestamp": "2019-05-07T08:05:31Z",
    "modelView": {
       "components": [
          {
@@ -143,7 +143,7 @@
                {
                   "label": "Import",
                   "name": "startUpload",
-                  "onClick": "$artifacts.$data.forEach(function (a) {\n\tvar task = {\n\t\ttask: 'import',\n\t\tartifact: {\n\t\t\tfileName: a.name,\n\t\t\tdomain: a.domain,\n\t\t\tindex: a.index,\n\t\t\tcount: a.count,\n\t\t\tsize: a.size\n\t\t}\n\t};\n\t$adminTaskResource.$post(\n\t\ttask,\n\t\tnull, /*no params*/\n\t\tfunction (response) {\n\t\t\tif (response.imported == 1) {\n\t\t\t\talert('Imported ' + response.name + ' type: ' + response.type, {\n\t\t\t\t\tflash : true\n\t\t\t\t});\n\t\t\t}\n                       if (response.accessError) {\n\t\t\t\t alert(response.accessError, {type:\"error\"});\n\t\t\t}\n\t\t},\n\t\tfunction (response) {\n\t\t\tvar msg = \"Failed uploading artifacts.\\n\";  \n\t\t\tif (response.data.errors.errorMessage) {\n\t\t\t  msg += response.data.errors.errorMessage;\n\t\t\t} else if (response.data.errors[0].errorMessage) {\n\t\t\t  msg += response.data.errors[0].errorMessage;\n\t\t\t} else {\n\t\t\t  msg += response.statusText;\n\t\t\t}\n\t\t\tif (msg) {\n\t\t\t  alert(msg,{type:\"error\"});\n\t\t\t}\n\t\t}\n\t);\n});",
+                  "onClick": "$artifacts.$data.forEach(function (a) {\n\tvar task = {\n\t\ttask: 'import',\n                copyOwner: $copyOwner,\n                copyDevSec: $copyDevSec,\n\t\tartifact: {\n\t\t\tfileName: a.name,\n\t\t\tdomain: a.domain,\n\t\t\tindex: a.index,\n\t\t\tcount: a.count,\n\t\t\tsize: a.size\n\t\t}\n\t};\n\t$adminTaskResource.$post(\n\t\ttask,\n\t\tnull, /*no params*/\n\t\tfunction (response) {\n\t\t\tif (response.imported == 1) {\n\t\t\t\talert('Imported ' + response.name + ' type: ' + response.type, {\n\t\t\t\t\tflash : true\n\t\t\t\t});\n\t\t\t}\n                       if (response.accessError) {\n\t\t\t\t alert(response.accessError, {type:\"error\"});\n\t\t\t}\n\t\t},\n\t\tfunction (response) {\n\t\t\tvar msg = \"Failed uploading artifacts.\\n\";  \n\t\t\tif (response.data.errors.errorMessage) {\n\t\t\t  msg += response.data.errors.errorMessage;\n\t\t\t} else if (response.data.errors[0].errorMessage) {\n\t\t\t  msg += response.data.errors[0].errorMessage;\n\t\t\t} else {\n\t\t\t  msg += response.statusText;\n\t\t\t}\n\t\t\tif (msg) {\n\t\t\t  alert(msg,{type:\"error\"});\n\t\t\t}\n\t\t}\n\t);\n});",
                   "type": "button",
                   "valueStyle": "primary"
                }
@@ -184,7 +184,7 @@
                {
                   "label": "Import",
                   "name": "startImport",
-                  "onClick": "if ($pages || $virtualDomains || $css) {\n\t$adminTaskResource.$post({\n\t\t\ttask : 'import',\n\t\t\tpages : $pages,\n\t\t\tvirtualDomains : $virtualDomains,\n\t\t\tcss : $css,\n\t\t},\n\t\tnull, /*no params*/\n\t\tfunction (response) {\n\t\t\talert('Imported pages: '+ nvl(response.importedPagesCount,0)+ \n\t\t\t      '<br>Imported virtualDomains: '+ nvl(response.importedVirtualDomainsCount,0)+\n\t\t\t      '<br>Imported css: '+ nvl(response.importedCssCount,0),\n                              {flash : true});\n\t        },\n\t\tfunction (response) {\n\t\t\tvar msg = \"Failed importing artifacts.\\n\";  \n\t\t\tif (response.data.errors.errorMessage) {\n\t\t\t  msg += response.data.errors.errorMessage;\n\t\t\t} else if (response.data.errors[0].errorMessage) {\n\t\t\t  msg += response.data.errors[0].errorMessage;\n\t\t\t} else {\n\t\t\t  msg += response.statusText;\n\t\t\t}\n\t\t\tif (msg) {\n\t\t\t  alert(msg,{type:\"error\"});\n\t\t\t}\n\t\t}\n\t);\n} else {\n\talert('No artifact type is selected for import', {flash : true,type : 'info'});\n}",
+                  "onClick": "if ($pages || $virtualDomains || $css) {\n\t$adminTaskResource.$post({\n\t\t\ttask : 'import',\n\t\t\tpages : $pages,\n                        copyOwner: $copyOwner,\n                        copyDevSec: $copyDevSec,\n\t\t\tvirtualDomains : $virtualDomains,\n\t\t\tcss : $css,\n\t\t},\n\t\tnull, /*no params*/\n\t\tfunction (response) {\n\t\t\talert('Imported pages: '+ nvl(response.importedPagesCount,0)+ \n\t\t\t      '<br>Imported virtualDomains: '+ nvl(response.importedVirtualDomainsCount,0)+\n\t\t\t      '<br>Imported css: '+ nvl(response.importedCssCount,0),\n                              {flash : true});\n\t        },\n\t\tfunction (response) {\n\t\t\tvar msg = \"Failed importing artifacts.\\n\";  \n\t\t\tif (response.data.errors.errorMessage) {\n\t\t\t  msg += response.data.errors.errorMessage;\n\t\t\t} else if (response.data.errors[0].errorMessage) {\n\t\t\t  msg += response.data.errors[0].errorMessage;\n\t\t\t} else {\n\t\t\t  msg += response.statusText;\n\t\t\t}\n\t\t\tif (msg) {\n\t\t\t  alert(msg,{type:\"error\"});\n\t\t\t}\n\t\t}\n\t);\n} else {\n\talert('No artifact type is selected for import', {flash : true,type : 'info'});\n}",
                   "type": "button",
                   "valueStyle": "primary"
                }
