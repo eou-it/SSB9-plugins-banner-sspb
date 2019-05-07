@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.AdminTasks",
    "extendsPage": null,
-   "fileTimestamp": "2018-11-13T11:51:35Z",
+   "fileTimestamp": "2019-05-07T08:05:31Z",
    "modelView": {
       "components": [
          {
@@ -36,6 +36,40 @@
          {
             "components": [
                {
+                  "components": [
+                     {
+                        "name": "txtDispOwner",
+                        "type": "literal",
+                        "value": "Check copy owner box to copy the owner from exported artifact. To set the user to current user, uncheck box"
+                     },
+                     {
+                        "label": "Copy Owner on Import",
+                        "loadInitially": true,
+                        "model": "copyOwner",
+                        "name": "copyOwner",
+                        "readonly": false,
+                        "type": "boolean"
+                     },
+                     {
+                        "name": "textDispDevSec",
+                        "type": "literal",
+                        "value": "Check copy Developer permission box to copy the developer permission from the exported artifact. To copy no permission, uncheck box."
+                     },
+                     {
+                        "label": "Copy all Developers permissions on import",
+                        "loadInitially": true,
+                        "model": "copyDevSec",
+                        "name": "copyDevSec",
+                        "readonly": false,
+                        "type": "boolean"
+                     }
+                  ],
+                  "label": "Select Artifact permissions",
+                  "name": "securityBlock",
+                  "showInitially": true,
+                  "type": "block"
+               },
+               {
                   "name": "helpText",
                   "type": "literal",
                   "value": "Select files from local directories for import"
@@ -43,7 +77,7 @@
                {
                   "name": "uploadFileSelect",
                   "type": "literal",
-                  "value": "<input type=\"file\" id=\"filesElem\" name=\"files[]\" multiple accept=\".json\"/>\n<script>\n  function handleFileSelect(evt) {\n  \tvar files = evt.target.files;\n        var scope = getControllerScopeById(controllerId);\n        var count = files.length;\n        //scope.artifactsGrid.enablePaging = false;\n               \n        scope.artifactsDS.data.removeAll();\n        scope.\\$apply();\n  \t\n\tfunction addFile(event, file) {\n  \t\tfile.domain = event.target.result;\n  \t\tscope.artifactsDS.data.push(file);\n  \t\tscope.\\$apply(); //Update the UI\t\n\t}\n\tfor (var i = 0, f; f = files[i]; i++) {\n                f.index = i;\n                f.count = count;\n  \t\tvar reader = new FileReader();\n\t\treader.onloadend = (function(file) {\n\t\t  return function(evt) {\n\t\t\taddFile(evt, file);\n\t\t  };\n\t\t})(f);\t\t\n  \t\treader.readAsText(f);\n  \t}\n  }\n  document.getElementById('filesElem').addEventListener('change', handleFileSelect, false);\n</script>"
+                  "value": "<input type=\"file\" id=\"filesElem\" name=\"files[]\" multiple accept=\".json\"/><br/>\n\n<script>\n\n  function handleFileSelect(evt) {\n  \tvar files = evt.target.files;\n        var scope = getControllerScopeById(controllerId);\n        var count = files.length;\n        //scope.artifactsGrid.enablePaging = false;\n\n        scope.artifactsDS.data.removeAll();\n        scope.\\$apply();\n  \t\n\tfunction addFile(event, file) {\n            var jsonData = JSON.parse(event.target.result)\n            if(!scope.copyOwner) {\n                    jsonData.owner = user.loginName\n                    file.owner = user.loginName\n                 } else {\n                     file.owner = jsonData.owner\n                 }\n                if(!scope.copyDevSec) {\n                    jsonData.developerSecurity = [];\n                 }\n  \t\tfile.domain =JSON.stringify(jsonData)  \n           \tscope.artifactsDS.data.push(file);\n \t\tscope.\\$apply(); //Update the UI\t\n\t}\n\tfor (var i = 0, f; f = files[i]; i++) {\n                f.index = i;\n                f.count = count;\n  \t\tvar reader = new FileReader();\n\t\treader.onloadend = (function(file) {\n\t\t  return function(evt) {\n\t\t\taddFile(evt, file);\n\t\t  };\n\t\t})(f);\t\t\n  \t\treader.readAsText(f);\n  \t}\n  }\n  document.getElementById('filesElem').addEventListener('change', handleFileSelect, false);\n\n</script>"
                },
                {
                   "allowDelete": false,
@@ -58,6 +92,16 @@
                         "model": "name",
                         "name": "fileName",
                         "type": "display"
+                     },
+                     {
+                        "asHtml": false,
+                        "label": "Owner",
+                        "loadInitially": true,
+                        "model": "owner",
+                        "name": "owner",
+                        "style": "",
+                        "type": "display",
+                        "value": ""
                      },
                      {
                         "label": "Modified",
@@ -99,7 +143,7 @@
                {
                   "label": "Import",
                   "name": "startUpload",
-                  "onClick": "$artifacts.$data.forEach(function (a) {\n\tvar task = {\n\t\ttask: 'import',\n\t\tartifact: {\n\t\t\tfileName: a.name,\n\t\t\tdomain: a.domain,\n\t\t\tindex: a.index,\n\t\t\tcount: a.count,\n\t\t\tsize: a.size\n\t\t}\n\t};\n\t$adminTaskResource.$post(\n\t\ttask,\n\t\tnull, /*no params*/\n\t\tfunction (response) {\n\t\t\tif (response.imported == 1) {\n\t\t\t\talert('Imported ' + response.name + ' type: ' + response.type, {\n\t\t\t\t\tflash : true\n\t\t\t\t});\n\t\t\t}\n\t\t},\n\t\tfunction (response) {\n\t\t\tvar msg = \"Failed uploading artifacts.\\n\";  \n\t\t\tif (response.data.errors.errorMessage) {\n\t\t\t  msg += response.data.errors.errorMessage;\n\t\t\t} else if (response.data.errors[0].errorMessage) {\n\t\t\t  msg += response.data.errors[0].errorMessage;\n\t\t\t} else {\n\t\t\t  msg += response.statusText;\n\t\t\t}\n\t\t\tif (msg) {\n\t\t\t  alert(msg,{type:\"error\"});\n\t\t\t}\n\t\t}\n\t);\n});",
+                  "onClick": "$artifacts.$data.forEach(function (a) {\n\tvar task = {\n\t\ttask: 'import',\n                copyOwner: $copyOwner,\n                copyDevSec: $copyDevSec,\n\t\tartifact: {\n\t\t\tfileName: a.name,\n\t\t\tdomain: a.domain,\n\t\t\tindex: a.index,\n\t\t\tcount: a.count,\n\t\t\tsize: a.size\n\t\t}\n\t};\n\t$adminTaskResource.$post(\n\t\ttask,\n\t\tnull, /*no params*/\n\t\tfunction (response) {\n\t\t\tif (response.imported == 1) {\n\t\t\t\talert('Imported ' + response.name + ' type: ' + response.type, {\n\t\t\t\t\tflash : true\n\t\t\t\t});\n\t\t\t}\n                       if (response.accessError) {\n\t\t\t\t alert(response.accessError, {type:\"error\"});\n\t\t\t}\n\t\t},\n\t\tfunction (response) {\n\t\t\tvar msg = \"Failed uploading artifacts.\\n\";  \n\t\t\tif (response.data.errors.errorMessage) {\n\t\t\t  msg += response.data.errors.errorMessage;\n\t\t\t} else if (response.data.errors[0].errorMessage) {\n\t\t\t  msg += response.data.errors[0].errorMessage;\n\t\t\t} else {\n\t\t\t  msg += response.statusText;\n\t\t\t}\n\t\t\tif (msg) {\n\t\t\t  alert(msg,{type:\"error\"});\n\t\t\t}\n\t\t}\n\t);\n});",
                   "type": "button",
                   "valueStyle": "primary"
                }
@@ -140,7 +184,7 @@
                {
                   "label": "Import",
                   "name": "startImport",
-                  "onClick": "if ($pages || $virtualDomains || $css) {\n\t$adminTaskResource.$post({\n\t\t\ttask : 'import',\n\t\t\tpages : $pages,\n\t\t\tvirtualDomains : $virtualDomains,\n\t\t\tcss : $css,\n\t\t},\n\t\tnull, /*no params*/\n\t\tfunction (response) {\n\t\t\talert('Imported pages: '+ nvl(response.importedPagesCount,0)+ \n\t\t\t      '<br>Imported virtualDomains: '+ nvl(response.importedVirtualDomainsCount,0)+\n\t\t\t      '<br>Imported css: '+ nvl(response.importedCssCount,0),\n                              {flash : true});\n\t        },\n\t\tfunction (response) {\n\t\t\tvar msg = \"Failed importing artifacts.\\n\";  \n\t\t\tif (response.data.errors.errorMessage) {\n\t\t\t  msg += response.data.errors.errorMessage;\n\t\t\t} else if (response.data.errors[0].errorMessage) {\n\t\t\t  msg += response.data.errors[0].errorMessage;\n\t\t\t} else {\n\t\t\t  msg += response.statusText;\n\t\t\t}\n\t\t\tif (msg) {\n\t\t\t  alert(msg,{type:\"error\"});\n\t\t\t}\n\t\t}\n\t);\n} else {\n\talert('No artifact type is selected for import', {flash : true,type : 'info'});\n}",
+                  "onClick": "if ($pages || $virtualDomains || $css) {\n\t$adminTaskResource.$post({\n\t\t\ttask : 'import',\n\t\t\tpages : $pages,\n                        copyOwner: $copyOwner,\n                        copyDevSec: $copyDevSec,\n\t\t\tvirtualDomains : $virtualDomains,\n\t\t\tcss : $css,\n\t\t},\n\t\tnull, /*no params*/\n\t\tfunction (response) {\n\t\t\talert('Imported pages: '+ nvl(response.importedPagesCount,0)+ \n\t\t\t      '<br>Imported virtualDomains: '+ nvl(response.importedVirtualDomainsCount,0)+\n\t\t\t      '<br>Imported css: '+ nvl(response.importedCssCount,0),\n                              {flash : true});\n\t        },\n\t\tfunction (response) {\n\t\t\tvar msg = \"Failed importing artifacts.\\n\";  \n\t\t\tif (response.data.errors.errorMessage) {\n\t\t\t  msg += response.data.errors.errorMessage;\n\t\t\t} else if (response.data.errors[0].errorMessage) {\n\t\t\t  msg += response.data.errors[0].errorMessage;\n\t\t\t} else {\n\t\t\t  msg += response.statusText;\n\t\t\t}\n\t\t\tif (msg) {\n\t\t\t  alert(msg,{type:\"error\"});\n\t\t\t}\n\t\t}\n\t);\n} else {\n\talert('No artifact type is selected for import', {flash : true,type : 'info'});\n}",
                   "type": "button",
                   "valueStyle": "primary"
                }
@@ -383,6 +427,11 @@
             "name": "viewArtifactsSection",
             "showInitially": true,
             "type": "block"
+         },
+         {
+            "name": "jsCode",
+            "type": "literal",
+            "value": "<script>\nif(isImportPrevented && !user.isSuperUser) {\n$(\"input\", \"#pbid-securityBlock\").attr(\"disabled\", \"disabled\")\n$(\"input\", \"#pbid-uploadFileSelect-container\").attr(\"disabled\", \"disabled\")\n$(\"button\").attr(\"disabled\", \"disabled\")\n}\n</script>"
          }
       ],
       "documentation": "Miscellaneous tasks",
@@ -393,10 +442,16 @@
       "title": "Admin tasks",
       "type": "page"
    },
+   "owner": null,
    "pageRoles": [
       {
          "roleName": "ADMIN-GPBADMN",
          "allow": true
+      },
+      {
+         "roleName": "ADMIN-GPBADMA",
+         "allow": true
       }
-   ]
+   ],
+   "pageSecurity": []
 }

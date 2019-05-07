@@ -5,14 +5,15 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
-import org.springframework.context.i18n.LocaleContextHolder
-
+import net.hedtech.banner.security.DeveloperSecurityService
 
 class PageService {
     def compileService
     def groovyPagesTemplateEngine
     def pageSecurityService
     def springSecurityService
+    def dateConverterService
+    def developerSecurityService
 
     def get(String constantName) {
         Page.findByConstantName(constantName)
@@ -48,20 +49,13 @@ class PageService {
         }
 
         def listResult = []
-       Locale locale = LocaleContextHolder.getLocale()
-        String date_format = "dd/MM/yyyy"
-        if(locale && ['ar','fr_CA'].contains(locale.toString())){
-            date_format = "yyyy/MM/dd"
-        } else if("en_US".equals(locale.toString())){
-            date_format = "MM/dd/YYYY"
+        result.each{
+            listResult << [constantName : it.constantName,extendsPage:  it.extendsPage?.constantName, id: it.id, version: it.version,
+                           dateCreated:dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated),
+                           lastUpdated:dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated),
+                           allowModify:!developerSecurityService.isAllowModify(it.constantName,developerSecurityService.PAGE_IND)
+                          ]
         }
-        result.each {
-            //supplementPage( it )
-            // trim the object since we only need to return the constantName properties for listing
-            //listResult << [page : [constantName : it.constantName, id: it.id, version: it.version]]
-            listResult << [constantName : it.constantName,extendsPage:  it.extendsPage?.constantName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format(date_format), lastUpdated:it.lastUpdated?.format(date_format)]
-        }
-
         log.trace "PageService.list is returning a ${result.getClass().simpleName} containing ${result.size()} pages"
         listResult
     }
@@ -103,7 +97,10 @@ class PageService {
         def result = null
         if (page) {
             String model = page.getMergedModelText(true) //Get the merged model with merge Info
-            result = [constantName: page.constantName, id: page.id, extendsPage: page.extendsPage, version: page.version, modelView: model]
+            result = [constantName: page.constantName, id: page.id, extendsPage: page.extendsPage, version: page.version,
+                      modelView: model, allowModify:developerSecurityService.isAllowModify(page.constantName,DeveloperSecurityService.PAGE_IND) ,
+                      allowUpdateOwner: developerSecurityService.isAllowUpdateOwner(page.constantName, DeveloperSecurityService.PAGE_IND),
+                    owner: page.owner]
         }
         result
     }
@@ -116,8 +113,10 @@ class PageService {
         def result
         Page.withTransaction {
             // compile first
-            result = compileAndSavePage(content.pageName, content.source, content.extendsPage)
+            result = compileAndSavePage(content.pageName, content.source, content.extendsPage , content.pageOwner)
         }
+        result <<[allowModify:developerSecurityService.isAllowModify(content.pageName,developerSecurityService.PAGE_IND) ,
+                  allowUpdateOwner: developerSecurityService.isAllowUpdateOwner(content.pageName, developerSecurityService.PAGE_IND)]
         log.trace "PageService.create returning $result"
         result
     }
@@ -128,7 +127,7 @@ class PageService {
         create(content, params)
     }
 
-    def compileAndSavePage( pageName, pageSource, extendsPage) {
+    def compileAndSavePage( pageName, pageSource, extendsPage, pageOwner) {
         log.trace "in compileAndSavePage: pageName=$pageName"
         def pageInstance  = Page.findByConstantName(pageName)
         boolean isUpdated = updateConfigAttr(pageName, pageSource,pageInstance)
@@ -150,8 +149,9 @@ class PageService {
 
                 if (pageInstance) {
                     pageInstance.extendsPage = extendsPage ? Page.findByConstantName(extendsPage.constantName) : null
+                    pageInstance.owner = pageOwner
                 } else {
-                    pageInstance = new Page([constantName :pageName, extendsPage :extendsPage])
+                    pageInstance = new Page([constantName :pageName, extendsPage :extendsPage, owner: pageOwner])
                 }
                 pageInstance.modelView = pageSource
                 //remove merge Info if page is not extended
@@ -173,7 +173,7 @@ class PageService {
                         }
                     }
                     if (ret.statusCode == 0) {
-                        if (!ret.page.save()) {
+                        if (!ret.page.save(flush: true)) {
                             ret.page.errors.allErrors.each { ret.statusMessage += it +"\n" }
                             ret.statusCode = 3
                         }

@@ -1,0 +1,307 @@
+{
+   "constantName": "pbadm.DeveloperPageSecurity",
+   "extendsPage": null,
+   "fileTimestamp": "2019-05-03T14:46:56Z",
+   "modelView": {
+      "components": [
+         {
+            "name": "genericData",
+            "resource": "virtualDomains.pbadmDPSArtifactDetails",
+            "staticData": [],
+            "type": "resource"
+         },
+         {
+            "name": "selectOptions",
+            "staticData": [
+               {
+                  "label": "Page",
+                  "value": "P"
+               },
+               {
+                  "label": "Virtual Domain",
+                  "value": "V"
+               },
+               {
+                  "label": "CSS",
+                  "value": "C"
+               }
+            ],
+            "type": "resource"
+         },
+         {
+            "name": "userDetails",
+            "resource": "virtualDomains.pbadmUserDetails",
+            "staticData": [],
+            "type": "resource"
+         },
+         {
+            "name": "pbadmDeveloperSecurityDetails",
+            "resource": "virtualDomains.pbadmDeveloperSecurityDetails",
+            "staticData": [],
+            "type": "resource"
+         },
+         {
+            "name": "getBusinessProfile",
+            "resource": "virtualDomains.pbadmGetBusinessProfile",
+            "staticData": [],
+            "type": "resource"
+         },
+         {
+            "components": [
+               {
+                  "label": "Type",
+                  "labelKey": "label",
+                  "loadInitially": false,
+                  "name": "ownerPagesBlock_options",
+                  "onLoad": "",
+                  "onUpdate": "$ownerPagesBlock_genericData.$load();\n$ownerPagesBlock_owner='';\n$assigningPrivileges='N';",
+                  "placeholder": "Select...",
+                  "required": false,
+                  "sourceModel": "selectOptions",
+                  "sourceParameters": {},
+                  "style": "col-md-3",
+                  "type": "select",
+                  "valueKey": "value"
+               },
+               {
+                  "label": "Name",
+                  "labelKey": "NAME",
+                  "loadInitially": false,
+                  "name": "ownerPagesBlock_genericData",
+                  "onLoad": "",
+                  "onUpdate": "if($ownerPagesBlock_genericData){\n$securityBlock.$visible = $ownerPagesBlock_genericData;\n$developerPrivilegesBlock.$visible = true;\nif(this.currentRecord){\n$ownerPagesBlock_owner=this.currentRecord.TYPE_OWNER\n$assigningPrivileges=this.currentRecord.ALLOW_MODIFY\n$selectedPage = this.currentRecord.NAME\n}\n$userRoleGrid.$load()\n$profileGrid.$load()\n}else{\n$ownerPagesBlock_owner='';\n$assigningPrivileges='N';\n$securityBlock.$visible = false;\n$developerPrivilegesBlock.$visible = false;\n}",
+                  "placeholder": "Select...",
+                  "required": false,
+                  "sourceModel": "genericData",
+                  "sourceParameters": {
+                     "owner": "user.isSuperUser?\"\":user.loginName",
+                     "type": "$ownerPagesBlock_options"
+                  },
+                  "style": "col-md-3",
+                  "type": "select",
+                  "value": "",
+                  "valueKey": "id"
+               },
+               {
+                  "label": "Owner",
+                  "name": "ownerPagesBlock_owner",
+                  "style": "col-md-2",
+                  "type": "literal",
+                  "value": "$ownerPagesBlock_owner"
+               }
+            ],
+            "name": "ownerPagesBlock",
+            "showInitially": true,
+            "style": "row",
+            "type": "block"
+         },
+         {
+            "components": [
+               {
+                  "booleanFalseValue": "N",
+                  "booleanTrueValue": "Y",
+                  "label": "Assign Maintenance Privileges to All Developers",
+                  "loadInitially": true,
+                  "model": "",
+                  "name": "assigningPrivileges",
+                  "onUpdate": "if($ownerPagesBlock_genericData){\n$ownerPagesBlock_genericDataDS.data.filter(function(x){ return x.id==$ownerPagesBlock_genericData})[0].ALLOW_MODIFY=$assigningPrivileges \n\n$genericData.$put({'id':$ownerPagesBlock_genericData, 'SOURCE_TYPE':$ownerPagesBlock_options, 'ALLOW_ALL':$assigningPrivileges }, null, function(){\n        \nif($assigningPrivileges=='Y'){\nalert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.enableall')}\", {type:\"success\", flash:true}); \n}else{\n\talert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.disableall')}\", {type:\"success\", flash:true}); \n}\n});\n}",
+                  "readonly": false,
+                  "style": "col-md-4",
+                  "type": "boolean",
+                  "value": "N"
+               }
+            ],
+            "name": "developerPrivilegesBlock",
+            "showInitially": false,
+            "style": "row",
+            "type": "block"
+         },
+         {
+            "components": [
+               {
+                  "allowDelete": true,
+                  "allowModify": true,
+                  "allowNew": true,
+                  "allowReload": true,
+                  "components": [
+                     {
+                        "label": "User",
+                        "labelKey": "USER_ID",
+                        "loadInitially": true,
+                        "model": "USER",
+                        "name": "USERDETAILS",
+                        "required": false,
+                        "sourceModel": "userDetails",
+                        "sourceParameters": {},
+                        "type": "select",
+                        "value": "",
+                        "valueKey": "USER_ID"
+                     },
+                     {
+                        "booleanFalseValue": "N",
+                        "booleanTrueValue": "Y",
+                        "label": "Maintenance",
+                        "loadInitially": true,
+                        "model": "ALLOW_MODIFY",
+                        "name": "ALLOW_MODIFY",
+                        "readonly": false,
+                        "type": "boolean",
+                        "value": "N"
+                     },
+                     {
+                        "loadInitially": true,
+                        "model": "SOURCE_TYPE",
+                        "name": "SOURCE_TYPE",
+                        "type": "hidden",
+                        "value": "$ownerPagesBlock_options"
+                     },
+                     {
+                        "loadInitially": true,
+                        "model": "USER_TYPE",
+                        "name": "USER_TYPE",
+                        "type": "hidden",
+                        "value": "\"INDIVIDUAL\""
+                     },
+                     {
+                        "loadInitially": true,
+                        "model": "ID",
+                        "name": "OBJECTID",
+                        "type": "hidden",
+                        "value": "$ownerPagesBlock_genericData"
+                     },
+                     {
+                        "loadInitially": true,
+                        "model": "OWNER",
+                        "name": "OWNER",
+                        "type": "hidden",
+                        "value": "user.loginName"
+                     },
+                     {
+                        "loadInitially": true,
+                        "model": "SURR_ID",
+                        "name": "id",
+                        "type": "hidden"
+                     }
+                  ],
+                  "label": "Assign Privileges to Users",
+                  "loadInitially": false,
+                  "model": "pbadmDeveloperSecurityDetails",
+                  "name": "userRoleGrid",
+                  "newRecordLabel": "",
+                  "onClick": "",
+                  "onError": "var errorMessage =response.data.errors? response.data.errors.errorMessage: null;\nif(errorMessage&&errorMessage.indexOf(\"ORA-20000\") > -2){\n alert(response.data.errors.errorMessage, {type: \"error\"});\n}else \nif(errorMessage&&errorMessage){\n    alert(response.data.errors.errorMessage, {type: \"error\"});\n}else {\n    alert(errorMessage?errorMessage:response.data, {type:\"error\"});\n  }",
+                  "onLoad": "",
+                  "onSave": "",
+                  "onSaveSuccess": "if (action == 'D')\n  {\n   alert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.individual.delete')}\"+\" \"+response.USER +\" \"+\"${message(code:'pbadmDeveloperPageSecurity.securityform.individual.deleted')}\", {type:\"success\", flash:true});\n  }\n\nelse if (action == 'U')\n  {\n    alert($selectedPage+\" \"+\"${message(code:'pbadmDeveloperPageSecurity.securityform.individual.updated')}\"+\" \"+response.USER, {type:\"success\", flash:true});\n  }\nelse{\nalert($selectedPage+\" \"+\"${message(code:'pbadmDeveloperPageSecurity.securityform.individual.save')}\"+\" \"+response.USER, {type:\"success\", flash:true});\n}",
+                  "pageSize": 5,
+                  "parameters": {
+                     "id": "$ownerPagesBlock_genericData",
+                     "owner": "user.loginName",
+                     "type": "$ownerPagesBlock_options",
+                     "usertype": "\"INDIVIDUAL\""
+                  },
+                  "type": "grid"
+               },
+               {
+                  "allowDelete": true,
+                  "allowModify": true,
+                  "allowNew": true,
+                  "allowReload": true,
+                  "components": [
+                     {
+                        "label": "Business Profile",
+                        "labelKey": "PROFILE",
+                        "loadInitially": true,
+                        "model": "USER",
+                        "name": "profileGridAllowSelect",
+                        "required": false,
+                        "sourceModel": "getBusinessProfile",
+                        "sourceParameters": {},
+                        "type": "select",
+                        "valueKey": "PROFILE"
+                     },
+                     {
+                        "booleanFalseValue": "N",
+                        "booleanTrueValue": "Y",
+                        "loadInitially": true,
+                        "model": "ALLOW_MODIFY",
+                        "name": "profileGridAllowModify",
+                        "readonly": false,
+                        "type": "boolean",
+                        "value": "N"
+                     },
+                     {
+                        "loadInitially": true,
+                        "model": "SOURCE_TYPE",
+                        "name": "profileGrid_child_3",
+                        "type": "hidden",
+                        "value": "$ownerPagesBlock_options"
+                     },
+                     {
+                        "loadInitially": true,
+                        "model": "USER_TYPE",
+                        "name": "profileGrid_child_4",
+                        "type": "hidden",
+                        "value": "\"PROFILE\""
+                     },
+                     {
+                        "loadInitially": true,
+                        "model": "ID",
+                        "name": "profileGrid_child_5",
+                        "type": "hidden",
+                        "value": "$ownerPagesBlock_genericData"
+                     },
+                     {
+                        "loadInitially": true,
+                        "model": "OWNER",
+                        "name": "profileGrid_child_6",
+                        "type": "hidden",
+                        "value": "user.loginName"
+                     },
+                     {
+                        "loadInitially": true,
+                        "model": "SURR_ID",
+                        "name": "profSURRID",
+                        "type": "hidden"
+                     }
+                  ],
+                  "label": "Assign Privileges to Group of Users",
+                  "loadInitially": false,
+                  "model": "pbadmDeveloperSecurityDetails",
+                  "name": "profileGrid",
+                  "onError": "var errorMessage =response.data.errors? response.data.errors.errorMessage: null;\nif(errorMessage&&errorMessage.indexOf(\"ORA-20000\") > -2){\n alert(response.data.errors.errorMessage, {type: \"error\"});\n}else \nif(errorMessage&&errorMessage){\n    alert(response.data.errors.errorMessage, {type: \"error\"});\n}else {\n    alert(errorMessage?errorMessage:response.data, {type:\"error\"});\n  }",
+                  "onSaveSuccess": "if (action == 'D')\n  {\n   alert(\"${message(code:'pbadmDeveloperPageSecurity.securityform.group.delete')}\" +\" \"+response.USER+\" \"+\"${message(code:'pbadmDeveloperPageSecurity.securityform.group.deleted')}\",{type:\"success\", flash:true});\n  }\n\nelse if (action == 'U')\n  {\n    alert($selectedPage+\" \"+\"${message(code:'pbadmDeveloperPageSecurity.securityform.group.updated')}\"+\" \"+response.USER, {type:\"success\", flash:true});\n  }\nelse{\nalert($selectedPage+\" \"+\"${message(code:'pbadmDeveloperPageSecurity.securityform.group.save')}\"+\" \"+response.USER, {type:\"success\", flash:true});\n}",
+                  "pageSize": 5,
+                  "parameters": {
+                     "id": "$ownerPagesBlock_genericData",
+                     "owner": "user.loginName",
+                     "type": "$ownerPagesBlock_options",
+                     "usertype": "\"PROFILE\""
+                  },
+                  "type": "grid"
+               }
+            ],
+            "name": "securityBlock",
+            "showInitially": false,
+            "type": "block"
+         }
+      ],
+      "importCSS": "pbadmDeveloperSecurity,xeStyle",
+      "label": "Developer Page Security",
+      "name": "pbadmDeveloperPageSecurity",
+      "style": "",
+      "title": "Developer Page Security",
+      "type": "page"
+   },
+   "owner": null,
+   "pageRoles": [
+      {
+         "roleName": "ADMIN-GPBADMA",
+         "allow": true
+      },
+      {
+         "roleName": "ADMIN-GPBADMN",
+         "allow": true
+      }
+   ]
+}

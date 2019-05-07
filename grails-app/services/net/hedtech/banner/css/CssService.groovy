@@ -5,6 +5,7 @@
 package net.hedtech.banner.css
 
 import net.hedtech.banner.exceptions.ApplicationException
+import net.hedtech.banner.security.DeveloperSecurityService
 import net.hedtech.banner.sspb.CommonService
 import org.codehaus.groovy.grails.web.util.WebUtils
 import net.hedtech.banner.service.ServiceBase
@@ -13,6 +14,8 @@ import org.springframework.context.i18n.LocaleContextHolder
 class CssService extends ServiceBase {
 
     static transactional = true
+    def dateConverterService
+    def developerSecurityService
 
     def list(Map params) {
 
@@ -39,23 +42,16 @@ class CssService extends ServiceBase {
         }
 
         def listResult = []
-        Locale locale = LocaleContextHolder.getLocale()
-        String date_format = "dd/MM/yyyy"
-        if(locale && ['ar','fr_CA'].contains(locale.toString())){
-            date_format = "yyyy/MM/dd"
-        } else if("en_US".equals(locale.toString())){
-            date_format = "MM/dd/YYYY"
-        }
         result.each {
             //supplementCss( it )
             // trim the object since we only need to return the constantName properties for listing
-            if(params.containsKey('getGridData')){
-                listResult << [constantName : it.constantName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format(date_format), lastUpdated:it.lastUpdated?.format(date_format)]
-            }else {
-                listResult << [css : [constantName : it.constantName, id: it.id, version: it.version]]
+            if (params.containsKey('getGridData')) {
+                listResult << [constantName: it.constantName, id: it.id, version: it.version, owner: it.owner ,
+                               dateCreated: dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated), lastUpdated: dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated)]
+            } else {
+                listResult << [css: [constantName: it.constantName, id: it.id, version: it.version, owner: it.owner ]]
             }
         }
-
         log.trace "CssService.list is returning a ${result.getClass().simpleName} containing ${result.size()} style sheets"
         listResult
     }
@@ -93,7 +89,9 @@ class CssService extends ServiceBase {
         if (result) {
             //supplementCss( result )
             log.trace "CssService.show returning ${result}"
-            showResult = [constantName : result.constantName, id: result.id, version: result.version, css: result.css, description: result.description]
+            showResult = [constantName : result.constantName, id: result.id, version: result.version, css: result.css, owner: result.owner ,
+                          description: result.description,  allowModify: developerSecurityService.isAllowModify(result.constantName,DeveloperSecurityService.CSS_IND),
+                          allowUpdateOwner: developerSecurityService.isAllowUpdateOwner(result.constantName, DeveloperSecurityService.CSS_IND)]
         }
         showResult
     }
@@ -109,7 +107,9 @@ class CssService extends ServiceBase {
             throw new ApplicationException( CssService, "generic failure" )
         }
 
-        def result = compileCss(content.cssName, content.source, content.description)
+        def result = compileCss(content.cssName, content.source, content.description, content.owner)
+        result <<[allowModify:developerSecurityService.isAllowModify(content.cssName,developerSecurityService.CSS_IND) ,
+                  allowUpdateOwner: developerSecurityService.isAllowUpdateOwner(content.cssName, developerSecurityService.CSS_IND)]
         //supplementCss( result )
         log.trace "CssService.create returning $result"
         result
@@ -121,13 +121,13 @@ class CssService extends ServiceBase {
 
         //checkForExceptionRequest()
 
-        def result = compileCss(content.cssName, content.source, content.description)
+        def result = compileCss(content.cssName, content.source, content.description, content.owner)
 
         //supplementCss( result )
         result
     }
 
-    def compileCss( cssName, cssSource, description) {
+    def compileCss( cssName, cssSource, description, owner) {
         log.trace "in compileCss: \ncssSource=$cssSource"
 
         description = description?:""
@@ -144,9 +144,10 @@ class CssService extends ServiceBase {
                 if (cssInstance) {
                     cssInstance.css = cssSource
                     cssInstance.description = description
+                    cssInstance.owner = owner
                     super.update(cssInstance)
                 } else {
-                    cssInstance = new Css([constantName: cssName, description: description, css: cssSource])
+                    cssInstance = new Css([constantName: cssName, description: description, css: cssSource, owner:owner])
                     super.create(cssInstance)
                 }
                 ret = [statusCode:0, statusMessage:"${message(code:'sspb.css.cssManager.saved.message')}"]

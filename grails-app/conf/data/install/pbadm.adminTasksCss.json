@@ -1,11 +1,11 @@
 {
    "lastUpdated": null,
-   "css": "#paging-container-artifacts {\n  visibility: hidden;\n}",
+   "css": "#paging-container-artifacts {\n  visibility: hidden;\n}\n#pbid-securityBlock {\nmargin-top: 25px;\nmargin-bottom: 20px;\n}\n#pbid-copyOwner-container {\nmargin-bottom:15px;\n}\n#pbid-copyOwner-container .pb-literal{\nmargin-bottom:3px;\n}",
    "dateCreated": null,
    "constantName": "pbadm.adminTasksCss",
    "description": "CSS for Admin tasks page",
    "id": null,
-   "fileTimestamp": "2018-10-30T14:52:33Z",
+   "fileTimestamp": "2019-04-23T14:52:33Z",
    "class": "net.hedtech.banner.css.Css",
    "version": null
 }

@@ -1,0 +1,25 @@
+{
+   "codePut": null,
+   "codeDelete": null,
+   "virtualDomainRoles": [
+      {
+         "allowDelete": true,
+         "allowPost": true,
+         "allowPut": true,
+         "roleName": "ADMIN-GPBADMA",
+         "allowGet": true
+      },
+      {
+         "allowDelete": true,
+         "allowPost": true,
+         "allowPut": true,
+         "roleName": "ADMIN-GPBADMN",
+         "allowGet": true
+      }
+   ],
+   "codeGet": "select GTVFBPR_CODE  as \"PROFILE\" from GTVFBPR",
+   "typeOfCode": "S",
+   "fileTimestamp": "2019-04-23T12:26:40Z",
+   "serviceName": "pbadmGetBusinessProfile",
+   "codePost": null
+}

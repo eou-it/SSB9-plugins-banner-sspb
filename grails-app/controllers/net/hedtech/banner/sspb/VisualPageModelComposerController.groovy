@@ -1,13 +1,15 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ * Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
 class VisualPageModelComposerController {
     static defaultAction = "loadComposerPage"
 
+    def developerSecurityService
+
     def loadComposerPage = {
-        render (view:"visualComposer")
+        render (view:"visualComposer", model: [isProductionReadOnlyMode : developerSecurityService.isProductionReadOnlyMode()])
     }
 
     // TODO replace with REST API
