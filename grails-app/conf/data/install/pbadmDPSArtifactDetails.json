@@ -20,7 +20,7 @@
    ],
    "codeGet": "select * from (select p.id as id, p.CONSTANT_NAME AS NAME,nvl(p.PAGE_OWNER,' ') as TYPE_OWNER , p.PAGE_ALLOW_ALL_IND as ALLOW_MODIFY FROM SSPBMGR.PAGE p  \r\nwhere 'P'=:type and p.PAGE_OWNER = decode(:owner,'',p.PAGE_OWNER,:owner)\r\nunion\r\nselect id as id, SERVICE_NAME as NAME, nvl(VIRTUAL_DOMAIN_OWNER,' ') AS TYPE_OWNER  , VIRTUAL_DOMAIN_ALLOW_ALL_IND as ALLOW_MODIFY from virtual_domain\r\nwhere 'V'=:type and VIRTUAL_DOMAIN_OWNER  = decode(:owner,'',VIRTUAL_DOMAIN_OWNER,:owner)\r\nunion\r\nselect id as id, CONSTANT_NAME AS NAME,nvl(CSS_OWNER,' ') AS TYPE_OWNER, CSS_ALLOW_ALL_IND as ALLOW_MODIFY from css \r\nwhere 'C'=:type  and CSS_OWNER = decode(:owner,'',CSS_OWNER,:owner)\r\n) order by name",
    "typeOfCode": "S",
-   "fileTimestamp": "2019-04-075T11:31:29Z",
+   "fileTimestamp": "2019-05-075T11:31:29Z",
    "serviceName": "pbadmDPSArtifactDetails",
    "codePost": null,
    "developerSecurity": []
