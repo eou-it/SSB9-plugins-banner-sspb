@@ -132,9 +132,9 @@ class CssUtilService extends PBUtilServiceBase {
                 css.description = json.description
                 //Copy owner and Dev Security
                 if(copyOwner) {
-                    page.owner = json.owner ?: null
+                    css.owner = json.owner ?: null
                 } else {
-                    page.owner = PBUser.userCache.loginName
+                    css.owner = PBUser.userCache.loginName
                 }
                 if(copyDevSec) {
                     json.developerSecurity = json.developerSecurity ?: null
