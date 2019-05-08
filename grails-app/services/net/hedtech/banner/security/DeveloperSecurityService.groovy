@@ -49,7 +49,7 @@ class DeveloperSecurityService {
     }
 
     static def getImportConfigValue(){
-        ConfigurationData.fetchByNameAndType(PREVENT_IMPORT_BY_DEVELOPER, "boolean", APP_ID).value
+        ConfigurationData.fetchByNameAndType(PREVENT_IMPORT_BY_DEVELOPER, "boolean", APP_ID)?.value
     }
 
     static boolean isSuperUser() {
