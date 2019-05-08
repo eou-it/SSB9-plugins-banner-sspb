@@ -49,7 +49,7 @@ class DeveloperSecurityService {
     }
 
     static def getImportConfigValue(){
-        ConfigurationData.fetchByNameAndType(PREVENT_IMPORT_BY_DEVELOPER, "boolean", APP_ID).value
+        ConfigurationData.fetchByNameAndType(PREVENT_IMPORT_BY_DEVELOPER, "boolean", APP_ID)?.value
     }
 
     static boolean isSuperUser() {
@@ -67,7 +67,7 @@ class DeveloperSecurityService {
          return isSupUser
     }
 
-    boolean checkUserHasPrivilage(String constantName, String type, boolean isModify = false) {
+    boolean checkUserHasPrivilage(String constantName, String type, boolean isModify = false, boolean isUpdateOwner=false) {
         def userIn = SecurityContextHolder?.context?.authentication?.principal
         String oracleUserId
         if (userIn?.class?.name?.endsWith('BannerUser')) {
@@ -77,21 +77,21 @@ class DeveloperSecurityService {
         }
         Boolean hasPrivilage = false
         if (PAGE_IND.equalsIgnoreCase(type)) {
-            hasPrivilage = isPageHasPrivilege(constantName, oracleUserId, isModify)
+            hasPrivilage = isPageHasPrivilege(constantName, oracleUserId, isModify, isUpdateOwner)
         } else if (VIRTUAL_DOMAIN_IND.equalsIgnoreCase(type)) {
-            hasPrivilage = isVirtualDomainHasPrivilege(constantName, oracleUserId, isModify)
+            hasPrivilage = isVirtualDomainHasPrivilege(constantName, oracleUserId, isModify, isUpdateOwner)
         } else if (CSS_IND.equalsIgnoreCase(type)) {
-            hasPrivilage = isCssHasPrivilege(constantName, oracleUserId, isModify)
+            hasPrivilage = isCssHasPrivilege(constantName, oracleUserId, isModify, isUpdateOwner)
         }
 
         return hasPrivilage
 
     }
 
-    protected boolean isCssHasPrivilege(String constantName, String oracleUserId, boolean isModify) {
+    protected boolean isCssHasPrivilege(String constantName, String oracleUserId, boolean isModify, boolean isUpdateOwner) {
         Boolean isCssHasPrivilege = false
         Css css = Css.fetchByConstantName(constantName)
-        if (css && (css.owner?.equalsIgnoreCase(oracleUserId) || "Y".equalsIgnoreCase(css.allowAllInd))) {
+        if (css && (css.owner?.equalsIgnoreCase(oracleUserId) || (!isUpdateOwner && "Y".equalsIgnoreCase(css.allowAllInd)))) {
             isCssHasPrivilege = true
         } else if (isModify) {
             List<CssSecurity> secList = CssSecurity.fetchAllByCssId(css?.id)
@@ -111,10 +111,10 @@ class DeveloperSecurityService {
         return isCssHasPrivilege
     }
 
-    protected boolean isVirtualDomainHasPrivilege(String constantName, String oracleUserId, boolean isModify) {
+    protected boolean isVirtualDomainHasPrivilege(String constantName, String oracleUserId, boolean isModify, boolean isUpdateOwner) {
         Boolean isVirtualDomainHasPrivilege = false
         VirtualDomain domain = VirtualDomain.findByServiceName(constantName)
-        if (domain && (domain.owner?.equalsIgnoreCase(oracleUserId) || "Y".equalsIgnoreCase(domain.allowAllInd))) {
+        if (domain && (domain.owner?.equalsIgnoreCase(oracleUserId) || (!isUpdateOwner && "Y".equalsIgnoreCase(domain.allowAllInd)))) {
             isVirtualDomainHasPrivilege = true
         } else if (isModify) {
                 List<VirtualDomainSecurity> secList = VirtualDomainSecurity.fetchAllByVirtualDomainId(domain?.id)
@@ -134,10 +134,10 @@ class DeveloperSecurityService {
         return isVirtualDomainHasPrivilege
     }
 
-    protected boolean isPageHasPrivilege(String constantName, String oracleUserId, boolean isModify) {
+    protected boolean isPageHasPrivilege(String constantName, String oracleUserId, boolean isModify, boolean isUpdateOwner) {
         Boolean isPageHasPrivilege = false
         Page page = Page.findByConstantName(constantName)
-        if (page && (page.owner?.equalsIgnoreCase(oracleUserId) || "Y".equalsIgnoreCase(page.allowAllInd))) {
+        if (page && (page.owner?.equalsIgnoreCase(oracleUserId) || (!isUpdateOwner && "Y".equalsIgnoreCase(page.allowAllInd)))) {
             isPageHasPrivilege = true
         } else if (isModify) {
             List<PageSecurity> secList = PageSecurity.fetchAllByPageId(page?.id)
@@ -191,7 +191,7 @@ class DeveloperSecurityService {
         }else if(productionMode){
             return false
         }else if(enableDeveloperSecurity && !productionMode){
-            return checkUserHasPrivilage(constantName, type)
+            return checkUserHasPrivilage(constantName, type, false, true)
         }else if (!productionMode){
             return true
         }else{
