@@ -49,7 +49,8 @@ class DeveloperSecurityService {
     }
 
     static def getImportConfigValue(){
-        ConfigurationData.fetchByNameAndType(PREVENT_IMPORT_BY_DEVELOPER, "boolean", APP_ID)?.value
+        ConfigurationData.fetchByNameAndType(PREVENT_IMPORT_BY_DEVELOPER, "boolean", APP_ID)?
+                ConfigurationData.fetchByNameAndType(PREVENT_IMPORT_BY_DEVELOPER, "boolean", APP_ID).value:false
     }
 
     static boolean isSuperUser() {
@@ -71,7 +72,7 @@ class DeveloperSecurityService {
         def userIn = SecurityContextHolder?.context?.authentication?.principal
         String oracleUserId
         if (userIn?.class?.name?.endsWith('BannerUser')) {
-            oracleUserId = userIn.username
+            oracleUserId = userIn?.username?.toString()?.toUpperCase()
         } else {
             return false
         }

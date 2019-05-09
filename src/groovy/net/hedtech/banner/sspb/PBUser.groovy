@@ -56,7 +56,7 @@ class PBUser {
         def user = PBUser.get()
         def userInfo =
                 [authenticated:  user.authenticated,
-                 loginName: user.loginName, fullName: user.fullName , isSuperUser: DeveloperSecurityService.isSuperUser()]
+                 loginName: user?.loginName?.toString()?.toUpperCase(), fullName: user.fullName , isSuperUser: DeveloperSecurityService.isSuperUser()]
         boolean isEnabled = Holders.config?.pageBuilder?.development?.authorities?.enabled
         if(isEnabled){
             userInfo<<[authorities: user.authorities]
