@@ -1,0 +1,13 @@
+//= require /plugins/banner-sspb-0.1/BannerXE/lib/ng-grid/ng-grid.js
+//= require /plugins/banner-sspb-0.1/BannerXE/lib/angular-ui/angular-ui.js
+//= require pbRunDirectives.js
+//= require xe-ui-components.js
+//= require bootstrap.js
+//= require modelPoppup.js
+//= require pbRunApp.js
+//= require /plugins/banner-sspb-0.1/BannerXE/lib/jquery/jquery-ui-1.8.24.custom.js
+//= require menu/tools-menu.js
+//= require extensibility-angular/xe-angular.js
+//= require angular/hotkeys.js
+//= require about/about.js
+//= require preference/userpreference.js
