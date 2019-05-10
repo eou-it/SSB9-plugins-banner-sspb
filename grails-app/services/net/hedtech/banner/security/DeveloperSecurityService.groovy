@@ -98,13 +98,15 @@ class DeveloperSecurityService {
             List<CssSecurity> secList = CssSecurity.fetchAllByCssId(css?.id)
             for (CssSecurity cs : secList) {
                 if (USER_GROUP.equalsIgnoreCase(cs.type)) {
-                    if (oracleUserId.equals(cs.id.developerUserId)) {
+                    if (oracleUserId.equals(cs.id.developerUserId) && "Y".equals(cs.allowModifyInd)) {
                         isCssHasPrivilege = true
                     }
                 } else {
-                    def userList = BusinessProfile.findByProfile(cs.id.developerUserId, oracleUserId)
-                    if (userList) {
-                        isCssHasPrivilege = true
+                    if("Y".equals(cs.allowModifyInd)) {
+                        def userList = BusinessProfile.findByProfile(cs.id.developerUserId, oracleUserId)
+                        if (userList) {
+                            isCssHasPrivilege = true
+                        }
                     }
                 }
             }
@@ -121,13 +123,15 @@ class DeveloperSecurityService {
                 List<VirtualDomainSecurity> secList = VirtualDomainSecurity.fetchAllByVirtualDomainId(domain?.id)
                 for (VirtualDomainSecurity vs : secList) {
                     if (USER_GROUP.equalsIgnoreCase(vs.type)) {
-                        if (oracleUserId.equals(vs.id.developerUserId)) {
+                        if (oracleUserId.equals(vs.id.developerUserId) && "Y".equals(vs.allowModifyInd)) {
                             isVirtualDomainHasPrivilege = true
                         }
                     } else {
-                        def userList = BusinessProfile.findByProfile(vs.id.developerUserId, oracleUserId)
-                        if (userList) {
-                            isVirtualDomainHasPrivilege = true
+                        if("Y".equals(vs.allowModifyInd)) {
+                            def userList = BusinessProfile.findByProfile(vs.id.developerUserId, oracleUserId)
+                            if (userList) {
+                                isVirtualDomainHasPrivilege = true
+                            }
                         }
                     }
                 }
@@ -144,13 +148,15 @@ class DeveloperSecurityService {
             List<PageSecurity> secList = PageSecurity.fetchAllByPageId(page?.id)
             for (PageSecurity ps : secList) {
                 if (USER_GROUP.equalsIgnoreCase(ps.type)) {
-                    if (oracleUserId.equals(ps.id.developerUserId)) {
+                    if (oracleUserId.equals(ps.id.developerUserId) && "Y".equals(ps.allowModifyInd)) {
                         isPageHasPrivilege = true
                     }
                 } else {
-                    def userList = BusinessProfile.findByProfile(ps.id.developerUserId, oracleUserId)
-                    if (userList) {
-                        isPageHasPrivilege = true
+                    if("Y".equals(ps.allowModifyInd)) {
+                        def userList = BusinessProfile.findByProfile(ps.id.developerUserId, oracleUserId)
+                        if (userList) {
+                            isPageHasPrivilege = true
+                        }
                     }
                 }
             }
