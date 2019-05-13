@@ -150,7 +150,7 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
 
                 //Copy owner and Dev Security
                 if(copyOwner) {
-                    vd.owner = json.has('owner') ?: null
+                    vd.owner = json.owner ?: null
                 } else {
                     vd.owner = PBUser.userCache.oracleUserName
                 }
