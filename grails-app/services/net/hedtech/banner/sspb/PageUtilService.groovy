@@ -204,7 +204,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 if(copyOwner) {
                     page.owner = json.owner ?: null
                 } else {
-                    page.owner = PBUser.userCache.loginName
+                    page.owner = PBUser.userCache.oracleUserName
                 }
                 if(copyDevSec) {
                     json.developerSecurity = json.developerSecurity ?: null

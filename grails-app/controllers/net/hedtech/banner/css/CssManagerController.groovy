@@ -30,7 +30,7 @@ class CssManagerController {
             buf = mpf.inputStream.getText('utf-8')
             if ( validEncoding(buf) ) {
                 def ret = cssService.create([cssName: params.cssName, source: buf, description: params.description ,
-                                             owner: PBUser.userCache.loginName], [:])
+                                             owner: PBUser.userCache.oracleUserName], [:])
                 res = [received     : true, fileName: filename, fileSize: buf.length(), statusCode: ret.statusCode,
                        statusMessage: ret.statusMessage]
             } else {

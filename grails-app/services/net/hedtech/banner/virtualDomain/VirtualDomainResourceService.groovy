@@ -121,7 +121,7 @@ class VirtualDomainResourceService {
             if (!vd)   {
                 vd = new VirtualDomain([serviceName:vdServiceName])
                 updateVD = false
-                vd.owner= PBUser.userCache.loginName
+                vd.owner= PBUser.userCache.oracleUserName
             }
             if (vd) {
                 if(updateVD && vdOwner){

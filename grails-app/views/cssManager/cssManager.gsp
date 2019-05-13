@@ -151,7 +151,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                 $scope.cssName= "${message( code:'sspb.css.cssManager.newCss.default', encodeAs: 'JavaScript')}";
                 $scope.cssSource = "";
                 $scope.description="";
-                $scope.cssOwner = user.loginName;
+                $scope.cssOwner = user.oracleUserName;
                 $scope.allowUpdateOwner = true;
                 $scope.allowModify = true;
             };
@@ -165,11 +165,11 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                 }
 
                 Css.save({cssName:$scope.cssName, source:$scope.cssSource, description:$scope.description,
-                    owner:$scope.cssOwner?$scope.cssOwner:user.loginName }, function(response) {
+                    owner:$scope.cssOwner?$scope.cssOwner:user.oracleUserName }, function(response) {
                     //console.log("save response = " + response.statusCode + ", " +response.statusMessage);
                     var note = {type:"error"};
                     if (response.statusCode == 0) {
-                        $scope.cssOwner=$scope.cssOwner?$scope.cssOwner:user.loginName;
+                        $scope.cssOwner=$scope.cssOwner?$scope.cssOwner:user.oracleUserName;
                         $scope.cssStatus.message = $scope.i18nGet(response.statusMessage);
                         note = {type: "success", flash: true};
                         $scope.allowUpdateOwner = response.allowUpdateOwner;

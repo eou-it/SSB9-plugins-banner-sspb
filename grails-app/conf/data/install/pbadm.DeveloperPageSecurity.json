@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.DeveloperPageSecurity",
    "extendsPage": null,
-   "fileTimestamp": "2019-05-03T14:46:56Z",
+   "fileTimestamp": "2019-05-10T14:46:56Z",
    "modelView": {
       "components": [
          {
@@ -74,7 +74,7 @@
                   "required": false,
                   "sourceModel": "genericData",
                   "sourceParameters": {
-                     "owner": "user.isSuperUser?\"\":user.loginName",
+                     "owner": "user.isSuperUser?\"\":user.oracleUserName",
                      "type": "$ownerPagesBlock_options"
                   },
                   "style": "col-md-3",
@@ -174,7 +174,7 @@
                         "model": "OWNER",
                         "name": "OWNER",
                         "type": "hidden",
-                        "value": "user.loginName"
+                        "value": "user.oracleUserName"
                      },
                      {
                         "loadInitially": true,
@@ -196,7 +196,7 @@
                   "pageSize": 5,
                   "parameters": {
                      "id": "$ownerPagesBlock_genericData",
-                     "owner": "user.loginName",
+                     "owner": "user.oracleUserName",
                      "type": "$ownerPagesBlock_options",
                      "usertype": "\"INDIVIDUAL\""
                   },
@@ -256,7 +256,7 @@
                         "model": "OWNER",
                         "name": "profileGrid_child_6",
                         "type": "hidden",
-                        "value": "user.loginName"
+                        "value": "user.oracleUserName"
                      },
                      {
                         "loadInitially": true,
@@ -274,7 +274,7 @@
                   "pageSize": 5,
                   "parameters": {
                      "id": "$ownerPagesBlock_genericData",
-                     "owner": "user.loginName",
+                     "owner": "user.oracleUserName",
                      "type": "$ownerPagesBlock_options",
                      "usertype": "\"PROFILE\""
                   },

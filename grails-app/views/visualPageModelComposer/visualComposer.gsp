@@ -793,7 +793,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                     $scope.pageSource[0] = {"type": "page", "name": $scope.pageName};
                     $scope.pageOneSource = $scope.pageSource[0];
                     $scope.resetSelected();
-                    $scope.pageOwner = user.loginName;
+                    $scope.pageOwner = user.oracleUserName;
                     $scope.allowUpdateOwner = true;
                     $scope.allowModify = true;
                     //$scope.handlePageTreeChange();
@@ -1046,7 +1046,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
             }
 
             $scope.resetOwner = function (){
-                $scope.pageOwner = user.loginName;
+                $scope.pageOwner = user.oracleUserName;
                 $scope.allowUpdateOwner = true;
                 $scope.allowModify = true;
             }
