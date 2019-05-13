@@ -134,7 +134,7 @@ class CssUtilService extends PBUtilServiceBase {
                 if(copyOwner) {
                     css.owner = json.owner ?: null
                 } else {
-                    css.owner = PBUser.userCache.loginName
+                    css.owner = PBUser.userCache.oracleUserName
                 }
                 if(copyDevSec) {
                     json.developerSecurity = json.developerSecurity ?: null
