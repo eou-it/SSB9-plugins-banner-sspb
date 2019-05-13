@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 
 package net.hedtech.banner.tools
@@ -9,7 +9,7 @@ import org.hibernate.HibernateException
 import java.text.ParseException
 
 @Log4j
-class PBUtilServiceBase {
+public class PBUtilServiceBase {
 
     def final static loadOverwriteExisting=0
     def final static loadSkipExisting=1

@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2018 Ellucian Company L.P. and its affiliates.
+ Copyright 2018-2019 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
@@ -436,7 +436,7 @@ class VirtualDomainSqlService {
     }
 
     // For CLOB support. Based on code found on forum.springsource.org
-    private String getStringValue(oracle.sql.CLOB c) {
+    private String getStringValue(def c) {
         if (c != null) {
             BufferedReader reader = new BufferedReader(c.getCharacterStream())
             try {

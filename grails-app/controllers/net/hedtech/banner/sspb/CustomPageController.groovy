@@ -1,15 +1,17 @@
 /*******************************************************************************
- Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
+ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 
 package net.hedtech.banner.sspb
+
+import grails.core.GrailsApplication
 
 class CustomPageController {
 
     static defaultAction = "page"
     def groovyPagesTemplateEngine
     def compileService
-    def grailsApplication
+    GrailsApplication grailsApplication
     def pageService
 
     def page() {

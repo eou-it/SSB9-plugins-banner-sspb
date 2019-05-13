@@ -1,11 +1,12 @@
 /*******************************************************************************
- Copyright 2017 Ellucian Company L.P. and its affiliates.
+ Copyright 2017-2019 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 import difflib.*
+import difflib.Patch
 
 @Log4j
 class Page {

@@ -6,7 +6,7 @@ package net.hedtech.banner.css
 
 import net.hedtech.banner.exceptions.ApplicationException
 import net.hedtech.banner.sspb.CommonService
-import org.codehaus.groovy.grails.web.util.WebUtils
+import org.grails.web.util.WebUtils
 import net.hedtech.banner.service.ServiceBase
 import org.springframework.context.i18n.LocaleContextHolder
 

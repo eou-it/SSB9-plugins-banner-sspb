@@ -1,0 +1,14 @@
+include ':banner-core'
+project(':banner-core').projectDir = new File('../banner_core.git')
+
+include ':banner-restful-api-support'
+project(':banner-restful-api-support').projectDir= new File('../banner-restful-api-support.git')
+
+include ':i18n-core'
+project(':i18n-core').projectDir = new File('../i18n_core.git')
+
+include ':banner-general-utility'
+project(':banner-general-utility').projectDir = new File('../banner_general_utility.git')
+
+include ':banner-ui-ss'
+project(':banner-ui-ss').projectDir = new File('../banner_ui_ss.git')

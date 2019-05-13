@@ -1,15 +1,15 @@
 /*******************************************************************************
- Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
 import groovy.util.logging.Log4j
-import org.codehaus.groovy.grails.web.context.ServletContextHolder
-import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
+import grails.web.context.ServletContextHolder
+import org.grails.web.util.GrailsApplicationAttributes
 import org.springframework.context.ApplicationContext
-import net.hedtech.banner.tools.i18n.SortedProperties
+import net.hedtech.banner.tools.i18n.*
 
 @Log4j
 class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
