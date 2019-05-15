@@ -92,7 +92,9 @@ class DeveloperSecurityService {
     protected boolean isCssHasPrivilege(String constantName, String oracleUserId, boolean isModify, boolean isUpdateOwner) {
         Boolean isCssHasPrivilege = false
         Css css = Css.fetchByConstantName(constantName)
-        if (css && (css.owner?.equalsIgnoreCase(oracleUserId) || (!isUpdateOwner && "Y".equalsIgnoreCase(css.allowAllInd)))) {
+        if(!css){
+            isCssHasPrivilege = true
+        }else if (css && (css.owner?.equalsIgnoreCase(oracleUserId) || (!isUpdateOwner && "Y".equalsIgnoreCase(css.allowAllInd)))) {
             isCssHasPrivilege = true
         } else if (isModify) {
             List<CssSecurity> secList = CssSecurity.fetchAllByCssId(css?.id)
@@ -117,7 +119,9 @@ class DeveloperSecurityService {
     protected boolean isVirtualDomainHasPrivilege(String constantName, String oracleUserId, boolean isModify, boolean isUpdateOwner) {
         Boolean isVirtualDomainHasPrivilege = false
         VirtualDomain domain = VirtualDomain.findByServiceName(constantName)
-        if (domain && (domain.owner?.equalsIgnoreCase(oracleUserId) || (!isUpdateOwner && "Y".equalsIgnoreCase(domain.allowAllInd)))) {
+        if(!domain){
+            isVirtualDomainHasPrivilege = true
+        } else if (domain && (domain.owner?.equalsIgnoreCase(oracleUserId) || (!isUpdateOwner && "Y".equalsIgnoreCase(domain.allowAllInd)))) {
             isVirtualDomainHasPrivilege = true
         } else if (isModify) {
                 List<VirtualDomainSecurity> secList = VirtualDomainSecurity.fetchAllByVirtualDomainId(domain?.id)
@@ -142,7 +146,9 @@ class DeveloperSecurityService {
     protected boolean isPageHasPrivilege(String constantName, String oracleUserId, boolean isModify, boolean isUpdateOwner) {
         Boolean isPageHasPrivilege = false
         Page page = Page.findByConstantName(constantName)
-        if (page && (page.owner?.equalsIgnoreCase(oracleUserId) || (!isUpdateOwner && "Y".equalsIgnoreCase(page.allowAllInd)))) {
+        if(!page){
+            isPageHasPrivilege = true
+        }else if (page && (page.owner?.equalsIgnoreCase(oracleUserId) || (!isUpdateOwner && "Y".equalsIgnoreCase(page.allowAllInd)))) {
             isPageHasPrivilege = true
         } else if (isModify) {
             List<PageSecurity> secList = PageSecurity.fetchAllByPageId(page?.id)

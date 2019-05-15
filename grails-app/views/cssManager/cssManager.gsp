@@ -186,13 +186,19 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                     // refresh the page list in case new page is added
                     //  $scope.loadCssNames();
                 }, function(response) {
-                    var msg ="${message(code: 'sspb.css.cssManager.stylesheet.submit.failed.message', encodeAs: 'JavaScript')}";;
-                    if (response.data != undefined && response.data.errors!=undefined)
-                        msg =  $scope.i18nGet(msg, [response.data.errors[0].errorMessage]);
-                    else
-                        msg = $scope.i18nGet(msg, ['']);
+                    if(response && response.status == 403){
+                        var err = response.data && response.data.errors ? response.data.errors.errorMessage : "";
+                        alert(err,{type: "error",flash: true});
+                    }else {
+                        var msg = "${message(code: 'sspb.css.cssManager.stylesheet.submit.failed.message', encodeAs: 'JavaScript')}";
+                        ;
+                        if (response.data != undefined && response.data.errors != undefined)
+                            msg = $scope.i18nGet(msg, [response.data.errors[0].errorMessage]);
+                        else
+                            msg = $scope.i18nGet(msg, ['']);
 
-                    alert(msg,{type: "error"});
+                        alert(msg, {type: "error"});
+                    }
                 });
 
             }
@@ -214,6 +220,10 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                     // $scope.loadCssNames();
 
                 }, function(response) {
+                    if(response && response.status == 403){
+                        var err = response.data && response.data.errors ? response.data.errors.errorMessage : "";
+                        alert(err,{type: "error",flash: true});
+                    }else {
                     var msg="${message(code:'sspb.css.cssManager.deletion.error.message')}";
 
                     if (response.data != undefined && response.data.errors != undefined)
@@ -222,7 +232,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                         msg = $scope.i18nGet(msg, ['']);
 
                     alert(msg,{type: "error"});
-
+                    }
                 });
 
             }

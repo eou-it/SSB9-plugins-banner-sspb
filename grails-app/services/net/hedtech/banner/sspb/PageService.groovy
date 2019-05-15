@@ -6,6 +6,7 @@ package net.hedtech.banner.sspb
 
 import grails.converters.JSON
 import net.hedtech.banner.security.DeveloperSecurityService
+import net.hedtech.restfulapi.AccessDeniedException
 
 class PageService {
     def compileService
@@ -110,6 +111,9 @@ class PageService {
     // TODO for now update(post) handles both update and creation to simplify client side logic
     def create(Map content, ignore) {
         log.trace "PageService.create invoked"
+        if (!developerSecurityService.isAllowModify(content.pageName, developerSecurityService.PAGE_IND)) {
+            throw new AccessDeniedException("user.not.authorized.create", [PBUser.getTrimmed().loginName])
+        }
         def result
         Page.withTransaction {
             // compile first
@@ -124,6 +128,9 @@ class PageService {
     // update is not used to update pages since the client may not know if a page exists or not when submitting (concurrent editing)
     def update( /*def id,*/ Map content, params) {
         log.trace "PageService.update invoked"
+        if (!developerSecurityService.isAllowModify(content.pageName, developerSecurityService.PAGE_IND)) {
+            throw new AccessDeniedException("user.not.authorized.update", [PBUser.getTrimmed().loginName])
+        }
         create(content, params)
     }
 
@@ -229,6 +236,9 @@ class PageService {
 
     // note the content-type header still needs to be set in the request even we don't send in any content in the body
     void delete(Map ignore, params) {
+        if (!developerSecurityService.isAllowModify(params.id, developerSecurityService.PAGE_IND)) {
+            throw new AccessDeniedException("user.not.authorized.delete", [PBUser.getTrimmed().loginName])
+        }
         pageSecurityService.delete([:],[constantName:params.id])
         Page.withTransaction {
             def page = Page.find{constantName==params.id}
