@@ -3,12 +3,13 @@
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
+import groovy.util.logging.Log4j
 import net.hedtech.banner.security.DeveloperSecurityService
 import net.hedtech.banner.sspb.PBUser
-import net.hedtech.restfulapi.AccessDeniedException
 
 import javax.servlet.http.HttpSession
 
+@Log4j
 class VirtualDomainComposerController {
     static defaultAction = "loadVirtualDomain"
     def virtualDomainResourceService
@@ -22,6 +23,7 @@ class VirtualDomainComposerController {
     def saveVirtualDomain = {
         def pageInstance = filter(params)
         if (!developerSecurityService.isAllowModify(pageInstance?.vdServiceName, developerSecurityService.VIRTUAL_DOMAIN_IND)) {
+            log.error('user not authorized to save virtual domain')
             pageInstance.error = message(code:"user.not.authorized.create", args:[PBUser.getTrimmed().loginName])
             render (status: 403, text:  pageInstance.error)
         }
@@ -82,6 +84,7 @@ class VirtualDomainComposerController {
 
     def deleteVirtualDomain = {
         if (!developerSecurityService.isAllowModify(params.vdServiceName, developerSecurityService.VIRTUAL_DOMAIN_IND)) {
+            log.error('user not authorized to delete virtual domain')
             render (status: 403, text:  message(code:"user.not.authorized.delete", args:[PBUser.getTrimmed().loginName]))
         }else if (params.vdServiceName)  {
             VirtualDomain.withTransaction {

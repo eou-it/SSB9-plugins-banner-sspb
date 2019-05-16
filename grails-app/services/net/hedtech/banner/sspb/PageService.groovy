@@ -5,9 +5,11 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
+import groovy.util.logging.Log4j
 import net.hedtech.banner.security.DeveloperSecurityService
 import net.hedtech.restfulapi.AccessDeniedException
 
+@Log4j
 class PageService {
     def compileService
     def groovyPagesTemplateEngine
@@ -112,6 +114,7 @@ class PageService {
     def create(Map content, ignore) {
         log.trace "PageService.create invoked"
         if (!developerSecurityService.isAllowModify(content.pageName, developerSecurityService.PAGE_IND)) {
+            log.error('user not authorized to create page')
             throw new AccessDeniedException("user.not.authorized.create", [PBUser.getTrimmed().loginName])
         }
         def result
@@ -129,6 +132,7 @@ class PageService {
     def update( /*def id,*/ Map content, params) {
         log.trace "PageService.update invoked"
         if (!developerSecurityService.isAllowModify(content.pageName, developerSecurityService.PAGE_IND)) {
+            log.error('user not authorized to update page')
             throw new AccessDeniedException("user.not.authorized.update", [PBUser.getTrimmed().loginName])
         }
         create(content, params)
@@ -237,6 +241,7 @@ class PageService {
     // note the content-type header still needs to be set in the request even we don't send in any content in the body
     void delete(Map ignore, params) {
         if (!developerSecurityService.isAllowModify(params.id, developerSecurityService.PAGE_IND)) {
+            log.error('user not authorized to delete page')
             throw new AccessDeniedException("user.not.authorized.delete", [PBUser.getTrimmed().loginName])
         }
         pageSecurityService.delete([:],[constantName:params.id])

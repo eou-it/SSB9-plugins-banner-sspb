@@ -4,15 +4,16 @@
 
 package net.hedtech.banner.css
 
+import groovy.util.logging.Log4j
 import net.hedtech.banner.exceptions.ApplicationException
 import net.hedtech.banner.security.DeveloperSecurityService
+import net.hedtech.banner.service.ServiceBase
 import net.hedtech.banner.sspb.CommonService
 import net.hedtech.banner.sspb.PBUser
 import net.hedtech.restfulapi.AccessDeniedException
 import org.codehaus.groovy.grails.web.util.WebUtils
-import net.hedtech.banner.service.ServiceBase
-import org.springframework.context.i18n.LocaleContextHolder
 
+@Log4j
 class CssService extends ServiceBase {
 
     static transactional = true
@@ -104,6 +105,7 @@ class CssService extends ServiceBase {
     def create(Map content, ignore) {
         log.trace "cssService.create invoked"
         if (!developerSecurityService.isAllowModify(content.cssName, developerSecurityService.CSS_IND)) {
+            log.error('user not authorized to create css')
             throw new AccessDeniedException("user.not.authorized.create", [PBUser.getTrimmed().loginName])
         }
 
@@ -123,6 +125,7 @@ class CssService extends ServiceBase {
     def update(/*def id,*/ Map content) {
         log.trace "CssService.update invoked"
         if (!developerSecurityService.isAllowModify(content.cssName, developerSecurityService.CSS_IND)) {
+            log.error('user not authorized to update css')
             throw new AccessDeniedException("user.not.authorized.update", [PBUser.getTrimmed().loginName])
         }
         //checkForExceptionRequest()
@@ -171,6 +174,7 @@ class CssService extends ServiceBase {
     // note the content-type header still needs to be set in the request even we don't send in any content in the body
     void delete(Map ignore, params) {
         if (!developerSecurityService.isAllowModify(params.id, developerSecurityService.CSS_IND)) {
+            log.error('user not authorized to delete css')
             throw new AccessDeniedException("user.not.authorized.delete", [PBUser.getTrimmed().loginName])
         }
             def css = Css.fetchByConstantName(params.id)

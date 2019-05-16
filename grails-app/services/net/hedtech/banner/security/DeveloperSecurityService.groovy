@@ -3,14 +3,17 @@
  *******************************************************************************/
 package net.hedtech.banner.security
 
+import groovy.util.logging.Log4j
 import net.hedtech.banner.css.Css
 import net.hedtech.banner.general.ConfigurationData
 import net.hedtech.banner.sspb.Page
 import net.hedtech.banner.virtualDomain.VirtualDomain
+import org.apache.log4j.Logger
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
+@Log4j
 @Transactional(readOnly = true, propagation = Propagation.SUPPORTS )
 class DeveloperSecurityService {
 
@@ -29,10 +32,12 @@ class DeveloperSecurityService {
 
 
     DeveloperSecurityService(){
+        log.debug('initialize Developer Security Service')
         loadSecurityConfiguration()
     }
 
     void loadSecurityConfiguration() {
+        log.debug('loading security configuration - start')
         List<ConfigurationData> results = ConfigurationData.fetchByType("boolean", APP_ID)
         results.each {
             switch (it.name){
@@ -46,11 +51,15 @@ class DeveloperSecurityService {
                     productionMode = new Boolean(it.value)
             }
         }
+        log.debug('loading security configuration - end')
     }
 
-    static def getImportConfigValue(){
+    static def getImportConfigValue() {
         def importData = ConfigurationData.fetchByNameAndType(PREVENT_IMPORT_BY_DEVELOPER, "boolean", APP_ID)
-            importData?importData.value:false
+        if (log.isDebugEnabled()) {
+            log.debug('import config flag value is ' + importData?.value ?: false)
+        }
+        return importData ? importData.value : false
     }
 
     static boolean isSuperUser() {
@@ -64,6 +73,9 @@ class DeveloperSecurityService {
                 }
             }
 
+        }
+        if (log.isDebugEnabled()) {
+            log.debug('login user is a super user -> ' + isSupUser)
         }
          return isSupUser
     }
@@ -83,6 +95,10 @@ class DeveloperSecurityService {
             hasPrivilage = isVirtualDomainHasPrivilege(constantName, oracleUserId, isModify, isUpdateOwner)
         } else if (CSS_IND.equalsIgnoreCase(type)) {
             hasPrivilage = isCssHasPrivilege(constantName, oracleUserId, isModify, isUpdateOwner)
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug('login user has privilege to access on '+ constantName+" -> " + hasPrivilage)
         }
 
         return hasPrivilage
