@@ -3,14 +3,17 @@
  *******************************************************************************/
 package net.hedtech.banner.security
 
+import groovy.util.logging.Log4j
 import net.hedtech.banner.css.Css
 import net.hedtech.banner.general.ConfigurationData
 import net.hedtech.banner.sspb.Page
 import net.hedtech.banner.virtualDomain.VirtualDomain
+import org.apache.log4j.Logger
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
+@Log4j
 @Transactional(readOnly = true, propagation = Propagation.SUPPORTS )
 class DeveloperSecurityService {
 
@@ -29,10 +32,12 @@ class DeveloperSecurityService {
 
 
     DeveloperSecurityService(){
+        log.debug('initialize Developer Security Service')
         loadSecurityConfiguration()
     }
 
     void loadSecurityConfiguration() {
+        log.debug('loading security configuration - start')
         List<ConfigurationData> results = ConfigurationData.fetchByType("boolean", APP_ID)
         results.each {
             switch (it.name){
@@ -46,11 +51,15 @@ class DeveloperSecurityService {
                     productionMode = new Boolean(it.value)
             }
         }
+        log.debug('loading security configuration - end')
     }
 
-    static def getImportConfigValue(){
+    static def getImportConfigValue() {
         def importData = ConfigurationData.fetchByNameAndType(PREVENT_IMPORT_BY_DEVELOPER, "boolean", APP_ID)
-            importData?importData.value:false
+        if (log.isDebugEnabled()) {
+            log.debug('import config flag value is ' + importData?.value ?: false)
+        }
+        return importData ? importData.value : false
     }
 
     static boolean isSuperUser() {
@@ -64,6 +73,9 @@ class DeveloperSecurityService {
                 }
             }
 
+        }
+        if (log.isDebugEnabled()) {
+            log.debug('login user is a super user -> ' + isSupUser)
         }
          return isSupUser
     }
@@ -85,6 +97,10 @@ class DeveloperSecurityService {
             hasPrivilage = isCssHasPrivilege(constantName, oracleUserId, isModify, isUpdateOwner)
         }
 
+        if (log.isDebugEnabled()) {
+            log.debug('login user has privilege to access on '+ constantName+" -> " + hasPrivilage)
+        }
+
         return hasPrivilage
 
     }
@@ -92,7 +108,9 @@ class DeveloperSecurityService {
     protected boolean isCssHasPrivilege(String constantName, String oracleUserId, boolean isModify, boolean isUpdateOwner) {
         Boolean isCssHasPrivilege = false
         Css css = Css.fetchByConstantName(constantName)
-        if (css && (css.owner?.equalsIgnoreCase(oracleUserId) || (!isUpdateOwner && "Y".equalsIgnoreCase(css.allowAllInd)))) {
+        if(!css){
+            isCssHasPrivilege = true
+        }else if (css && (css.owner?.equalsIgnoreCase(oracleUserId) || (!isUpdateOwner && "Y".equalsIgnoreCase(css.allowAllInd)))) {
             isCssHasPrivilege = true
         } else if (isModify) {
             List<CssSecurity> secList = CssSecurity.fetchAllByCssId(css?.id)
@@ -117,7 +135,9 @@ class DeveloperSecurityService {
     protected boolean isVirtualDomainHasPrivilege(String constantName, String oracleUserId, boolean isModify, boolean isUpdateOwner) {
         Boolean isVirtualDomainHasPrivilege = false
         VirtualDomain domain = VirtualDomain.findByServiceName(constantName)
-        if (domain && (domain.owner?.equalsIgnoreCase(oracleUserId) || (!isUpdateOwner && "Y".equalsIgnoreCase(domain.allowAllInd)))) {
+        if(!domain){
+            isVirtualDomainHasPrivilege = true
+        } else if (domain && (domain.owner?.equalsIgnoreCase(oracleUserId) || (!isUpdateOwner && "Y".equalsIgnoreCase(domain.allowAllInd)))) {
             isVirtualDomainHasPrivilege = true
         } else if (isModify) {
                 List<VirtualDomainSecurity> secList = VirtualDomainSecurity.fetchAllByVirtualDomainId(domain?.id)
@@ -142,7 +162,9 @@ class DeveloperSecurityService {
     protected boolean isPageHasPrivilege(String constantName, String oracleUserId, boolean isModify, boolean isUpdateOwner) {
         Boolean isPageHasPrivilege = false
         Page page = Page.findByConstantName(constantName)
-        if (page && (page.owner?.equalsIgnoreCase(oracleUserId) || (!isUpdateOwner && "Y".equalsIgnoreCase(page.allowAllInd)))) {
+        if(!page){
+            isPageHasPrivilege = true
+        }else if (page && (page.owner?.equalsIgnoreCase(oracleUserId) || (!isUpdateOwner && "Y".equalsIgnoreCase(page.allowAllInd)))) {
             isPageHasPrivilege = true
         } else if (isModify) {
             List<PageSecurity> secList = PageSecurity.fetchAllByPageId(page?.id)

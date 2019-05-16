@@ -890,12 +890,19 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                         }
                     },
                     function (response) {
+                        if(response && response.status == 403){
+                            var err = response.data && response.data.errors ? response.data.errors.errorMessage : "";
+                            note.message = err;
+                            note.type = noteType.error;
+                            $scope.alertNote(note);
+                        }else {
                         var msg = "${message(code: 'sspb.page.visualcomposer.page.submit.failed.message', encodeAs: 'JavaScript')}";
                         var err = response.data && response.data.errors ? response.data.errors[0].errorMessage : "";
                         msg = $scope.i18nGet(msg, [err]);
                         note.message = msg;
                         note.type = noteType.success;
                         $scope.alertNote(note);
+                        }
                     }
                 );
 
@@ -962,13 +969,24 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                     $scope.pagemodelform.$setUntouched();
                     $scope.resetPageNameData();
                 }, function(response) {
-                    var note={type: noteType.error, message: "${message(code:'sspb.page.visualbuilder.deletion.error.message', encodeAs: 'JavaScript')}",flash:true};
-                    if (response.data != undefined && response.data.errors != undefined) {
-                        note.message = $scope.i18nGet(note.message, [response.data.errors[0].errorMessage]);
-                    } else {
-                        note.message = $scope.i18nGet(note.message, ['']);
+                    var note = {
+                        type: noteType.error,
+                        message: "${message(code:'sspb.page.visualbuilder.deletion.error.message', encodeAs: 'JavaScript')}",
+                        flash: true
+                    };
+                    if(response && response.status == 403){
+                        var err = response.data && response.data.errors ? response.data.errors.errorMessage : "";
+                        note.message = err;
+                        note.type = noteType.error;
+                        $scope.alertNote(note);
+                    }else {
+                        if (response.data != undefined && response.data.errors != undefined) {
+                            note.message = $scope.i18nGet(note.message, [response.data.errors[0].errorMessage]);
+                        } else {
+                            note.message = $scope.i18nGet(note.message, ['']);
+                        }
+                        $scope.alertNote(note);
                     }
-                    $scope.alertNote(note);
                 });
 
             }
