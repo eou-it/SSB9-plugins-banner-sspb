@@ -5,6 +5,7 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
+import grails.util.Holders
 import groovy.util.logging.Log4j
 import grails.web.context.ServletContextHolder
 import org.grails.web.util.GrailsApplicationAttributes
@@ -260,8 +261,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     def compileMissingProperties() {
-        def messageSource = ServletContextHolder.getServletContext()
-                .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT).getBean("messageSource")
+        def messageSource = Holders.grailsApplication.mainContext.getBean("messageSource")
         def externalMessageSource = messageSource?.externalMessageSource
         // Check if properties files exist, if not we will compile pages if non-baseline pages exist
         if (externalMessageSource.basenamesExposed.size()==0){
@@ -279,9 +279,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
 
     // Handler for Page properties
     void updateProperties( Map properties, String baseName){
-        ApplicationContext applicationContext = (ApplicationContext) ServletContextHolder.getServletContext()
-                .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT);
-        def messageSource = applicationContext.getBean("messageSource")
+        def messageSource = Holders.grailsApplication.mainContext.getBean("messageSource")
         def isBaseline = false
         if ( baseName.startsWith('pbadm') || baseName.startsWith(PageComponent.globalPropertiesName) || currentAction == actionImportInitally ) {
             def props = messageSource.getPropertiesByNormalizedName("plugins/banner-sspb/$baseName", new Locale("root"))
@@ -312,9 +310,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     def reloadBundles = {
-        ApplicationContext applicationContext = (ApplicationContext) ServletContextHolder.getServletContext()
-                .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT);
-        def messageSource = applicationContext.getBean("messageSource")
+        def messageSource = Holders.grailsApplication.mainContext.getBean("messageSource")
         messageSource.clearCache()
         messageSource.externalMessageSource?.clearCache()
     }

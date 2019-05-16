@@ -3,6 +3,8 @@ package banner.sspb
 import grails.plugins.*
 
 import grails.util.Holders
+import org.grails.datastore.mapping.core.Datastore
+import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import net.hedtech.banner.i18n.ExternalMessageSource
@@ -63,7 +65,7 @@ Brief summary/description of the plugin.
 
     void doWithDynamicMethods() {
         //add a message method to the following classes
-        def classes = application.serviceClasses
+        def classes = grailsApplication.serviceClasses
         classes += net.hedtech.banner.sspb.PageModelErrors
         classes.each {
             // Note: weblogic throws an error if we try to inject the method if it is already present
@@ -91,7 +93,8 @@ Brief summary/description of the plugin.
         // TODO Implement post initialization spring config (optional)
 
         // TODO Implement post initialization spring config (optional)
-        application.mainContext.eventTriggeringInterceptor.datastores.each { k, datastore ->
+        ConfigurableApplicationContext configurableApplicationContext = (ConfigurableApplicationContext) applicationContext;
+        configurableApplicationContext.getBeansOfType(Datastore).each { k, datastore ->
             applicationContext.addApplicationListener new PBPersistenceListener(datastore)
             //println "Added PersistenceListener to $datastore"
         }

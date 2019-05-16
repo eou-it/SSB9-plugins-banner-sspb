@@ -1,11 +1,8 @@
 /*******************************************************************************
- Copyright 2017-2018 Ellucian Company L.P. and its affiliates.
+ Copyright 2017-2019 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 
-
-import grails.util.Holders
-import net.hedtech.banner.configuration.ApplicationConfigurationUtils as ConfigFinder
-import grails.plugin.springsecurity.SecurityConfigType
+import grails.util.Holders as CH
 
 // ******************************************************************************
 //
@@ -20,17 +17,12 @@ import grails.plugin.springsecurity.SecurityConfigType
 //
 // Map [ environment variable or -D command line argument name : file path ]
 
-grails.config.locations = [] // leave this initialized to an empty list, and add your locations in the map below.
-
-def locationAdder = ConfigFinder.&addLocation.curry(grails.config.locations)
-
-[ BANNER_APP_CONFIG:        "banner_configuration.groovy",
-  PAGEBUILDER_PLUGIN_CONFIG: "${appName}_configuration.groovy",
-].each { envName, defaultFileName -> locationAdder( envName, defaultFileName ) }
-
-grails.config.locations.each {
-    println "configuration: " + it
-}
+//Added for integration tests to run in plugin level
+grails.config.locations = [
+        BANNER_APP_CONFIG:        "banner_configuration.groovy",
+        BANNER_EXTENSIBILITY_APP_CONFIG:   "BannerExtensibility_configuration.groovy",
+        WEB_APP_EXTENSIBILITY_CONFIG: "WebAppExtensibilityConfig.class"
+]
 
 // ******************************************************************************
 //
@@ -77,7 +69,7 @@ grails.mime.types = [
 
 // The default codec used to encode data with ${}
 //TODO: change default codec back to html and specify codec for javascript in visualComposer.gsp
-grails.views.default.codec = "none" // none, html, base64  **** note: Setting this to html will ensure html is escaped, to prevent XSS attack ****
+grails.views.default.codec = "html" // none, html, base64  **** note: Setting this to html will ensure html is escaped, to prevent XSS attack ****
 grails.views.gsp.encoding = "UTF-8"
 grails.converters.encoding = "UTF-8"
 grails.plugin.springsecurity.logout.afterLogoutUrl = "/"
@@ -98,18 +90,34 @@ grails.resources.mappers.yuijsminify.includes  = ['**/*.js']
 grails.resources.mappers.yuicssminify.excludes = ['**/*.min.css']
 grails.resources.mappers.yuijsminify.excludes  = ['**/*.min.js']
 
-// set per-environment serverURL stem for creating absolute links
-environments {
-    production {
-        grails.serverURL = "http://localhost:8080/${appName}"
-    }
-    development {
-        grails.resources.debug = true
-        grails.serverURL = "http://localhost:8080/${appName}"
-    }
-    test {
-        grails.serverURL = "http://localhost:8080/${appName}"
-    }
+markdown = [
+        removeHtml: true
+]
+
+dataSource {
+    configClass = GrailsAnnotationConfiguration.class
+    dialect = "org.hibernate.dialect.Oracle10gDialect"
+    loggingSql = false
+}
+
+hibernate {
+    cache.use_second_level_cache = true
+    cache.use_query_cache = false
+    cache.region.factory_class = 'org.hibernate.cache.SingletonEhCacheRegionFactory' // Hibernate 3
+//  cache.region.factory_class = 'org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory' // Hibernate 4
+    singleSession = true // configure OSIV singleSession mode
+    flush.mode = 'manual' // OSIV session flush mode outside of transactional context
+//  cache.provider_class = 'net.sf.ehcache.hibernate.EhCacheProvider'
+    hbm2ddl.auto = null
+    show_sql = false
+    // naming_strategy = "org.hibernate.cfg.ImprovedNamingStrategy"
+    dialect = "org.hibernate.dialect.Oracle10gDialect"
+
+    config.location = [
+            "classpath:hibernate-banner-sspb.cfg.xml",
+            "classpath:hibernate-banner-general-utility.cfg.xml"
+    ]
+
 }
 
 // ******************************************************************************
@@ -155,12 +163,12 @@ grails.plugin.springsecurity.useRequestMapDomainClass = false
 //        '/**': 'securityContextPersistenceFilter,logoutFilter,authenticationProcessingFilter,securityContextHolderAwareRequestFilter,anonymousProcessingFilter,exceptionTranslationFilter,filterInvocationInterceptor'
 //]
 // User RequestMap to only EXTZ App, since other app might need SS config changes.
-    String appId = Holders?.grailsApplication?.metadata?.get('app.appId')
+    String appId = 'EXTZ'
     if(appId && "EXTZ".equals(appId)){
-        grails.plugin.springsecurity.securityConfigType = SecurityConfigType.Requestmap //SecurityConfigType.Requestmap
+        grails.plugin.springsecurity.securityConfigType = grails.plugin.springsecurity.SecurityConfigType.Requestmap //SecurityConfigType.Requestmap
         grails.plugin.springsecurity.requestMap.className = 'net.hedtech.banner.sspb.Requestmap'
     }else{
-        grails.plugin.springsecurity.securityConfigType = SecurityConfigType.InterceptUrlMap
+        grails.plugin.springsecurity.securityConfigType = grails.plugin.springsecurity.SecurityConfigType.InterceptUrlMap
     }
 //TODO: evaluate if it makes sense to use grails.plugin.springsecurity.securityConfigType = "Requestmap"
 
@@ -204,304 +212,18 @@ grails.plugin.springsecurity.interceptUrlMap = [
 
 ]
 
-// CodeNarc rulesets
-codenarc.ruleSetFiles="rulesets/banner.groovy"
-codenarc.reportName="target/CodeNarcReport.html"
-codenarc.propertiesFile="grails-app/conf/codenarc.properties"
-codenarc.extraIncludeDirs=["grails-app/composers"]
-
 grails.validateable.packages=['net.hedtech.banner.student.registration']
 
-// placeholder for real configuration
-// base.dir is probably not defined for .war file deployments
-//banner.picturesPath=System.getProperty('base.dir') + '/test/images'
-
-// local seeddata files
-seedDataTarget = [ ]
-
-markdown = [
-        removeHtml: true
-]
-
-// ******************************************************************************
-//                              CORS Configuration
-// ******************************************************************************
-// Note: If changing custom header names, remember to reflect them here.
-//
-cors.url.pattern        = '/api/*'
-cors.allow.origin.regex ='.*'
-cors.expose.headers     ='content-type,X-hedtech-totalCount,X-hedtech-pageOffset,X-hedtech-pageMaxSize,X-hedtech-message,X-hedtech-Media-Type'
-
-
-// ******************************************************************************
-//             RESTful API Custom Response Header Name Configuration
-// ******************************************************************************
-// Note: Tests within this test app expect this 'X-hedtech...' naming to be used.
-//
-restfulApi.header.totalCount  = 'X-hedtech-totalCount'
-restfulApi.header.pageOffset  = 'X-hedtech-pageOffset'
-restfulApi.header.pageMaxSize = 'X-hedtech-pageMaxSize'
-restfulApi.header.message     = 'X-hedtech-message'
-restfulApi.header.mediaType   = 'X-hedtech-Media-Type'
-
-// ******************************************************************************
-//             RESTful API 'Paging' Query Parameter Name Configuration
-// ******************************************************************************
-// Note: Tests within this test app expect this 'X-hedtech...' naming to be used.
-//
-restfulApi.page.max    = 'max'
-restfulApi.page.offset = 'offset'
-
-// API path component to construct the REST API URL
-sspb.apiPath = 'internalPb'
-
-// ******************************************************************************
-//                       RESTful API Endpoint Configuration
-// ******************************************************************************
-
-restfulApiConfig = {
-    // Pagebuilder resources
-
-    // generic resource for virtual domains
-
-    anyResource {
-        serviceName = 'virtualDomainResourceService'
-        representation {
-            mediaTypes = ["application/json"]
-            marshallers {
-                marshaller {
-                    instance = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
-                    priority = 100
-                }
-            }
-            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
-        }
-        representation {
-            mediaTypes = ["application/xml"]
-            //jsonAsXml = true
-            marshallers {
-                marshaller {
-                    instance = new net.hedtech.restfulapi.marshallers.xml.BasicDomainClassMarshaller(app:grailsApplication)
-                    priority = 200
-                }
-            }
-            extractor = new net.hedtech.restfulapi.extractors.xml.MapExtractor()
-        }
+// set per-environment serverURL stem for creating absolute links
+environments {
+    production {
+        grails.serverURL = "http://www.changeme.com"
     }
-
-    resource 'pagesecurity' config {
-        serviceName= 'pageSecurityService'
-        representation {
-            mediaTypes = ["application/json"]
-            marshallers {
-                marshaller {
-                    instance = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
-                    priority = 100
-                }
-            }
-            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
-        }
+    development {
+        grails.serverURL = "http://localhost:8080/${appName}"
     }
-
-
-    resource  'pages' config {
-        representation {
-            mediaTypes = ["application/json"]
-            marshallers {
-                marshaller {
-                    instance = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
-                    priority = 100
-                }
-            }
-            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
-        }
-        representation {
-            mediaTypes = ["application/xml"]
-            //jsonAsXml = true
-            marshallers {
-                marshaller {
-                    instance = new net.hedtech.restfulapi.marshallers.xml.BasicDomainClassMarshaller(app:grailsApplication)
-                    priority = 200
-                }
-            }
-            extractor = new net.hedtech.restfulapi.extractors.xml.MapExtractor()
-        }
+    test {
+        grails.serverURL = "http://localhost:8080/${appName}"
     }
-
-    resource 'csses' config {
-        representation {
-            mediaTypes = ["application/json"]
-            marshallers {
-                marshaller {
-                    instance = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
-                    priority = 100
-                }
-            }
-            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
-        }
-        representation {
-            mediaTypes = ["application/xml"]
-            //jsonAsXml = true
-            marshallers {
-                marshaller {
-                    instance = new net.hedtech.restfulapi.marshallers.xml.BasicDomainClassMarshaller(app:grailsApplication)
-                    priority = 200
-                }
-            }
-            extractor = new net.hedtech.restfulapi.extractors.xml.MapExtractor()
-        }
-    }
-
-    resource 'pageexports' config {
-        serviceName= 'pageExportService'
-        representation {
-            mediaTypes = ["application/json"]
-            marshallers {
-                marshaller {
-                    instance = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
-                    priority = 100
-                }
-            }
-            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
-        }
-    }
-    resource 'virtualdomainexports' config {
-        serviceName= 'virtualDomainExportService'
-        representation {
-            mediaTypes = ["application/json"]
-            marshallers {
-                marshaller {
-                    instance = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
-                    priority = 100
-                }
-            }
-            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
-        }
-    }
-    resource 'cssexports' config {
-        serviceName= 'cssExportService'
-        representation {
-            mediaTypes = ["application/json"]
-            marshallers {
-                marshaller {
-                    instance = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
-                    priority = 100
-                }
-            }
-            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
-        }
-    }
-
-    // This pseudo resource is used when issuing a query using a POST. Such a POST is made
-    // against the actual resource being queried, but using a different URL prefix (e.g., qapi)
-    // so the request is routed to the 'list' method (versus the normal 'create' method).
-    resource 'query-filters' config {
-        // TODO: Add support for 'application/x-www-form-urlencoded'
-        representation {
-            mediaTypes = ["application/json"]
-            jsonExtractor {}
-        }
-    }
-
-    // 2 demo resources
-    resource 'todos' config {
-        representation {
-            mediaTypes = ["application/json"]
-            marshallers {
-                marshaller {
-                    instance = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
-                    priority = 100
-                }
-            }
-            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
-        }
-        representation {
-            mediaTypes = ["application/xml"]
-            //jsonAsXml = true
-            marshallers {
-                marshaller {
-                    instance = new net.hedtech.restfulapi.marshallers.xml.BasicDomainClassMarshaller(app:grailsApplication)
-                    priority = 200
-                }
-            }
-            extractor = new net.hedtech.restfulapi.extractors.xml.MapExtractor()
-        }
-    }
-
-    resource 'projects'  config {
-        representation {
-            mediaTypes = ["application/json"]
-            marshallers {
-                marshaller {
-                    instance = new net.hedtech.restfulapi.marshallers.json.BasicDomainClassMarshaller(app:grailsApplication)
-                    priority = 100
-                }
-            }
-            extractor = new net.hedtech.restfulapi.extractors.json.DefaultJSONExtractor()
-        }
-        representation {
-            mediaTypes = ["application/xml"]
-            //jsonAsXml = true
-            marshallers {
-                marshaller {
-                    instance = new net.hedtech.restfulapi.marshallers.xml.BasicDomainClassMarshaller(app:grailsApplication)
-                    priority = 200
-                }
-            }
-            extractor = new net.hedtech.restfulapi.extractors.xml.MapExtractor()
-        }
-    }
-
-}
-
-//does not to work well with virtual domains yet - updates are not being picked up
-cache.headers.enabled = false
-// Uncomment and edit the following lines to start using Grails encoding & escaping improvements
-
-/* remove this line
-// GSP settings
-grails {
-    views {
-        gsp {
-            encoding = 'UTF-8'
-            htmlcodec = 'xml' // use xml escaping instead of HTML4 escaping
-            codecs {
-                expression = 'html' // escapes values inside null
-                scriptlet = 'none' // escapes output from scriptlets in GSPs
-                taglib = 'none' // escapes output from taglibs
-                staticparts = 'none' // escapes output from static template parts
-            }
-        }
-        // escapes all not-encoded output at final stage of outputting
-        filteringCodecForContentType {
-            //'text/html' = 'html'
-        }
-    }
-}
-remove this line */
-
-dataSource {
-    configClass = GrailsAnnotationConfiguration.class
-    dialect = "org.hibernate.dialect.Oracle10gDialect"
-    loggingSql = false
-}
-
-hibernate {
-    cache.use_second_level_cache = true
-    cache.use_query_cache = false
-    cache.region.factory_class = 'org.hibernate.cache.SingletonEhCacheRegionFactory' // Hibernate 3
-//  cache.region.factory_class = 'org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory' // Hibernate 4
-    singleSession = true // configure OSIV singleSession mode
-    flush.mode = 'manual' // OSIV session flush mode outside of transactional context
-//  cache.provider_class = 'net.sf.ehcache.hibernate.EhCacheProvider'
-    hbm2ddl.auto = null
-    show_sql = false
-    // naming_strategy = "org.hibernate.cfg.ImprovedNamingStrategy"
-    dialect = "org.hibernate.dialect.Oracle10gDialect"
-
-    config.location = [
-            "classpath:hibernate-banner-sspb.cfg.xml",
-            "classpath:hibernate-banner-general-utility.cfg.xml"
-    ]
 
 }
