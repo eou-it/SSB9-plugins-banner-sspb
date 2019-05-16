@@ -72,7 +72,8 @@ class VirtualDomainResourceService {
     def create (Map data, params) {
         log.debug "Data for post/save/create:" + data
         def serviceName = vdName(params)
-        if (['pbadmPageRoles','pbadmVirtualDomainRoles'].contains(serviceName) && !developerSecurityService.isAllowModify(serviceName, developerSecurityService.VIRTUAL_DOMAIN_IND)) {
+        if (['pbadmPageRoles', 'pbadmVirtualDomainRoles'].contains(serviceName) &&
+                !developerSecurityService.isAllowModify(serviceName, developerSecurityService.VIRTUAL_DOMAIN_IND)) {
             throw new AccessDeniedException("user.not.authorized.create", [PBUser.getTrimmed().loginName])
         }
 
@@ -88,7 +89,8 @@ class VirtualDomainResourceService {
     def update (/*def id,*/ Map data, params) {
         log.debug "Data for put/update:" + data
         def serviceName = vdName(params)
-        if (['pbadmPageRoles','pbadmVirtualDomainRoles'].contains(serviceName) && !developerSecurityService.isAllowModify(serviceName, developerSecurityService.VIRTUAL_DOMAIN_IND)) {
+        if (['pbadmPageRoles', 'pbadmVirtualDomainRoles'].contains(serviceName) &&
+                !developerSecurityService.isAllowModify(serviceName, developerSecurityService.VIRTUAL_DOMAIN_IND)) {
             throw new AccessDeniedException("user.not.authorized.update", [PBUser.getTrimmed().loginName])
         }
         def vd = loadVirtualDomain(serviceName)
@@ -103,7 +105,8 @@ class VirtualDomainResourceService {
     def delete (/*def id,*/ Map data,  params) {
         log.debug "Data for DELETE:" + data
         def serviceName = vdName(params)
-        if (['pbadmPageRoles','pbadmVirtualDomainRoles'].contains(serviceName) &&  !developerSecurityService.isAllowModify(serviceName, developerSecurityService.VIRTUAL_DOMAIN_IND)) {
+        if (['pbadmPageRoles', 'pbadmVirtualDomainRoles'].contains(serviceName) &&
+                !developerSecurityService.isAllowModify(serviceName, developerSecurityService.VIRTUAL_DOMAIN_IND)) {
             throw new AccessDeniedException("user.not.authorized.delete", [PBUser.getTrimmed().loginName])
         }
         def vd = loadVirtualDomain(serviceName)
