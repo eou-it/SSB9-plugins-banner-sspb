@@ -444,9 +444,11 @@ class VirtualDomainSqlService {
         for ( row in rows )  {
             for (col in row ) {
                 if (col.value.getClass().getName().endsWith("CLOB")) {
-                    String s = getStringValue(col.value)
-                    col.value = s
-                    foundClob = true
+                    if (col.value instanceof java.sql.Clob) {
+                        String s = getStringValue(col.value)
+                        col.value = s
+                        foundClob = true
+                    }
                 }
             }
             if (!foundClob)
@@ -456,7 +458,7 @@ class VirtualDomainSqlService {
     }
 
     // For CLOB support. Based on code found on forum.springsource.org
-    private String getStringValue(oracle.sql.CLOB c) {
+    private String getStringValue(java.sql.Clob c) {
         if (c != null) {
             BufferedReader reader = new BufferedReader(c.getCharacterStream())
             try {
