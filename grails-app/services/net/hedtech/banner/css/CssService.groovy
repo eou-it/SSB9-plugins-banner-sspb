@@ -49,10 +49,11 @@ class CssService extends ServiceBase {
             //supplementCss( it )
             // trim the object since we only need to return the constantName properties for listing
             if (params.containsKey('getGridData')) {
-                listResult << [constantName: it.constantName, id: it.id, version: it.version, owner: it.owner ,
-                               dateCreated: dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated), lastUpdated: dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated)]
+                listResult << [constantName: it.constantName, id: it.id, version: it.version, owner: it.owner,
+                               dateCreated : it.dateCreated ? dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated) : '',
+                               lastUpdated : it.lastUpdated ? dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated) : '']
             } else {
-                listResult << [css: [constantName: it.constantName, id: it.id, version: it.version, owner: it.owner ]]
+                listResult << [css: [constantName: it.constantName, id: it.id, version: it.version, owner: it.owner]]
             }
         }
         log.trace "CssService.list is returning a ${result.getClass().simpleName} containing ${result.size()} style sheets"
