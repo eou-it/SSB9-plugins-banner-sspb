@@ -88,7 +88,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                 <input type="button" class="secondary" value="${message(code:"sspb.css.cssManager.developer.label")}" onclick="getDeveloperSecurityPage('${pageInstance?.id}','${pageInstance?.vdServiceName}')"/>
                 <span class="alignRight">
                     <label class="vpc-name-label dispInline"><g:message code="sspb.vd.visualbuilder.vdowner.label" /></label>
-                    <g:select class="owner-select alignRight" name="owner" noSelection="${['null':'']}"
+                    <g:select class="owner-select alignRight" name="owner" ng-disabled="${!(pageInstance?.allowUpdateOwner==null ? true: pageInstance?.allowUpdateOwner)}" noSelection="${['null':'']}"
                               value="${pageInstance?.owner?:''}" from="${userDetailsInList}" optionKey="USER_ID" optionValue="USER_ID">
                     </g:select>
                    %{-- <select class="owner-select vd-select-width" id="pageOwner" onchange="onChangeOfOwner()">
