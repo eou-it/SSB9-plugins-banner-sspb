@@ -48,9 +48,10 @@ class VirtualDomainService {
         def listResult = []
         if(params.containsKey('getGridData')){
             result.each {
-                listResult << [serviceName : it.serviceName, id: it.id, version: it.version, dateCreated:dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated),
-                               lastUpdated:dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated),
-                               allowModify:!developerSecurityService.isAllowModify(it.serviceName,developerSecurityService.VIRTUAL_DOMAIN_IND)]
+                listResult << [serviceName: it.serviceName, id: it.id, version: it.version,
+                               dateCreated: it.dateCreated ? dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated) : '',
+                               lastUpdated: it.lastUpdated ? dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated) : '',
+                               allowModify: !developerSecurityService.isAllowModify(it.serviceName, developerSecurityService.VIRTUAL_DOMAIN_IND)]
            }
         }
         log.trace "VirtualDomainService.list is returning a ${listResult.getClass().simpleName} containing ${listResult.size()} rows"
