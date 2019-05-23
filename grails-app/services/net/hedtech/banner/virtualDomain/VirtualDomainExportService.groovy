@@ -126,7 +126,7 @@ class VirtualDomainExportService {
         def result
         if (content.export == 1) {
             def vdUtilService = new VirtualDomainUtilService()
-            vdUtilService.exportToFile(content.serviceName)
+            vdUtilService.exportToFile(content)
             result = content
         }
         result

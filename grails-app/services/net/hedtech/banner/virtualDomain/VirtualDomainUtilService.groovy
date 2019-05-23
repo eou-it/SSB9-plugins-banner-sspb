@@ -22,7 +22,9 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
     }
 
     //Export one or more virtual domains to the configured directory
-    void exportToFile(String serviceName, String pageLike=null, String path=pbConfig.locations.virtualDomain, Boolean skipDuplicates=false ) {
+    void exportToFile(String serviceName, String pageLike=null,
+                      String path=pbConfig.locations.virtualDomain,
+                      Boolean skipDuplicates=false, Boolean isAllowExportDSPermission = false ) {
         def usedByPageLike
         if (pageLike) {
             def es = new VirtualDomainExportService()
@@ -35,15 +37,25 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
                 else {
                     def file = new File("$path/${vd.serviceName}.json")
                     JSON.use("deep") {
-                        def vdStripped = new VirtualDomain()
+                        def vdStripped = [:]
+                        def vdRoles = []
                         //nullify data that is derivable or not applicable in other environment
-                        vdStripped.properties['serviceName', 'typeOfCode', 'codeGet', 'codePost', 'codePut', 'codeDelete'] = vd.properties
-                        vdStripped.fileTimestamp = new Date()
-                        vd.virtualDomainRoles.each { role ->
-                            def r = new VirtualDomainRole()
-                            r.properties['roleName', 'allowGet', 'allowPost', 'allowPut', 'allowDelete'] = role.properties
-                            vdStripped.addToVirtualDomainRoles(r)
+                        vd.virtualDomainRoles.each{
+                            vdRoles << it.properties["allowDelete", "allowGet", "allowPost", "allowPut","roleName"]
                         }
+                        vdStripped = vd.properties['serviceName', 'typeOfCode', 'dataSource',
+                                'codeGet', 'codePost', 'codePut', 'codeDelete', 'fileTimestamp']
+                        vdStripped.virtualDomainRoles = vdRoles
+                        vdStripped.developerSecurity = []
+                        vdStripped.owner = null
+
+                        if(isAllowExportDSPermission){
+                            vdStripped.owner = vd.owner
+                            VirtualDomainSecurity.fetchAllByVirtualDomainId(vd.id)?.each{ vs ->
+                                vdStripped.developerSecurity << [type:vs.type, name:vs.id.developerUserId,allowModify:vs.allowModifyInd]
+                            }
+                        }
+
                         def json = new JSON(vdStripped)
                         def jsonString = json.toString(true)
                         log.info message(code:"sspb.virtualdomain.export.done.message", args:[vd.serviceName])
@@ -52,6 +64,11 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
                 }
             }
         }
+    }
+
+    void exportToFile(Map content) {
+        boolean isAllowExportDSPermission = content.isAllowExportDSPermission && "Y".equalsIgnoreCase(content.isAllowExportDSPermission)
+        exportToFile(content.serviceName, null, pbConfig.locations.virtualDomain, false, isAllowExportDSPermission)
     }
 
     static Date getTimestamp(String vdName, String path=pbConfig.locations.virtualDomain ) {

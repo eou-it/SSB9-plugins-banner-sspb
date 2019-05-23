@@ -105,7 +105,7 @@ class PageExportService {
         def result
         if (content.export == 1) {
             def pageUtilService = new PageUtilService()
-            pageUtilService.exportToFile(content.constantName)
+            pageUtilService.exportToFile(content)
             result = content
         }
         result

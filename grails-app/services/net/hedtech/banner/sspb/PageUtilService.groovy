@@ -40,7 +40,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     //Export one or more pages to the configured directory
-    void exportToFile(String pageName, String path=pbConfig.locations.page, Boolean skipDuplicates=false ) {
+    void exportToFile(String pageName, String path=pbConfig.locations.page, Boolean skipDuplicates=false, Boolean isAllowExportDSPermission=false ) {
         Page.findAllByConstantNameLike(pageName).each { page ->
             if (skipDuplicates && page.constantName.endsWith(".bak")) {
                 log.info message(code: "sspb.pageutil.export.skipDuplicate.message", args: [page.constantName])
@@ -49,6 +49,12 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 def file = new File("$path/${page.constantName}.json")
                 JSON.use("deep") {
                     def pageExport = new PageExport(page)
+                    if (isAllowExportDSPermission) {
+                        pageExport.owner = page.owner
+                        PageSecurity.fetchAllByPageId(page.id)?.each { ps ->
+                            pageExport.developerSecurity << [type: ps.type, name: ps.id.developerUserId, allowModify: ps.allowModifyInd]
+                        }
+                    }
                     def json = new JSON(pageExport)
                     def jsonString = json.toString(true)
                     log.info message(code:"sspb.pageutil.export.page.done.message", args:[page.constantName])
@@ -56,6 +62,11 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 }
             }
         }
+    }
+
+    void exportToFile(Map content) {
+        boolean isAllowExportDSPermission = content.isAllowExportDSPermission && "Y".equalsIgnoreCase(content.isAllowExportDSPermission)
+        exportToFile(content.constantName,pbConfig.locations.page,false,isAllowExportDSPermission)
     }
 
     //Load pages required for Page Builder administration
