@@ -123,7 +123,7 @@ class CssExportService {
         def result
         if (content.export == 1) {
             def cssUtilService = new CssUtilService()
-            cssUtilService.exportToFile(content.constantName)
+            cssUtilService.exportToFile(content)
             result = content
         }
         result

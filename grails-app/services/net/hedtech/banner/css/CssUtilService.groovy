@@ -26,7 +26,9 @@ class CssUtilService extends PBUtilServiceBase {
     }
 
     //Export one or more virtual domains to the configured directory
-    void exportToFile(String constantName, String pageLike=null, String path=PBUtilServiceBase.pbConfig.locations.css, Boolean skipDuplicates=false ) {
+    void exportToFile(String constantName, String pageLike=null,
+                      String path=PBUtilServiceBase.pbConfig.locations.css,
+                      Boolean skipDuplicates=false, Boolean isAllowExportDSPermission = false ) {
         def usedByPageLike
         if (pageLike) {
             def es = new CssExportService()
@@ -39,13 +41,22 @@ class CssUtilService extends PBUtilServiceBase {
                 else {
                     def file = new File("$path/${css.constantName}.json")
                     JSON.use("deep") {
-                        def cssStripped = new Css()
+                        def cssStripped = [:]
                         //nullify data that is derivable or not applicable in other environment
                         //cssStripped.properties['constantName', 'css', 'description'] = css.properties
                         cssStripped.constantName = css.constantName
                         cssStripped.css = css.css
                         cssStripped.description = css.description
                         cssStripped.fileTimestamp = new Date()
+                        cssStripped.developerSecurity = []
+                        cssStripped.owner = null
+                        if(isAllowExportDSPermission){
+                            cssStripped.owner = css.owner
+                            CssSecurity.fetchAllByCssId(css.id)?.each{ cs ->
+                                cssStripped.developerSecurity << [type:cs.type, name:cs.id.developerUserId,allowModify:cs.allowModifyInd]
+                            }
+                        }
+
                         def json = new JSON(cssStripped)
                         def jsonString = json.toString(true)
                         log.info message(code: "sspb.css.export.done.message", args: [css.constantName])
@@ -54,6 +65,11 @@ class CssUtilService extends PBUtilServiceBase {
                 }
             }
         }
+    }
+
+    void exportToFile(Map content) {
+        boolean isAllowExportDSPermission = content.isAllowExportDSPermission && "Y".equalsIgnoreCase(content.isAllowExportDSPermission)
+        exportToFile(content.constantName,null,pbConfig.locations.css,false,isAllowExportDSPermission)
     }
 
     void importInitially(mode = PBUtilServiceBase.loadSkipExisting) {
