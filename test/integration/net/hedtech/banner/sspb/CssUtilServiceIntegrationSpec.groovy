@@ -24,17 +24,18 @@ class CssUtilServiceIntegrationSpec extends IntegrationSpec {
             "   \"version\": null\n" +
             "}"
     def setup() {
-        pbConfig = grails.util.Holders.getConfig().pageBuilder
-        path = pbConfig.locations.css
+        /*pbConfig = grails.util.Holders.getConfig().pageBuilder*/
+        path = System.getProperty("java.io.tmpdir");
         new File(path+"/testCss.json").write(cssString)
     }
 
     def cleanup() {
+        new File(path+"/testCss.json").delete()
     }
 
     void "test Import CSS files"() {
         given:
-        cssUtilService.importAllFromDir()
+        cssUtilService.importAllFromDir(path)
         when:
         def cssInstance  = Css.findByConstantName("testCss")
         and:
