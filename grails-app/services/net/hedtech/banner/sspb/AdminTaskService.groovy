@@ -43,9 +43,17 @@ class AdminTaskService {
                     def domain = JSON.parse(content.artifact.domain)
                     def at = determineArtifact(domain)
                     if ( at.valid ) {
-                        if(!developerSecurityService.isAllowImport(domain.constantName, developerSecurityService.PAGE_IND)) {
-                            result << [accessError: message(code: "sspb.renderer.page.deny.access", args: [domain.constantName])]
-                            return result
+                        def artifactType
+                        if(at.type == 'css') {
+                            artifactType = 'C'
+                        } else if (at.type == 'page') {
+                            artifactType = 'P'
+                        } else {
+                            artifactType = 'V'
+                        }
+                        if(!developerSecurityService.isAllowImport(domain.constantName, artifactType)) {
+                        result << [accessError: message(code: "sspb.renderer.page.deny.access", args: [domain.constantName])]
+                        return result
                         }
                         def fileName = "${PBUtilServiceBase.pbConfig.locations[at.type]}/${at.name}.json"
                         def file = new File(fileName)
