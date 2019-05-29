@@ -13,9 +13,12 @@ class CssExportServiceIntegrationSpec extends IntegrationSpec {
     def cssString = "body {color: red}"
     def pbConfig = grails.util.Holders.getConfig().pageBuilder
     def path = pbConfig.locations.css
+    def developerSecurityService
 
     def setup() {
         new File(path+"/testExportCss.json").write(cssString)
+        developerSecurityService.enableDeveloperSecurity=false
+        cssService.developerSecurityService = developerSecurityService
         def result = cssService.create([cssName: "testExportCss.json", source:"TEST", description:"testExportCss"], [:])
         assert result.statusCode == 0
     }
