@@ -140,7 +140,7 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
             JSON.use("deep") {
                 json = JSON.parse(jsonString)
             }
-            if(json.serviceName && !developerSecurityService.isAllowImport(json.serviceName, developerSecurityService.PAGE_IND) && !currentAction) {
+            if(json.serviceName && !developerSecurityService.isAllowImport(json.serviceName, developerSecurityService.VIRTUAL_DOMAIN_IND) && !currentAction) {
                 log.error "Insufficient privileges to import"
                 return result
             }

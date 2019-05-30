@@ -130,7 +130,7 @@ class CssUtilService extends PBUtilServiceBase {
             JSON.use("deep") {
                 json = JSON.parse(jsonString)
             }
-            if(json.serviceName && !developerSecurityService.isAllowImport(json.serviceName, developerSecurityService.PAGE_IND) && !currentAction) {
+            if(json.serviceName && !developerSecurityService.isAllowImport(json.serviceName, developerSecurityService.CSS_IND) && !currentAction) {
                 log.error "Insufficient privileges to import"
                 return result
             }

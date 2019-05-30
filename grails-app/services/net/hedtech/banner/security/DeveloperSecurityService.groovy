@@ -187,15 +187,16 @@ class DeveloperSecurityService {
     }
 
     boolean isAllowImport(String constantName, String type){
-         if(isSuperUser()){
+        loadSecurityConfiguration()
+        if(isSuperUser()){
             return true
-        }else if(preventImportByDeveloper){
+        } else if (preventImportByDeveloper){
             return false
-        }else if(enableDeveloperSecurity && !preventImportByDeveloper ){
-            return checkUserHasPrivilage(constantName, type)
-        }else if (!preventImportByDeveloper){
+        } else if (enableDeveloperSecurity && !preventImportByDeveloper ){
+            return checkUserHasPrivilage(constantName, type, true, false)
+        } else if (!enableDeveloperSecurity && !preventImportByDeveloper ){
             return true
-        }else{
+        } else {
             return false
         }
     }
