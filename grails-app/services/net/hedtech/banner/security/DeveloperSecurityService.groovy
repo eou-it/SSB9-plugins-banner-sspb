@@ -187,7 +187,7 @@ class DeveloperSecurityService {
     }
 
     boolean isAllowImport(String constantName, String type){
-        isProductionReadOnlyMode()
+        loadSecurityConfiguration()
         if(isSuperUser()){
             return true
         } else if (preventImportByDeveloper){
