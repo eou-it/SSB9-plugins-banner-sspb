@@ -5,6 +5,8 @@ import grails.test.spock.IntegrationSpec
 class AdminTaskServiceIntegrationSpec extends IntegrationSpec {
 
     def adminTaskService
+    def pbConfig = grails.util.Holders.getConfig().pageBuilder
+
 
     def artifactFiles = [
               "test/testData/model/PageModel1.json"
@@ -17,6 +19,15 @@ class AdminTaskServiceIntegrationSpec extends IntegrationSpec {
     def artifacts = []
 
     def setup() {
+        if(!pbConfig.locations.css){
+            pbConfig.locations.css = 'target'
+        }
+        if(!pbConfig.locations.page){
+            pbConfig.locations.page = 'target'
+        }
+        if(!pbConfig.locations.virtualDomain){
+            pbConfig.locations.virtualDomain = 'target'
+        }
         Map content
         artifactFiles.eachWithIndex { fname, idx ->
             content = [

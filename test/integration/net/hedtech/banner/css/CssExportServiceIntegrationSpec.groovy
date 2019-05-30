@@ -4,6 +4,7 @@
 package net.hedtech.banner.css
 
 import grails.test.spock.IntegrationSpec
+import net.hedtech.banner.security.DeveloperSecurityService
 import net.hedtech.banner.tools.PBUtilServiceBase
 
 class CssExportServiceIntegrationSpec extends IntegrationSpec {
@@ -13,12 +14,17 @@ class CssExportServiceIntegrationSpec extends IntegrationSpec {
     def cssString = "body {color: red}"
     def pbConfig = grails.util.Holders.getConfig().pageBuilder
     def path = pbConfig.locations.css
-    def developerSecurityService
 
     def setup() {
+        cssService.developerSecurityService = Stub(DeveloperSecurityService) {
+            isAllowModify(_,_) >> true
+        }
+
+        if(!pbConfig.locations.css){
+            pbConfig.locations.css = 'target'
+        }
+        path = pbConfig.locations.css
         new File(path+"/testExportCss.json").write(cssString)
-        developerSecurityService.enableDeveloperSecurity=false
-        cssService.developerSecurityService = developerSecurityService
         def result = cssService.create([cssName: "testExportCss.json", source:"TEST", description:"testExportCss"], [:])
         assert result.statusCode == 0
     }

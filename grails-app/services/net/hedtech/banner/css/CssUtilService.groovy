@@ -69,7 +69,8 @@ class CssUtilService extends PBUtilServiceBase {
 
     void exportToFile(Map content) {
         boolean isAllowExportDSPermission = content.isAllowExportDSPermission && "Y".equalsIgnoreCase(content.isAllowExportDSPermission)
-        exportToFile(content.constantName,null,pbConfig.locations.css,false,isAllowExportDSPermission)
+        String path = pbConfig.locations.css
+        exportToFile(content.constantName,null,path,false,isAllowExportDSPermission)
     }
 
     void importInitially(mode = PBUtilServiceBase.loadSkipExisting) {

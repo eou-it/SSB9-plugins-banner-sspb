@@ -15,8 +15,12 @@ class VirtualDomainUtilServiceTest extends Specification{
     def sessionFactory
     def virtualDomainSqlService
     def externalLocation = 'target/i18n'
+    def pbConfig = grails.util.Holders.getConfig().pageBuilder
 
     def setup(){
+        if(!pbConfig.locations.virtualDomain){
+            pbConfig.locations.virtualDomain = 'target'
+        }
         def subDir = new File(externalLocation)
         subDir.mkdirs()
         def vd = new VirtualDomain(serviceName: 'integrationTest', codeGet:

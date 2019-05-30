@@ -4,6 +4,8 @@
 package net.hedtech.banner.css
 
 import grails.test.spock.IntegrationSpec
+import net.hedtech.banner.security.DeveloperSecurityService
+
 import java.io.File
 import org.springframework.mock.web.MockMultipartFile
 
@@ -22,6 +24,9 @@ class CssManagerControllerIntegrationSpec extends IntegrationSpec {
     void "Integration test uploading of CSS file"() {
         given: "mock multipart file "
         def cssManagerController = new CssManagerController()
+                cssManagerController.developerSecurityService = Stub(DeveloperSecurityService) {
+                    isProductionReadOnlyMode() >> true
+        }
         def contentStream = new FileInputStream(cssDirPath + "/testCss.json")
         def file = new MockMultipartFile("file",
                 cssDirPath + "/testCss.json",

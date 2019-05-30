@@ -10,7 +10,12 @@ class PageExportServiceIntegrationSpec extends IntegrationSpec {
     def pageService
 
     def testPage
+    def pbConfig = grails.util.Holders.getConfig().pageBuilder
+
     def setup() {
+        if(!pbConfig.locations.page){
+            pbConfig.locations.page = 'target'
+        }
         Map pageMap = [pageName: "integrationTestPage",
                            source: '''{
                                      "type": "page",
