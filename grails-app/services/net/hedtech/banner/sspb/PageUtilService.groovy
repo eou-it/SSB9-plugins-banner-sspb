@@ -66,8 +66,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
 
     void exportToFile(Map content) {
         boolean isAllowExportDSPermission = content.isAllowExportDSPermission && "Y".equalsIgnoreCase(content.isAllowExportDSPermission)
-        String path = pbConfig.locations.page
-        exportToFile(content.constantName,path,false,isAllowExportDSPermission)
+        exportToFile(content.constantName,pbConfig.locations.page,false,isAllowExportDSPermission)
     }
 
     //Load pages required for Page Builder administration
