@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.ExportBase",
    "extendsPage": null,
-   "fileTimestamp": "2018-11-13T11:51:35Z",
+   "fileTimestamp": "2019-04-16T11:40:25Z",
    "modelView": {
       "components": [
          {
@@ -32,7 +32,7 @@
             "onError": "var msg;  \nif (response.data.errors.errorMessage) {\n  msg = response.data.errors.errorMessage;\n} else if (response.data.errors[0].errorMessage) {\n  msg=response.data.errors[0].errorMessage;\n} else {\n  msg=response.statusText;\n}\nif (msg) {\n  alert(msg,{type:\"error\"});\n}",
             "onLoad": "function download(p){\n    if(!p) return;\n    var theAnchor = $('<a />')\n        .attr('href', p.header+p.data)\n        .attr('download', p.fileName)\n        // Firefox does not fires click if the link is outside\n        // the DOM\n        .appendTo('body');\n    \n    theAnchor[0].click(); \n    theAnchor.remove();\n}\n\n//Define keys to remove using + to avoid replacement with PB variables\nvar keys={};\nkeys[ \"$\"+\"resolved\"]= true;\nkeys[\"$\"+\"$\"+\"hashKey\"]= true;\nkeys[\"$\"+\"promise\"]=true;\n\n// remove additional properties added by Angular resource when pretty print source\nfunction jsonFilter(key, value) {\n    return keys[key]?undefined:value;\n}\n\n\nif (data && data.serviceName){\n    var params = {\n          fileName: 'objects.'+data.serviceName+'.json',\n          header: 'data:text/csv;charset=utf8,',\n          data: encodeURIComponent(JSON.stringify(data,jsonFilter,3))\n    };\n    download(params);\n    alert(\"Exported virtual domain: \"+ data.serviceName,{flash: true});\n} else {\n    alert('Unable to save data - unexpected format.', {type:\"error\"});   \n}",
             "parameters": {
-               "id": "$exportId"
+               "id": "$exportId+\"^\"+$isAllowExportSecurity"
             },
             "type": "data"
          },
@@ -125,6 +125,15 @@
                         "validation": {}
                      },
                      {
+                        "asHtml": false,
+                        "label": "owner",
+                        "loadInitially": true,
+                        "model": "owner",
+                        "name": "owner",
+                        "type": "display",
+                        "value": ""
+                     },
+                     {
                         "label": "Timestamp File",
                         "loadInitially": true,
                         "model": "fileTimestamp",
@@ -151,9 +160,20 @@
                         "description": "Click to download this virtual domain",
                         "label": "Download",
                         "name": "downloadLink",
-                        "onClick": "$exportId=item.serviceName;\n$getExport.$get();",
+                        "onClick": "$exportId=item.serviceName;\n$isAllowExportSecurity=item.isAllowExportDSPermission;\n$getExport.$get();",
                         "replaceView": true,
                         "type": "link"
+                     },
+                     {
+                        "booleanFalseValue": "N",
+                        "booleanTrueValue": "Y",
+                        "label": "isAllowExportDSPermission",
+                        "loadInitially": true,
+                        "model": "isAllowExportDSPermission",
+                        "name": "isAllowExportDSPermission",
+                        "readonly": false,
+                        "type": "boolean",
+                        "value": "N"
                      }
                   ],
                   "label": "Objects to export",
@@ -161,7 +181,7 @@
                   "model": "exportResource",
                   "name": "exportGrid",
                   "onLoad": "//Clear internal array to bypass default behavior\n$exportGridDS.modified.removeAll();",
-                  "onSave": "var exportDone = false; // return false use the default save handler\nif ($exportTarget == 'C')  {\n\tvar count = 0;\n\tfunction getOne(data, index) {\n\t\tif (data.export) {\n\t\t\t$exportId=data.serviceName;\n\t\t\t$getExport.$get();\n\t\t\tcount++;\n\t\t}\n\t}\n\t$exportGrid.$data.forEach( getOne);\n\tconsole.log(\"Started download of\",count,\" files.\");\n\texportDone = true; // well, it is kicked off - the download is started asynch\n}\nreturn exportDone;",
+                  "onSave": "var exportDone = false; // return false use the default save handler\nif ($exportTarget == 'C')  {\n\tvar count = 0;\n\tfunction getOne(data, index) {\n\t\tif (data.export) {\n\t\t\t$exportId=data.serviceName;\n                       $isAllowExportSecurity = data.isAllowExportDSPermission\n\t\t\t$getExport.$get();\n\t\t\tcount++;\n\t\t}\n\t}\n\t$exportGrid.$data.forEach( getOne);\n\tconsole.log(\"Started download of\",count,\" files.\");\n\texportDone = true; // well, it is kicked off - the download is started asynch\n}\nreturn exportDone;",
                   "onSaveSuccess": "if (response.export == \"1\") {\n  alert( \"Exported virtual domain: \" + response.serviceName, {flash: true});\n}",
                   "pageSize": 5,
                   "parameters": {

@@ -13,6 +13,19 @@
       },
       "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
       "version": null
+   },{
+      "allowDelete": false,
+      "allowPost": false,
+      "allowPut": false,
+      "roleName": "ADMIN-GPBADMA",
+      "id": null,
+      "allowGet": true,
+      "virtualDomain": {
+         "_ref": "../..",
+         "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+      },
+      "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
+      "version": null
    }],
    "codeGet": "select gobsdtb_table_name\r\nfrom gobsdtb\r\nwhere gobsdtb_table_name like nvl(:table_name, '%') \r\norder by 1",
    "codePost": null,
@@ -22,7 +35,7 @@
    "lastUpdated": null,
    "dateCreated": null,
    "id": null,
-   "fileTimestamp": "2016-12-20T17:57:06Z",
+   "fileTimestamp": "2019-04-23T11:32:15Z",
    "typeOfCode": "S",
    "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
 }

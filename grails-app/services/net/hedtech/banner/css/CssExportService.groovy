@@ -3,14 +3,15 @@
  ******************************************************************************/
 
 package net.hedtech.banner.css
-import net.hedtech.banner.css.Css
-import net.hedtech.banner.sspb.CommonService
-import org.hibernate.criterion.CriteriaSpecification
-import net.hedtech.banner.sspb.Page
 
+import net.hedtech.banner.security.CssSecurity
+import net.hedtech.banner.sspb.CommonService
+import net.hedtech.banner.sspb.Page
+import org.hibernate.criterion.CriteriaSpecification
 
 class CssExportService {
     static transactional = false  //Getting error connection closed without this
+    def dateConverterService
 
     def normalizeSortBy = {sortBy ->
         def result=[]
@@ -38,6 +39,11 @@ class CssExportService {
     def show(params) {
         Map parameter = CommonService.decodeBase64(params)
         params.putAll(parameter);
+        if(params.id && params.id.contains('^')){
+            params.isAllowExportDSPermission = params.id?.substring(params.id?.length()-1,params.id?.length())
+            params.id = params.id?.substring(0,params.id?.length()-2)
+        }
+
         def css
         if (params.id && params.id.matches("[0-9]+")) {
             css = Css.get(params.id )
@@ -50,6 +56,15 @@ class CssExportService {
         cssExport.css = css.css
         cssExport.description = css.description
         cssExport.fileTimestamp = css.fileTimestamp
+        cssExport.developerSecurity = []
+        cssExport.owner = null
+        if(css && params.isAllowExportDSPermission && "Y".equalsIgnoreCase(params.isAllowExportDSPermission)){
+            cssExport.owner = css.owner
+            CssSecurity.fetchAllByCssId(css.id)?.each{ cs ->
+                cssExport.developerSecurity << [type:cs.type, name:cs.id.developerUserId,allowModify:cs.allowModifyInd]
+            }
+        }
+
         cssExport
     }
 
@@ -92,7 +107,13 @@ class CssExportService {
                 property("lastUpdated","lastUpdated")
                 property("fileTimestamp","fileTimestamp")
                 property("version","version")
+                property("owner","owner")
             }
+        }
+        result?.each{
+            it.lastUpdated = it.lastUpdated? dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated) : ''
+            it.fileTimestamp = it.fileTimestamp? dateConverterService.parseGregorianToDefaultCalendar(it.fileTimestamp) : ''
+            it.isAllowExportDSPermission = 'N'
         }
         result
     }
@@ -102,7 +123,7 @@ class CssExportService {
         def result
         if (content.export == 1) {
             def cssUtilService = new CssUtilService()
-            cssUtilService.exportToFile(content.constantName)
+            cssUtilService.exportToFile(content)
             result = content
         }
         result

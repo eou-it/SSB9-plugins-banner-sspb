@@ -7,3 +7,5 @@ pbadm.ExportVirtualDomains.json
 pbadm.LandingPage.json
 pbadm.AdminTasks.json
 pbadm.VirtualDomainComposer.json
+pbadm.DeveloperPageSecurity.json
+pbadm.AdminSecurity.json

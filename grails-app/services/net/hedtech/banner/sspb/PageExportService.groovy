@@ -3,10 +3,12 @@
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
+import net.hedtech.banner.security.PageSecurity
 import org.hibernate.criterion.CriteriaSpecification
 
 class PageExportService {
     static transactional = false  //Getting error connection closed without this
+    def dateConverterService
 
     def normalizeSortBy = {sortBy ->
         def result=[]
@@ -34,6 +36,10 @@ class PageExportService {
     def show(params) {
         Map parameter = CommonService.decodeBase64(params)
         params.putAll(parameter);
+        if(params.id && params.id.contains('^')){
+            params.isAllowExportDSPermission = params.id?.substring(params.id?.length()-1,params.id?.length())
+            params.id = params.id?.substring(0,params.id?.length()-2)
+        }
         def pageExport
         def page
         if (params.id && params.id.matches("[0-9]+")) {
@@ -44,7 +50,15 @@ class PageExportService {
         if (page) {
             pageExport = new PageExport(page)
         }
-        pageExport
+
+        if(page && params.isAllowExportDSPermission && "Y".equalsIgnoreCase(params.isAllowExportDSPermission)){
+            pageExport.owner = page.owner
+            PageSecurity.fetchAllByPageId(page.id)?.each{ ps ->
+                pageExport.developerSecurity << [type:ps.type, name:ps.id.developerUserId,allowModify:ps.allowModifyInd]
+            }
+        }
+
+          pageExport
     }
 
     def list( params) {
@@ -76,7 +90,13 @@ class PageExportService {
                 property("lastUpdated","lastUpdated")
                 property("fileTimestamp","fileTimestamp")
                 property("version","version")
+                property("owner","owner")
             }
+        }
+        result?.each{
+            it.lastUpdated = it.lastUpdated? dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated) : ''
+            it.fileTimestamp = it.fileTimestamp? dateConverterService.parseGregorianToDefaultCalendar(it.fileTimestamp) : ''
+            it.isAllowExportDSPermission = 'N'
         }
         result
     }
@@ -85,7 +105,7 @@ class PageExportService {
         def result
         if (content.export == 1) {
             def pageUtilService = new PageUtilService()
-            pageUtilService.exportToFile(content.constantName)
+            pageUtilService.exportToFile(content)
             result = content
         }
         result

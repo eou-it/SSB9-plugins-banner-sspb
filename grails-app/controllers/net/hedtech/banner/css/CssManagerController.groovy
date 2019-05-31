@@ -1,19 +1,21 @@
 /*******************************************************************************
- * Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
+ * Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 package net.hedtech.banner.css
 
 import groovy.json.JsonOutput
+import net.hedtech.banner.sspb.PBUser
 import org.springframework.web.multipart.MultipartFile
-import grails.converters.JSON
 
 class CssManagerController {
     static defaultAction = "loadCssManagerPage"
 
     def cssService
+    def developerSecurityService
+
 
     def loadCssManagerPage = {
-        render (view:"cssManager")
+        render (view:"cssManager",model: [isProductionReadOnlyMode : developerSecurityService.isProductionReadOnlyMode()])
     }
 
     // TODO use REST API
@@ -27,7 +29,8 @@ class CssManagerController {
         if (mpf.getContentType() == 'text/css' ) {
             buf = mpf.inputStream.getText('utf-8')
             if ( validEncoding(buf) ) {
-                def ret = cssService.create([cssName: params.cssName, source: buf, description: params.description], [:])
+                def ret = cssService.create([cssName: params.cssName, source: buf, description: params.description ,
+                                             owner: PBUser.getTrimmed().oracleUserName], [:])
                 res = [received     : true, fileName: filename, fileSize: buf.length(), statusCode: ret.statusCode,
                        statusMessage: ret.statusMessage]
             } else {

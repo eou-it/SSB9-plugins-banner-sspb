@@ -173,5 +173,39 @@ div[ng-grid] {
     text-align: right;
 }
 
+select.owner-select {
+    color:#026BC8;
+    margin-top:0px;
+    height: 30px;
+    box-shadow: inset 0px -2px #DEE5E7;
+    width: 18.75em;
+    padding: 0.5em 0.5em;
+    font-size: 0.875em;
+    -moz-border-radius       : 4px;
+    -webkit-border-radius    : 4px;
+    border-radius:4px;
+}
+
+select.owner-select:focus {
+    background-color: #FFFFFF;
+    border: #206E9F;
+}
+
+span.alignRight{
+   float: right;
+}
 
 
+select.owner-select:disabled {
+    background-color: #B2B3B7;
+    color: #FFFFFF;
+    border: none;
+}
+
+label.dispInline{
+    display:inline;
+}
+
+select.vd-select-width{
+    width : 13em;
+}

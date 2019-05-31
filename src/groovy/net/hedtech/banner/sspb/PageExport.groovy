@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ * Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 
 package net.hedtech.banner.sspb
@@ -8,12 +8,15 @@ package net.hedtech.banner.sspb
 class PageExport  {
 
     String constantName
+    String owner
 
     def extendsPage
 
     def modelView
 
     def pageRoles = []
+
+    def developerSecurity = []
 
     Date fileTimestamp
 

@@ -14,10 +14,23 @@
       "roleName": "ADMIN-GPBADMN",
       "allowDelete": true,
       "version": null
+   },{
+      "allowGet": true,
+      "id": null,
+      "allowPost": true,
+      "allowPut": true,
+      "virtualDomain": {
+         "_ref": "../..",
+         "class": "net.hedtech.banner.virtualDomain.VirtualDomain"
+      },
+      "class": "net.hedtech.banner.virtualDomain.VirtualDomainRole",
+      "roleName": "ADMIN-GPBADMA",
+      "allowDelete": true,
+      "version": null
    }],
    "codePut": "update page_role\r\nset version=version+1,\r\nallow=nvl(:ALLOW,0),\r\nrole_name=:ROLE_NAME\r\nwhere id=:id",
    "lastUpdated": null,
-   "fileTimestamp": "2016-07-25T12:26:40Z",
+   "fileTimestamp": "2019-04-23T11:32:15Z",
    "dateCreated": null,
    "class": "net.hedtech.banner.virtualDomain.VirtualDomain",
    "codeDelete": "delete from page_role where id=:id",
