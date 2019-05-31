@@ -190,12 +190,14 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             JSON.use("deep") {
                 json = JSON.parse(jsonString)
             }
-           if(json.constantName && !developerSecurityService.isAllowImport(json.constantName, developerSecurityService.PAGE_IND) && !currentAction) {
-                result.statusCode = statusError
-                result.statusMessage = message(code: "sspb.renderer.page.deny.access", args: [json.constantName])
-                log.error "Insufficient privileges to import"
-                return result
-           }
+            if(!currentAction && json.constantName) {
+                if (!developerSecurityService.isAllowImport(json.constantName, developerSecurityService.PAGE_IND)) {
+                    result.statusCode = statusError
+                    result.statusMessage = message(code: "sspb.renderer.page.deny.access", args: [json.constantName])
+                    log.error "Insufficient privileges to import page - ${json.constantName}"
+                    return result
+                }
+            }
 
             page = page ?: pageService.getNew(pageName)
             // when loading from resources (stream), check the file time stamp in the Json
@@ -233,14 +235,14 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
 
                     }
                 }
-                associateRoles(page, json.pageRoles)
                 page=page.merge()
                 if (result.statusCode == statusOk) {
                     result = pageService.compileAndSavePage(page.constantName, page.mergedModelText, page.extendsPage, page.owner)
-                    associateDeveloperSecurity(page, json.developerSecurity)
                     result.loaded = result.page?1:0
                     if (page) {
                         if (result.loaded) {
+                            associateRoles(page, json.pageRoles)
+                            associateDeveloperSecurity(page, json.developerSecurity)
                             // Create the requestmap record to allow access]
                             if (updateSecurity) {
                                 pageSecurityService.mergePage(result.page)

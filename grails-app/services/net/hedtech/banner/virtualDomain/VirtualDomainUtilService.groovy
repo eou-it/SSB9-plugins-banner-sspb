@@ -91,6 +91,7 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
             count+=loadStream(serviceName, stream, mode, true, true)
         }
         bootMsg "Finished checking/loading system required virtual domains. Virtual domains loaded: $count"
+        currentAction = null
     }
 
 
@@ -140,9 +141,11 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
             JSON.use("deep") {
                 json = JSON.parse(jsonString)
             }
-            if(json.serviceName && !developerSecurityService.isAllowImport(json.serviceName, developerSecurityService.VIRTUAL_DOMAIN_IND) && !currentAction) {
-                log.error "Insufficient privileges to import"
-                return result
+            if(!currentAction && json.serviceName) {
+                if (!developerSecurityService.isAllowImport(json.serviceName, developerSecurityService.VIRTUAL_DOMAIN_IND)) {
+                    log.error "Insufficient privileges to import Virtual Domain - ${json.serviceName}"
+                    return result
+                }
             }
             def doLoad = true
             // when loading from resources (stream), check the file time stamp in the Json
@@ -180,7 +183,9 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
                 if (file)
                     vd.fileTimestamp = new Date(file.lastModified())
                 vd = saveObject(vd)
-                associateDeveloperSecurity(vd, json.developerSecurity)
+                if(vd) {
+                    associateDeveloperSecurity(vd, json.developerSecurity)
+                }
                 if (file && !vd.hasErrors()) {
                     file.renameTo(file.getCanonicalPath() + '.' + nowAsIsoInFileName() + ".imp")
                 }
