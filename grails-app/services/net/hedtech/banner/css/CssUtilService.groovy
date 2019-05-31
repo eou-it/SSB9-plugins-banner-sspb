@@ -83,6 +83,7 @@ class CssUtilService extends PBUtilServiceBase {
             count+=loadStream(constantName, stream, mode, true, true)
         }
         bootMsg "Finished checking/loading system required css files. Css files loaded: $count"
+        currentAction = null
     }
 
     //Import/Install Utility
@@ -130,9 +131,11 @@ class CssUtilService extends PBUtilServiceBase {
             JSON.use("deep") {
                 json = JSON.parse(jsonString)
             }
-            if(json.serviceName && !developerSecurityService.isAllowImport(json.serviceName, developerSecurityService.CSS_IND) && !currentAction) {
-                log.error "Insufficient privileges to import"
-                return result
+            if(!currentAction && json.constantName) {
+                if (!developerSecurityService.isAllowImport(json.constantName, developerSecurityService.CSS_IND)) {
+                    log.error "Insufficient privileges to import CSS - ${json.constantName}"
+                    return result
+                }
             }
             def doLoad = true
             // when loading from resources (stream), check the file time stamp in the Json
@@ -161,7 +164,9 @@ class CssUtilService extends PBUtilServiceBase {
                 if (file)
                     css.fileTimestamp = new Date(file.lastModified())
                 css = cssService.create(css)
-                associateDeveloperSecurity(css, json.developerSecurity)
+                if(css) {
+                    associateDeveloperSecurity(css, json.developerSecurity)
+                }
                 if (file && css && !css.hasErrors()) {
                     file.renameTo(file.getCanonicalPath() + '.' + nowAsIsoInFileName() + ".imp")
                 }

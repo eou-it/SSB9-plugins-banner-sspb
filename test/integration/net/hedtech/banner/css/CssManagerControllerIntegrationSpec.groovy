@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 package net.hedtech.banner.css
 
@@ -26,7 +26,9 @@ class CssManagerControllerIntegrationSpec extends IntegrationSpec {
         def cssManagerController = new CssManagerController()
                 cssManagerController.developerSecurityService = Stub(DeveloperSecurityService) {
                     isProductionReadOnlyMode() >> true
+                    isAllowModify(_,_) >> true
         }
+        cssManagerController.cssService.developerSecurityService = cssManagerController.developerSecurityService
         def contentStream = new FileInputStream(cssDirPath + "/testCss.json")
         def file = new MockMultipartFile("file",
                 cssDirPath + "/testCss.json",

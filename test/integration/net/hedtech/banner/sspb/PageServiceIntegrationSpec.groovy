@@ -1,31 +1,23 @@
 /******************************************************************************
- *  Copyright 2013-2018 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
 import grails.test.spock.IntegrationSpec
-import grails.util.Holders
 import grails.validation.ValidationException
-import net.hedtech.banner.general.ConfigurationData
 import net.hedtech.banner.security.DeveloperSecurityService
 import net.hedtech.restfulapi.AccessDeniedException
 import org.codehaus.groovy.grails.web.json.JSONObject
-import org.junit.Ignore
 
 class PageServiceIntegrationSpec extends IntegrationSpec {
 
     def pageService
-    def configurationDataService
-    def developerSecurityService
-    String appId = Holders?.grailsApplication?.metadata?.get('app.appId')?:'EXTZ'
-    ConfigurationData developerReadOnly = null
-    ConfigurationData enableDeveloperSecurity = null
 
     def setup() {
-        saveDeveloperReadOnlyConfig()
-        saveEnableDeveloperSecurityConfig()
-        developerSecurityService.loadSecurityConfiguration()
+        pageService.developerSecurityService = Stub(DeveloperSecurityService) {
+            isAllowModify(_,_) >> true
+        }
     }
 
     def cleanup() {
@@ -191,9 +183,9 @@ class PageServiceIntegrationSpec extends IntegrationSpec {
 
     void "Integration test create when production is on"() {
         given:
-        developerReadOnly.value = 'true'
-        configurationDataService.createOrUpdate(developerReadOnly)
-        developerSecurityService.isProductionReadOnlyMode()
+        pageService.developerSecurityService = Stub(DeveloperSecurityService) {
+            isAllowModify(_,_) >> false
+        }
         org.codehaus.groovy.grails.web.json.JSONObject extendsPage = null
         Map basePageMap = [pageName   : "stu.base",
                            source     : '''{
@@ -211,38 +203,5 @@ class PageServiceIntegrationSpec extends IntegrationSpec {
          exception != null
     }
 
-    protected void saveDeveloperReadOnlyConfig() {
-        developerReadOnly = ConfigurationData.fetchByNameAndType(DeveloperSecurityService.DEVELOPER_READONLY, 'boolean', appId)
-        if (!developerReadOnly) {
-            developerReadOnly = newConfigurationData(DeveloperSecurityService.DEVELOPER_READONLY)
-        } else {
-            developerReadOnly.value = 'false'
-        }
-        configurationDataService.createOrUpdate(developerReadOnly)
-    }
 
-    protected void saveEnableDeveloperSecurityConfig() {
-        enableDeveloperSecurity = ConfigurationData.fetchByNameAndType(DeveloperSecurityService.ENABLE_DEVELOPER_SECURITY, 'boolean', appId)
-        if (!enableDeveloperSecurity) {
-            enableDeveloperSecurity = newConfigurationData(DeveloperSecurityService.ENABLE_DEVELOPER_SECURITY)
-        } else {
-            enableDeveloperSecurity.value = 'false'
-        }
-        configurationDataService.createOrUpdate(enableDeveloperSecurity)
-    }
-
-
-    private def newConfigurationData(String name) {
-        def configurationData = new ConfigurationData(
-                name:  name,
-                type: "boolean",
-                value: "false",
-                version:  0.0,
-                lastModified: new Date(),
-                lastModifiedBy: "test",
-                dataOrigin: "Banner",
-                appId:appId?:'EXTZ'
-        )
-        return configurationData
-    }
 }

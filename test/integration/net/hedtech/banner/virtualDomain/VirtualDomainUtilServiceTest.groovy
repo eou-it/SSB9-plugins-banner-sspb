@@ -1,9 +1,10 @@
 /******************************************************************************
- *  Copyright 2018 Ellucian Company L.P. and its affiliates.                   *
+ *  Copyright 2018-2019 Ellucian Company L.P. and its affiliates.                   *
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
 import grails.util.Holders
+import net.hedtech.banner.security.DeveloperSecurityService
 import net.hedtech.banner.sspb.Page
 import spock.lang.Specification
 
@@ -19,7 +20,7 @@ class VirtualDomainUtilServiceTest extends Specification{
 
     def setup(){
         if(!pbConfig.locations.virtualDomain){
-            pbConfig.locations.virtualDomain = 'target'
+            pbConfig.locations.virtualDomain = 'target/testData/virtualDomain'
         }
         def subDir = new File(externalLocation)
         subDir.mkdirs()
@@ -91,6 +92,10 @@ class VirtualDomainUtilServiceTest extends Specification{
     void "test for importAllFromDir"(){
         given:
         def virtualDomainUtil = new VirtualDomainUtilService()
+        virtualDomainUtil.developerSecurityService = Stub(DeveloperSecurityService) {
+            getPreventImportByDeveloper() >> false
+            isAllowImport(_,_) >> true
+        }
         when:
         def res = virtualDomainUtil.importAllFromDir()
         then:
