@@ -4,6 +4,7 @@
 package net.hedtech.banner.virtualDomain
 
 import grails.util.Holders
+import net.hedtech.banner.security.DeveloperSecurityService
 import net.hedtech.banner.sspb.Page
 import spock.lang.Specification
 
@@ -91,6 +92,7 @@ class VirtualDomainUtilServiceTest extends Specification{
     void "test for importAllFromDir"(){
         given:
         def virtualDomainUtil = new VirtualDomainUtilService()
+        virtualDomainUtil.developerSecurityService = new DeveloperSecurityService()
         when:
         def res = virtualDomainUtil.importAllFromDir()
         then:
