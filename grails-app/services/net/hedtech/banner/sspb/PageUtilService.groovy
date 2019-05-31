@@ -103,7 +103,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         importAllFromDir(path, mode, false, names, updateSecurity, copyOwner, copyDevSec)
     }
 
-    int importAllFromDir(String path, mode, boolean deferred, ArrayList names, boolean updateSecurity, boolean copyOwner, boolean copyDevSec) {
+    int importAllFromDir(String path, mode, boolean deferred, ArrayList names, boolean updateSecurity, boolean copyOwner=true, boolean copyDevSec=true) {
         def count=0
         def needDeferred = false
         if (!deferred) {
