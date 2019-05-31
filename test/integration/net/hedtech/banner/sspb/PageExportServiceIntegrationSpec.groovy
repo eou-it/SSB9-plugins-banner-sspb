@@ -15,7 +15,7 @@ class PageExportServiceIntegrationSpec extends IntegrationSpec {
 
     def setup() {
         if(!pbConfig.locations.page){
-            pbConfig.locations.page = 'target'
+            pbConfig.locations.page = 'target/testData/model'
         }
         pageService.developerSecurityService = Stub(DeveloperSecurityService) {
             isAllowModify(_,_) >> true

@@ -97,7 +97,7 @@ class VirtualDomainUtilServiceTest extends Specification{
             isAllowImport(_,_) >> true
         }
         when:
-        def res = virtualDomainUtil.importAllFromDir()
+        def res = virtualDomainUtil.importAllFromDir(pbConfig.locations.virtualDomain)
         then:
         res>=0
     }
