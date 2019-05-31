@@ -68,7 +68,8 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
 
     void exportToFile(Map content) {
         boolean isAllowExportDSPermission = content.isAllowExportDSPermission && "Y".equalsIgnoreCase(content.isAllowExportDSPermission)
-        exportToFile(content.serviceName, null, pbConfig.locations.virtualDomain, false, isAllowExportDSPermission)
+        String path = pbConfig.locations.virtualDomain
+        exportToFile(content.serviceName, null, path, false, isAllowExportDSPermission)
     }
 
     static Date getTimestamp(String vdName, String path=pbConfig.locations.virtualDomain ) {

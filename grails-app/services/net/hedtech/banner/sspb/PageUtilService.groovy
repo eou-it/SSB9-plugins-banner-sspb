@@ -66,7 +66,8 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
 
     void exportToFile(Map content) {
         boolean isAllowExportDSPermission = content.isAllowExportDSPermission && "Y".equalsIgnoreCase(content.isAllowExportDSPermission)
-        exportToFile(content.constantName,pbConfig.locations.page,false,isAllowExportDSPermission)
+        String path = pbConfig.locations.page
+        exportToFile(content.constantName,path,false,isAllowExportDSPermission)
     }
 
     //Load pages required for Page Builder administration
@@ -103,7 +104,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         importAllFromDir(path, mode, false, names, updateSecurity, copyOwner, copyDevSec)
     }
 
-    int importAllFromDir(String path, mode, boolean deferred, ArrayList names, boolean updateSecurity, boolean copyOwner, boolean copyDevSec) {
+    int importAllFromDir(String path, mode, boolean deferred, ArrayList names, boolean updateSecurity, boolean copyOwner=true, boolean copyDevSec=true) {
         def count=0
         def needDeferred = false
         if (!deferred) {
