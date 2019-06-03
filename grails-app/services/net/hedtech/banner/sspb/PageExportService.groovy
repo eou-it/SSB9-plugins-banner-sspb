@@ -8,6 +8,7 @@ import org.hibernate.criterion.CriteriaSpecification
 
 class PageExportService {
     static transactional = false  //Getting error connection closed without this
+    def dateConverterService
 
     def normalizeSortBy = {sortBy ->
         def result=[]
@@ -93,6 +94,8 @@ class PageExportService {
             }
         }
         result?.each{
+            it.lastUpdated = it.lastUpdated? dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated) : ''
+            it.fileTimestamp = it.fileTimestamp? dateConverterService.parseGregorianToDefaultCalendar(it.fileTimestamp) : ''
             it.isAllowExportDSPermission = 'N'
         }
         result
@@ -102,7 +105,7 @@ class PageExportService {
         def result
         if (content.export == 1) {
             def pageUtilService = new PageUtilService()
-            pageUtilService.exportToFile(content.constantName)
+            pageUtilService.exportToFile(content)
             result = content
         }
         result

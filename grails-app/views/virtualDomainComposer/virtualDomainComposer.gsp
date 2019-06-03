@@ -51,31 +51,6 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
             window.open(rootWebApp+'customPage/page/'+ 'pbadm.DeveloperPageSecurity', '_self');
         }
 
-        $(document).ready(function () {
-            $.get( resourceBase+"virtualDomains.pbadmUserDetails", function( data ) {
-                var option = '<option style="display:none"> </option>';
-                var vdOwner ="${pageInstance?.owner}"
-                angular.forEach(data, function(vd){
-                    if(vd.USER_ID==vdOwner) {
-                        option += '<option value="'+ vd.USER_ID +'" selected>' + vd.USER_ID + '</option>';
-                        $("input[name=owner]").val(vd.USER_ID)
-                    }else
-                        option += '<option value="'+ vd.USER_ID +'">' + vd.USER_ID + '</option>'
-                });
-                $("#pageOwner").append(option)
-                var isAllowOwnerUpdate = "${pageInstance?.allowUpdateOwner}"
-                if(isAllowOwnerUpdate=='true'){
-                    $("#pageOwner").prop('disabled', false);
-                }else{
-                    $("#pageOwner").prop('disabled', 'disabled');
-                }
-            });
-
-        });
-        function onChangeOfOwner(){
-            var selectedVal = $("#pageOwner :selected").val()
-            $("input[name=owner]").val(selectedVal)
-        }
 
     </Script>
     <!-- g:set var="pageSource" value="test test" scope="page" /-->
@@ -113,10 +88,15 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                 <input type="button" class="secondary" value="${message(code:"sspb.css.cssManager.developer.label")}" onclick="getDeveloperSecurityPage('${pageInstance?.id}','${pageInstance?.vdServiceName}')"/>
                 <span class="alignRight">
                     <label class="vpc-name-label dispInline"><g:message code="sspb.vd.visualbuilder.vdowner.label" /></label>
-                    <select class="owner-select vd-select-width" id="pageOwner" onchange="onChangeOfOwner()">
-                    </select>
+                    <g:select class="owner-select alignRight" name="owner" ng-disabled="${!(pageInstance?.allowUpdateOwner==null ? true: pageInstance?.allowUpdateOwner)}" noSelection="${['null':'']}"
+                              value="${pageInstance?.owner?:''}" from="${userDetailsInList}" optionKey="USER_ID" optionValue="USER_ID">
+                    </g:select>
+                   %{-- <select class="owner-select vd-select-width" id="pageOwner" onchange="onChangeOfOwner()">
+                    </select>--}%
                 </span>
+%{--
                 <g:textField name="owner" id="vdowner"  style="display:none;" />
+--}%
             </g:if>
         </div>
 

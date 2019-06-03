@@ -5,6 +5,7 @@ package net.hedtech.banner.sspb
 
 import grails.test.spock.IntegrationSpec
 import net.hedtech.banner.css.Css
+import net.hedtech.banner.security.DeveloperSecurityService
 
 class CssUtilServiceIntegrationSpec extends IntegrationSpec {
 
@@ -25,16 +26,23 @@ class CssUtilServiceIntegrationSpec extends IntegrationSpec {
             "}"
     def setup() {
         pbConfig = grails.util.Holders.getConfig().pageBuilder
+        pbConfig.locations.css = 'target/testData/css'
+     //   path = System.getProperty("java.io.tmpdir");
         path = pbConfig.locations.css
         new File(path+"/testCss.json").write(cssString)
     }
 
     def cleanup() {
+        new File(path+"/testCss.json").delete()
     }
 
     void "test Import CSS files"() {
         given:
-        cssUtilService.importAllFromDir()
+        cssUtilService.developerSecurityService = Stub(DeveloperSecurityService) {
+            getPreventImportByDeveloper() >> false
+            isAllowImport(_,_) >> true
+        }
+        cssUtilService.importAllFromDir(path)
         when:
         def cssInstance  = Css.findByConstantName("testCss")
         and:

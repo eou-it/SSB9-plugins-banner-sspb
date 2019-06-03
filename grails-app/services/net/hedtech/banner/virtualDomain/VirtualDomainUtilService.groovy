@@ -22,7 +22,9 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
     }
 
     //Export one or more virtual domains to the configured directory
-    void exportToFile(String serviceName, String pageLike=null, String path=pbConfig.locations.virtualDomain, Boolean skipDuplicates=false ) {
+    void exportToFile(String serviceName, String pageLike=null,
+                      String path=pbConfig.locations.virtualDomain,
+                      Boolean skipDuplicates=false, Boolean isAllowExportDSPermission = false ) {
         def usedByPageLike
         if (pageLike) {
             def es = new VirtualDomainExportService()
@@ -35,15 +37,25 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
                 else {
                     def file = new File("$path/${vd.serviceName}.json")
                     JSON.use("deep") {
-                        def vdStripped = new VirtualDomain()
+                        def vdStripped = [:]
+                        def vdRoles = []
                         //nullify data that is derivable or not applicable in other environment
-                        vdStripped.properties['serviceName', 'typeOfCode', 'codeGet', 'codePost', 'codePut', 'codeDelete'] = vd.properties
-                        vdStripped.fileTimestamp = new Date()
-                        vd.virtualDomainRoles.each { role ->
-                            def r = new VirtualDomainRole()
-                            r.properties['roleName', 'allowGet', 'allowPost', 'allowPut', 'allowDelete'] = role.properties
-                            vdStripped.addToVirtualDomainRoles(r)
+                        vd.virtualDomainRoles.each{
+                            vdRoles << it.properties["allowDelete", "allowGet", "allowPost", "allowPut","roleName"]
                         }
+                        vdStripped = vd.properties['serviceName', 'typeOfCode', 'dataSource',
+                                'codeGet', 'codePost', 'codePut', 'codeDelete', 'fileTimestamp']
+                        vdStripped.virtualDomainRoles = vdRoles
+                        vdStripped.developerSecurity = []
+                        vdStripped.owner = null
+
+                        if(isAllowExportDSPermission){
+                            vdStripped.owner = vd.owner
+                            VirtualDomainSecurity.fetchAllByVirtualDomainId(vd.id)?.each{ vs ->
+                                vdStripped.developerSecurity << [type:vs.type, name:vs.id.developerUserId,allowModify:vs.allowModifyInd]
+                            }
+                        }
+
                         def json = new JSON(vdStripped)
                         def jsonString = json.toString(true)
                         log.info message(code:"sspb.virtualdomain.export.done.message", args:[vd.serviceName])
@@ -52,6 +64,11 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
                 }
             }
         }
+    }
+
+    void exportToFile(Map content) {
+        boolean isAllowExportDSPermission = content.isAllowExportDSPermission && "Y".equalsIgnoreCase(content.isAllowExportDSPermission)
+        exportToFile(content.serviceName, null, pbConfig.locations.virtualDomain, false, isAllowExportDSPermission)
     }
 
     static Date getTimestamp(String vdName, String path=pbConfig.locations.virtualDomain ) {
@@ -74,6 +91,7 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
             count+=loadStream(serviceName, stream, mode, true, true)
         }
         bootMsg "Finished checking/loading system required virtual domains. Virtual domains loaded: $count"
+        currentAction = null
     }
 
 
@@ -123,9 +141,11 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
             JSON.use("deep") {
                 json = JSON.parse(jsonString)
             }
-            if(json.serviceName && !developerSecurityService.isAllowImport(json.serviceName, developerSecurityService.PAGE_IND) && !currentAction) {
-                log.error "Insufficient privileges to import"
-                return result
+            if(!currentAction && json.serviceName) {
+                if (!developerSecurityService.isAllowImport(json.serviceName, developerSecurityService.VIRTUAL_DOMAIN_IND)) {
+                    log.error "Insufficient privileges to import Virtual Domain - ${json.serviceName}"
+                    return result
+                }
             }
             def doLoad = true
             // when loading from resources (stream), check the file time stamp in the Json
@@ -150,9 +170,9 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
 
                 //Copy owner and Dev Security
                 if(copyOwner) {
-                    vd.owner = json.has('owner') ?: null
+                    vd.owner = json.owner ?: null
                 } else {
-                    vd.owner = PBUser.userCache.loginName
+                    vd.owner = PBUser.getTrimmed().oracleUserName
                 }
                 if(copyDevSec) {
                     json.developerSecurity = json.developerSecurity ?: null
@@ -163,7 +183,9 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
                 if (file)
                     vd.fileTimestamp = new Date(file.lastModified())
                 vd = saveObject(vd)
-                associateDeveloperSecurity(vd, json.developerSecurity)
+                if(vd) {
+                    associateDeveloperSecurity(vd, json.developerSecurity)
+                }
                 if (file && !vd.hasErrors()) {
                     file.renameTo(file.getCanonicalPath() + '.' + nowAsIsoInFileName() + ".imp")
                 }

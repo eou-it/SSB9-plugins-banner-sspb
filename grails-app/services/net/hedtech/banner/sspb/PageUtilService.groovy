@@ -40,7 +40,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     //Export one or more pages to the configured directory
-    void exportToFile(String pageName, String path=pbConfig.locations.page, Boolean skipDuplicates=false ) {
+    void exportToFile(String pageName, String path=pbConfig.locations.page, Boolean skipDuplicates=false, Boolean isAllowExportDSPermission=false ) {
         Page.findAllByConstantNameLike(pageName).each { page ->
             if (skipDuplicates && page.constantName.endsWith(".bak")) {
                 log.info message(code: "sspb.pageutil.export.skipDuplicate.message", args: [page.constantName])
@@ -49,6 +49,12 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 def file = new File("$path/${page.constantName}.json")
                 JSON.use("deep") {
                     def pageExport = new PageExport(page)
+                    if (isAllowExportDSPermission) {
+                        pageExport.owner = page.owner
+                        PageSecurity.fetchAllByPageId(page.id)?.each { ps ->
+                            pageExport.developerSecurity << [type: ps.type, name: ps.id.developerUserId, allowModify: ps.allowModifyInd]
+                        }
+                    }
                     def json = new JSON(pageExport)
                     def jsonString = json.toString(true)
                     log.info message(code:"sspb.pageutil.export.page.done.message", args:[page.constantName])
@@ -56,6 +62,11 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 }
             }
         }
+    }
+
+    void exportToFile(Map content) {
+        boolean isAllowExportDSPermission = content.isAllowExportDSPermission && "Y".equalsIgnoreCase(content.isAllowExportDSPermission)
+        exportToFile(content.constantName,pbConfig.locations.page,false,isAllowExportDSPermission)
     }
 
     //Load pages required for Page Builder administration
@@ -179,12 +190,14 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             JSON.use("deep") {
                 json = JSON.parse(jsonString)
             }
-           if(json.constantName && !developerSecurityService.isAllowImport(json.constantName, developerSecurityService.PAGE_IND) && !currentAction) {
-                result.statusCode = statusError
-                result.statusMessage = message(code: "sspb.renderer.page.deny.access", args: [json.constantName])
-                log.error "Insufficient privileges to import"
-                return result
-           }
+            if(!currentAction && json.constantName) {
+                if (!developerSecurityService.isAllowImport(json.constantName, developerSecurityService.PAGE_IND)) {
+                    result.statusCode = statusError
+                    result.statusMessage = message(code: "sspb.renderer.page.deny.access", args: [json.constantName])
+                    log.error "Insufficient privileges to import page - ${json.constantName}"
+                    return result
+                }
+            }
 
             page = page ?: pageService.getNew(pageName)
             // when loading from resources (stream), check the file time stamp in the Json
@@ -204,7 +217,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 if(copyOwner) {
                     page.owner = json.owner ?: null
                 } else {
-                    page.owner = PBUser.userCache.loginName
+                    page.owner = PBUser.getTrimmed().oracleUserName
                 }
                 if(copyDevSec) {
                     json.developerSecurity = json.developerSecurity ?: null
@@ -222,14 +235,14 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
 
                     }
                 }
-                associateRoles(page, json.pageRoles)
                 page=page.merge()
                 if (result.statusCode == statusOk) {
                     result = pageService.compileAndSavePage(page.constantName, page.mergedModelText, page.extendsPage, page.owner)
-                    associateDeveloperSecurity(page, json.developerSecurity)
                     result.loaded = result.page?1:0
                     if (page) {
                         if (result.loaded) {
+                            associateRoles(page, json.pageRoles)
+                            associateDeveloperSecurity(page, json.developerSecurity)
                             // Create the requestmap record to allow access]
                             if (updateSecurity) {
                                 pageSecurityService.mergePage(result.page)

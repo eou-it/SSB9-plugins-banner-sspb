@@ -4,9 +4,13 @@
 package net.hedtech.banner.virtualDomain
 
 import grails.test.spock.IntegrationSpec
+import grails.util.Holders
+import net.hedtech.banner.general.ConfigurationData
+import net.hedtech.banner.security.DeveloperSecurityService
 import net.hedtech.banner.virtualDomain.VirtualDomainComposerController
 
 class VirtualDomainComposerControllerIntegrationSpec extends IntegrationSpec {
+
     def setup() {
     }
 
@@ -27,6 +31,12 @@ class VirtualDomainComposerControllerIntegrationSpec extends IntegrationSpec {
     void "test saveVirtualDomain"() {
         given:
         def vdController = new VirtualDomainComposerController()
+        vdController.virtualDomainResourceService = Stub(VirtualDomainResourceService) {
+            list() >> [:]
+        }
+        vdController.developerSecurityService = Stub(DeveloperSecurityService) {
+            isAllowModify(_,_) >> true
+        }
         when: "saving the virtual domain"
         vdController.saveVirtualDomain()
         then: "should saves the virtual domain and renders the virtual domain composer page"
@@ -35,4 +45,6 @@ class VirtualDomainComposerControllerIntegrationSpec extends IntegrationSpec {
         where:
         params = [vdPutView: '', vdQueryView: 'select spriden_id from spriden', vdDeleteView: '', vdPostView: '', vdServiceName: 'pbTestSpriden']
     }
+
+
 }

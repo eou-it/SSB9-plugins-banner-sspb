@@ -11,6 +11,7 @@ import org.hibernate.criterion.CriteriaSpecification
 
 class CssExportService {
     static transactional = false  //Getting error connection closed without this
+    def dateConverterService
 
     def normalizeSortBy = {sortBy ->
         def result=[]
@@ -110,6 +111,8 @@ class CssExportService {
             }
         }
         result?.each{
+            it.lastUpdated = it.lastUpdated? dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated) : ''
+            it.fileTimestamp = it.fileTimestamp? dateConverterService.parseGregorianToDefaultCalendar(it.fileTimestamp) : ''
             it.isAllowExportDSPermission = 'N'
         }
         result
@@ -120,7 +123,7 @@ class CssExportService {
         def result
         if (content.export == 1) {
             def cssUtilService = new CssUtilService()
-            cssUtilService.exportToFile(content.constantName)
+            cssUtilService.exportToFile(content)
             result = content
         }
         result

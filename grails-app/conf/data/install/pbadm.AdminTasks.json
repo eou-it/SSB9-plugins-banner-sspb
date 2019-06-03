@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.AdminTasks",
    "extendsPage": null,
-   "fileTimestamp": "2019-05-07T08:05:31Z",
+   "fileTimestamp": "2019-05-13T09:05:31Z",
    "modelView": {
       "components": [
          {
@@ -77,7 +77,7 @@
                {
                   "name": "uploadFileSelect",
                   "type": "literal",
-                  "value": "<input type=\"file\" id=\"filesElem\" name=\"files[]\" multiple accept=\".json\"/><br/>\n\n<script>\n\n  function handleFileSelect(evt) {\n  \tvar files = evt.target.files;\n        var scope = getControllerScopeById(controllerId);\n        var count = files.length;\n        //scope.artifactsGrid.enablePaging = false;\n\n        scope.artifactsDS.data.removeAll();\n        scope.\\$apply();\n  \t\n\tfunction addFile(event, file) {\n            var jsonData = JSON.parse(event.target.result)\n            if(!scope.copyOwner) {\n                    jsonData.owner = user.loginName\n                    file.owner = user.loginName\n                 } else {\n                     file.owner = jsonData.owner\n                 }\n                if(!scope.copyDevSec) {\n                    jsonData.developerSecurity = [];\n                 }\n  \t\tfile.domain =JSON.stringify(jsonData)  \n           \tscope.artifactsDS.data.push(file);\n \t\tscope.\\$apply(); //Update the UI\t\n\t}\n\tfor (var i = 0, f; f = files[i]; i++) {\n                f.index = i;\n                f.count = count;\n  \t\tvar reader = new FileReader();\n\t\treader.onloadend = (function(file) {\n\t\t  return function(evt) {\n\t\t\taddFile(evt, file);\n\t\t  };\n\t\t})(f);\t\t\n  \t\treader.readAsText(f);\n  \t}\n  }\n  document.getElementById('filesElem').addEventListener('change', handleFileSelect, false);\n\n</script>"
+                  "value": "<input type=\"file\" id=\"filesElem\" name=\"files[]\" multiple accept=\".json\"/><br/>\n\n<script>\n\n  function handleFileSelect(evt) {\n  \tvar files = evt.target.files;\n        var scope = getControllerScopeById(controllerId);\n        var count = files.length;\n        //scope.artifactsGrid.enablePaging = false;\n\n        scope.artifactsDS.data.removeAll();\n        scope.\\$apply();\n  \t\n\tfunction addFile(event, file) {\n            var jsonData = JSON.parse(event.target.result)\n            if(!scope.copyOwner) {\n                    jsonData.owner = user.oracleUserName\n                    file.owner = user.oracleUserName\n                 } else {\n                     file.owner = jsonData.owner\n                 }\n                if(!scope.copyDevSec) {\n                    jsonData.developerSecurity = [];\n                 }\n  \t\tfile.domain =JSON.stringify(jsonData)  \n           \tscope.artifactsDS.data.push(file);\n \t\tscope.\\$apply(); //Update the UI\t\n\t}\n\tfor (var i = 0, f; f = files[i]; i++) {\n                f.index = i;\n                f.count = count;\n  \t\tvar reader = new FileReader();\n\t\treader.onloadend = (function(file) {\n\t\t  return function(evt) {\n\t\t\taddFile(evt, file);\n\t\t  };\n\t\t})(f);\t\t\n  \t\treader.readAsText(f);\n  \t}\n  }\n  document.getElementById('filesElem').addEventListener('change', handleFileSelect, false);\n\n</script>"
                },
                {
                   "allowDelete": false,

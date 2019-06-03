@@ -4,13 +4,16 @@
 
 package net.hedtech.banner.css
 
+import groovy.util.logging.Log4j
 import net.hedtech.banner.exceptions.ApplicationException
 import net.hedtech.banner.security.DeveloperSecurityService
-import net.hedtech.banner.sspb.CommonService
-import org.codehaus.groovy.grails.web.util.WebUtils
 import net.hedtech.banner.service.ServiceBase
-import org.springframework.context.i18n.LocaleContextHolder
+import net.hedtech.banner.sspb.CommonService
+import net.hedtech.banner.sspb.PBUser
+import net.hedtech.restfulapi.AccessDeniedException
+import org.codehaus.groovy.grails.web.util.WebUtils
 
+@Log4j
 class CssService extends ServiceBase {
 
     static transactional = true
@@ -46,10 +49,11 @@ class CssService extends ServiceBase {
             //supplementCss( it )
             // trim the object since we only need to return the constantName properties for listing
             if (params.containsKey('getGridData')) {
-                listResult << [constantName: it.constantName, id: it.id, version: it.version, owner: it.owner ,
-                               dateCreated: dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated), lastUpdated: dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated)]
+                listResult << [constantName: it.constantName, id: it.id, version: it.version, owner: it.owner,
+                               dateCreated : it.dateCreated ? dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated) : '',
+                               lastUpdated : it.lastUpdated ? dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated) : '']
             } else {
-                listResult << [css: [constantName: it.constantName, id: it.id, version: it.version, owner: it.owner ]]
+                listResult << [css: [constantName: it.constantName, id: it.id, version: it.version, owner: it.owner]]
             }
         }
         log.trace "CssService.list is returning a ${result.getClass().simpleName} containing ${result.size()} style sheets"
@@ -101,7 +105,10 @@ class CssService extends ServiceBase {
     // TODO for now update(post) handles both update and creation to simplify client side logic
     def create(Map content, ignore) {
         log.trace "cssService.create invoked"
-
+        if (!developerSecurityService.isAllowModify(content.cssName, developerSecurityService.CSS_IND)) {
+            log.error('user not authorized to create css')
+            throw new AccessDeniedException("user.not.authorized.create", [PBUser.getTrimmed().loginName])
+        }
 
         if (WebUtils.retrieveGrailsWebRequest().getParameterMap().forceGenericError == 'y') {
             throw new ApplicationException( CssService, "generic failure" )
@@ -118,7 +125,10 @@ class CssService extends ServiceBase {
     // update is not used since the client may not know if a CSS exists or not when submitting (concurrent editing)
     def update(/*def id,*/ Map content) {
         log.trace "CssService.update invoked"
-
+        if (!developerSecurityService.isAllowModify(content.cssName, developerSecurityService.CSS_IND)) {
+            log.error('user not authorized to update css')
+            throw new AccessDeniedException("user.not.authorized.update", [PBUser.getTrimmed().loginName])
+        }
         //checkForExceptionRequest()
 
         def result = compileCss(content.cssName, content.source, content.description, content.owner)
@@ -164,6 +174,10 @@ class CssService extends ServiceBase {
 
     // note the content-type header still needs to be set in the request even we don't send in any content in the body
     void delete(Map ignore, params) {
+        if (!developerSecurityService.isAllowModify(params.id, developerSecurityService.CSS_IND)) {
+            log.error('user not authorized to delete css')
+            throw new AccessDeniedException("user.not.authorized.delete", [PBUser.getTrimmed().loginName])
+        }
             def css = Css.fetchByConstantName(params.id)
             super.delete(css)
     }

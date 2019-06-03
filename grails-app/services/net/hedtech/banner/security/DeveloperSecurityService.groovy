@@ -3,14 +3,17 @@
  *******************************************************************************/
 package net.hedtech.banner.security
 
+import groovy.util.logging.Log4j
 import net.hedtech.banner.css.Css
 import net.hedtech.banner.general.ConfigurationData
 import net.hedtech.banner.sspb.Page
 import net.hedtech.banner.virtualDomain.VirtualDomain
+import org.apache.log4j.Logger
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
 
+@Log4j
 @Transactional(readOnly = true, propagation = Propagation.SUPPORTS )
 class DeveloperSecurityService {
 
@@ -29,10 +32,12 @@ class DeveloperSecurityService {
 
 
     DeveloperSecurityService(){
+        log.debug('initialize Developer Security Service')
         loadSecurityConfiguration()
     }
 
     void loadSecurityConfiguration() {
+        log.debug('loading security configuration - start')
         List<ConfigurationData> results = ConfigurationData.fetchByType("boolean", APP_ID)
         results.each {
             switch (it.name){
@@ -46,10 +51,15 @@ class DeveloperSecurityService {
                     productionMode = new Boolean(it.value)
             }
         }
+        log.debug('loading security configuration - end')
     }
 
-    static def getImportConfigValue(){
-        ConfigurationData.fetchByNameAndType(PREVENT_IMPORT_BY_DEVELOPER, "boolean", APP_ID).value
+    static def getImportConfigValue() {
+        def importData = ConfigurationData.fetchByNameAndType(PREVENT_IMPORT_BY_DEVELOPER, "boolean", APP_ID)
+        if (log.isDebugEnabled()) {
+            log.debug('import config flag value is ' + importData?.value ?: false)
+        }
+        return importData ? importData.value : false
     }
 
     static boolean isSuperUser() {
@@ -64,46 +74,57 @@ class DeveloperSecurityService {
             }
 
         }
+        if (log.isDebugEnabled()) {
+            log.debug('login user is a super user -> ' + isSupUser)
+        }
          return isSupUser
     }
 
-    boolean checkUserHasPrivilage(String constantName, String type, boolean isModify = false) {
+    boolean checkUserHasPrivilage(String constantName, String type, boolean isModify = false, boolean isUpdateOwner=false) {
         def userIn = SecurityContextHolder?.context?.authentication?.principal
         String oracleUserId
         if (userIn?.class?.name?.endsWith('BannerUser')) {
-            oracleUserId = userIn.username
+            oracleUserId = userIn.oracleUserName?.toUpperCase()
         } else {
             return false
         }
         Boolean hasPrivilage = false
         if (PAGE_IND.equalsIgnoreCase(type)) {
-            hasPrivilage = isPageHasPrivilege(constantName, oracleUserId, isModify)
+            hasPrivilage = isPageHasPrivilege(constantName, oracleUserId, isModify, isUpdateOwner)
         } else if (VIRTUAL_DOMAIN_IND.equalsIgnoreCase(type)) {
-            hasPrivilage = isVirtualDomainHasPrivilege(constantName, oracleUserId, isModify)
+            hasPrivilage = isVirtualDomainHasPrivilege(constantName, oracleUserId, isModify, isUpdateOwner)
         } else if (CSS_IND.equalsIgnoreCase(type)) {
-            hasPrivilage = isCssHasPrivilege(constantName, oracleUserId, isModify)
+            hasPrivilage = isCssHasPrivilege(constantName, oracleUserId, isModify, isUpdateOwner)
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug('login user has privilege to access on '+ constantName+" -> " + hasPrivilage)
         }
 
         return hasPrivilage
 
     }
 
-    protected boolean isCssHasPrivilege(String constantName, String oracleUserId, boolean isModify) {
+    protected boolean isCssHasPrivilege(String constantName, String oracleUserId, boolean isModify, boolean isUpdateOwner) {
         Boolean isCssHasPrivilege = false
         Css css = Css.fetchByConstantName(constantName)
-        if (css && (css.owner?.equalsIgnoreCase(oracleUserId) || "Y".equalsIgnoreCase(css.allowAllInd))) {
+        if(!css){
+            isCssHasPrivilege = true
+        }else if (css && (css.owner?.equalsIgnoreCase(oracleUserId) || (!isUpdateOwner && "Y".equalsIgnoreCase(css.allowAllInd)))) {
             isCssHasPrivilege = true
         } else if (isModify) {
             List<CssSecurity> secList = CssSecurity.fetchAllByCssId(css?.id)
             for (CssSecurity cs : secList) {
                 if (USER_GROUP.equalsIgnoreCase(cs.type)) {
-                    if (oracleUserId.equals(cs.id.developerUserId)) {
+                    if (oracleUserId.equals(cs.id.developerUserId) && "Y".equals(cs.allowModifyInd)) {
                         isCssHasPrivilege = true
                     }
                 } else {
-                    def userList = BusinessProfile.findByProfile(cs.id.developerUserId, oracleUserId)
-                    if (userList) {
-                        isCssHasPrivilege = true
+                    if("Y".equals(cs.allowModifyInd)) {
+                        def userList = BusinessProfile.findByProfile(cs.id.developerUserId, oracleUserId)
+                        if (userList) {
+                            isCssHasPrivilege = true
+                        }
                     }
                 }
             }
@@ -111,22 +132,26 @@ class DeveloperSecurityService {
         return isCssHasPrivilege
     }
 
-    protected boolean isVirtualDomainHasPrivilege(String constantName, String oracleUserId, boolean isModify) {
+    protected boolean isVirtualDomainHasPrivilege(String constantName, String oracleUserId, boolean isModify, boolean isUpdateOwner) {
         Boolean isVirtualDomainHasPrivilege = false
         VirtualDomain domain = VirtualDomain.findByServiceName(constantName)
-        if (domain && (domain.owner?.equalsIgnoreCase(oracleUserId) || "Y".equalsIgnoreCase(domain.allowAllInd))) {
+        if(!domain){
+            isVirtualDomainHasPrivilege = true
+        } else if (domain && (domain.owner?.equalsIgnoreCase(oracleUserId) || (!isUpdateOwner && "Y".equalsIgnoreCase(domain.allowAllInd)))) {
             isVirtualDomainHasPrivilege = true
         } else if (isModify) {
                 List<VirtualDomainSecurity> secList = VirtualDomainSecurity.fetchAllByVirtualDomainId(domain?.id)
                 for (VirtualDomainSecurity vs : secList) {
                     if (USER_GROUP.equalsIgnoreCase(vs.type)) {
-                        if (oracleUserId.equals(vs.id.developerUserId)) {
+                        if (oracleUserId.equals(vs.id.developerUserId) && "Y".equals(vs.allowModifyInd)) {
                             isVirtualDomainHasPrivilege = true
                         }
                     } else {
-                        def userList = BusinessProfile.findByProfile(vs.id.developerUserId, oracleUserId)
-                        if (userList) {
-                            isVirtualDomainHasPrivilege = true
+                        if("Y".equals(vs.allowModifyInd)) {
+                            def userList = BusinessProfile.findByProfile(vs.id.developerUserId, oracleUserId)
+                            if (userList) {
+                                isVirtualDomainHasPrivilege = true
+                            }
                         }
                     }
                 }
@@ -134,22 +159,26 @@ class DeveloperSecurityService {
         return isVirtualDomainHasPrivilege
     }
 
-    protected boolean isPageHasPrivilege(String constantName, String oracleUserId, boolean isModify) {
+    protected boolean isPageHasPrivilege(String constantName, String oracleUserId, boolean isModify, boolean isUpdateOwner) {
         Boolean isPageHasPrivilege = false
         Page page = Page.findByConstantName(constantName)
-        if (page && (page.owner?.equalsIgnoreCase(oracleUserId) || "Y".equalsIgnoreCase(page.allowAllInd))) {
+        if(!page){
+            isPageHasPrivilege = true
+        }else if (page && (page.owner?.equalsIgnoreCase(oracleUserId) || (!isUpdateOwner && "Y".equalsIgnoreCase(page.allowAllInd)))) {
             isPageHasPrivilege = true
         } else if (isModify) {
             List<PageSecurity> secList = PageSecurity.fetchAllByPageId(page?.id)
             for (PageSecurity ps : secList) {
                 if (USER_GROUP.equalsIgnoreCase(ps.type)) {
-                    if (oracleUserId.equals(ps.id.developerUserId)) {
+                    if (oracleUserId.equals(ps.id.developerUserId) && "Y".equals(ps.allowModifyInd)) {
                         isPageHasPrivilege = true
                     }
                 } else {
-                    def userList = BusinessProfile.findByProfile(ps.id.developerUserId, oracleUserId)
-                    if (userList) {
-                        isPageHasPrivilege = true
+                    if("Y".equals(ps.allowModifyInd)) {
+                        def userList = BusinessProfile.findByProfile(ps.id.developerUserId, oracleUserId)
+                        if (userList) {
+                            isPageHasPrivilege = true
+                        }
                     }
                 }
             }
@@ -158,15 +187,16 @@ class DeveloperSecurityService {
     }
 
     boolean isAllowImport(String constantName, String type){
-         if(isSuperUser()){
+        loadSecurityConfiguration()
+        if(isSuperUser()){
             return true
-        }else if(preventImportByDeveloper){
+        } else if (preventImportByDeveloper){
             return false
-        }else if(enableDeveloperSecurity && !preventImportByDeveloper ){
-            return checkUserHasPrivilage(constantName, type)
-        }else if (!preventImportByDeveloper){
+        } else if (enableDeveloperSecurity && !preventImportByDeveloper ){
+            return checkUserHasPrivilage(constantName, type, true, false)
+        } else if (!enableDeveloperSecurity && !preventImportByDeveloper ){
             return true
-        }else{
+        } else {
             return false
         }
     }
@@ -191,7 +221,7 @@ class DeveloperSecurityService {
         }else if(productionMode){
             return false
         }else if(enableDeveloperSecurity && !productionMode){
-            return checkUserHasPrivilage(constantName, type)
+            return checkUserHasPrivilage(constantName, type, false, true)
         }else if (!productionMode){
             return true
         }else{

@@ -3,10 +3,13 @@
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
+import groovy.util.logging.Log4j
 import net.hedtech.banner.security.DeveloperSecurityService
+import net.hedtech.banner.sspb.PBUser
 
 import javax.servlet.http.HttpSession
 
+@Log4j
 class VirtualDomainComposerController {
     static defaultAction = "loadVirtualDomain"
     def virtualDomainResourceService
@@ -19,6 +22,12 @@ class VirtualDomainComposerController {
 
     def saveVirtualDomain = {
         def pageInstance = filter(params)
+        if (!developerSecurityService.isAllowModify(pageInstance?.vdServiceName, developerSecurityService.VIRTUAL_DOMAIN_IND)) {
+            log.error('user not authorized to save virtual domain')
+            pageInstance.error = message(code:"user.not.authorized.create", args:[PBUser.getTrimmed().loginName])
+            render (status: 403, text:  pageInstance.error)
+        }
+
         if (params.vdServiceName)  {
             if ( validateInput(params)) {
                 def saveResult = virtualDomainResourceService.saveVirtualDomain(params.vdServiceName,
@@ -37,7 +46,9 @@ class VirtualDomainComposerController {
                 render (status: 400, text:  pageInstance.error)
             }
         }
-        render (view:"virtualDomainComposer", model: [pageInstance: pageInstance,isProductionReadOnlyMode : developerSecurityService.isProductionReadOnlyMode()])
+        render (view:"virtualDomainComposer", model: [pageInstance: pageInstance,isProductionReadOnlyMode : developerSecurityService.isProductionReadOnlyMode(),
+                                                      userDetailsInList : virtualDomainResourceService.list(['pluralizedResourceName':'virtualDomains.pbadmUserDetails',
+                                                                                                             'encoded':true, 'controller':'CustomPage' , 'action':'get'])])
     }
 
     def loadVirtualDomain = {
@@ -65,11 +76,17 @@ class VirtualDomainComposerController {
                render (status: 400, text:  pageInstance.error)
            }
         }
-        render (view:"virtualDomainComposer", model: [pageInstance: pageInstance,isProductionReadOnlyMode : developerSecurityService.isProductionReadOnlyMode()])
+        render (view:"virtualDomainComposer", model: [pageInstance: pageInstance,
+                                                      isProductionReadOnlyMode : developerSecurityService.isProductionReadOnlyMode(),
+                                                      userDetailsInList : virtualDomainResourceService.list(['pluralizedResourceName':'virtualDomains.pbadmUserDetails',
+                                                                                                             'encoded':true, 'controller':'CustomPage' , 'action':'get'])])
     }
 
     def deleteVirtualDomain = {
-        if (params.vdServiceName)  {
+        if (!developerSecurityService.isAllowModify(params.vdServiceName, developerSecurityService.VIRTUAL_DOMAIN_IND)) {
+            log.error('user not authorized to delete virtual domain')
+            render (status: 403, text:  message(code:"user.not.authorized.delete", args:[PBUser.getTrimmed().loginName]))
+        }else if (params.vdServiceName)  {
             VirtualDomain.withTransaction {
                 def vd = VirtualDomain.find{serviceName==params.vdServiceName}
                 vd.delete(failOnError:true)

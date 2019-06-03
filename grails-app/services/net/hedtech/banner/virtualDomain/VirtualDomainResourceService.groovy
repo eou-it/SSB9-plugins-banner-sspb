@@ -7,7 +7,8 @@ import groovy.util.logging.Log4j
 import net.hedtech.banner.security.DeveloperSecurityService
 import net.hedtech.banner.sspb.CommonService
 import net.hedtech.banner.sspb.PBUser
-import org.apache.commons.codec.binary.Base64
+import net.hedtech.banner.sspb.Page
+import net.hedtech.restfulapi.AccessDeniedException
 import org.hibernate.HibernateException
 
 @Log4j
@@ -72,6 +73,20 @@ class VirtualDomainResourceService {
     def create (Map data, params) {
         log.debug "Data for post/save/create:" + data
         def serviceName = vdName(params)
+        if ('pbadmPageRoles' == serviceName) {
+            Page page = Page.get(data?.PAGE_ID)
+            if (!developerSecurityService.isAllowModify(page?.constantName, developerSecurityService.PAGE_IND)) {
+                log.error('user not authorized to create page role grid')
+                throw new AccessDeniedException("user.not.authorized.create", [PBUser.getTrimmed().loginName])
+            }
+        } else if ('pbadmVirtualDomainRoles' == serviceName) {
+            VirtualDomain vd = VirtualDomain.get(data?.VIRTUAL_DOMAIN_ID)
+            if (!developerSecurityService.isAllowModify(vd?.serviceName, developerSecurityService.VIRTUAL_DOMAIN_IND)) {
+                log.error('user not authorized to create virtual domain role grid')
+                throw new AccessDeniedException("user.not.authorized.create", [PBUser.getTrimmed().loginName])
+            }
+        }
+
         def vd = loadVirtualDomain(serviceName)
         if (vd.error) {
             throw new VirtualDomainException( message(code:"sspb.virtualdomain.invalid.service.message", args:[serviceName]))
@@ -84,6 +99,19 @@ class VirtualDomainResourceService {
     def update (/*def id,*/ Map data, params) {
         log.debug "Data for put/update:" + data
         def serviceName = vdName(params)
+        if ('pbadmPageRoles' == serviceName) {
+            Page page = Page.get(data?.PAGE_ID)
+            if (!developerSecurityService.isAllowModify(page?.constantName, developerSecurityService.PAGE_IND)) {
+                log.error('user not authorized to create page role grid')
+                throw new AccessDeniedException("user.not.authorized.create", [PBUser.getTrimmed().loginName])
+            }
+        } else if ('pbadmVirtualDomainRoles' == serviceName) {
+            VirtualDomain vd = VirtualDomain.get(data?.VIRTUAL_DOMAIN_ID)
+            if (!developerSecurityService.isAllowModify(vd?.serviceName, developerSecurityService.VIRTUAL_DOMAIN_IND)) {
+                log.error('user not authorized to create virtual domain role grid')
+                throw new AccessDeniedException("user.not.authorized.create", [PBUser.getTrimmed().loginName])
+            }
+        }
         def vd = loadVirtualDomain(serviceName)
         if (vd.error) {
             throw new VirtualDomainException( message(code:"sspb.virtualdomain.invalid.service.message", args:[serviceName]))
@@ -96,6 +124,20 @@ class VirtualDomainResourceService {
     def delete (/*def id,*/ Map data,  params) {
         log.debug "Data for DELETE:" + data
         def serviceName = vdName(params)
+        if ('pbadmPageRoles' == serviceName) {
+            Page page = Page.get(data?.PAGE_ID)
+            if (!developerSecurityService.isAllowModify(page?.constantName, developerSecurityService.PAGE_IND)) {
+                log.error('user not authorized to create page role grid')
+                throw new AccessDeniedException("user.not.authorized.create", [PBUser.getTrimmed().loginName])
+            }
+        } else if ('pbadmVirtualDomainRoles' == serviceName) {
+            VirtualDomain vd = VirtualDomain.get(data?.VIRTUAL_DOMAIN_ID)
+            if (!developerSecurityService.isAllowModify(vd?.serviceName, developerSecurityService.VIRTUAL_DOMAIN_IND)) {
+                log.error('user not authorized to create virtual domain role grid')
+                throw new AccessDeniedException("user.not.authorized.create", [PBUser.getTrimmed().loginName])
+            }
+        }
+
         def vd = loadVirtualDomain(serviceName)
         if (vd.error) {
             throw new VirtualDomainException( message(code:"sspb.virtualdomain.invalid.service.message", args:[serviceName]))
@@ -121,7 +163,7 @@ class VirtualDomainResourceService {
             if (!vd)   {
                 vd = new VirtualDomain([serviceName:vdServiceName])
                 updateVD = false
-                vd.owner= PBUser.userCache.loginName
+                vd.owner= PBUser.getTrimmed().oracleUserName
             }
             if (vd) {
                 if(updateVD && vdOwner){
