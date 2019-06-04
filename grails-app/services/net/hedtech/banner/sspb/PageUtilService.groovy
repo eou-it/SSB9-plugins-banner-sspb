@@ -126,7 +126,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             if ( count > 0 && needDeferred) {
                 // attempt import files that could not be loaded because of missing parent
                 // which might have been imported if count > 0
-                def i = importAllFromDir(path, mode, true, names, updateSecurity)
+                def i = importAllFromDir(path, mode, true, names, updateSecurity, copyOwner,copyDevSec)
                 bootMsg "Pages loaded deferred: $i"
                 count += i
             }
