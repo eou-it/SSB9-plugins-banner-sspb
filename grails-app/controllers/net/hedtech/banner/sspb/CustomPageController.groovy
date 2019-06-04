@@ -17,6 +17,13 @@ class CustomPageController {
             render ""
             return
         }
+
+        //TODO Need to check alternative solution
+        //Mep url has to set like http://<<host>>:<<port>>/BannerExtensibility/?url=/customPage/page/
+        if (params.id=="pbadm.LandingPage" && params.url) {
+                redirect(uri: params.url)
+        }
+
         if (params.id=="pbadm.ssoauth") {
             if (params.url) {
                 redirect(uri: params.url)
