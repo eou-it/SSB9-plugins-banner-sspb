@@ -11,7 +11,7 @@ import org.apache.commons.logging.LogFactory
 
 // Integration with Banner - class to get user object for page builder
 // Define a user object with relevant attributes from the Banner user
-class PBUser {
+public class PBUser {
 
     static def userNameCache
     static def userCache
