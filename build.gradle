@@ -50,10 +50,6 @@ dependencies {
     profile "org.grails.profiles:web-plugin"
     provided "org.grails:grails-plugin-services"
     provided "org.grails:grails-plugin-domain-class"
-//    runtime "com.bertramlabs.plugins:asset-pipeline-grails:2.14.2"
-//    testCompile "org.grails:grails-gorm-testing-support"
-//    testCompile "org.grails:grails-plugin-testing"
-//    testCompile "org.grails:grails-web-testing-support"
 
     runtime "com.bertramlabs.plugins:asset-pipeline-grails:2.14.2"
 
@@ -70,11 +66,9 @@ dependencies {
 
 grails{
     plugins {
-        compile project(":banner-core")
         compile project(":banner-restful-api-support")
         compile project(":banner-general-utility")
         compile project(":i18n-core")
-        compile project(":banner-ui-ss")
     }
 }
 

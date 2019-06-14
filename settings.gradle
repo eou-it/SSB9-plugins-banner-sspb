@@ -12,3 +12,12 @@ project(':banner-general-utility').projectDir = new File('../banner_general_util
 
 include ':banner-ui-ss'
 project(':banner-ui-ss').projectDir = new File('../banner_ui_ss.git')
+
+include ':restful-api'
+project(':restful-api').projectDir= new File('../restful-api.git')
+
+include ':banner-codenarc'
+project(':banner-codenarc').projectDir = new File('../banner_codenarc.git')
+
+include ':grails-constraints'
+project(':grails-constraints').projectDir = new File('../grails_constraints.git')
