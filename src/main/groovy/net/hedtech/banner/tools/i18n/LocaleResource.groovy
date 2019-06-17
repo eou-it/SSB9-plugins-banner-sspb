@@ -8,7 +8,7 @@ import groovy.util.logging.Log4j
 @Log4j
 class LocaleResource {
     static def ga = grails.util.Holders.grailsApplication
-    static def g = ga.mainContext.getBean('org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib')
+    static def g = ga.mainContext.getBean('org.grails.plugins.web.taglib.ApplicationTagLib')
     static def existsCache = [:] //Using a map as a simple cache - should be small
 
     // Method to derive a list of suffices for locale specific files. 'en-US' results in ['en-US', 'en']

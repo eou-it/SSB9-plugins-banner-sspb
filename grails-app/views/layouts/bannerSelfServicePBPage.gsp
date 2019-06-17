@@ -57,15 +57,18 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 
 </script>
         <script>
-            var extensibilityInfo =
-                    ${raw(net.hedtech.extensibility.InfoService.getJSON(controllerName, resource(plugin:'web-app-extensibility', dir:'html')))};
+            <%
+            def infoService = grailsApplication.classLoader.loadClass('net.hedtech.extensibility.InfoService').newInstance()
+            def extensibilityInfo = (infoService.getJSON(controllerName, resource(plugin:'web-app-extensibility', dir:'html')))
+            %>
             window.mepCode='${session.mep}';
-        </script>
+        </script
+
         <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
-            <r:require modules="pageBuilderRTL"/>
+            <asset:stylesheet href="modules/pageBuilderRTL-mf.css"/>
         </g:if>
         <g:else>
-            <r:require modules="pageBuilderLTR"/>
+            <asset:stylesheet href="modules/pageBuilder-mf.css"/>
         </g:else>
 
         <g:set var="mep" value="${org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes()?.request?.session?.getAttribute('ssbMepDesc')}"/>
@@ -73,7 +76,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 
         <meta charset="${message(code: 'default.character.encoding')}"/>
         <meta name="dir" content="${message(code:'default.language.direction')}"/>
-        <meta name="synchronizerToken" content="${org.codehaus.groovy.grails.web.servlet.mvc.SynchronizerTokensHolder.store( session ).generateToken(request.forwardURI)}"/>
+        <meta name="synchronizerToken" content="${org.grails.web.servlet.mvc.SynchronizerTokensHolder.store( session ).generateToken(request.forwardURI)}" />
         <meta name="logLevel" content="${g.logLevel()}"/>
         <meta name="maxInactiveInterval" content="${session.maxInactiveInterval}"/>
         <meta name="transactionTimeout" content="${session.getServletContext().transactionTimeout}"/>
@@ -84,9 +87,9 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         <meta name="keepAliveURL" content="${createLink(controller:'keepAlive')}"/>
         <meta name="ssbMepDesc" content="${!mep ? '' : mep}"/>
         <meta name="fullName" content="${g.fullName()}"/>
-        <meta name="loginEndpoint" content="${session.getServletContext().loginEndpoint}"/>
-        <meta name="logoutEndpoint" content="${session.getServletContext().logoutEndpoint}"/>
-        <meta name="guestLoginEnabled" content="${session.getServletContext().guestLoginEnabled}"/>
+        <meta name="loginEndpoint" content="${grails.util.Holders.config.loginEndpoint}"/>
+        <meta name="logoutEndpoint" content="${grails.util.Holders.config.logoutEndpoint}"/>
+        <meta name="guestLoginEnabled" content="${grails.util.Holders.config.guestLoginEnabled}"/>
         <meta name="userLocale" content="${LocaleContextHolder.getLocale()}"/>
         <meta name="footerFadeAwayTime" content="${grails.util.Holders.config.footerFadeAwayTime}"/>
         <meta name="hideSSBHeaderComps" content="${session?.hideSSBHeaderComps?.trim()}"/>
@@ -155,7 +158,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
             var rootWebApp = "${createLink(uri: '/')}";
             var resourceBase = "${createLink(uri: '/') + grails.util.Holders.config.sspb.apiPath +'/' }";
             var templatesLocation = "<g:resource plugin="banner-sspb" dir="template" />";
-            var user = ${PBUser.getTrimmed()?.encodeAsJSON()};
+            var user = ${PBUser.getTrimmed().encodeAsJSON()};
             var gridLocale = '${localeBrowserFull.toLowerCase()}';
             var params = ${params?.encodeAsJSON()};
             if (!window.console) {
