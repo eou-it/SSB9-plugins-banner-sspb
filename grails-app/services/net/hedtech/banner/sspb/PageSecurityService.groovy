@@ -54,20 +54,20 @@ class PageSecurityService {
     }
 
     private def applyRequestMapIndex(map) {
-        map.each { url, it ->
-            saveRequestmap(url, it.configAttribute, it.domain, false)
+        map.each { key, it ->
+            saveRequestmap(key, it.configAttribute, it.domain, false)
         }
     }
 
     private def mergeInterceptUrlMap( map, requestMapIndex) {
         //parse the interceptUrlMap and merge into the Requestmap
-        map.each { url, roles ->
-            def match = requestMapIndex[url]
+        map.each { it ->
+            def match = requestMapIndex[it.pattern]
             if (!match) {
                 match = [domain: null]
-                requestMapIndex[url] = match
+                requestMapIndex[it.pattern] = match
             }
-            match.configAttribute = getConfigAttribute(roles)
+            match.configAttribute = getConfigAttribute(it.configAttributes)
         }
         requestMapIndex
     }
