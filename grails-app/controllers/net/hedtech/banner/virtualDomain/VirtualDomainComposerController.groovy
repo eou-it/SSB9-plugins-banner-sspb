@@ -25,7 +25,7 @@ class VirtualDomainComposerController {
         if (!developerSecurityService.isAllowModify(pageInstance?.vdServiceName, developerSecurityService.VIRTUAL_DOMAIN_IND)) {
             log.error('user not authorized to save virtual domain')
             pageInstance.error = message(code:"user.not.authorized.create", args:[PBUser.getTrimmed().loginName])
-            render (status: 403, text:  pageInstance.error)
+            return render (status: 403, text:  pageInstance.error)
         }
 
         if (params.vdServiceName)  {
@@ -85,11 +85,11 @@ class VirtualDomainComposerController {
     def deleteVirtualDomain = {
         if (!developerSecurityService.isAllowModify(params.vdServiceName, developerSecurityService.VIRTUAL_DOMAIN_IND)) {
             log.error('user not authorized to delete virtual domain')
-            render (status: 403, text:  message(code:"user.not.authorized.delete", args:[PBUser.getTrimmed().loginName]))
+            return render (status: 403, text:  message(code:"user.not.authorized.delete", args:[PBUser.getTrimmed().loginName]))
         }else if (params.vdServiceName)  {
             VirtualDomain.withTransaction {
                 def vd = VirtualDomain.find{serviceName==params.vdServiceName}
-                vd.delete(failOnError:true)
+                vd.delete(flush:true, failOnError:true)
             }
         }
         render (view:"virtualDomainComposer", model: [pageInstance: null, isProductionReadOnlyMode : developerSecurityService.isProductionReadOnlyMode()])
