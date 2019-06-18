@@ -70,7 +70,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         <g:else>
             <asset:stylesheet href="modules/pageBuilder-mf.css"/>
         </g:else>
-
+        <asset:javascript src="modules/pageBuilder-mf.js"/>
         <g:set var="mep" value="${org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes()?.request?.session?.getAttribute('ssbMepDesc')}"/>
         <g:set var="hideSSBHeaderComps" value="${session.hideSSBHeaderComps?session.hideSSBHeaderComps: params?.hideSSBHeaderComps? params.hideSSBHeaderComps:false} " scope="session" />
 
@@ -155,6 +155,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 
 
         <script type="text/javascript">
+
             var rootWebApp = "${createLink(uri: '/')}";
             var resourceBase = "${createLink(uri: '/') + grails.util.Holders.config.sspb.apiPath +'/' }";
             var templatesLocation = "<g:resource plugin="banner-sspb" dir="template" />";

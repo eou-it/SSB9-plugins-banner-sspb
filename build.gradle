@@ -66,6 +66,7 @@ dependencies {
 
 grails{
     plugins {
+        compile project(":banner_ui_ss")
         compile project(":banner-restful-api-support")
         compile project(":banner-general-utility")
         compile project(":i18n-core")
