@@ -1,0 +1,130 @@
+
+.shortcut-container-expanded {
+    padding-bottom: 0%;
+}
+
+.shortcutAccordion {
+    display: inline-block;
+    float: right;
+    width: 2em;
+    height: 2em;
+    margin-top: 0.125em;
+}
+
+.down {
+    background: url('../../images/expand.svg') right center no-repeat;
+    margin-right: 0.35em;
+}
+
+.up {
+    background: url('../../images/collapse.svg') no-repeat;
+    margin-right: 0.35em;
+}
+
+.content-heading-shortcut {
+    display: inline-block;
+    vertical-align: middle;
+    float: left;
+    opacity: 1;
+    width: 88%;
+    color: #4F585F;
+    padding:0.5em 0em 0.5em 1em;
+    font-family: OpenSans-Bold;
+}
+
+.chicklet {
+    padding: 0.5em;
+    min-width: 1.75em;
+    height: 1.5em;
+    text-align: center;
+    background: #EFF4F8 100%;
+    color: #557287;
+    font-family: OpenSans-Semibold;
+    overflow: hidden;
+    margin-right: 0.5em;
+    margin-left: 0.5em;
+    vertical-align: middle;
+    display: table-cell;
+    border-radius: 6px;
+    border: 0.1em solid #BECCD7
+}
+
+.shortcut-description {
+    margin-right: 10px;
+    text-align: left;
+    display: table-cell;
+    word-break: break-word;
+    padding: 0em 1em 0em 1em;
+    width: 60%;
+    font-size: 0.875em;
+    vertical-align: middle;
+}
+
+.delimiter-shortcut {
+    width: 0.25em;
+    display: inline-block;
+    display: table-cell;
+    vertical-align: super;
+}
+
+.banner-shortcut {
+    display: table;
+    width: 100%;
+    padding-top: 0.25em;
+    border-bottom:1px solid #EEEEEF;
+    /*-webkit-user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -ms-user-select: none;*/
+}
+
+.column-container {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    padding: 0.5em 0 0.5em 0em;
+}
+
+.shortcut-row {
+    display: table-row;
+    width: auto;
+}
+
+.keyboard-hidden-screen-reader {
+    opacity: 0;
+    height: 0;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+.keyboard-screen-reader-opens {
+    opacity: 0;
+    height: 0;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+}
+
+@media screen and (min-width: 768px) {
+
+    .content-heading-shortcut {
+        width: 92%;
+    }
+
+    .down {
+        margin-right: 0em;
+    }
+
+    .up {
+        margin-right: 0.35em;
+        width: 3%;
+    }
+
+    /*div#shortcut_module_added div#xeModalMask div.xe-popup-wrapper div.xe-popup-container {
+        width:50em !important;
+        height:100% !important;
+    }*/
+}

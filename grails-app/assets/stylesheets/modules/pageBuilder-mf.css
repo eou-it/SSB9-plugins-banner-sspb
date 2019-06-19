@@ -1,4 +1,12 @@
 /*
+*= require BannerXE/css/jquery-ui.css
+*= require BannerXE/css/ng-grid.css
+*= require BannerXE/css/angular-ui.css
+*= require BannerXE/css/bootstrap.css
+*= require preference/userpreference.css
+*= require xe-components/xe-ui-components.css
+*= require main.css
+*= require pbDefault.css
 *= require shortcuts/bannershortcuts.css
 *= require preference/userpreference.css
 */

@@ -22,5 +22,5 @@
 //= require angular-components/i18n/i18n-filter.js
 //= require angular/hotkeys.js
 //= require shortcuts/bannershortcuts.js
-//= require /plugins/banner-sspb-0.1/BannerXE/lib/angular/angular-messages.js
-//= require /plugins/banner-sspb-0.1/BannerXE/lib/angular/angular-translate.js
+//= require angular/angular-messages.js
+//= require angular/angular-translate.js

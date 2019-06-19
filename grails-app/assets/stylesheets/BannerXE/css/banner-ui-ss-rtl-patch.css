@@ -1,0 +1,178 @@
+/** *****************************************************************************
+ Copyright 2013-2014 Ellucian Company L.P. and its affiliates.
+ ****************************************************************************** */
+.notification-center-flyout li div.notification-item-message {
+    background-position: 369px 4px !important;
+}
+
+.notification-center-flyout li:first-child div.notification-item-message {
+    background-position: 369px 8px !important;
+}
+
+.ui-button {
+    margin-right: 0;
+}
+
+.ui-icon-circle-triangle-e {
+    background-position: -80px -192px;
+}
+
+.ui-icon-circle-triangle-w {
+    background-position: -48px -192px;
+}
+
+.ui-layout-toggler-west-open {
+    background: url('../images/ui-layout-divider-arrow-w.png') no-repeat scroll center center !important;
+}
+
+.ui-layout-toggler-west-closed {
+    background: url('../images/ui-layout-divider-arrow-e.png') no-repeat scroll center center !important;
+}
+
+.paginate_button.last.enabled {
+    background-position: 0 0;
+    width: 22px;
+    height: 23px;
+}
+
+.paginate_button.first.enabled {
+    background-position: 0 -112px;
+    width: 22px;
+    height: 23px;
+}
+
+.paginate_button.previous.enabled {
+    background-position: 0 -224px;
+    width: 22px;
+    height: 23px;
+}
+
+.paginate_button.next.enabled {
+    background-position: 0 -336px;
+    width: 22px;
+    height: 23px;
+}
+
+.paginate_button.last {
+    background-position: 0 -28px;
+    width: 22px;
+    height: 23px;
+}
+
+.paginate_button.first {
+    background-position: 0 -140px;
+    width: 22px;
+    height: 23px;
+}
+
+.paginate_button.previous {
+    background-position: 0 -252px;
+    width: 22px;
+    height: 23px;
+}
+
+.paginate_button.next {
+    background-position: 0 -364px;
+    width: 22px;
+    height: 23px;
+}
+
+.paginate_button.last.enabled:hover {
+    background-position: 0 -84px;
+    width: 22px;
+    height: 23px;
+}
+
+.paginate_button.first.enabled:hover {
+    background-position: 0 -196px;
+    width: 22px;
+    height: 23px;
+}
+
+.paginate_button.previous.enabled:hover {
+    background-position: 0 -308px;
+    width: 22px;
+    height: 23px;
+}
+
+.paginate_button.next.enabled:hover {
+    background-position: 0 -420px;
+    width: 22px;
+    height: 23px;
+}
+
+.paging-control.first.enabled {
+    background-position: 0 331px;
+    width: 22px;
+    height: 23px;
+}
+
+.paging-control.last.enabled {
+    background-position: 0 -444px;
+    width: 22px;
+    height: 23px;
+}
+
+.paging-control.next.enabled {
+    background-position: 0 106px;
+    width: 22px;
+    height: 23px;
+}
+
+.paging-control.previous.enabled {
+    background-position: 0 -667px;
+    width: 22px;
+    height: 23px;
+}
+
+.paging-control.first {
+    background-position: 0 303px;
+    width: 22px;
+    height: 23px;
+}
+
+.paging-control.last {
+    background-position: 0 -471px;
+    width: 22px;
+    height: 23px;
+}
+
+.paging-control.next {
+    background-position: 0 79px;
+    width: 22px;
+    height: 23px;
+}
+
+.paging-control.previous {
+    background-position: 0 -252px;
+    width: 22px;
+    height: 23px;
+}
+
+.paging-control.first.enabled:hover {
+    background-position: 0 -196px;
+    width: 22px;
+    height: 23px;
+}
+
+.paging-control.last.enabled:hover {
+    background-position: 0 -84px;
+    width: 22px;
+    height: 23px;
+}
+
+.paging-control.next.enabled:hover {
+    background-position: 0 -420px;
+    width: 22px;
+    height: 23px;
+}
+
+.paging-control.previous.enabled:hover {
+    background-position: 0 -308px;
+    width: 22px;
+    height: 23px;
+}
+
+.paging-container .divider {
+    border-left: medium none;
+}
