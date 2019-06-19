@@ -64,13 +64,6 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         window.mepCode='${session.mep}';
         </script>
 
-    <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
-        <asset:stylesheet href="modules/pageBuilderRTL-mf.css"/>
-    </g:if>
-    <g:else>
-        <asset:stylesheet href="modules/pageBuilder-mf.css"/>
-    </g:else>
-
     <g:set var="mep" value="${org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes()?.request?.session?.getAttribute('ssbMepDesc')}"/>
     <g:set var="hideSSBHeaderComps" value="${session.hideSSBHeaderComps?session.hideSSBHeaderComps: params?.hideSSBHeaderComps? params.hideSSBHeaderComps:false} " scope="session" />
 
@@ -100,6 +93,12 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
     <meta name="aboutUrlContextPath" content="${request.contextPath}/ssb"/>
     <meta name="contextPath" content="${request.contextPath}"/>
 
+    <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
+        <asset:stylesheet href="modules/pageBuilderRTL-mf.css"/>
+    </g:if>
+    <g:else>
+        <asset:stylesheet href="modules/pageBuilder-mf.css"/>
+    </g:else>
 
     <meta name="headerAttributes" content=""/>
     <script type="text/javascript">
@@ -125,7 +124,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
     <link rel="shortcut icon" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'favicon.ico')}" type="image/x-icon" />
 
 
-        <asset:script type="text/javascript">
+        <asset:script>
         <g:i18nJavaScript/>
 
         var transactionTimeoutMeta    = $( "meta[name=transactionTimeout]" ),
@@ -154,7 +153,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 
 
 
-        <asset:script type="text/javascript">
+        <script>
 
         var rootWebApp = "${createLink(uri: '/')}";
         var resourceBase = "${createLink(uri: '/') + grails.util.Holders.config.sspb.apiPath +'/' }";
@@ -169,7 +168,27 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         var myCustomServices = ['ngResource','ngGrid','ui', 'pbrun.directives', 'ngSanitize', 'xe-ui-components', 'extensibility'];
         var pageControllers = {};
 
-        </asset:script>
+            window.ngGrid.i18n[gridLocale] = {
+            ngAggregateLabel:          '${message(code: 'nggrid.ngAggregateLabel'         , encodeAs: 'JavaScript')}',
+            ngGroupPanelDescription:   '${message(code: 'nggrid.ngGroupPanelDescription'  , encodeAs: 'JavaScript')}',
+            ngSearchPlaceHolder:       '${message(code: 'nggrid.ngSearchPlaceHolder'      , encodeAs: 'JavaScript')}',
+            ngMenuText:                '${message(code: 'nggrid.ngMenuText'               , encodeAs: 'JavaScript')}',
+            ngShowingItemsLabel:       '${message(code: 'nggrid.ngShowingItemsLabel'      , encodeAs: 'JavaScript')}',
+            ngTotalItemsLabel:         '${message(code: 'nggrid.ngTotalItemsLabel'        , encodeAs: 'JavaScript')}',
+            ngSelectedItemsLabel:      '${message(code: 'nggrid.ngSelectedItemsLabel'     , encodeAs: 'JavaScript')}',
+            ngPageSizeLabel:           '${message(code: 'nggrid.ngPageSizeLabel'          , encodeAs: 'JavaScript')}',
+            ngPagerFirstTitle:         '${message(code: 'nggrid.ngPagerFirstTitle'        , encodeAs: 'JavaScript')}',
+            ngPesheetInclude:          '${message(code: 'nggrid.ngPagerNextTitle'         , encodeAs: 'JavaScript')}',
+            ngPagerPrevTitle:          '${message(code: 'nggrid.ngPagerPrevTitle'         , encodeAs: 'JavaScript')}',
+            ngPagerLastTitle:          '${message(code: 'nggrid.ngPagerLastTitle'         , encodeAs: 'JavaScript')}',
+            direction:                 '${message(code:'default.language.direction')}',
+            styleLeft:                 '${message(code:'default.language.direction')=='ltr'?'left':'right'}',
+            styleRight:                '${message(code:'default.language.direction')=='ltr'?'right':'left'}',
+            maxPageLabel:              '${message(code:'nggrid.maxPageLabel'             , encodeAs: 'JavaScript')}',
+            pageLabel:                 '${message(code:'nggrid.pageLabel'                , encodeAs: 'JavaScript')}'
+        };
+
+        </script>
 
     <g:customStylesheetIncludes/>
     <!-- layout head contains angular module declaration and need to be placed before pbRunApp.js -->
@@ -196,7 +215,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
             locale: localeBrowserFull.toLowerCase(), html: '<script src="{resource}" ></script>' )}
 
 
-        <asset:script type="text/javascript">
+        <asset:script>
         window.ngGrid.i18n[gridLocale] = {
             ngAggregateLabel:          '${message(code: 'nggrid.ngAggregateLabel'         , encodeAs: 'JavaScript')}',
             ngGroupPanelDescription:   '${message(code: 'nggrid.ngGroupPanelDescription'  , encodeAs: 'JavaScript')}',
@@ -207,7 +226,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
             ngSelectedItemsLabel:      '${message(code: 'nggrid.ngSelectedItemsLabel'     , encodeAs: 'JavaScript')}',
             ngPageSizeLabel:           '${message(code: 'nggrid.ngPageSizeLabel'          , encodeAs: 'JavaScript')}',
             ngPagerFirstTitle:         '${message(code: 'nggrid.ngPagerFirstTitle'        , encodeAs: 'JavaScript')}',
-            ngPagerNextTitle:          '${message(code: 'nggrid.ngPagerNextTitle'         , encodeAs: 'JavaScript')}',
+            ngPesheetInclude:          '${message(code: 'nggrid.ngPagerNextTitle'         , encodeAs: 'JavaScript')}',
             ngPagerPrevTitle:          '${message(code: 'nggrid.ngPagerPrevTitle'         , encodeAs: 'JavaScript')}',
             ngPagerLastTitle:          '${message(code: 'nggrid.ngPagerLastTitle'         , encodeAs: 'JavaScript')}',
             direction:                 '${message(code:'default.language.direction')}',

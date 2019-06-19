@@ -1,4 +1,4 @@
-//=require jquery-mf.js
+//= require modules/jquery-mf.js
 //= require html5shim.js
 //= require underscore.js
 //= require underscore.string.js

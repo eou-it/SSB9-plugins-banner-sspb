@@ -1242,7 +1242,7 @@ class PageComponent {
         |$cssImp
         |<!--meta name="layout" content="simple"/-->
         |<title>${tran("title")}</title>
-        |<asset:script type="text/javascript">
+        |<asset:script>
         |  var pageId = "$name";
         |  var controllerId = "$controllerName"
         |  pageControllers[controllerId] = $CONTROLLER_PLACEHOLDER;
