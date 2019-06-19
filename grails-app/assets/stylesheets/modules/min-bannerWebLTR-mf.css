@@ -1,4 +1,6 @@
 /*
+*= require javascripts/modules/min-bannerWeb-mf.js
+*= require plugins/sghe_aurora.git/grails-app/assets/stylesheets/modules/auroraRTL-mf.css
 *= require BannerXE/css/banner-ui-ss.css
 *= require BannerXE/css/notification-center.css
 *= require BannerXE/css/jquery.ui.tooltip.css
