@@ -8,8 +8,8 @@
 //= require modelPoppup.js
 //= require pbRunApp.js
 //= require jquery/jquery-ui-1.8.15.custom.js
-//= require menu/tools-menu.js
-//= require extensibility-angular/xe-angular.js
 //= require angular/hotkeys.js
 //= require about/about.js
 //= require preference/userpreference.js
+//= require pb-tools-menu.js
+

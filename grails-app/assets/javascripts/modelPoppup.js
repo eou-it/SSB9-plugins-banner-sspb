@@ -172,7 +172,7 @@
             $scope.isResponseEmpty = function(){
                 return $scope.resultsFound == 0;
             }
-            $scope.goToPage = function (event) {
+            $scope.goToPage = function () {
                 var name = "";
                 var value= "";
                 $scope.modalShown = false;
@@ -185,6 +185,7 @@
                 if(nameIndex != -1 && !$scope.isResponseEmpty()) {
                     name = $scope.content[nameIndex][$scope.nameHeader]
                     value = name;
+                    window.localStorage['allowModify'] = $scope.content[nameIndex]['allowModify'];
                 }
                 element.removeClass('active-row');
 
@@ -211,8 +212,7 @@
 
                 var selectInput = angular.element(document.getElementById($scope.inputTypeFieldID))
                 selectInput.trigger('change');
-                event.preventDefault();
-                event.stopPropagation();
+
             };
 
             $scope.setFocusOnLoad = function () {

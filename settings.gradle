@@ -21,3 +21,9 @@ project(':banner-codenarc').projectDir = new File('../banner_codenarc.git')
 
 include ':grails-constraints'
 project(':grails-constraints').projectDir = new File('../grails_constraints.git')
+
+include ':sghe-aurora'
+project(':sghe-aurora').projectDir = new File('plugins/sghe_aurora.git')
+
+include ':banner-packaging'
+project(':banner-packaging').projectDir = new File('plugins/banner_packaging.git')
