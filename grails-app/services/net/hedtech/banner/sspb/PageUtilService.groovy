@@ -8,8 +8,8 @@ import grails.converters.JSON
 import groovy.util.logging.Log4j
 import net.hedtech.banner.security.PageSecurity
 import net.hedtech.banner.security.PageSecurityId
-import org.codehaus.groovy.grails.web.context.ServletContextHolder
-import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
+import grails.web.context.ServletContextHolder
+import org.grails.web.util.GrailsApplicationAttributes
 import org.springframework.context.ApplicationContext
 import net.hedtech.banner.tools.i18n.SortedProperties
 

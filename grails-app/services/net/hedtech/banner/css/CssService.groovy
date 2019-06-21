@@ -11,7 +11,7 @@ import net.hedtech.banner.service.ServiceBase
 import net.hedtech.banner.sspb.CommonService
 import net.hedtech.banner.sspb.PBUser
 import net.hedtech.restfulapi.AccessDeniedException
-import org.codehaus.groovy.grails.web.util.WebUtils
+import org.grails.web.util.WebUtils
 
 @Log4j
 class CssService extends ServiceBase {

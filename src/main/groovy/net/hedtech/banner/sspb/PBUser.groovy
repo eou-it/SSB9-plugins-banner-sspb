@@ -5,7 +5,7 @@ package net.hedtech.banner.sspb
 
 import grails.util.Holders
 import net.hedtech.banner.security.DeveloperSecurityService
-import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
+import org.grails.plugins.web.taglib.ValidationTagLib
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
 import org.apache.commons.logging.LogFactory
