@@ -14,8 +14,13 @@ class VirtualDomainExportServiceTest extends Specification{
     ]
     def sessionFactory
     def virtualDomainSqlService
+    def pbConfig = grails.util.Holders.getConfig().pageBuilder
+
 
     def setup(){
+        if(!pbConfig.locations.virtualDomain){
+            pbConfig.locations.virtualDomain = 'target'
+        }
         def vd = new VirtualDomain(serviceName: 'integrationTest', codeGet:
                 'select * from dual' , codeDelete: 'delete virtual_domain where service_name =:serviceName'
                 , codePost: 'select * from virtual_domain where id =:id',

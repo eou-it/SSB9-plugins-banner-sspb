@@ -5,17 +5,19 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
-import grails.util.Holders
 import groovy.util.logging.Log4j
-import grails.web.context.ServletContextHolder
-import org.grails.web.util.GrailsApplicationAttributes
+import net.hedtech.banner.security.PageSecurity
+import net.hedtech.banner.security.PageSecurityId
+import org.codehaus.groovy.grails.web.context.ServletContextHolder
+import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
 import org.springframework.context.ApplicationContext
-import net.hedtech.banner.tools.i18n.*
+import net.hedtech.banner.tools.i18n.SortedProperties
 
 @Log4j
 class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     def pageService
     def pageSecurityService
+    def developerSecurityService
 
     def static final statusOk = 0
     def static final statusError = 1
@@ -38,7 +40,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     //Export one or more pages to the configured directory
-    void exportToFile(String pageName, String path=pbConfig.locations.page, Boolean skipDuplicates=false ) {
+    void exportToFile(String pageName, String path=pbConfig.locations.page, Boolean skipDuplicates=false, Boolean isAllowExportDSPermission=false ) {
         Page.findAllByConstantNameLike(pageName).each { page ->
             if (skipDuplicates && page.constantName.endsWith(".bak")) {
                 log.info message(code: "sspb.pageutil.export.skipDuplicate.message", args: [page.constantName])
@@ -47,6 +49,12 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 def file = new File("$path/${page.constantName}.json")
                 JSON.use("deep") {
                     def pageExport = new PageExport(page)
+                    if (isAllowExportDSPermission) {
+                        pageExport.owner = page.owner
+                        PageSecurity.fetchAllByPageId(page.id)?.each { ps ->
+                            pageExport.developerSecurity << [type: ps.type, name: ps.id.developerUserId, allowModify: ps.allowModifyInd]
+                        }
+                    }
                     def json = new JSON(pageExport)
                     def jsonString = json.toString(true)
                     log.info message(code:"sspb.pageutil.export.page.done.message", args:[page.constantName])
@@ -54,6 +62,11 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 }
             }
         }
+    }
+
+    void exportToFile(Map content) {
+        boolean isAllowExportDSPermission = content.isAllowExportDSPermission && "Y".equalsIgnoreCase(content.isAllowExportDSPermission)
+        exportToFile(content.constantName,pbConfig.locations.page,false,isAllowExportDSPermission)
     }
 
     //Load pages required for Page Builder administration
@@ -68,7 +81,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         fileNames.eachLine {  fileName ->
             def pageName = fileName.substring(0,fileName.lastIndexOf(".json"))
             InputStream stream = PageUtilService.class.classLoader.getResourceAsStream( "data/install/$fileName" )
-            def loadResult = load(pageName, stream, mode, false )
+            def loadResult = load(pageName, stream, mode, false, true, true )
             needDeferred |= (loadResult.statusCode == statusDeferLoad)
             count += loadResult.loaded
 
@@ -86,11 +99,11 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     //Import/Install Utility
-    int importAllFromDir(String path=pbConfig.locations.page, mode=loadIfNew, ArrayList names = null, boolean updateSecurity = false) {
-        importAllFromDir(path, mode, false, names, updateSecurity)
+    int importAllFromDir(String path=pbConfig.locations.page, mode=loadIfNew, ArrayList names = null, boolean updateSecurity = false, boolean copyOwner = true, boolean copyDevSec = true) {
+        importAllFromDir(path, mode, false, names, updateSecurity, copyOwner, copyDevSec)
     }
 
-    int importAllFromDir(String path, mode, boolean deferred, ArrayList names, boolean updateSecurity) {
+    int importAllFromDir(String path, mode, boolean deferred, ArrayList names, boolean updateSecurity, boolean copyOwner, boolean copyDevSec) {
         def count=0
         def needDeferred = false
         if (!deferred) {
@@ -99,7 +112,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         try {
             new File(path).eachFileMatch(jsonExt) { file ->
                 if (!names || names.contains(file.name.take(file.name.lastIndexOf('.')))) {
-                    def loadResult = load(file, mode, updateSecurity)
+                    def loadResult = load(file, mode, updateSecurity, copyOwner, copyDevSec)
                     needDeferred |= (loadResult.statusCode == statusDeferLoad)
                     finalizeFileImport(file, loadResult)
                     count += loadResult.loaded
@@ -145,13 +158,13 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     //Load a page, save and compile it
-    private def load(String name, InputStream stream, int mode, boolean updateSecurity) {
-        load(name,stream, null, mode, updateSecurity)
+    private def load(String name, InputStream stream, int mode, boolean updateSecurity, boolean copyOwner, boolean copyDevSec) {
+        load(name,stream, null, mode, updateSecurity, copyOwner, copyDevSec)
     }
-    private def load(File file, int mode, boolean updateSecurity) {
-        load(null, null, file, mode, updateSecurity)
+    private def load(File file, int mode, boolean updateSecurity, copyOwner, copyDevSec) {
+        load(null, null, file, mode, updateSecurity, copyOwner, copyDevSec)
     }
-    private def load( String name, InputStream stream, File file, int mode, boolean updateSecurity ) {
+    private def load( String name, InputStream stream, File file, int mode, boolean updateSecurity, boolean copyOwner, boolean copyDevSec ) {
         // either name + stream is needed or file
         def pageName = name?name:file.name.substring(0,file.name.lastIndexOf(".json"))
         def page = pageService.get(pageName)
@@ -177,6 +190,15 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             JSON.use("deep") {
                 json = JSON.parse(jsonString)
             }
+            if(!currentAction && json.constantName) {
+                if (!developerSecurityService.isAllowImport(json.constantName, developerSecurityService.PAGE_IND)) {
+                    result.statusCode = statusError
+                    result.statusMessage = message(code: "sspb.renderer.page.deny.access", args: [json.constantName])
+                    log.error "Insufficient privileges to import page - ${json.constantName}"
+                    return result
+                }
+            }
+
             page = page ?: pageService.getNew(pageName)
             // when loading from resources (stream), check the file time stamp in the Json
             if ( stream && mode==loadIfNew ) {
@@ -190,6 +212,19 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                 // if the json has a modelView the json is a marshaled page, otherwise it is just the modelView
                 page.modelView = json.has('modelView') ? json.modelView: jsonString
                 page.fileTimestamp = file?new Date(file.lastModified()):json2date(json.fileTimestamp)
+
+                //Copy owner and Dev Security
+                if(copyOwner) {
+                    page.owner = json.owner ?: null
+                } else {
+                    page.owner = PBUser.getTrimmed().oracleUserName
+                }
+                if(copyDevSec) {
+                    json.developerSecurity = json.developerSecurity ?: null
+                } else {
+                    json.developerSecurity = null
+                }
+
                 //Check to see if parent page exists
                 if (json.has('extendsPage') && json.extendsPage && json.extendsPage.constantName) {
                     page.extendsPage = pageService.get(json.extendsPage.constantName)
@@ -200,13 +235,14 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
 
                     }
                 }
-                associateRoles(page, json.pageRoles)
                 page=page.merge()
                 if (result.statusCode == statusOk) {
-                    result = pageService.compileAndSavePage(page.constantName, page.mergedModelText, page.extendsPage)
+                    result = pageService.compileAndSavePage(page.constantName, page.mergedModelText, page.extendsPage, page.owner)
                     result.loaded = result.page?1:0
                     if (page) {
                         if (result.loaded) {
+                            associateRoles(page, json.pageRoles)
+                            associateDeveloperSecurity(page, json.developerSecurity)
                             // Create the requestmap record to allow access]
                             if (updateSecurity) {
                                 pageSecurityService.mergePage(result.page)
@@ -246,13 +282,42 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         }
     }
 
+    //Associate Developer security
+    private def associateDeveloperSecurity(page, developerSecurity) {
+        def pageDevEntries = PageSecurity.fetchAllByPageId(page.id)
+        if(pageDevEntries) {
+            pageDevEntries.each {PageSecurity psObj ->
+                psObj.delete(flush:true)
+            }
+        }
+        developerSecurity.each { securityEntry ->
+            if ( securityEntry.name ) {
+                try {
+                    PageSecurity pageSecurityInstance = new PageSecurity()
+                    PageSecurityId pageSecurityIdInstance = new PageSecurityId()
+                    pageSecurityIdInstance.pageId = page.id
+                    pageSecurityIdInstance.developerUserId = securityEntry.name
+                    pageSecurityInstance.id = pageSecurityIdInstance
+                    pageSecurityInstance.type = securityEntry.type
+                    pageSecurityInstance.allowModifyInd = securityEntry.allowModify
+                    pageSecurityInstance.userId = securityEntry.name
+                    pageSecurityInstance.acitivityDate = new Date()
+                    pageSecurityInstance.save(flush: true)
+                } catch(e) {
+                    log.error "Exception associating Developer security: ${e.message}"
+                }
+            }
+        }
+
+    }
+
     def compileAll(String pattern) {
         def pat = pattern?pattern:"%"
         def pages = Page.findAllByConstantNameLike(pat)
         def errors =[]
         pages.each { page ->
             def model=page.extendsPage?page.mergedModelText:page.modelView
-            def result = pageService.compileAndSavePage(page.constantName, model, page.extendsPage)
+            def result = pageService.compileAndSavePage(page.constantName, model, page.extendsPage, page.owner)
             if (result.statusCode>0)
                 errors << result
             log.info result
@@ -261,7 +326,8 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     def compileMissingProperties() {
-        def messageSource = Holders.grailsApplication.mainContext.getBean("messageSource")
+        def messageSource = ServletContextHolder.getServletContext()
+                .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT).getBean("messageSource")
         def externalMessageSource = messageSource?.externalMessageSource
         // Check if properties files exist, if not we will compile pages if non-baseline pages exist
         if (externalMessageSource.basenamesExposed.size()==0){
@@ -279,7 +345,9 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
 
     // Handler for Page properties
     void updateProperties( Map properties, String baseName){
-        def messageSource = Holders.grailsApplication.mainContext.getBean("messageSource")
+        ApplicationContext applicationContext = (ApplicationContext) ServletContextHolder.getServletContext()
+                .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT);
+        def messageSource = applicationContext.getBean("messageSource")
         def isBaseline = false
         if ( baseName.startsWith('pbadm') || baseName.startsWith(PageComponent.globalPropertiesName) || currentAction == actionImportInitally ) {
             def props = messageSource.getPropertiesByNormalizedName("plugins/banner-sspb/$baseName", new Locale("root"))
@@ -310,7 +378,9 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     def reloadBundles = {
-        def messageSource = Holders.grailsApplication.mainContext.getBean("messageSource")
+        ApplicationContext applicationContext = (ApplicationContext) ServletContextHolder.getServletContext()
+                .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT);
+        def messageSource = applicationContext.getBean("messageSource")
         messageSource.clearCache()
         messageSource.externalMessageSource?.clearCache()
     }

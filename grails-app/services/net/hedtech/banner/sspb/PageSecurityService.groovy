@@ -54,20 +54,20 @@ class PageSecurityService {
     }
 
     private def applyRequestMapIndex(map) {
-        map.each { key, it ->
-            saveRequestmap(key, it.configAttribute, it.domain, false)
+        map.each { url, it ->
+            saveRequestmap(url, it.configAttribute, it.domain, false)
         }
     }
 
     private def mergeInterceptUrlMap( map, requestMapIndex) {
         //parse the interceptUrlMap and merge into the Requestmap
-        map.each { it ->
-            def match = requestMapIndex[it.pattern]
+        map.each { url, roles ->
+            def match = requestMapIndex[url]
             if (!match) {
                 match = [domain: null]
-                requestMapIndex[it.pattern] = match
+                requestMapIndex[url] = match
             }
-            match.configAttribute = getConfigAttribute(it.configAttributes)
+            match.configAttribute = getConfigAttribute(roles)
         }
         requestMapIndex
     }
@@ -136,8 +136,10 @@ class PageSecurityService {
             result = "IS_AUTHENTICATED_ANONYMOUSLY"
         } else if ( roleName.startsWith(admin) ) {
             def adminRoles = grails.util.Holders.config.pageBuilder.adminRoles.split(',')
+            def superAdminRoles =  grails.util.Holders.config.pageBuilder.superAdminRoles.split(',')
             def r = "ROLE_${roleName.minus(admin)}"
             result = adminRoles.find { it.startsWith(r) }
+            result = result?:superAdminRoles.find { it.startsWith(r) }
             result = result?"$result": "${r}_BAN_DEFAULT_M"
         } else {
             result = "ROLE_SELFSERVICE-${roleName}_BAN_DEFAULT_M"

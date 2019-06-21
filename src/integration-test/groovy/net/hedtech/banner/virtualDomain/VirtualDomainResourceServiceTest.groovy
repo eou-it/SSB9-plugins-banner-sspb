@@ -14,6 +14,7 @@ class VirtualDomainResourceServiceTest extends Specification{
     ]
     def sessionFactory
     def virtualDomainSqlService
+    def developerSecurityService
 
 
 
@@ -44,6 +45,7 @@ class VirtualDomainResourceServiceTest extends Specification{
         params<<param
         def virtualDomain = new VirtualDomainResourceService()
         virtualDomain.virtualDomainSqlService = virtualDomainSqlService
+        virtualDomain.developerSecurityService = developerSecurityService
         when:
         def list = virtualDomain.list(params)
         then:
@@ -56,8 +58,9 @@ class VirtualDomainResourceServiceTest extends Specification{
         params<<param
         def virtualDomain = new VirtualDomainResourceService()
         virtualDomain.virtualDomainSqlService = virtualDomainSqlService
+        virtualDomain.developerSecurityService = developerSecurityService
         when:
-        def res =virtualDomain.loadVirtualDomain(params)
+        def res =virtualDomain.loadVirtualDomain('integrationTest')
         then:
         res !=null
     }
@@ -68,6 +71,7 @@ class VirtualDomainResourceServiceTest extends Specification{
         params<<param
         def virtualDomain = new VirtualDomainResourceService()
         virtualDomain.virtualDomainSqlService = virtualDomainSqlService
+        virtualDomain.developerSecurityService = developerSecurityService
         when:
         def res = virtualDomain.show(params)
         then:
@@ -80,6 +84,7 @@ class VirtualDomainResourceServiceTest extends Specification{
         params<<param
         def virtualDomain = new VirtualDomainResourceService()
         virtualDomain.virtualDomainSqlService = virtualDomainSqlService
+        virtualDomain.developerSecurityService = developerSecurityService
         when:
         def res = virtualDomain.count(params)
         then:
@@ -92,6 +97,7 @@ class VirtualDomainResourceServiceTest extends Specification{
         params << param
         def virtualDomain = new VirtualDomainResourceService()
         virtualDomain.virtualDomainSqlService = virtualDomainSqlService
+        virtualDomain.developerSecurityService = developerSecurityService
         def data = ['id':0]
         when:
         virtualDomain.create(data, params)
@@ -108,6 +114,7 @@ class VirtualDomainResourceServiceTest extends Specification{
         def data = ['id':0]
         def virtualDomain = new VirtualDomainResourceService()
         virtualDomain.virtualDomainSqlService = virtualDomainSqlService
+        virtualDomain.developerSecurityService = developerSecurityService
         when:
         def res =virtualDomain.update(data,params)
         then:
@@ -121,6 +128,7 @@ class VirtualDomainResourceServiceTest extends Specification{
         def data = ['serviceName':'integrationTest']
         def virtualDomain = new VirtualDomainResourceService()
         virtualDomain.virtualDomainSqlService = virtualDomainSqlService
+        virtualDomain.developerSecurityService = developerSecurityService
         when:
         def res =virtualDomain.delete(data,params)
         then:
@@ -133,8 +141,9 @@ class VirtualDomainResourceServiceTest extends Specification{
         params<<param
         def virtualDomain = new VirtualDomainResourceService()
         virtualDomain.virtualDomainSqlService = virtualDomainSqlService
+        virtualDomain.developerSecurityService = developerSecurityService
         when:
-        def res =virtualDomain.saveVirtualDomain('integrationTest',false, false, false, false)
+        def res =virtualDomain.saveVirtualDomain('integrationTest',false, false, false, false,null)
         then:
         res.success== true
     }

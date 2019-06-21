@@ -1,0 +1,26 @@
+{
+   "developerSecurity": [],
+   "codePost": null,
+   "virtualDomainRoles": [
+      {
+         "allowGet": true,
+         "allowPost": false,
+         "allowPut": false,
+         "roleName": "ADMIN-GPBADMN",
+         "allowDelete": false
+      },
+      {
+         "allowGet": true,
+         "allowPost": false,
+         "allowPut": false,
+         "roleName": "ADMIN-GPBADMA",
+         "allowDelete": false
+      }
+   ],
+   "codePut": null,
+   "fileTimestamp": "2019-05-13T11:38:01Z",
+   "codeDelete": null,
+   "codeGet": "select guruobj_userid as USER_ID from bansecr.GURUOBJ where guruobj_OBJECT in('GPBADMN','GPBADMA')  and GURUOBJ_USERID not like 'BAN_%'\r\nunion\r\nselect GURUCLS_userid as USER_ID from bansecr.gurucls\r\nwhere gurucls_class_code in (select GURUOBJ_USERID from bansecr.GURUOBJ where guruobj_OBJECT in('GPBADMN','GPBADMA')  and GURUOBJ_USERID like 'BAN_%')",
+   "typeOfCode": "S",
+   "serviceName": "pbadmUserDetails"
+}

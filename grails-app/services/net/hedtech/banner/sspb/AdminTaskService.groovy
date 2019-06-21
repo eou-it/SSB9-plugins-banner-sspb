@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
@@ -11,6 +11,7 @@ class AdminTaskService {
     def pageUtilService
     def virtualDomainUtilService
     def cssUtilService
+    def developerSecurityService
 
     def nameLists = [:]
     def listCount = 0
@@ -20,16 +21,21 @@ class AdminTaskService {
     def create(Map content, ignore) {
         def result = [:]
         if (content.task == 'import') {
+            def copyOwner = content.copyOwner ?: false
+            def copyDevSec =  content.copyDevSec ?: false
             if (content.virtualDomains) {
-                def count = virtualDomainUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.virtualDomain, PBUtilServiceBase.loadOverwriteExisting)
+                def count = virtualDomainUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.virtualDomain,
+                        PBUtilServiceBase.loadOverwriteExisting, null, copyOwner, copyDevSec)
                 result << [importedVirtualDomainsCount: count]
             }
             if (content.css) {
-                def count = cssUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.css, PBUtilServiceBase.loadOverwriteExisting)
+                def count = cssUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.css,
+                        PBUtilServiceBase.loadOverwriteExisting, null, copyOwner, copyDevSec)
                 result << [importedCssCount: count]
             }
             if (content.pages) {
-                def count = pageUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.page, PBUtilServiceBase.loadOverwriteExisting, null, true)
+                def count = pageUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.page, PBUtilServiceBase.loadOverwriteExisting,
+                        false, null, true, copyOwner, copyDevSec)
                 result << [importedPagesCount: count]
             }
             if (content.artifact) {
@@ -37,12 +43,28 @@ class AdminTaskService {
                     def domain = JSON.parse(content.artifact.domain)
                     def at = determineArtifact(domain)
                     if ( at.valid ) {
+                        def artifactType
+                        String objectName
+                        if(at.type == 'css') {
+                            artifactType = 'C'
+                            objectName=domain?.constantName
+                        } else if (at.type == 'page') {
+                            artifactType = 'P'
+                            objectName=domain?.constantName
+                        } else {
+                            artifactType = 'V'
+                            objectName=domain?.serviceName
+                        }
+                        if(!developerSecurityService.isAllowImport(objectName, artifactType)) {
+                        result << [accessError: message(code: "sspb.renderer.page.deny.access", args: [objectName])]
+                        return result
+                        }
                         def fileName = "${PBUtilServiceBase.pbConfig.locations[at.type]}/${at.name}.json"
                         def file = new File(fileName)
                         file.text = content.artifact.domain
                         result = [imported: 1, type: at.type, name: at.name, location: fileName]
                         log.info "Uploaded artifact. File name: ${content.artifact.fileName} Size: ${content.artifact.size} Index: ${content.artifact.index} Count: ${content.artifact.count}"
-                        result.digested = pushArtifactForImport(at.type, at.name, content)
+                        result.digested = pushArtifactForImport(at.type, at.name, content, copyOwner, copyDevSec)
                     } else {
                         throw new RuntimeException(message(code:"sspb.admintask.invalid.artifact.type", args:[content.artifact.fileName]))
                     }
@@ -71,7 +93,7 @@ class AdminTaskService {
     }
 
     // This method checks if all artifacts have been submitted. If so, the import is started.
-    private def pushArtifactForImport(type, name, content) {
+    private def pushArtifactForImport(type, name, content, copyOwner, copyDevSec) {
         def importCount = 0
         if ( listCount ==0 || ( (new Date()).getTime() - listsStartedMilis > listTimeout) ) {
             nameLists = [:] // Reset the namesAssume data are from a failed previous upload
@@ -91,13 +113,16 @@ class AdminTaskService {
             def mode = PBUtilServiceBase.loadOverwriteExisting
             // copied all artifacts
             if (nameLists.css?.size() > 0){
-                importCount += cssUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.css, mode, nameLists.css)
+                importCount += cssUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.css, mode,
+                        nameLists.css, copyOwner, copyDevSec)
             }
             if (nameLists.page?.size() > 0) {
-                importCount += pageUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.page, mode, nameLists.page, true)
+                importCount += pageUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.page, mode,
+                        nameLists.page, true, copyOwner, copyDevSec)
             }
             if (nameLists.virtualDomain?.size() > 0) {
-                importCount += virtualDomainUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.virtualDomain, mode, nameLists.virtualDomain)
+                importCount += virtualDomainUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.virtualDomain,
+                        mode, nameLists.virtualDomain, copyOwner, copyDevSec)
             }
         }
         importCount
