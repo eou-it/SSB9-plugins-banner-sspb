@@ -1242,11 +1242,11 @@ class PageComponent {
         |$cssImp
         |<!--meta name="layout" content="simple"/-->
         |<title>${tran("title")}</title>
-        |<asset:script>
+        |<script type="text/javascript">
         |  var pageId = "$name";
         |  var controllerId = "$controllerName"
         |  pageControllers[controllerId] = $CONTROLLER_PLACEHOLDER;
-        |</asset:script>
+        |</script>
         |</head>
         |<body>
         |   <div id="content" ng-controller="$controllerName"  class="customPage container-fluid">

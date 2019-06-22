@@ -1,8 +1,8 @@
 /*
-*= require javascripts/modules/min-bannerWeb-mf.js
-*= require plugins/sghe_aurora.git/grails-app/assets/stylesheets/modules/auroraRTL-mf.css
-*= require BannerXE/css/banner-ui-ss.css
-*= require BannerXE/css/notification-center.css
+*= require banner-ui-ss.css
+*= require BannerXE/css/jquery-ui.css
+*= require themeroller/jquery-ui-1.8.13.custom.css
+*= require notification-center.css
 *= require BannerXE/css/jquery.ui.tooltip.css
 *= require BannerXE/css/backbone.pagingcontrols.css
 *= require BannerXE/css/extensibility-ss.css

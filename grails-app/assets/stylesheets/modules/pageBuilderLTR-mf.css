@@ -1,15 +1,6 @@
 /*
-*= require min-bannerWebLTR-mf.css
+*= require modules/min-bannerWebLTR-mf.css
+*= require modules/aurora-mf.css
+*= require custom-number-input/custom-number-input.css
 *= require pageBuilder-mf.css
-*= require BannerXE/css/jquery-ui.css
-*= require BannerXE/css/ng-grid.css
-*= require BannerXE/css/angular-ui.css
-*= require BannerXE/css/bootstrap.css
-*= require preference/userpreference.css
-*= require xe-components/xe-ui-components.css
-*= require main.css
-*= require pbDefault.css
-*= require shortcuts/bannershortcuts.css
-*= require select2/select2.css
-*= require eds.css
 */

@@ -56,18 +56,16 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 
 
 </script>
-        <script>
-            var extensibilityInfo =<% (grailsApplication.classLoader.loadClass('net.hedtech.extensibility.InfoService').
-            newInstance().getJSON(controllerName, resource(plugin:'web-app-extensibility', dir:'html')))
-            %>
-            window.mepCode='${session.mep}';
-        </script>
+    <%
+        def infoService = grailsApplication.classLoader.loadClass('net.hedtech.extensibility.InfoService').newInstance()
+        def extensibilityInfo = (infoService.getJSON(controllerName, resource(plugin: 'web-app-extensibility', dir: 'html')))
+    %>
 
     <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
         <asset:stylesheet href="modules/pageBuilderRTL-mf.css"/>
     </g:if>
     <g:else>
-        <asset:stylesheet href="modules/pageBuilder-mf.css"/>
+        <asset:stylesheet href="modules/pageBuilderLTR-mf.css"/>
     </g:else>
     <asset:javascript src="modules/jquery-ext-mf.js"/>
 
@@ -100,7 +98,10 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
     <meta name="aboutUrl" content="${!aboutServiceUrl ? '' : aboutServiceUrl}"/>
     <meta name="aboutUrlContextPath" content="${request.contextPath}/ssb"/>
     <meta name="contextPath" content="${request.contextPath}"/>
-
+    <script type="text/javascript">
+        var extensibilityInfo = ${extensibilityInfo.encodeAsRaw()}
+        window.mepCode='${session.mep}';
+    </script>
 
 
     <meta name="headerAttributes" content=""/>
@@ -112,23 +113,9 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 
     <title><g:layoutTitle default="Banner Page Builder"/></title>
 
-    <link rel="apple-touch-icon" sizes="57x57" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'apple-touch-icon-57x57.png')}"/>
-    <link rel="apple-touch-icon" sizes="60x60" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'apple-touch-icon-60x60.png')}"/>
-    <link rel="apple-touch-icon" sizes="72x72" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'apple-touch-icon-72x72.png')}"/>
-    <link rel="apple-touch-icon" sizes="76x76" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'apple-touch-icon-76x76.png')}"/>
-    <link rel="apple-touch-icon" sizes="114x114" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'apple-touch-icon-114x114.png')}"/>
-    <link rel="apple-touch-icon" sizes="120x120" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'apple-touch-icon-120x120.png')}"/>
-    <link rel="apple-touch-icon" sizes="144x144" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'apple-touch-icon-144x144.png')}"/>
-    <link rel="apple-touch-icon" sizes="152x152" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'apple-touch-icon-152x152.png')}"/>
-    <link rel="shortcut icon" type="image/png" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'favicon-32x32.png')}" sizes="32x32"/>
-    <link rel="shortcut icon" type="image/png" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'android-chrome-192x192.png')}" sizes="192x192"/>
-    <link rel="shortcut icon" type="image/png" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'favicon-96x96.png')}" sizes="96x96"/>
-    <link rel="shortcut icon" type="image/png" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'favicon-16x16.png')}" sizes="16x16"/>
-    <link rel="shortcut icon" href="${resource(plugin: 'banner-ui-ss', dir:'images/eds/',file:'favicon.ico')}" type="image/x-icon" />
 
 
-        <script type="text/javascript">
-        <g:i18nJavaScript/>
+        <asset:script>
 
         var transactionTimeoutMeta    = $( "meta[name=transactionTimeout]" ),
             transactionTimeoutSeconds = ( transactionTimeoutMeta.length == 1 ? parseInt( transactionTimeoutMeta.attr( "content" ) ) : 30 ),
@@ -137,22 +124,26 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 
         $.ajaxSetup( { timeout: transactionTimeoutMilli } );
 
-        yepnope({
-           test : window.JSON,
-           nope : '${resource(plugin: 'banner-ui-ss', file: 'js/json2.js')}'
-            });
 
-            $(window).load(function() {
-                _.defer( function() {
-                    $( "#splash" ).remove();
-                });
-            });
-        </script>
-
-    <g:set var="localeLanguage"    value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).language}" scope="page" />
-    <g:set var="localeBrowserFull" value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).toString().replace('_','-')}" scope="page" />
+        </asset:script>
+        <g:set var="localeLanguage"    value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).language}" scope="page" />
+        <g:set var="localeBrowserFull" value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).toString().replace('_','-')}" scope="page" />
 
 
+        <asset:link rel="apple-touch-icon" sizes="57x57" href="eds/apple-touch-icon-57x57.png"/>
+        <asset:link rel="apple-touch-icon" sizes="60x60" href="eds/apple-touch-icon-60x60.png"/>
+        <asset:link rel="apple-touch-icon" sizes="72x72" href="eds/apple-touch-icon-72x72.png"/>
+        <asset:link rel="apple-touch-icon" sizes="76x76" href="eds/apple-touch-icon-76x76.png"/>
+        <asset:link rel="apple-touch-icon" sizes="114x114" href="eds/apple-touch-icon-114x114.png"/>
+        <asset:link rel="apple-touch-icon" sizes="120x120" href="eds/apple-touch-icon-120x120.png"/>
+        <asset:link rel="apple-touch-icon" sizes="144x144" href="eds/apple-touch-icon-144x144.png"/>
+        <asset:link rel="apple-touch-icon" sizes="152x152" href="eds/apple-touch-icon-152x152.png"/>
+        <asset:link rel="apple-touch-icon" sizes="180x180" href="eds/apple-touch-icon-180x180.png"/>
+        <asset:link rel="shortcut icon" type="image/png" href="eds/favicon-32x32.png" sizes="32x32"/>
+        <asset:link rel="shortcut icon" type="image/png" href="eds/android-chrome-192x192.png" sizes="192x192"/>
+        <asset:link rel="shortcut icon" type="image/png" href="eds/favicon-96x96.png" sizes="96x96"/>
+        <asset:link rel="shortcut icon" type="image/png" href="eds/favicon-16x16.png" sizes="16x16"/>
+        <asset:link rel="shortcut icon" href="eds/favicon.ico" type="image/x-icon"/>
 
     <script type="text/javascript">
 
@@ -171,43 +162,44 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         var myCustomServices = ['ngResource','ngGrid','ui', 'pbrun.directives', 'ngSanitize', 'xe-ui-components'];
         var pageControllers = {};
     </script>
+    <asset:deferredScripts/>
+
+    <g:layoutHead />
 
     <g:customStylesheetIncludes/>
-    <!-- layout head contains angular module declaration and need to be placed before pbRunApp.js -->
-    <g:layoutHead />
+
     <g:theme />
-
 </head>
-<body>
+        <body>
 <div ng-app="BannerOnAngular">
-    <div id="splash"></div>
-    <div id="spinner" class="spinner spinner-img" style="display:none;">
+            <div id="splash"></div>
+            <div id="spinner" class="spinner spinner-img" style="display:none;">
 
-    </div>
+           %{--<g:if test="${grails.util.Holders.config.locale_userPreferenceEnable}">
+                    <g:render template="/layouts/userPreference"/>
+                </g:if>
+               <g:render template="/layouts/bannershortcuts"/>--}%
 
-    <g:layoutBody />
 
-    <g:customJavaScriptIncludes/>
 
-    ${LocaleResource.importExisting(plugin:'banner-sspb', dir: 'BannerXE/lib/jquery/i18n', file: 'jquery.ui.datepicker-{locale}.js',
-            locale: localeBrowserFull, html: '<script src="{resource}" ></script>' )}
-    ${LocaleResource.importExisting(plugin:'banner-sspb', dir: 'BannerXE/lib/angular/i18n', file: 'angular-locale_{locale}.js',
-            locale: localeBrowserFull.toLowerCase(), html: '<script src="{resource}" ></script>' )}
+            %{--<script src="assets/lib/jquery/i18n/jquery.ui.datepicker-${localeLanguage}.js"/>
+            <script src="assets/lib/jquery/i18n/angular-locale_${localeLanguage}.js"/>--}%
+            %{--${LocaleResource.importExisting(plugin:'banner-sspb', dir: 'BannerXE/lib/jquery/i18n', file: 'jquery.ui.datepicker-{locale}.js',
+                    locale: localeBrowserFull, html: '<script src="{resource}" ></script>' )}
+            ${LocaleResource.importExisting(plugin:'banner-sspb', dir: 'BannerXE/lib/angular/i18n', file: 'angular-locale_{locale}.js',
+                    locale: localeBrowserFull.toLowerCase(), html: '<script src="{resource}" ></script>' )}--}%
+
 
 
 </div>
-<div id="dialogAppDiv"></div>
-%{--<g:if test="${grails.util.Holders.config.locale_userPreferenceEnable}">
-    <g:render template="/layouts/userPreference" plugin="banner-ui-ss"/>
-</g:if>--}%
-%{--<g:render template="/layouts/bannershortcuts" plugin="banner-ui-ss"/>--}%
+        <div id="dialogAppDiv"></div>
+        <div id="popupContainerDiv"></div>
 
 
-<div id="popupContainerDiv"></div>
-<asset:deferredScripts/>
-</body>
+            <r:layoutResources/>
+
 <asset:javascript src="modules/pageBuilder-mf.js"/>
-<script type="text/javascript">
+<asset:script>
     window.ngGrid.i18n[gridLocale] = {
         ngAggregateLabel:          '${message(code: 'nggrid.ngAggregateLabel'         , encodeAs: 'JavaScript')}',
         ngGroupPanelDescription:   '${message(code: 'nggrid.ngGroupPanelDescription'  , encodeAs: 'JavaScript')}',
@@ -227,5 +219,26 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         maxPageLabel:              '${message(code:'nggrid.maxPageLabel'             , encodeAs: 'JavaScript')}',
         pageLabel:                 '${message(code:'nggrid.pageLabel'                , encodeAs: 'JavaScript')}'
     };
-</script>
+    yepnope({
+        test : window.JSON,
+        nope : '${assetPath(src: 'json2.js')}'
+    });
+
+    $(window).load(function() {
+        _.defer( function() {
+            $( "#splash" ).remove();
+        });
+    });
+    <g:i18nJavaScript/>
+    <g:pageAccessAudit/>
+</asset:script>
+
+
+
+<g:layoutBody/>
+<asset:deferredScripts/>
+
+<g:customJavaScriptIncludes/>
+</body>
 </html>
+
