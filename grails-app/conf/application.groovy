@@ -119,11 +119,19 @@ dataSource {
 }*/
 
 hibernate {
-    /*cache.use_second_level_cache = true
-    cache.use_query_cache = true
-    cache.provider_class = 'net.sf.ehcache.hibernate.EhCacheProvider'
-    show_sql = false*/
+    show_sql = false
+    reload = false
     dialect = "org.hibernate.dialect.Oracle10gDialect"
+    packagesToScan="net.hedtech.**.*"
+    cache {
+        queries: true
+        use_second_level_cache = true
+        use_query_cache = true
+        //provider_class = "net.sf.ehcache.hibernate.EhCacheProvider"
+        region {
+            factory_class = "org.hibernate.cache.ehcache.EhCacheRegionFactory"
+        }
+    }
     config.location = [
             "classpath:hibernate-banner-sspb.cfg.xml",
             "classpath:hibernate-banner-general-utility.cfg.xml"
