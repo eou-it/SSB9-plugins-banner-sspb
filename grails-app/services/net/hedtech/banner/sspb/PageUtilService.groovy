@@ -5,6 +5,7 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
+import grails.util.Holders
 import groovy.util.logging.Log4j
 import net.hedtech.banner.security.PageSecurity
 import net.hedtech.banner.security.PageSecurityId
@@ -326,9 +327,11 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     def compileMissingProperties() {
-        def messageSource = ServletContextHolder.getServletContext()
-                .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT).getBean("messageSource")
-        def externalMessageSource = messageSource?.externalMessageSource
+        /*def messageSource = ServletContextHolder.getServletContext()
+                .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT).getBean("messageSource")*/
+        ApplicationContext context = (ApplicationContext) Holders.grailsApplication.getMainContext()
+        context.getBean("messageSource")
+        def externalMessageSource = context.messageSource?.externalMessageSource
         // Check if properties files exist, if not we will compile pages if non-baseline pages exist
         if (externalMessageSource.basenamesExposed.size()==0){
             log.debug "No Page Resources found"
