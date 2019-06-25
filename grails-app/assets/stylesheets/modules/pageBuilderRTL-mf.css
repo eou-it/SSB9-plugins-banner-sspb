@@ -7,7 +7,7 @@
 *= require BannerXE/css/bootstrap-rtl.css
 *= require BannerXE/css/xe-ui-components.min-rtl.css
 *= require banner-sspb-rtl-patch.css
-*= require main-rtl.css
+*= require sspbmain/main-rtl.css
 *= require pbDefault-rtl.css
 *= require shortcuts/bannershortcuts-rtl.css
 *= require preference/userpreference-rtl.css
