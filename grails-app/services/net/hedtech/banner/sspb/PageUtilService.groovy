@@ -5,6 +5,7 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import grails.util.Holders
 import groovy.util.logging.Log4j
 import grails.web.context.ServletContextHolder
@@ -13,9 +14,11 @@ import org.springframework.context.ApplicationContext
 import net.hedtech.banner.tools.i18n.*
 
 @Log4j
+@Transactional
 class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     def pageService
     def pageSecurityService
+    def path =Holders.getConfig().pageBuilder.locations.page
 
     def static final statusOk = 0
     def static final statusError = 1
@@ -38,7 +41,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     //Export one or more pages to the configured directory
-    void exportToFile(String pageName, String path=pbConfig.locations.page, Boolean skipDuplicates=false ) {
+    void exportToFile(String pageName, String path=path, Boolean skipDuplicates=false ) {
         Page.findAllByConstantNameLike(pageName).each { page ->
             if (skipDuplicates && page.constantName.endsWith(".bak")) {
                 log.info message(code: "sspb.pageutil.export.skipDuplicate.message", args: [page.constantName])
@@ -67,6 +70,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
         }
         fileNames.eachLine {  fileName ->
             def pageName = fileName.substring(0,fileName.lastIndexOf(".json"))
+            pageName = pageName.replace('.','')
             InputStream stream = PageUtilService.class.classLoader.getResourceAsStream( "data/install/$fileName" )
             def loadResult = load(pageName, stream, mode, false )
             needDeferred |= (loadResult.statusCode == statusDeferLoad)
@@ -86,7 +90,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     //Import/Install Utility
-    int importAllFromDir(String path=pbConfig.locations.page, mode=loadIfNew, ArrayList names = null, boolean updateSecurity = false) {
+    int importAllFromDir(String path=path, mode=loadIfNew, ArrayList names = null, boolean updateSecurity = false) {
         importAllFromDir(path, mode, false, names, updateSecurity)
     }
 
@@ -154,6 +158,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     private def load( String name, InputStream stream, File file, int mode, boolean updateSecurity ) {
         // either name + stream is needed or file
         def pageName = name?name:file.name.substring(0,file.name.lastIndexOf(".json"))
+        pageName = pageName.replace('.','')
         def page = pageService.get(pageName)
         def result = [page: null, statusCode: statusOk, statusMessage: "", loaded: 0]
         def jsonString

@@ -4,13 +4,15 @@
 
 package net.hedtech.banner.sspb
 
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import groovy.util.logging.Log4j
 import org.omg.CORBA.portable.ApplicationException
 
 @Log4j
+@Transactional
 class PageSecurityService {
-    static transactional = true
+
     //static final datasource = 'sspb'
     def springSecurityService
 
@@ -67,7 +69,7 @@ class PageSecurityService {
                 match = [domain: null]
                 requestMapIndex[it.pattern] = match
             }
-            match.configAttribute = getConfigAttribute(it.configAttributes)
+            match.configAttribute = getConfigAttribute(it.access)
         }
         requestMapIndex
     }
@@ -166,7 +168,7 @@ class PageSecurityService {
             }
         } else {
             if (configAttribute) {
-                rm=new Requestmap (url: url, configAttribute: configAttribute)
+                rm=new Requestmap (url: url.replace('.',''), configAttribute: configAttribute)
                 rm.save()
                 log.debug "Created new Requestmap entry $url : $configAttribute"
             }
