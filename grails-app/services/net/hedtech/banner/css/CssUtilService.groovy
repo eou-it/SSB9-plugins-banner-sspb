@@ -6,6 +6,8 @@ package net.hedtech.banner.css
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 import net.hedtech.banner.tools.PBUtilServiceBase
+import org.springframework.transaction.annotation.Transactional
+
 @Log4j
 class CssUtilService extends PBUtilServiceBase {
 

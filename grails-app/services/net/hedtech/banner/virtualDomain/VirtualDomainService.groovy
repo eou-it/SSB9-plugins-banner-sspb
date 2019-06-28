@@ -3,12 +3,14 @@
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
+import grails.gorm.transactions.Transactional
 import net.hedtech.banner.sspb.CommonService
 import org.hibernate.criterion.CriteriaSpecification
 
 import org.hibernate.criterion.Order
 import org.springframework.context.i18n.LocaleContextHolder
 
+@Transactional
 class VirtualDomainService {
 
     static transactional = false //Getting error connection closed without this

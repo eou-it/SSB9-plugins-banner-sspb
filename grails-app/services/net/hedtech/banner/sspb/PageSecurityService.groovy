@@ -4,11 +4,13 @@
 
 package net.hedtech.banner.sspb
 
+import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import groovy.util.logging.Log4j
 import org.omg.CORBA.portable.ApplicationException
 
 @Log4j
+@Transactional
 class PageSecurityService {
     static transactional = true
     //static final datasource = 'sspb'

@@ -4,11 +4,13 @@
 
 package net.hedtech.banner.tools
 
+import grails.gorm.transactions.Transactional
 import groovy.util.logging.Log4j
 import org.hibernate.HibernateException
 import java.text.ParseException
 
 @Log4j
+@Transactional
 public class PBUtilServiceBase {
 
     def final static loadOverwriteExisting=0

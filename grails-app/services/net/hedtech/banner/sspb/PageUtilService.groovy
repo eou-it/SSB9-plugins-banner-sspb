@@ -7,13 +7,11 @@ package net.hedtech.banner.sspb
 import grails.converters.JSON
 import grails.util.Holders
 import groovy.util.logging.Log4j
-import grails.web.context.ServletContextHolder
-import org.grails.web.util.GrailsApplicationAttributes
-import org.springframework.context.ApplicationContext
-import net.hedtech.banner.tools.i18n.*
+import net.hedtech.banner.tools.PBUtilServiceBase
+import net.hedtech.banner.tools.i18n.SortedProperties
 
 @Log4j
-class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
+class PageUtilService extends PBUtilServiceBase {
     def pageService
     def pageSecurityService
 
@@ -201,7 +199,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
                     }
                 }
                 associateRoles(page, json.pageRoles)
-                page=page.merge()
+                page = page.merge(validate: true, failOnError: true, flush: true)
                 if (result.statusCode == statusOk) {
                     result = pageService.compileAndSavePage(page.constantName, page.mergedModelText, page.extendsPage)
                     result.loaded = result.page?1:0

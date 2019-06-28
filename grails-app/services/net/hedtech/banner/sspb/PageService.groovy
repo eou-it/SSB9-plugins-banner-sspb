@@ -5,9 +5,10 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import org.springframework.context.i18n.LocaleContextHolder
 
-
+@Transactional
 class PageService {
     def compileService
     def groovyPagesTemplateEngine
@@ -173,7 +174,7 @@ class PageService {
                         }
                     }
                     if (ret.statusCode == 0) {
-                        if (!ret.page.save()) {
+                        if (!ret.page.save(failOnError: true)) {
                             ret.page.errors.allErrors.each { ret.statusMessage += it +"\n" }
                             ret.statusCode = 3
                         }
