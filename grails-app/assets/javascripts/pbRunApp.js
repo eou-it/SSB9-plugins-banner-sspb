@@ -88,7 +88,7 @@ if (undefined == myCustomServices) {
     var myCustomServices = [];
 }
 
-myCustomServices.push('modalPopup')
+//myCustomServices.push('modalPopup')
 //noinspection JSUnusedAssignment
 var appModule = appModule||angular.module('BannerOnAngular', myCustomServices);
 

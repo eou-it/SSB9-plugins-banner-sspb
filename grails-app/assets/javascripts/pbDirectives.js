@@ -13,7 +13,7 @@ pagebuilderModule.directive('pbArrayofmap', function() {
         restrict:'E',
         //transclude: true,
         scope:{label:'@', array:'=', pbParent:'=', pbAttrname:'=', pbChange:'&'},
-        templateUrl: templatesLocation + '/pbArrayOfMap.html',
+        templateUrl: '../template/pbArrayOfMap.html',
         controller: ['$scope', '$element', '$attrs', '$transclude',
             function($scope, $element, $attrs, $transclude) {
                 // assign an empty array to the attribute if the map is undefined
@@ -91,7 +91,7 @@ pagebuilderModule.directive('pbMap', function() {
         restrict:'E',
         //transclude: true,
         scope:{label:'@', map:'=', pbParent:'=', pbAttrname:'=', pbChange:'&'},
-        templateUrl: templatesLocation + '/pbMap.html',
+        templateUrl: '../template/pbMap.html',
         controller: ['$scope', '$element', '$attrs', '$transclude',
             function($scope, $element, $attrs, $transclude) {
                 // assign an empty map to the attribute if the map is undefined
@@ -165,7 +165,7 @@ pagebuilderModule.directive('pbTextarea', function() {
         restrict:'E',
         //transclude: true,
         scope:{label:'@', value:'=', pbParent:'=', pbAttrname:'=', pbChange:'&'},
-        templateUrl: templatesLocation + '/pbTextarea.html',
+        templateUrl:  '../template/pbTextarea.html',
         controller: ['$scope', '$element', '$attrs', '$transclude',
             function($scope, $element, $attrs, $transclude) {
                 // assign an empty map to the attribute if the map is undefined
@@ -260,7 +260,7 @@ pagebuilderModule.directive('pbUpload', function() {
     return {
         restrict:'E',
         scope:{label:'@', status:'=', pbChange:'&'},
-        templateUrl: templatesLocation + '/pbUpload.gsp',
+        templateUrl: '../template/pbUpload.gsp',
         controller: ['$scope', '$element', '$attrs', '$transclude',
             function($scope, $element, $attrs, $transclude) {
                 $scope.complete = function(content, completed) {
