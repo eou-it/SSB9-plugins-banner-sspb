@@ -158,7 +158,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     private def load( String name, InputStream stream, File file, int mode, boolean updateSecurity ) {
         // either name + stream is needed or file
         def pageName = name?name:file.name.substring(0,file.name.lastIndexOf(".json"))
-        pageName = pageName.replace('.','')
+        pageName = pageName.replace('.','_')
         def page = pageService.get(pageName)
         def result = [page: null, statusCode: statusOk, statusMessage: "", loaded: 0]
         def jsonString
