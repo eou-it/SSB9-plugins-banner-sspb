@@ -89,7 +89,7 @@ class VirtualDomainComposerController {
         }else if (params.vdServiceName)  {
             VirtualDomain.withTransaction {
                 def vd = VirtualDomain.find{serviceName==params.vdServiceName}
-                vd.delete(flush:true, failOnError:true)
+                vd.delete(failOnError: true, flush: true)
             }
         }
         render (view:"virtualDomainComposer", model: [pageInstance: null, isProductionReadOnlyMode : developerSecurityService.isProductionReadOnlyMode()])
