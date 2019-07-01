@@ -179,7 +179,7 @@
                               "name": "GotoCSSExport",
                               "replaceView": true,
                               "type": "link",
-                              "url": "{{$$contextRoot}}customPage/page/pbadm_ExportCss"
+                              "url": "{{$$contextRoot}}customPage/page/pbadmExportCss"
                            }
                         ],
                         "label": "",
@@ -207,7 +207,7 @@
                               "replaceView": true,
                               "style": "",
                               "type": "link",
-                              "url": "{{$$contextRoot}}customPage/page/pbadm_AdminTasks",
+                              "url": "{{$$contextRoot}}customPage/page/pbadmAdminTasks",
                               "valueStyle": ""
                            }
                         ],

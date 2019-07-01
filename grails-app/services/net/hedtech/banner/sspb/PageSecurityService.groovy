@@ -12,7 +12,7 @@ import org.omg.CORBA.portable.ApplicationException
 @Log4j
 @Transactional
 class PageSecurityService {
-
+    static transactional = true
     //static final datasource = 'sspb'
     def springSecurityService
 

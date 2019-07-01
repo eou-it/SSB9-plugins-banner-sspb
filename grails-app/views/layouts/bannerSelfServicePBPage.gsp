@@ -149,7 +149,9 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 
         var rootWebApp = "${createLink(uri: '/')}";
         var resourceBase = "${createLink(uri: '/') + grails.util.Holders.config.sspb.apiPath +'/' }";
-        var templatesLocation = "<g:resource plugin="banner-sspb" dir="template" />";
+
+
+        var templatesLocation = "${assetPath(src: 'template')}";
 
         var user = ${raw(PBUser.getTrimmed().encodeAsJSON().decodeHTML())};
 

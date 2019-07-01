@@ -38,7 +38,7 @@ class CssUtilService extends PBUtilServiceBase {
                         //cssStripped.properties['constantName', 'css', 'description'] = css.properties
                         cssStripped.constantName = css.constantName
                         cssStripped.css = css.css
-                        cssStripped.description = css.description
+                        cssStripped.description = css?.description
                         cssStripped.fileTimestamp = new Date()
                         def json = new JSON(cssStripped)
                         def jsonString = json.toString(true)
@@ -120,7 +120,7 @@ class CssUtilService extends PBUtilServiceBase {
             }
             if (doLoad) {
                 css.css = json.css
-                css.description = json.description
+                css.description = json?.description
                 css.fileTimestamp = json2date(json.fileTimestamp)
                 if (file)
                     css.fileTimestamp = new Date(file.lastModified())

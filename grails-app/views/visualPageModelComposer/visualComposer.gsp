@@ -16,7 +16,6 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pbDeveloper.css')}">
     </g:else>
 
-    <r:require modules="pageBuilderDev"/>
 
     <script type="text/javascript">
 
@@ -28,7 +27,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
             });
         });
 
-     var myCustomServices = ['ngResource', 'ui.bootstrap', 'pagebuilder.directives', 'ngMessages', 'extensibility'];
+     var myCustomServices = ['ngResource', 'ui.bootstrap', 'pagebuilder.directives', 'ngMessages'];
 
     // remove additional properties added by Angular resource when pretty print page source
     function JSONFilter(key, value) {
@@ -386,7 +385,8 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         };
 
         $scope.attributeIsTranslatable = function (attr) {
-            var attributes = ${PageComponent.translatableAttributes.encodeAsJSON()};
+
+            var attributes = ${raw(PageComponent.translatableAttributes.encodeAsJSON().decodeHTML())};
             return (attributes.indexOf(attr) != -1); // seems not to work in IE8 - indexOf is added by one of the JS libraries
         };
 
@@ -1003,6 +1003,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 
 </head>
 <body>
+<asset:javascript src="modules/pageBuilderDev-mf.js"/>
 
 <div id="content" ng-controller="VisualPageComposerController" class="customPage container-fluid" ng-form="pagemodelform">
 

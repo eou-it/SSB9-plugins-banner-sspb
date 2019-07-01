@@ -5,9 +5,10 @@ package net.hedtech.banner.virtualDomain
 
 import grails.converters.JSON
 import groovy.util.logging.Log4j
+import net.hedtech.banner.tools.PBUtilServiceBase
 
 @Log4j
-class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
+class VirtualDomainUtilService extends PBUtilServiceBase {
 
     //Used in integration test
     void exportAllToFile(String path) {
