@@ -15,6 +15,7 @@ class PageService {
     def pageSecurityService
     def springSecurityService
 
+    @Transactional(readOnly = true)
     def get(String constantName) {
         Page.findByConstantName(constantName)
     }
@@ -23,6 +24,7 @@ class PageService {
         new Page(constantName:constantName)
     }
 
+    @Transactional(readOnly = true)
     def list(Map params) {
         Map parameter = CommonService.decodeBase64(params)
         params.putAll(parameter);
@@ -67,7 +69,7 @@ class PageService {
         listResult
     }
 
-
+    @Transactional(readOnly = true)
     def count(Map params) {
         log.trace "PageService.count invoked"
         params = extractReqPrams(params)
@@ -84,7 +86,7 @@ class PageService {
 
     }
 
-
+    @Transactional(readOnly = true)
     def show(Map params) {
         if(params && params.containsKey('getGridData')) {
             def returnMap = [

@@ -4,11 +4,15 @@
 package net.hedtech.banner.virtualDomain
 
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import groovy.util.logging.Log4j
 import net.hedtech.banner.tools.PBUtilServiceBase
 
 @Log4j
+@Transactional
 class VirtualDomainUtilService extends PBUtilServiceBase {
+
+    String vdPath = pbConfig.locations.virtualDomain
 
     //Used in integration test
     void exportAllToFile(String path) {
@@ -16,7 +20,7 @@ class VirtualDomainUtilService extends PBUtilServiceBase {
     }
 
     //Export one or more virtual domains to the configured directory
-    void exportToFile(String serviceName, String pageLike=null, String path=pbConfig.locations.virtualDomain, Boolean skipDuplicates=false ) {
+    void exportToFile(String serviceName, String pageLike=null, String path=vdPath, Boolean skipDuplicates=false ) {
         def usedByPageLike
         if (pageLike) {
             def es = new VirtualDomainExportService()
@@ -71,7 +75,7 @@ class VirtualDomainUtilService extends PBUtilServiceBase {
 
 
     //Import/Install Utility
-    int importAllFromDir(String path=pbConfig.locations.virtualDomain, mode=loadIfNew, ArrayList names = null) {
+    int importAllFromDir(String path=vdPath, mode=loadIfNew, ArrayList names = null) {
         bootMsg "Importing updated or new virtual domains from $path."
         def count=0
         try {

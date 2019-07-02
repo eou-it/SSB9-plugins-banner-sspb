@@ -6,15 +6,15 @@ package net.hedtech.banner.virtualDomain
 import grails.gorm.transactions.Transactional
 import net.hedtech.banner.sspb.CommonService
 import org.hibernate.criterion.CriteriaSpecification
-
 import org.hibernate.criterion.Order
 import org.springframework.context.i18n.LocaleContextHolder
 
-@Transactional
+@Transactional(readOnly = false)
 class VirtualDomainService {
 
     static transactional = false //Getting error connection closed without this
 
+    @Transactional(readOnly = true)
     def list(Map params) {
         Map parameter = CommonService.decodeBase64(params)
         params.putAll(parameter);
@@ -66,6 +66,7 @@ class VirtualDomainService {
         result
     }
 
+    @Transactional(readOnly = true)
     def count(Map params) {
         log.trace "PageService.count invoked"
         params = extractReqPrams(params)
@@ -76,6 +77,7 @@ class VirtualDomainService {
         }
     }
 
+    @Transactional(readOnly = true)
     def show(Map params) {
         Map parameter = CommonService.decodeBase64(params)
         params.putAll(parameter);
