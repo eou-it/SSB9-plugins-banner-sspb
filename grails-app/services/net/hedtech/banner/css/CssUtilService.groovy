@@ -4,15 +4,17 @@
 package net.hedtech.banner.css
 
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import groovy.util.logging.Log4j
 import net.hedtech.banner.tools.PBUtilServiceBase
-import org.springframework.transaction.annotation.Transactional
 
 @Log4j
 @Transactional
 class CssUtilService extends PBUtilServiceBase {
 
     def cssService
+
+    def cssPath = pbConfig.locations.css
 
     static Date getTimestamp(String oName, String path=PBUtilServiceBase.pbConfig.locations.css ) {
         def file = new File( "$path/${oName}.json")
@@ -23,7 +25,7 @@ class CssUtilService extends PBUtilServiceBase {
     }
 
     //Export one or more virtual domains to the configured directory
-    void exportToFile(String constantName, String pageLike=null, String path=PBUtilServiceBase.pbConfig.locations.css, Boolean skipDuplicates=false ) {
+    void exportToFile(String constantName, String pageLike=null, String path=cssPath, Boolean skipDuplicates=false ) {
         def usedByPageLike
         if (pageLike) {
             def es = new CssExportService()
@@ -66,7 +68,7 @@ class CssUtilService extends PBUtilServiceBase {
     }
 
     //Import/Install Utility
-    int importAllFromDir(String path=PBUtilServiceBase.pbConfig.locations.css, mode=PBUtilServiceBase.loadIfNew, ArrayList names = null) {
+    int importAllFromDir(String path=cssPath, mode=PBUtilServiceBase.loadIfNew, ArrayList names = null) {
         bootMsg "Importing updated or new css files from $path."
         def count=0
         try {
