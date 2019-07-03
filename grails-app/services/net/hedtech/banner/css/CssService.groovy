@@ -4,16 +4,18 @@
 
 package net.hedtech.banner.css
 
+import grails.gorm.transactions.Transactional
 import net.hedtech.banner.exceptions.ApplicationException
 import net.hedtech.banner.sspb.CommonService
 import org.grails.web.util.WebUtils
 import net.hedtech.banner.service.ServiceBase
 import org.springframework.context.i18n.LocaleContextHolder
 
+@Transactional(readOnly = false)
 class CssService extends ServiceBase {
 
-    static transactional = true
-
+   // static transactional = true
+    @Transactional(readOnly = true)
     def list(Map params) {
 
         log.trace "CssService.list invoked with params $params"
@@ -60,7 +62,7 @@ class CssService extends ServiceBase {
         listResult
     }
 
-
+    @Transactional(readOnly = true)
     def count(Map params) {
         log.trace "CssService.count invoked"
         params = extractReqPrams(params)
@@ -72,7 +74,7 @@ class CssService extends ServiceBase {
 
     }
 
-
+    @Transactional(readOnly = true)
     def show(Map params) {
         Map parameter = CommonService.decodeBase64(params)
         params.putAll(parameter);
