@@ -1,5 +1,5 @@
 //= require modules/min-bannerWeb-mf.js
-//= require modules/angular-mf.js
+//= require modules/angularApp-mf.js
 //= require lib/ng-grid/ng-grid.js
 //= require lib/angular-ui/angular-ui.js
 //= require pbRunDirectives.js
@@ -13,5 +13,3 @@
 //= require about/about.js
 //= require menu/tools-menu.js
 //= require preference/userpreference.js
-
-
