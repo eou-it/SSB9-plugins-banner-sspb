@@ -174,7 +174,7 @@ class PageSecurityService {
         } else {
             if (configAttribute) {
                 rm=new Requestmap (url: url.replace('.',''), configAttribute: configAttribute)
-                rm.save()
+                rm.save(flush:true, failOnError:true)
                 log.debug "Created new Requestmap entry $url : $configAttribute"
             }
         }

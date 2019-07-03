@@ -117,7 +117,7 @@ class PageService {
         def result
         Page.withTransaction {
             // compile first
-            result = compileAndSavePage(content.pageName, content.source, content.extendsPage)
+            result = compileAndSavePage(content.pageName.replace('.',''), content.source, content.extendsPage)
         }
         log.trace "PageService.create returning $result"
         result
