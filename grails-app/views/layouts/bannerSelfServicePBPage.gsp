@@ -1,5 +1,5 @@
 <%--
-Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="net.hedtech.banner.sspb.PBUser;" contentType="text/html;charset=UTF-8" %>
@@ -9,6 +9,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
 <!DOCTYPE html>
 <html lang="${message(code: 'default.language.locale')}" dir="${message(code:'default.language.direction')}">
 <head>
+    <title><g:layoutTitle default="Banner Page Builder"/></title>
     <%
         def infoService = grailsApplication.classLoader.loadClass('net.hedtech.extensibility.InfoService').newInstance()
         def extensibilityInfo = (infoService.getJSON(controllerName, resource(plugin: 'web-app-extensibility', dir: 'html')))
@@ -42,44 +43,7 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
     <meta name="aboutUrl" content="${!aboutServiceUrl ? '' : aboutServiceUrl}"/>
     <meta name="aboutUrlContextPath" content="${request.contextPath}/ssb"/>
     <meta name="contextPath" content="${request.contextPath}"/>
-
-    <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
-        <asset:stylesheet href="modules/pageBuilderRTL-mf.css"/>
-    </g:if>
-    <g:else>
-        <asset:stylesheet href="modules/pageBuilderLTR-mf.css"/>
-    </g:else>
-    <asset:javascript src="modules/jquery-mf.js"/>
-
-    <script type="text/javascript">
-        var extensibilityInfo = ${extensibilityInfo.encodeAsRaw()}
-        window.mepCode='${session.mep}';
-    </script>
-
     <meta name="headerAttributes" content=""/>
-
-    <script type="text/javascript">
-        document.getElementsByName('headerAttributes')[0].content = JSON.stringify({
-            "pageTitle": "<g:layoutTitle/>"
-        });
-    </script>
-
-    <title><g:layoutTitle default="Banner Page Builder"/></title>
-
-
-    <asset:script type="text/javascript">
-
-        var transactionTimeoutMeta    = $( "meta[name=transactionTimeout]" ),
-            transactionTimeoutSeconds = ( transactionTimeoutMeta.length == 1 ? parseInt( transactionTimeoutMeta.attr( "content" ) ) : 30 ),
-            transactionTimeoutPadding = 10 * 1000,
-            transactionTimeoutMilli   = ( transactionTimeoutSeconds * 1000 ) + transactionTimeoutPadding;
-
-        $.ajaxSetup( { timeout: transactionTimeoutMilli } );
-
-    </asset:script>
-    <g:set var="localeLanguage"    value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).language}" scope="page" />
-    <g:set var="localeBrowserFull" value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).toString().replace('_','-')}" scope="page" />
-
 
     <asset:link rel="apple-touch-icon" sizes="57x57" href="eds/apple-touch-icon-57x57.png"/>
     <asset:link rel="apple-touch-icon" sizes="60x60" href="eds/apple-touch-icon-60x60.png"/>
@@ -96,7 +60,25 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
     <asset:link rel="shortcut icon" type="image/png" href="eds/favicon-16x16.png" sizes="16x16"/>
     <asset:link rel="shortcut icon" href="eds/favicon.ico" type="image/x-icon"/>
 
-    <script type="text/javascript">
+    <g:set var="localeLanguage"    value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).language}" scope="page" />
+    <g:set var="localeBrowserFull" value="${org.springframework.web.servlet.support.RequestContextUtils.getLocale(request).toString().replace('_','-')}" scope="page" />
+
+    <asset:deferredScripts/>
+
+    <g:customStylesheetIncludes/>
+
+    <g:if test="${message(code: 'default.language.direction')  == 'rtl'}">
+        <asset:stylesheet href="modules/pageBuilderRTL-mf.css"/>
+    </g:if>
+
+    <g:else>
+        <asset:stylesheet href="modules/pageBuilderLTR-mf.css"/>
+    </g:else>
+    <asset:javascript src="modules/jquery-mf.js"/>
+
+    <g:javascript>
+        var extensibilityInfo = ${extensibilityInfo.encodeAsRaw()}
+        window.mepCode='${session.mep}';
         var rootWebApp = "${createLink(uri: '/')}";
         var resourceBase = "${createLink(uri: '/') + grails.util.Holders.config.sspb.apiPath +'/' }";
         var templatesLocation = "${assetPath(src: 'template')}";
@@ -109,24 +91,34 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         // inject services and controller modules to be registered with the global ng-app
         var myCustomServices = ['ngResource','ngGrid','ui', 'pbrun.directives', 'ngSanitize', 'xe-ui-components'];
         var pageControllers = {};
-    </script>
 
-    <asset:deferredScripts/>
+        var transactionTimeoutMeta    = $( "meta[name=transactionTimeout]" ),
+            transactionTimeoutSeconds = ( transactionTimeoutMeta.length == 1 ? parseInt( transactionTimeoutMeta.attr( "content" ) ) : 30 ),
+            transactionTimeoutPadding = 10 * 1000,
+            transactionTimeoutMilli   = ( transactionTimeoutSeconds * 1000 ) + transactionTimeoutPadding;
 
-    <g:customStylesheetIncludes/>
+        $.ajaxSetup( { timeout: transactionTimeoutMilli } );
+
+          document.getElementsByName('headerAttributes')[0].content = JSON.stringify({
+            "pageTitle": "<g:layoutTitle/>"
+        });
+    </g:javascript>
 
     <g:theme />
     <g:layoutHead />
+
+
 </head>
     <body>
+        <div id="dialogAppDiv"></div>
+        <div id="popupContainerDiv"></div>
         <div ng-app="BannerOnAngular">
             <div id="splash"></div>
             <div id="spinner" class="spinner spinner-img" style="display:none;">
         </div>
-        <div id="dialogAppDiv"></div>
-        <div id="popupContainerDiv"></div>
 
         <asset:javascript src="modules/pageBuilder-mf.js"/>
+
         <asset:script type="text/javascript">
             window.ngGrid.i18n[gridLocale] = {
                 ngAggregateLabel:          '${message(code: 'nggrid.ngAggregateLabel'         , encodeAs: 'JavaScript')}',
@@ -165,6 +157,6 @@ Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
         <asset:deferredScripts/>
 
         <g:customJavaScriptIncludes/>
-        </body>
+    </body>
 </html>
 

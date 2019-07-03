@@ -114,18 +114,18 @@
                     + "&max=" + (query.max ? query.max : "");
 
                 $http.get(url)
-                    .success(function(data) {
-                        deferred.resolve(data);
-                       $scope.postFetch({response: data, oldResult: $scope.content});
-                        $scope.content = data.result;
-                        $scope.resultsFound = data.length;
+                    .then(function(response) {
+                        deferred.resolve(response.data);
+                        $scope.postFetch({response: response.data, oldResult: $scope.content});
+                        $scope.content = response.data.result;
+                        $scope.resultsFound = response.data.length;
                         $timeout(function () {
                             $scope.setFocusOnLoad();
                             angular.element('#nameDataTableSearch').focus();
                         },0);
                     })
-                    .error(function(data) {
-                        deferred.reject(data);
+                    .catch(function(response) {
+                        deferred.reject(response.data);
                     });
 
                 return deferred.promise;
