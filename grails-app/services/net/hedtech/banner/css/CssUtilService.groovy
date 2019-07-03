@@ -9,6 +9,7 @@ import net.hedtech.banner.tools.PBUtilServiceBase
 import org.springframework.transaction.annotation.Transactional
 
 @Log4j
+@Transactional
 class CssUtilService extends PBUtilServiceBase {
 
     def cssService

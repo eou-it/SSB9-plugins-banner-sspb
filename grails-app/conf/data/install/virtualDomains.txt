@@ -9,3 +9,11 @@ pbadmAppliedPageRoles.json
 pbadmSdeTables.json
 pbadmSdeToolCode.json
 pbadmWebAdminRoles.json
+pbadmGenericData.json
+pbadmPageDetails.json
+pbadmArtifactDetails.json
+pbadmUserDetails.json
+pbadmSecurityConfigDetails.json
+pbadmDeveloperSecurityDetails.json
+pbadmDPSArtifactDetails.json
+pbadmGetBusinessProfile.json

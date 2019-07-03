@@ -1030,7 +1030,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
             </span>
         </span>
     </div>
-    
+
     <div class="btn-section-2">
         <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.extends.label" /></label>
         <select id="extendsPage" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'extendsPage'}" name="extendsPage"

@@ -527,7 +527,7 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
             });
             this.modified = [];
             this.deleted.forEach( function(item)  {
-                item.$delete({id:item.id}, successHandler('D'), post.error);
+               item.$delete({id: item.id, item:item}, successHandler('D'), post.error);
             });
             this.deleted = [];
             this.cache.removeAll();
@@ -661,6 +661,10 @@ function dialogPopUp(params) {
 
 };
 
+function updateLocalStorage(name,id) {
+    window.localStorage['pageName'] = name;
+    window.localStorage['pageId'] = id;
+}
 
 appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
     return {
@@ -714,23 +718,26 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
 
             }
             function onLoadEventData(){
+                var pageName = window.localStorage['pageName'];
+                var pageId = window.localStorage['pageId'];
                 var pbDataOptions = $parse(attrs.pbPopupDataGrid)() || {};
-                var searchParams = window.location.search;
-                var reqParams = {};
-                if(searchParams && (pbDataOptions.id == 'vdServiceName' || pbDataOptions.isPbPage== 'true')){
-                    searchParams = searchParams.replace('?','')
-                    reqParams = JSON.parse('{"' + searchParams.replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
-                }
-                if(Object.keys(reqParams).length != 0 && reqParams.name && pbDataOptions.isPbPage== 'true'){
-                    pbPagesChangeEvent(pbDataOptions.id,reqParams.name,reqParams.id)
+
+                if(pageName && pbDataOptions.isPbPage== 'true'){
+                    pbPagesChangeEvent(pbDataOptions.id,pageName,pageId)
                 }
 
-                if(Object.keys(reqParams).length != 0 && reqParams.name && pbDataOptions.isPbPage != 'true' && pbDataOptions.id == 'vdServiceName'){
+                if(pageName && pbDataOptions.isPbPage != 'true' && pbDataOptions.id == 'vdServiceName'){
                     $("#"+pbDataOptions.id+" option:selected").remove();
-                    $("#"+pbDataOptions.id).append("<option label='"+reqParams.name+"' selected='selected' value="+reqParams.name+">"+reqParams.name+"</option>");
+                    $("#"+pbDataOptions.id).append("<option label='"+pageName+"' selected='selected' value="+pageName+">"+pageName+"</option>");
                     $("#LoadVDForm").submit();
                 }
 
+                if(pageName && pbDataOptions.isPbPage != 'true' && pbDataOptions.id == 'constantName'){
+                  scope.pageName = pageName;
+                  scope.getPageSource();
+                }
+
+                updateLocalStorage("","");
             }
 
             element.on('enter',scope.onClickData);

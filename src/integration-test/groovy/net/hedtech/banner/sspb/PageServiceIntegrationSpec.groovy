@@ -1,11 +1,13 @@
 /******************************************************************************
- *  Copyright 2013-2018 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
 import grails.test.spock.IntegrationSpec
 import grails.validation.ValidationException
+import net.hedtech.banner.security.DeveloperSecurityService
+import net.hedtech.restfulapi.AccessDeniedException
 import org.codehaus.groovy.grails.web.json.JSONObject
 
 class PageServiceIntegrationSpec extends IntegrationSpec {
@@ -13,6 +15,9 @@ class PageServiceIntegrationSpec extends IntegrationSpec {
     def pageService
 
     def setup() {
+        pageService.developerSecurityService = Stub(DeveloperSecurityService) {
+            isAllowModify(_,_) >> true
+        }
     }
 
     def cleanup() {
@@ -137,6 +142,66 @@ class PageServiceIntegrationSpec extends IntegrationSpec {
 
     }
 
+    void "Integration test load data grid"() {
+
+        given:
+        org.codehaus.groovy.grails.web.json.JSONObject extendsPage = null
+        Map basePageMap = [pageName   : "stu.base",
+                           source     : '''{
+                                     "type": "page",
+                                     "name": "student",
+                                     "title": "Student Base",
+                                     "scriptingLanguage": "JavaScript",
+                                     "components": null
+                                     }''',
+                           extendsPage: extendsPage]
+        def params = [:]
+
+        when: "page create check"
+        def result = pageService.create(basePageMap, [:])
+        Page basePage = result?.page
+        then: "page  created with not an extension"
+        result.statusCode == 0
+        basePage?.id != null
+        basePage?.constantName == "stu.base"
+        basePage?.extendsPage == null
+        println "Created page ${basePage?.constantName}"
+
+        when: "getGridData show with searchString"
+        params.getGridData = true
+        params.searchString = basePage.constantName
+        def res = pageService.show(params)
+        then: "dataGrid will provide json data with matching data"
+        res!=null
+        res.size() == 2
+        res.result != null || !res.result.isEmpty()
+        res.length == 1
+        res.result.size() == 1
+        res.result[0].constantName == basePage?.constantName
+
+    }
+
+    void "Integration test create when production is on"() {
+        given:
+        pageService.developerSecurityService = Stub(DeveloperSecurityService) {
+            isAllowModify(_,_) >> false
+        }
+        org.codehaus.groovy.grails.web.json.JSONObject extendsPage = null
+        Map basePageMap = [pageName   : "stu.base",
+                           source     : '''{
+                                     "type": "page",
+                                     "name": "student",
+                                     "title": "Student Base",
+                                     "scriptingLanguage": "JavaScript",
+                                     "components": null
+                                     }''',
+                           extendsPage: extendsPage]
+        when: "page create with production mode is on"
+        pageService.create(basePageMap, [:])
+        then: "AccessDeniedException exception will raise"
+        final AccessDeniedException exception = thrown()
+         exception != null
+    }
 
 
 }

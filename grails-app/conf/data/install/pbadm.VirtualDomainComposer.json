@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.VirtualDomainComposer",
    "extendsPage": null,
-   "fileTimestamp": "2018-11-13T11:51:36Z",
+   "fileTimestamp": "2019-04-23T09:16:02Z",
    "modelView": {
       "components": [
          {
@@ -265,6 +265,10 @@
    "pageRoles": [
       {
          "roleName": "ADMIN-GPBADMN",
+         "allow": true
+      },
+      {
+         "roleName": "ADMIN-GPBADMA",
          "allow": true
       }
    ]

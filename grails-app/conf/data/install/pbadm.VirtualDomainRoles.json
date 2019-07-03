@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.VirtualDomainRoles",
    "extendsPage": null,
-   "fileTimestamp": "2019-02-11T13:54:06Z",
+   "fileTimestamp": "2019-05-03T14:45:50Z",
    "modelView": {
       "components": [
          {
@@ -31,7 +31,7 @@
                   "model": "selectVirtualDomain",
                   "name": "selectVirtualDomain",
                   "onLoad": "$editVirtualDomainRoles.$load();$EditRolesForm.$visible=$selectVirtualDomain; $roleName.$populateSource();",
-                  "onUpdate": "$editVirtualDomainRoles.$load();\n$EditRolesForm.$visible=$selectVirtualDomain;\n $roleName.$populateSource();",
+                  "onUpdate": "$editVirtualDomainRoles.$load();\n$EditRolesForm.$visible=$selectVirtualDomain;\n $roleName.$populateSource();\n$allowModify = window.localStorage['allowModify'];\nwindow.localStorage['allowModify'] = \"\";",
                   "placeholder": "Select...",
                   "required": false,
                   "sourceModel": "virtualDomainLookup1",
@@ -44,7 +44,7 @@
                {
                   "label": "Virtual Domain Composer",
                   "name": "virtualDomainComposerButton",
-                  "onClick": "var baseUrl = location.origin; \nvar path = \"/BannerExtensibility/virtualDomainComposer/loadVirtualDomain\";\nvar url = baseUrl + path;\nif($selectVirtualDomain && $CONSTANT_NAME){\nurl = url+'?id='+$selectVirtualDomain+'&name='+$CONSTANT_NAME;\n}\nlocation.assign(url);",
+                  "onClick": "var baseUrl = location.origin; \nvar path = \"/BannerExtensibility/virtualDomainComposer/loadVirtualDomain\";\nvar url = baseUrl + path;\nif($selectVirtualDomain && $CONSTANT_NAME){\nupdateLocalStorage($CONSTANT_NAME, $selectVirtualDomain);\n}\nlocation.assign(url);",
                   "style": "col-sm-6 rTableCell divAlignToRight",
                   "type": "button",
                   "valueStyle": "primary"
@@ -150,6 +150,7 @@
                   "model": "virtualDomainRoles",
                   "name": "editVirtualDomainRoles",
                   "onError": "var errorMessage =response.data.errors? response.data.errors.errorMessage: null;\nif (errorMessage && errorMessage.indexOf(\"ORA-20000\") > -1) {\n  alert(\"An entry already exists for this virtual domain and role, cannot add a duplicate\", {type:\"error\"});\n} else {\n   alert( errorMessage?errorMessage:response.data, {type:\"error\"});\n}",
+                  "onLoad": "setTimeout(function(){ \nif($allowModify === 'true'){\n$('#pbid-EditRolesForm :input').attr('disabled', true);\n$editVirtualDomainRolesGrid.enableCellSelection=false;\n$editVirtualDomainRolesGrid.ngGrid.config.enableRowSelection=false;\n}else {\n$('#pbid-EditRolesForm :input').attr('disabled', false);\n$editVirtualDomainRolesGrid.enableCellSelection=true;\n$editVirtualDomainRolesGrid.ngGrid.config.enableRowSelection=true;\n}\n\n }, 0);",
                   "onSaveSuccess": "var saveAction = \"saved\";\n\nif (action == 'D')\n  {\n    saveAction = \"deleted\";\n  }\nalert( \"Virtual Domain role \" + response.ROLE_NAME  + ' ' + saveAction,{type:\"success\", flash:true});",
                   "pageSize": 5,
                   "parameters": {
@@ -171,6 +172,10 @@
       "type": "page"
    },
    "pageRoles": [
+      {
+         "roleName": "ADMIN-GPBADMA",
+         "allow": true
+      },
       {
          "roleName": "ADMIN-GPBADMN",
          "allow": true

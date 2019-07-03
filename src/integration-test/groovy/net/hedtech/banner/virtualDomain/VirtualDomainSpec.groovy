@@ -6,6 +6,8 @@ package net.hedtech.banner.virtualDomain
 import grails.test.mixin.TestMixin
 import grails.test.mixin.support.GrailsUnitTestMixin
 import grails.util.Holders
+import net.hedtech.banner.i18n.DateConverterService
+import net.hedtech.banner.security.DeveloperSecurityService
 import org.apache.commons.codec.binary.Base64
 import spock.lang.Specification
 
@@ -13,13 +15,16 @@ import spock.lang.Specification
 class VirtualDomainSpec extends Specification {
 
     def params=['url_encoding' :'utf-8' ,
-                'id' : '123456'
+                'id' : '123456',
+                'getGridData':'GridData'
     ]
     def virtualDomainService
     def vd
 
     def setup() {
         virtualDomainService = new VirtualDomainService()
+        virtualDomainService.dateConverterService = new DateConverterService()
+        virtualDomainService.developerSecurityService = new DeveloperSecurityService()
         vd = new VirtualDomain(serviceName: 'testPage', codeGet:
                 'select * from dual', typeOfCode: 'S')
         grails.util.Holders.config.pageBuilder.adminRoles = 'ROLE_GPBADMN_BAN_DEFAULT_PAGEBUILDER_M'

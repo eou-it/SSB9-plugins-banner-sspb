@@ -3,7 +3,7 @@
    "extendsPage": {
       "constantName": "pbadm.ExportBase"
    },
-   "fileTimestamp": "2018-11-13T11:51:35Z",
+   "fileTimestamp": "2019-04-23T09:16:02Z",
    "modelView": {
       "baseRoot": "pbadmExportBase",
       "deltaVersion": "1.0",
@@ -26,9 +26,9 @@
                "ext": "Click to download this CSS file"
             },
             "onClick": {
-               "base": "$exportId=item.serviceName;\n$getExport.$get();",
-               "ext": "$exportId=item.constantName;\n$getExport.$get();",
-               "patch": "--- original\n+++ revised\n@@ -1,2 +1,2 @@\n-$exportId=item.serviceName;\n+$exportId=item.constantName;\n $getExport.$get();"
+               "base": "$exportId=item.serviceName;\n$isAllowExportSecurity=item.isAllowExportDSPermission;\n$getExport.$get();",
+               "ext": "$exportId=item.constantName;\n$isAllowExportSecurity=item.isAllowExportDSPermission;\n$getExport.$get();",
+               "patch": "--- original\n+++ revised\n@@ -1,3 +1,3 @@\n-$exportId=item.serviceName;\n+$exportId=item.constantName;\n $isAllowExportSecurity=item.isAllowExportDSPermission;\n $getExport.$get();"
             }
          },
          "exportGrid": {
@@ -37,9 +37,9 @@
                "ext": "CSS files to export"
             },
             "onSave": {
-               "base": "var exportDone = false; // return false use the default save handler\nif ($exportTarget == 'C')  {\n\tvar count = 0;\n\tfunction getOne(data, index) {\n\t\tif (data.export) {\n\t\t\t$exportId=data.serviceName;\n\t\t\t$getExport.$get();\n\t\t\tcount++;\n\t\t}\n\t}\n\t$exportGrid.$data.forEach( getOne);\n\tconsole.log(\"Started download of\",count,\" files.\");\n\texportDone = true; // well, it is kicked off - the download is started asynch\n}\nreturn exportDone;",
-               "ext": "var exportDone = false; // return false use the default save handler\nif ($exportTarget == 'C')  {\n\tvar count = 0;\n\tfunction getOne(data, index) {\n\t\tif (data.export) {\n\t\t\t$exportId=data.constantName;\n\t\t\t$getExport.$get();\n\t\t\tcount++;\n\t\t}\n\t}\n\t$exportGrid.$data.forEach( getOne);\n\tconsole.log(\"Started download of\",count,\" files.\");\n\texportDone = true; // well, it is kicked off - the download is started asynch\n}\nreturn exportDone;",
-               "patch": "--- original\n+++ revised\n@@ -4,5 +4,5 @@\n \tfunction getOne(data, index) {\n \t\tif (data.export) {\n-\t\t\t$exportId=data.serviceName;\n+\t\t\t$exportId=data.constantName;\n \t\t\t$getExport.$get();\n \t\t\tcount++;"
+               "base": "var exportDone = false; // return false use the default save handler\nif ($exportTarget == 'C')  {\n\tvar count = 0;\n\tfunction getOne(data, index) {\n\t\tif (data.export) {\n\t\t\t$exportId=data.serviceName;\n                       $isAllowExportSecurity = data.isAllowExportDSPermission\n\t\t\t$getExport.$get();\n\t\t\tcount++;\n\t\t}\n\t}\n\t$exportGrid.$data.forEach( getOne);\n\tconsole.log(\"Started download of\",count,\" files.\");\n\texportDone = true; // well, it is kicked off - the download is started asynch\n}\nreturn exportDone;",
+               "ext": "var exportDone = false; // return false use the default save handler\nif ($exportTarget == 'C')  {\n\tvar count = 0;\n\tfunction getOne(data, index) {\n\t\tif (data.export) {\n\t\t\t$exportId=data.constantName;\n                       $isAllowExportSecurity = data.isAllowExportDSPermission\n\t\t\t$getExport.$get();\n\t\t\tcount++;\n\t\t}\n\t}\n\t$exportGrid.$data.forEach( getOne);\n\tconsole.log(\"Started download of\",count,\" files.\");\n\texportDone = true; // well, it is kicked off - the download is started asynch\n}\nreturn exportDone;",
+               "patch": "--- original\n+++ revised\n@@ -4,5 +4,5 @@\n \tfunction getOne(data, index) {\n \t\tif (data.export) {\n-\t\t\t$exportId=data.serviceName;\n+\t\t\t$exportId=data.constantName;\n                        $isAllowExportSecurity = data.isAllowExportDSPermission\n \t\t\t$getExport.$get();"
             },
             "onSaveSuccess": {
                "base": "if (response.export == \"1\") {\n  alert( \"Exported virtual domain: \" + response.serviceName, {flash: true});\n}",
@@ -81,6 +81,18 @@
                "ext": "constantName"
             }
          },
+         "isAllowExportDSPermission": {
+            "label": {
+               "base": "isAllowExportDSPermission",
+               "ext": "Export Current Permissions"
+            }
+         },
+         "owner": {
+            "label": {
+               "base": "owner",
+               "ext": "Css Owner"
+            }
+         },
          "pbadmExportBase": {
             "_name": {
                "base": "pbadmExportBase",
@@ -104,6 +116,10 @@
    "pageRoles": [
       {
          "roleName": "ADMIN-GPBADMN",
+         "allow": true
+      },
+      {
+         "roleName": "ADMIN-GPBADMA",
          "allow": true
       }
    ]

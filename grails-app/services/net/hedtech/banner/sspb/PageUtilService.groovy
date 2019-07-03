@@ -5,12 +5,14 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import grails.util.Holders
 import groovy.util.logging.Log4j
 import net.hedtech.banner.tools.PBUtilServiceBase
 import net.hedtech.banner.tools.i18n.SortedProperties
 
 @Log4j
+@Transactional
 class PageUtilService extends PBUtilServiceBase {
     def pageService
     def pageSecurityService
@@ -21,7 +23,7 @@ class PageUtilService extends PBUtilServiceBase {
     def static final actionImportInitally = 1
     def static final bundleLocation = getBundleLocation()
     def static final bundleName = "pageBuilder"
-
+    String pagePath = pbConfig.locations.page
     def currentAction = null
 
     def static getBundleLocation() {
@@ -36,7 +38,7 @@ class PageUtilService extends PBUtilServiceBase {
     }
 
     //Export one or more pages to the configured directory
-    void exportToFile(String pageName, String path=pbConfig.locations.page, Boolean skipDuplicates=false ) {
+    void exportToFile(String pageName, String path=pagePath, Boolean skipDuplicates=false ) {
         Page.findAllByConstantNameLike(pageName).each { page ->
             if (skipDuplicates && page.constantName.endsWith(".bak")) {
                 log.info message(code: "sspb.pageutil.export.skipDuplicate.message", args: [page.constantName])
@@ -84,7 +86,7 @@ class PageUtilService extends PBUtilServiceBase {
     }
 
     //Import/Install Utility
-    int importAllFromDir(String path=pbConfig.locations.page, mode=loadIfNew, ArrayList names = null, boolean updateSecurity = false) {
+    int importAllFromDir(String path=pagePath, mode=loadIfNew, ArrayList names = null, boolean updateSecurity = false) {
         importAllFromDir(path, mode, false, names, updateSecurity)
     }
 

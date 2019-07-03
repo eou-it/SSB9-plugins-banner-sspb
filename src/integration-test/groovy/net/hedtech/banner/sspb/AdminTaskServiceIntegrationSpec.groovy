@@ -1,10 +1,13 @@
 package net.hedtech.banner.sspb
 
 import grails.test.spock.IntegrationSpec
+import net.hedtech.banner.security.DeveloperSecurityService
 
 class AdminTaskServiceIntegrationSpec extends IntegrationSpec {
 
     def adminTaskService
+    def pbConfig = grails.util.Holders.getConfig().pageBuilder
+
 
     def artifactFiles = [
               "test/testData/model/PageModel1.json"
@@ -17,6 +20,22 @@ class AdminTaskServiceIntegrationSpec extends IntegrationSpec {
     def artifacts = []
 
     def setup() {
+        adminTaskService.developerSecurityService =  Stub(DeveloperSecurityService) {
+            getImportConfigValue() >> false
+            isAllowImport(_,_) >> true
+        }
+        adminTaskService.pageUtilService.developerSecurityService = adminTaskService.developerSecurityService
+        adminTaskService.cssUtilService.developerSecurityService = adminTaskService.developerSecurityService
+        adminTaskService.virtualDomainUtilService.developerSecurityService = adminTaskService.developerSecurityService
+        if(!pbConfig.locations.css){
+            pbConfig.locations.css = 'target/testData/css'
+        }
+        if(!pbConfig.locations.page){
+            pbConfig.locations.page = 'target/testData/model'
+        }
+        if(!pbConfig.locations.virtualDomain){
+            pbConfig.locations.virtualDomain = 'target/testData/virtualDomain'
+        }
         Map content
         artifactFiles.eachWithIndex { fname, idx ->
             content = [
