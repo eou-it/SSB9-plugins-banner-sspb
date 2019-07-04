@@ -1022,7 +1022,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         <span ng-hide="pageCurName == pageName && !saveAs">
             <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.name.label" /></label>
             <input id="saveAsInput" class="vpc-name-input" type="text" name="constantNameEdit" ng-model="pageCurName" required maxlength="60"
-                placeholder='<g:message code="sspb.page.visualbuilder.new.page.label" />' ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/">
+                placeholder='<g:message code="sspb.page.visualbuilder.new.page.label" />' ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\_-]*$/">
 
             <span ng-messages="pagemodelform.constantNameEdit.$error" role="alert" class="fieldValidationMessage">
                 <span ng-message="pattern" ><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" /></span>
@@ -1030,7 +1030,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
             </span>
         </span>
     </div>
-    
+
     <div class="btn-section-2">
         <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.extends.label" /></label>
         <select id="extendsPage" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'extendsPage'}" name="extendsPage"

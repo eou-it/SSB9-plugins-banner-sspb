@@ -1,0 +1,25 @@
+{
+   "codePut": "BEGIN\r\nIF :SOURCE_TYPE = 'P' THEN\r\nUPDATE GBRPSEC SET GBRPSEC_DEVELOPER_USER_ID= :USER, GBRPSEC_ALLOW_MODIFY_IND=:ALLOW_MODIFY WHERE GBRPSEC_SURROGATE_ID = :SURR_ID;\r\nEND IF;\r\nIF :SOURCE_TYPE = 'V' THEN\r\nUPDATE GBRVSEC SET GBRVSEC_DEVELOPER_USER_ID= :USER, GBRVSEC_ALLOW_MODIFY_IND=:ALLOW_MODIFY WHERE GBRVSEC_SURROGATE_ID = :SURR_ID;\r\nEND IF;\r\nIF :SOURCE_TYPE = 'C' THEN\r\nUPDATE GBRCSEC SET GBRCSEC_DEVELOPER_USER_ID= :USER, GBRCSEC_ALLOW_MODIFY_IND=:ALLOW_MODIFY WHERE GBRCSEC_SURROGATE_ID = :SURR_ID;\r\nEND IF;\r\ncommit;\r\nEND;",
+   "codeDelete": "BEGIN\r\nIF :SOURCE_TYPE = 'P' THEN\r\nDELETE GBRPSEC WHERE GBRPSEC_SURROGATE_ID = :SURR_ID;\r\nEND IF;\r\nIF :SOURCE_TYPE = 'V' THEN\r\nDELETE GBRVSEC WHERE GBRVSEC_SURROGATE_ID = :SURR_ID;\r\nEND IF;\r\nIF :SOURCE_TYPE = 'C' THEN\r\nDELETE GBRCSEC WHERE GBRCSEC_SURROGATE_ID = :SURR_ID;\r\nEND IF;\r\ncommit;\r\nEND;",
+   "virtualDomainRoles": [
+      {
+         "allowDelete": true,
+         "allowPost": true,
+         "allowPut": true,
+         "roleName": "ADMIN-GPBADMN",
+         "allowGet": true
+      },
+      {
+         "allowDelete": true,
+         "allowPost": true,
+         "allowPut": true,
+         "roleName": "ADMIN-GPBADMA",
+         "allowGet": true
+      }
+   ],
+   "codeGet": "select * from (\r\nselect GBRCSEC_DEVELOPER_USER_ID as \"USER\", GBRCSEC_ALLOW_MODIFY_IND AS \"ALLOW_MODIFY\", GBRCSEC_TYPE as \"USER_TYPE\", 'C' AS \"SOURCE_TYPE\" , GBRCSEC_CSS_ID as \"ID\", GBRCSEC_SURROGATE_ID as \"SURR_ID\" FROM GBRCSEC\r\nunion\r\nselect GBRPSEC_DEVELOPER_USER_ID as \"USER\", GBRPSEC_ALLOW_MODIFY_IND AS \"ALLOW_MODIFY\", GBRPSEC_TYPE as \"USER_TYPE\", 'P' AS \"SOURCE_TYPE\", GBRPSEC_PAGE_ID as \"ID\", GBRPSEC_SURROGATE_ID as \"SURR_ID\"  FROM GBRPSEC\r\nunion\r\nselect GBRVSEC_DEVELOPER_USER_ID as \"USER\", GBRVSEC_ALLOW_MODIFY_IND AS \"ALLOW_MODIFY\", GBRVSEC_TYPE as \"USER_TYPE\", 'V' AS \"SOURCE_TYPE\", GBRVSEC_DOMAIN_ID as \"ID\", GBRVSEC_SURROGATE_ID as \"SURR_ID\" FROM GBRVSEC) \r\nWHERE \r\nSOURCE_TYPE = :type and ID= :id and USER_TYPE =:usertype",
+   "typeOfCode": "S",
+   "fileTimestamp": "2019-05-03T14:46:56Z",
+   "serviceName": "pbadmDeveloperSecurityDetails",
+   "codePost": "declare\r\nlv_exists varchar(1);\r\nBEGIN\r\nIF :SOURCE_TYPE = 'P' THEN\r\n        begin\r\n                select 1\r\n                into lv_exists\r\n                from dual \r\n                where exists(\r\n                select null\r\n                from gbrpsec\r\n                where gbrpsec_page_id= :GBRPSEC_PAGE_ID\r\n                and gbrpsec_developer_user_id= :GBRPSEC_DEVELOPER_USER_ID\r\n                );\r\n                        EXCEPTION \r\n        WHEN NO_DATA_FOUND THEN\r\n        lv_exists := null;\r\n        END;\r\n                if lv_exists IS NOT NULL then\r\n        raise_application_error(-20000,'An entry already exists for this page and role');\r\n        end if;\r\nINSERT INTO GBRPSEC(GBRPSEC_ALLOW_MODIFY_IND, GBRPSEC_DEVELOPER_USER_ID, GBRPSEC_PAGE_ID, GBRPSEC_TYPE, GBRPSEC_ACTIVITY_DATE, GBRPSEC_USER_ID) values (:ALLOW_MODIFY, :USER, :id , :USER_TYPE , sysdate, :OWNER);\r\nEND IF;\r\n\r\nIF :SOURCE_TYPE = 'V' THEN\r\n begin\r\n                select 1\r\n                into lv_exists\r\n                from dual \r\n                where exists(\r\n                select null\r\n                from gbrvsec\r\n                where gbrvsec_domain_id= :GBRVSEC_DOMAIN_ID\r\n                and gbrvsec_developer_user_id= :GBRVSEC_DEVELOPER_USER_ID\r\n                );\r\n                        EXCEPTION \r\n        WHEN NO_DATA_FOUND THEN\r\n        lv_exists := null;\r\n        END;\r\n                if lv_exists IS NOT NULL then\r\n        raise_application_error(-20000,'An entry already exists for this page and role');\r\n        end if;\r\nINSERT INTO GBRVSEC(GBRVSEC_ALLOW_MODIFY_IND, GBRVSEC_DEVELOPER_USER_ID, GBRVSEC_DOMAIN_ID, GBRVSEC_TYPE, GBRVSEC_ACTIVITY_DATE, GBRVSEC_USER_ID) values (:ALLOW_MODIFY, :USER, :id , :USER_TYPE , sysdate, :OWNER);\r\nEND IF;\r\n\r\nIF :SOURCE_TYPE = 'C' THEN\r\n begin\r\n                select 1\r\n                into lv_exists\r\n                from dual \r\n                where exists(\r\n                select null\r\n                from gbrcsec\r\n                where gbrcsec_css_id= :GBRCSEC_CSS_ID\r\n                and gbrcsec_developer_user_id= :GBRCSEC_DEVELOPER_USER_ID\r\n                );\r\n                        EXCEPTION \r\n        WHEN NO_DATA_FOUND THEN\r\n        lv_exists := null;\r\n        END;\r\n                if lv_exists IS NOT NULL then\r\n        raise_application_error(-20000,'An entry already exists for this page and role');\r\n        end if;\r\nINSERT INTO GBRCSEC(GBRCSEC_ALLOW_MODIFY_IND, GBRCSEC_DEVELOPER_USER_ID, GBRCSEC_CSS_ID, GBRCSEC_TYPE, GBRCSEC_ACTIVITY_DATE, GBRCSEC_USER_ID) values (:ALLOW_MODIFY, :USER, :id, :USER_TYPE , sysdate, :OWNER);\r\nEND IF;\r\ncommit;\r\nEND;"
+}

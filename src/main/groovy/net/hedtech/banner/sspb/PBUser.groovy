@@ -4,6 +4,7 @@
 package net.hedtech.banner.sspb
 
 import grails.util.Holders
+import net.hedtech.banner.security.DeveloperSecurityService
 import org.grails.plugins.web.taglib.ValidationTagLib
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
@@ -11,7 +12,7 @@ import org.apache.commons.logging.LogFactory
 
 // Integration with Banner - class to get user object for page builder
 // Define a user object with relevant attributes from the Banner user
-public class PBUser {
+class PBUser {
 
     static def userNameCache
     static def userCache
@@ -37,10 +38,11 @@ public class PBUser {
                 }
             }
             userCache = [authenticated:  true, pidm: userIn.pidm,gidm: userIn.gidm, loginName: userIn.username, fullName: userIn.fullName,
-                    authorities: authorities]
+                         oracleUserName:userIn?.oracleUserName?.toUpperCase()?:'',  authorities: authorities]
 
         } else {
             userCache = [authenticated: false, pidm: null, gidm: null,  loginName: userIn?userIn?.username:"_anonymousUser",
+                         oracleUserName:'',
                          fullName: localizer(code:"sspb.renderer.page.anonymous.full.name"),authorities: authorities]
         }
         //give user guest role to be consistent with ability to view pages with IS_AUTHENTICATED_ANONYMOUSLY role
@@ -55,7 +57,9 @@ public class PBUser {
         def user = PBUser.get()
         def userInfo =
                 [authenticated:  user.authenticated,
-                 loginName: user.loginName, fullName: user.fullName ]
+                 loginName: user.loginName, fullName: user.fullName,
+                 oracleUserName:user?.oracleUserName,
+                 isSuperUser: DeveloperSecurityService.isSuperUser()]
         boolean isEnabled = Holders.config?.pageBuilder?.development?.authorities?.enabled
         if(isEnabled){
             userInfo<<[authorities: user.authorities]

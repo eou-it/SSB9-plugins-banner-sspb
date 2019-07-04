@@ -173,5 +173,12 @@ div[ng-grid] {
     text-align: right;
 }
 
+/* validation */
+input.ng-invalid.ng-touched, input.ng-invalid.ng-invalid-maxlength {
+    background-color: #FFFFFF;
+    color: #151618 !important;
+    border: 1px solid #FF3030 !important;
+}
+
 
 

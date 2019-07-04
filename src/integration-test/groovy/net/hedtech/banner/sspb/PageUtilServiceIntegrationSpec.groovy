@@ -1,11 +1,12 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ * Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
 import grails.test.spock.IntegrationSpec
+import net.hedtech.banner.security.DeveloperSecurityService
 
 class PageUtilServiceIntegrationSpec extends IntegrationSpec {
 
@@ -14,6 +15,10 @@ class PageUtilServiceIntegrationSpec extends IntegrationSpec {
     def sourcePath = "test/testData/model"
 
     def setup() {
+        pageUtilService.developerSecurityService =  Stub(DeveloperSecurityService) {
+            getImportConfigValue() >> false
+            isAllowImport(_,_) >> true
+        }
         // Setup logic here
         new File(workPath).mkdirs()
         new File(workPath).eachFileMatch(~/.*.json.*/) { file ->

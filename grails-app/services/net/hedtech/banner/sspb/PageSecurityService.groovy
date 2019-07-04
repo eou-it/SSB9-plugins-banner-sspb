@@ -196,8 +196,6 @@ class PageSecurityService {
                 InterceptedUrl iu = new InterceptedUrl(interceptMapping.key, accessList,method)
                 Holders.config.grails.plugin.springsecurity.interceptUrlMap?.add(iu)
                 data.add(iu)
-            }else {
-                log.error("Key is =${interceptMapping?.key} and Value is =${interceptMapping?.value?.configAttribute} in invalid for interceptUrlMap.")
             }
         }
     }

@@ -1,16 +1,25 @@
 /******************************************************************************
- *  Copyright 2013-2018 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
 import grails.test.spock.IntegrationSpec
+import net.hedtech.banner.security.DeveloperSecurityService
 
 class PageExportServiceIntegrationSpec extends IntegrationSpec {
     def pageExportService
     def pageService
 
     def testPage
+    def pbConfig = grails.util.Holders.getConfig().pageBuilder
+
     def setup() {
+        if(!pbConfig.locations.page){
+            pbConfig.locations.page = 'target/testData/model'
+        }
+        pageService.developerSecurityService = Stub(DeveloperSecurityService) {
+            isAllowModify(_,_) >> true
+        }
         Map pageMap = [pageName: "integrationTestPage",
                            source: '''{
                                      "type": "page",

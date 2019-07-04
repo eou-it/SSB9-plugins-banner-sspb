@@ -4,15 +4,15 @@
 
 package net.hedtech.banner.virtualDomain
 
+import net.hedtech.banner.security.VirtualDomainSecurity
 import net.hedtech.banner.sspb.CommonService
 import net.hedtech.banner.sspb.Page
 import net.hedtech.banner.sspb.PageComponent
-import org.apache.commons.codec.binary.Base64
 import org.hibernate.criterion.CriteriaSpecification
 
 class VirtualDomainExportService {
     static transactional = false //Getting error connection closed without this
-
+    def dateConverterService
     def normalizeSortBy = { sortBy ->
         def result = []
         if (sortBy) {
@@ -39,6 +39,11 @@ class VirtualDomainExportService {
     def show(params) {
         Map parameter = CommonService.decodeBase64(params)
         params.putAll(parameter);
+        if(params.id && params.id.contains('^')){
+            params.isAllowExportDSPermission = params.id?.substring(params.id?.length()-1,params.id?.length())
+            params.id = params.id?.substring(0,params.id?.length()-2)
+        }
+
         def vd
         if (params.id && params.id.matches("[0-9]+")) {
             vd = VirtualDomain.get(params.id )
@@ -54,6 +59,15 @@ class VirtualDomainExportService {
         vdExport = vd.properties['serviceName', 'typeOfCode', 'dataSource',
                 'codeGet', 'codePost', 'codePut', 'codeDelete', 'fileTimestamp']
         vdExport.virtualDomainRoles = vdRoles
+        vdExport.developerSecurity = []
+        vdExport.owner = null
+        if(vd && params.isAllowExportDSPermission && "Y".equalsIgnoreCase(params.isAllowExportDSPermission)){
+            vdExport.owner = vd.owner
+            VirtualDomainSecurity.fetchAllByVirtualDomainId(vd.id)?.each{ vs ->
+                vdExport.developerSecurity << [type:vs.type, name:vs.id.developerUserId,allowModify:vs.allowModifyInd]
+            }
+        }
+
         vdExport
     }
 
@@ -95,8 +109,15 @@ class VirtualDomainExportService {
                 property("lastUpdated","lastUpdated")
                 property("fileTimestamp","fileTimestamp")
                 property("version","version")
+                property("owner","owner")
             }
         }
+        result?.each{
+            it.lastUpdated = it.lastUpdated? dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated) : ''
+            it.fileTimestamp = it.fileTimestamp? dateConverterService.parseGregorianToDefaultCalendar(it.fileTimestamp) : ''
+            it.isAllowExportDSPermission = 'N'
+        }
+
         result
     }
 
@@ -105,7 +126,7 @@ class VirtualDomainExportService {
         def result
         if (content.export == 1) {
             def vdUtilService = new VirtualDomainUtilService()
-            vdUtilService.exportToFile(content.serviceName)
+            vdUtilService.exportToFile(content)
             result = content
         }
         result
