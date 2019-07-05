@@ -129,7 +129,9 @@ div[ng-grid] {
     display: inline-block;
     float: left;
 }
-
+#popupContainerDiv .table-container .caption caption {
+    line-height: 0;
+}
 #popupContainerDiv .pagination-container  {
     direction: ltr;
 }

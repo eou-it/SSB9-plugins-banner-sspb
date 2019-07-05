@@ -23,4 +23,3 @@
 //= require jquery-plugins/jquery.simplemodal-1.4.1.js
 //= require jquery-plugins/jquery.jeditable.datepicker.js
 //= require modules/aurora-common-mf.js
-//= require extensibility-common/xe-common.js

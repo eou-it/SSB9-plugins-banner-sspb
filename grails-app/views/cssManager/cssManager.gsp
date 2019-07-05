@@ -16,10 +16,9 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         <link rel="stylesheet" href="${resource(plugin: 'banner-sspb', dir: 'css', file: 'pbDeveloper.css')}">
     </g:else>
 
-    <r:require modules="pageBuilderDev"/>
 
     <script type="text/javascript">
-        var myCustomServices = ['ngResource', 'ui.bootstrap', 'pagebuilder.directives', 'ngUpload', 'ngMessages', 'extensibility'];
+        var myCustomServices = ['ngResource', 'ui.bootstrap', 'pagebuilder.directives', 'ngUpload', 'ngMessages'];
         pageControllers["CssManagerController"] = function ( $scope, $http, $resource, $parse) {
             // upload status callback
             $scope.foo = "Hello!";
@@ -253,8 +252,8 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
     </script>
 </head>
 <body>
-<div id="content" ng-controller="CssManagerController" class="customPage container-fluid cssPage">
-
+    <asset:javascript src="modules/pageBuilderDev-mf.js"/>
+    <div id="content" ng-controller="CssManagerController" class="customPage container-fluid cssPage">
     <div class="btn-section">
         <label><g:message code="sspb.css.cssManager.load.label" /></label>
         <select id="cssConstantName" name="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'csses','id':'cssConstantName'}"
