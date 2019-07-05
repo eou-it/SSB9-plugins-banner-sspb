@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2013-2017 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 package net.hedtech.banner.css
 
@@ -11,6 +11,8 @@ class CssUtilService extends PBUtilServiceBase {
 
     def cssService
 
+    def cssPath = pbConfig.locations.css
+
     static Date getTimestamp(String oName, String path=PBUtilServiceBase.pbConfig.locations.css ) {
         def file = new File( "$path/${oName}.json")
         Date result
@@ -20,7 +22,7 @@ class CssUtilService extends PBUtilServiceBase {
     }
 
     //Export one or more virtual domains to the configured directory
-    void exportToFile(String constantName, String pageLike=null, String path=PBUtilServiceBase.pbConfig.locations.css, Boolean skipDuplicates=false ) {
+    void exportToFile(String constantName, String pageLike=null, String path=cssPath, Boolean skipDuplicates=false ) {
         def usedByPageLike
         if (pageLike) {
             def es = new CssExportService()
@@ -64,7 +66,7 @@ class CssUtilService extends PBUtilServiceBase {
     }
 
     //Import/Install Utility
-    int importAllFromDir(String path=PBUtilServiceBase.pbConfig.locations.css, mode=PBUtilServiceBase.loadIfNew, ArrayList names = null) {
+    int importAllFromDir(String path=cssPath, mode=PBUtilServiceBase.loadIfNew, ArrayList names = null) {
         bootMsg "Importing updated or new css files from $path."
         def count=0
         try {
