@@ -3,9 +3,11 @@
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
+import grails.gorm.transactions.Transactional
 import net.hedtech.banner.security.PageSecurity
 import org.hibernate.criterion.CriteriaSpecification
 
+@Transactional(readOnly = true)
 class PageExportService {
     static transactional = false  //Getting error connection closed without this
     def dateConverterService

@@ -93,6 +93,10 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                     if (!r)
                         return;
                 }
+
+                if(!$scope.cssName){
+                    $scope.cssName = document.getElementById('cssConstantName').value;
+                }
                 Css.get({constantName:$scope.cssName}, function (data){
                     try {
                         //$scope.cssSource = JSON.parse(data.css);
@@ -259,6 +263,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         <select id="cssConstantName" name="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'csses','id':'cssConstantName'}"
                 ng-model="cssName"
                 ng-change="getCssSource()">
+            <option label="{{cssName}}" value="{{cssName}}">{{cssName}}</option>
         </select>
 
         <button class="secondary" ng-click='loadCssNames()' ng-show="false" ><g:message code="sspb.css.cssManager.reload.pages.label" /></button>

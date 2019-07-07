@@ -4,11 +4,13 @@
 
 package net.hedtech.banner.css
 
+import grails.gorm.transactions.Transactional
 import net.hedtech.banner.security.CssSecurity
 import net.hedtech.banner.sspb.CommonService
 import net.hedtech.banner.sspb.Page
 import org.hibernate.criterion.CriteriaSpecification
 
+@Transactional(readOnly = true)
 class CssExportService {
     static transactional = false  //Getting error connection closed without this
     def dateConverterService

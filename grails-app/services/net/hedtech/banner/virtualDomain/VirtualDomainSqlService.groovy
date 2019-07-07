@@ -4,17 +4,17 @@
 package net.hedtech.banner.virtualDomain
 
 import grails.gorm.transactions.Transactional
+import groovy.json.JsonSlurper
 import groovy.sql.Sql
-import groovy.transform.*
 import groovy.util.logging.Log4j
 import net.hedtech.banner.sspb.PBUser
+import net.hedtech.banner.sspb.Page
 import net.hedtech.restfulapi.AccessDeniedException
 
 import java.sql.SQLException
-import net.hedtech.banner.sspb.Page
 
 @Log4j
-@Transactional
+@Transactional(readOnly = false)
 class VirtualDomainSqlService {
 
     def sessionFactory    //injected by Spring
@@ -65,9 +65,22 @@ class VirtualDomainSqlService {
         }
     }
 
+    private def addParams(params){
+        def paramData = params.item
+        def parser = new JsonSlurper()
+        def json = parser.parseText(paramData)
+        json.each{k,v ->
+            try {
+                params.put(k, v)
+            }
+            catch (RuntimeException e) {
+                log.error "Exception adding params:", e
+            }
+        }
+    }
     /* Check the user roles against the virtual domain roles
      */
-    @Memoized
+   // @Memoized
     private def userAccessRights (vd, userRoles) {
         def result=[get: false, put: false, post: false, delete: false, debug: false ]
         String debugRoles = grailsApplication.config.pageBuilder.debugRoles?:""
@@ -175,6 +188,7 @@ class VirtualDomainSqlService {
     refactoring pagination to restrict in the sql layer
 
     */
+    @Transactional(readOnly = true)
     def get(vd, params) {
         def parameters = getNormalized(params) // some tweaks and work arounds
         addUser(parameters)
@@ -236,6 +250,7 @@ class VirtualDomainSqlService {
         return [error: errorMessage, rows:rows, totalCount: rows?.size(), debug: parameters.debug]
     }
 
+    @Transactional(readOnly = true)
     def count(vd, params) {
         def parameters = getNormalized(params) // some tweaks and work arounds
         addUser(parameters)
@@ -301,6 +316,9 @@ class VirtualDomainSqlService {
     def create(vd, params, data) {
         def parameters = params
         addUser(parameters)
+        if(data.ID){
+            data.id = data.ID
+        }
         data = prepareData(data, parameters)
         def privs=userAccessRights(vd, parameters.parm_user_authorities)
         if (!privs.post){
@@ -329,6 +347,9 @@ class VirtualDomainSqlService {
         if (!privs.delete){
             throw new AccessDeniedException("user.not.authorized.delete",["${parameters.parm_user_loginName} "])
             //throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
+        }
+        if(params.item){
+            addParams(params)
         }
         parameters.id = urlPathDecode(parameters.id)
         def sql
@@ -426,9 +447,11 @@ class VirtualDomainSqlService {
         for ( row in rows )  {
             for (col in row ) {
                 if (col.value.getClass().getName().endsWith("CLOB")) {
-                    String s = getStringValue(col.value)
-                    col.value = s
-                    foundClob = true
+                    if (col.value instanceof java.sql.Clob) {
+                        String s = getStringValue(col.value)
+                        col.value = s
+                        foundClob = true
+                    }
                 }
             }
             if (!foundClob)
@@ -438,7 +461,7 @@ class VirtualDomainSqlService {
     }
 
     // For CLOB support. Based on code found on forum.springsource.org
-    private String getStringValue(def c) {
+    private String getStringValue(java.sql.Clob c) {
         if (c != null) {
             BufferedReader reader = new BufferedReader(c.getCharacterStream())
             try {

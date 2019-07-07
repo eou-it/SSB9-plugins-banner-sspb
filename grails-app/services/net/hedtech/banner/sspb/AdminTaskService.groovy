@@ -4,8 +4,10 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import net.hedtech.banner.tools.PBUtilServiceBase
 
+@Transactional
 class AdminTaskService {
 
     def pageUtilService
