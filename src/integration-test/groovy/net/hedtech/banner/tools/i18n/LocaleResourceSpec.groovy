@@ -4,9 +4,10 @@
 
 package net.hedtech.banner.tools.i18n
 
-import grails.test.spock.IntegrationSpec
 
-class LocaleResourceSpec extends IntegrationSpec {
+import spock.lang.Specification
+
+class LocaleResourceSpec extends Specification {
 
     void "Integration test importExisting for datepicker resources"() {
         expect:

@@ -3,11 +3,12 @@
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
-import grails.test.spock.IntegrationSpec
+
 import net.hedtech.banner.css.Css
 import net.hedtech.banner.security.DeveloperSecurityService
+import spock.lang.Specification
 
-class CssUtilServiceIntegrationSpec extends IntegrationSpec {
+class CssUtilServiceIntegrationSpec extends Specification {
 
     def cssUtilService
     def css

@@ -5,10 +5,10 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
-import grails.test.spock.IntegrationSpec
 import net.hedtech.banner.security.DeveloperSecurityService
+import spock.lang.Specification
 
-class PageUtilServiceIntegrationSpec extends IntegrationSpec {
+class PageUtilServiceIntegrationSpec extends Specification {
 
     def pageUtilService
     def workPath = "target/testData/model"

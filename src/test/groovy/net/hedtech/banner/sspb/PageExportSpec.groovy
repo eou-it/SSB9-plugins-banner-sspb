@@ -3,11 +3,11 @@
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
-import grails.test.mixin.TestFor
-import spock.lang.*
+import grails.testing.gorm.DomainUnitTest
+import spock.lang.Specification
+import spock.lang.Unroll
 
-@TestFor(Page)
-class PageExportSpec extends Specification {
+class PageExportSpec extends Specification implements DomainUnitTest<Page> {
 
     @Unroll
     def "Test Constructor PageExport"() {

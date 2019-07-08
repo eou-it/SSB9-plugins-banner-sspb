@@ -4,11 +4,11 @@
 package net.hedtech.banner.virtualDomain
 
 
-import grails.test.spock.IntegrationSpec
 import net.hedtech.banner.security.DeveloperSecurityService
 import spock.lang.Shared
+import spock.lang.Specification
 
-class VirtualDomainComposerControllerIntegrationSpec extends IntegrationSpec  {
+class VirtualDomainComposerControllerIntegrationSpec extends Specification  {
     @Shared  VirtualDomainComposerController vdController = new VirtualDomainComposerController()
 
 

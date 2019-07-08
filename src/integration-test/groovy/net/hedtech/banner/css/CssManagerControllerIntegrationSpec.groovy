@@ -3,13 +3,12 @@
  ******************************************************************************/
 package net.hedtech.banner.css
 
-import grails.test.spock.IntegrationSpec
+
 import net.hedtech.banner.security.DeveloperSecurityService
-
-import java.io.File
 import org.springframework.mock.web.MockMultipartFile
+import spock.lang.Specification
 
-class CssManagerControllerIntegrationSpec extends IntegrationSpec {
+class CssManagerControllerIntegrationSpec extends Specification {
     def cssDirPath   = "target/testData/css"
     def cssString = "body {color: red;}"
     def setup() {

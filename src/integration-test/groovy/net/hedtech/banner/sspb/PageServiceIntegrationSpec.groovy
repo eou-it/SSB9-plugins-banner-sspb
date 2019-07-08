@@ -4,13 +4,13 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
-import grails.test.spock.IntegrationSpec
 import grails.validation.ValidationException
 import net.hedtech.banner.security.DeveloperSecurityService
 import net.hedtech.restfulapi.AccessDeniedException
-import org.codehaus.groovy.grails.web.json.JSONObject
+import org.grails.web.json.JSONObject
+import spock.lang.Specification
 
-class PageServiceIntegrationSpec extends IntegrationSpec {
+class PageServiceIntegrationSpec extends Specification {
 
     def pageService
 
@@ -25,7 +25,7 @@ class PageServiceIntegrationSpec extends IntegrationSpec {
 
     void "Integration test create page and extension"() {
         given:
-        org.codehaus.groovy.grails.web.json.JSONObject extendsPage = null
+        JSONObject extendsPage = null
         Map basePageMap = [pageName   : "stu.base",
                            source     : '''{
                                      "type": "page",
@@ -145,7 +145,7 @@ class PageServiceIntegrationSpec extends IntegrationSpec {
     void "Integration test load data grid"() {
 
         given:
-        org.codehaus.groovy.grails.web.json.JSONObject extendsPage = null
+        JSONObject extendsPage = null
         Map basePageMap = [pageName   : "stu.base",
                            source     : '''{
                                      "type": "page",
@@ -186,7 +186,7 @@ class PageServiceIntegrationSpec extends IntegrationSpec {
         pageService.developerSecurityService = Stub(DeveloperSecurityService) {
             isAllowModify(_,_) >> false
         }
-        org.codehaus.groovy.grails.web.json.JSONObject extendsPage = null
+        JSONObject extendsPage = null
         Map basePageMap = [pageName   : "stu.base",
                            source     : '''{
                                      "type": "page",

@@ -3,22 +3,27 @@
  ******************************************************************************/
 package net.hedtech.banner.css
 
-import grails.test.spock.IntegrationSpec
+import grails.gorm.transactions.Rollback
+import grails.testing.mixin.integration.Integration
 import net.hedtech.banner.security.DeveloperSecurityService
-import net.hedtech.banner.tools.PBUtilServiceBase
+import spock.lang.Specification
 
-class CssExportServiceIntegrationSpec extends IntegrationSpec {
+@Integration
+@Rollback
+class CssExportServiceIntegrationSpec extends Specification  {
 
     def cssExportService
+    def developerSecurityService
     def cssService
+    def grailsApplication
     def cssString = "body {color: red}"
-    def pbConfig = grails.util.Holders.getConfig().pageBuilder
-    def path = pbConfig.locations.css
+    def pbConfig
+    def path
 
     def setup() {
-        cssService.developerSecurityService = Stub(DeveloperSecurityService) {
-            isAllowModify(_,_) >> true
-        }
+        pbConfig = grailsApplication.config.pageBuilder
+        path = pbConfig.locations.css
+        cssService.developerSecurityService = developerSecurityService
 
         if(!pbConfig.locations.css){
             pbConfig.locations.css = 'target'
@@ -30,6 +35,8 @@ class CssExportServiceIntegrationSpec extends IntegrationSpec {
     }
 
     def cleanup() {
+        pbConfig = grailsApplication.config.pageBuilder
+        path = pbConfig.locations.css
         def path = pbConfig.locations.css
         new File(path+"/testExportCss.json").delete()
     }

@@ -1,9 +1,10 @@
 package net.hedtech.banner.sspb
 
-import grails.test.spock.IntegrationSpec
-import net.hedtech.banner.security.DeveloperSecurityService
 
-class AdminTaskServiceIntegrationSpec extends IntegrationSpec {
+import net.hedtech.banner.security.DeveloperSecurityService
+import spock.lang.Specification
+
+class AdminTaskServiceIntegrationSpec extends Specification {
 
     def adminTaskService
     def pbConfig = grails.util.Holders.getConfig().pageBuilder

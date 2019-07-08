@@ -3,15 +3,13 @@
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
-import grails.test.mixin.TestMixin
-import grails.test.mixin.support.GrailsUnitTestMixin
+
 import grails.util.Holders
 import net.hedtech.banner.i18n.DateConverterService
 import net.hedtech.banner.security.DeveloperSecurityService
-import org.apache.commons.codec.binary.Base64
 import spock.lang.Specification
 
-@TestMixin(GrailsUnitTestMixin)
+//@TestMixin(GrailsUnitTestMixin)
 class VirtualDomainSpec extends Specification {
 
     def params=['url_encoding' :'utf-8' ,
