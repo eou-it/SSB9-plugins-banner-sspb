@@ -67,7 +67,6 @@ class VirtualDomainUtilService extends PBUtilServiceBase {
         bootMsg "Checking/loading system required virtual domains."
         fileNames.eachLine { fileName ->
             def serviceName = fileName.substring(0, fileName.lastIndexOf(".json"))
-            serviceName = serviceName.replace('.','')
             def stream = VirtualDomainUtilService.class.classLoader.getResourceAsStream("data/install/$fileName")
             count+=loadStream(serviceName, stream, mode)
         }
@@ -104,7 +103,6 @@ class VirtualDomainUtilService extends PBUtilServiceBase {
     int load( name, stream, file, mode ) {
         // either name + stream is needed or file
         def vdName = name?name:file.name.substring(0,file.name.lastIndexOf(".json"))
-        vdName = vdName.replace('.','')
         def vd = VirtualDomain.findByServiceName(vdName)
         def result=0
         def jsonString

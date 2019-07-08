@@ -1,7 +1,7 @@
 {
    "constantName": "pbadm.LandingPage",
    "extendsPage": null,
-   "fileTimestamp": "2019-07-04T11:51:35Z",
+   "fileTimestamp": "2019-07-08T11:51:35Z",
    "modelView": {
       "components": [
          {
@@ -49,7 +49,7 @@
                                     "name": "GotoVDCExport",
                                     "replaceView": true,
                                     "type": "link",
-                                    "url": "{{$$contextRoot}}customPage/page/pbadmExportVirtualDomains"
+                                    "url": "{{$$contextRoot}}customPage/page/pbadm.ExportVirtualDomains"
                                  }
                               ],
                               "label": "",
@@ -65,7 +65,7 @@
                                     "name": "GotoVDCRoles",
                                     "replaceView": true,
                                     "type": "link",
-                                    "url": "{{$$contextRoot}}customPage/page/pbadmVirtualDomainRoles"
+                                    "url": "{{$$contextRoot}}customPage/page/pbadm.VirtualDomainRoles"
                                  }
                               ],
                               "label": "",
@@ -115,7 +115,7 @@
                                     "name": "GotoVPCExport",
                                     "replaceView": true,
                                     "type": "link",
-                                    "url": "{{$$contextRoot}}customPage/page/pbadmExportPages"
+                                    "url": "{{$$contextRoot}}customPage/page/pbadm.ExportPages"
                                  }
                               ],
                               "label": "",
@@ -131,7 +131,7 @@
                                     "name": "GotoVPCRoles",
                                     "replaceView": true,
                                     "type": "link",
-                                    "url": "{{$$contextRoot}}customPage/page/pbadmPageRoles"
+                                    "url": "{{$$contextRoot}}customPage/page/pbadm.PageRoles"
                                  }
                               ],
                               "label": "",
@@ -179,7 +179,7 @@
                               "name": "GotoCSSExport",
                               "replaceView": true,
                               "type": "link",
-                              "url": "{{$$contextRoot}}customPage/page/pbadmExportCss"
+                              "url": "{{$$contextRoot}}customPage/page/pbadm.ExportCss"
                            }
                         ],
                         "label": "",

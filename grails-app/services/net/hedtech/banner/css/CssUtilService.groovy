@@ -58,7 +58,6 @@ class CssUtilService extends PBUtilServiceBase {
         bootMsg "Checking/loading system required css files."
         fileNames.eachLine { fileName ->
             def constantName = fileName.substring(0, fileName.lastIndexOf(".json"))
-            constantName = constantName.replace('.','')
             def stream = CssUtilService.class.classLoader.getResourceAsStream("data/install/$fileName")
             count+=loadStream(constantName, stream, mode)
         }
@@ -93,7 +92,6 @@ class CssUtilService extends PBUtilServiceBase {
     //Load a css and save it
     int load( name, stream, file, mode ) {
         def cssName = name?name:file.name.substring(0,file.name.lastIndexOf(".json"))
-        cssName = cssName.replace('.','')
         def css = Css.fetchByConstantName(cssName)
         def result=0
         def jsonString

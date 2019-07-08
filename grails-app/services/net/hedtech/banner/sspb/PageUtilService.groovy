@@ -66,7 +66,6 @@ class PageUtilService extends PBUtilServiceBase {
         }
         fileNames.eachLine {  fileName ->
             def pageName = fileName.substring(0,fileName.lastIndexOf(".json"))
-            pageName = pageName.replace('.','')
             InputStream stream = PageUtilService.class.classLoader.getResourceAsStream( "data/install/$fileName" )
             def loadResult = load(pageName, stream, mode, false )
             needDeferred |= (loadResult.statusCode == statusDeferLoad)
@@ -154,7 +153,6 @@ class PageUtilService extends PBUtilServiceBase {
     private def load( String name, InputStream stream, File file, int mode, boolean updateSecurity ) {
         // either name + stream is needed or file
         def pageName = name?name:file.name.substring(0,file.name.lastIndexOf(".json"))
-        pageName = pageName.replace('.','')
         def page = pageService.get(pageName)
         def result = [page: null, statusCode: statusOk, statusMessage: "", loaded: 0]
         def jsonString
