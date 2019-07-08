@@ -207,7 +207,7 @@
                               "replaceView": true,
                               "style": "",
                               "type": "link",
-                              "url": "{{$$contextRoot}}customPage/page/pbadmAdminTasks",
+                              "url": "{{$$contextRoot}}customPage/page/pbadm.AdminTasks",
                               "valueStyle": ""
                            }
                         ],
