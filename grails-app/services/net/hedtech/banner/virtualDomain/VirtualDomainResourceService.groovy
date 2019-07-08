@@ -13,7 +13,7 @@ import net.hedtech.restfulapi.AccessDeniedException
 import org.hibernate.HibernateException
 
 @Log4j
-@Transactional(readOnly = false)
+@Transactional
 class VirtualDomainResourceService {
 
     def virtualDomainSqlService

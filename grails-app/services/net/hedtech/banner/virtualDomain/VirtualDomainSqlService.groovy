@@ -14,7 +14,7 @@ import net.hedtech.restfulapi.AccessDeniedException
 import java.sql.SQLException
 
 @Log4j
-@Transactional(readOnly = false)
+@Transactional
 class VirtualDomainSqlService {
 
     def sessionFactory    //injected by Spring

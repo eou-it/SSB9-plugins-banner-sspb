@@ -81,6 +81,7 @@ class Css implements Serializable{
         allowAllInd(nullable:true, maxSize:1)
         owner(nullable:true, maxSize:30)
         description(nullable:true, maxSize:255)
+        fileTimestamp(nullable:true)
     }
 
     boolean equals(o) {

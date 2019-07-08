@@ -49,6 +49,11 @@ class VirtualDomainSecurity implements Serializable{
     @Column( name="GBRVSEC_VPDI_CODE", length = 19)
     Long vpdiCode
 
+    static constraints = {
+        dataOrigin(nullable:true, maxSize:30)
+        vpdiCode(nullable:true, maxSize:19)
+    }
+
     public static def fetchAllByVirtualDomainId(Long id) {
         if (id) {
             return VirtualDomainSecurity.withSession { session -> session.getNamedQuery('VirtualDomainSecurity.fetchAllByVirtualDomainId').setLong('virtualDomainId', id).list() }

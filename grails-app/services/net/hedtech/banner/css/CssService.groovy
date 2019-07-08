@@ -158,7 +158,7 @@ class CssService extends ServiceBase {
                     cssInstance = new Css([constantName: cssName, description: description, css: cssSource, owner:owner])
                     super.create(cssInstance)
                 }
-                ret = [statusCode:0, statusMessage:"${message(code:'sspb.css.cssManager.saved.message')}"]
+                ret = [statusCode:0, statusMessage: message(code:'sspb.css.cssManager.saved.message')]
             } else {
                 ret = [statusCode: 2, statusMessage:message(code:"sspb.css.cssManager.stylesheet.validation.error.message")]
                 ret << [cssValidationResult:[errors: validateResult.error.join('\n')] ]

@@ -9,7 +9,7 @@ import org.hibernate.criterion.CriteriaSpecification
 import org.hibernate.criterion.Order
 import org.springframework.context.i18n.LocaleContextHolder
 
-@Transactional(readOnly = false)
+@Transactional
 class VirtualDomainService {
 
     static transactional = false //Getting error connection closed without this

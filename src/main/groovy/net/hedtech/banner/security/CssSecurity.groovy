@@ -51,6 +51,12 @@ class CssSecurity implements Serializable{
     @Column( name="GBRCSEC_VPDI_CODE", length = 19)
     Long vpdiCode
 
+
+    static constraints = {
+        dataOrigin(nullable:true, maxSize:30)
+        vpdiCode(nullable:true, maxSize:19)
+    }
+
     boolean equals(o) {
         if (this.is(o)) return true
         if (getClass() != o.class) return false

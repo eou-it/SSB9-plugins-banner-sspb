@@ -11,7 +11,7 @@ import net.hedtech.banner.sspb.Page
 import net.hedtech.banner.sspb.PageComponent
 import org.hibernate.criterion.CriteriaSpecification
 
-@Transactional(readOnly = true)
+@Transactional
 class VirtualDomainExportService {
     static transactional = false //Getting error connection closed without this
     def dateConverterService

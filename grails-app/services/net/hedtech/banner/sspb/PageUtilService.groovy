@@ -7,14 +7,11 @@ package net.hedtech.banner.sspb
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.util.Holders
-import grails.web.context.ServletContextHolder
 import groovy.util.logging.Log4j
 import net.hedtech.banner.security.PageSecurity
 import net.hedtech.banner.security.PageSecurityId
 import net.hedtech.banner.tools.PBUtilServiceBase
 import net.hedtech.banner.tools.i18n.SortedProperties
-import org.grails.web.util.GrailsApplicationAttributes
-import org.springframework.context.ApplicationContext
 
 @Log4j
 @Transactional

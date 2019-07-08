@@ -10,7 +10,7 @@ import net.hedtech.banner.sspb.CommonService
 import net.hedtech.banner.sspb.Page
 import org.hibernate.criterion.CriteriaSpecification
 
-@Transactional(readOnly = true)
+@Transactional
 class CssExportService {
     static transactional = false  //Getting error connection closed without this
     def dateConverterService
