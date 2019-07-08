@@ -3,7 +3,6 @@
  *******************************************************************************/
 package net.hedtech.banner.css
 
-import net.hedtech.banner.security.CssSecurity
 
 import javax.persistence.*
 
@@ -75,6 +74,15 @@ class Css implements Serializable{
 
     @Transient
     String lastModifiedBy // Transient to work around banner-core issue
+
+
+    static constraints = {
+        tag(nullable:true, maxSize:60)
+        allowAllInd(nullable:true, maxSize:1)
+        owner(nullable:true, maxSize:30)
+        description(nullable:true, maxSize:255)
+        fileTimestamp(nullable:true)
+    }
 
     boolean equals(o) {
         if (this.is(o)) return true

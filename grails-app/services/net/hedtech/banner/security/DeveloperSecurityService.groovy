@@ -3,15 +3,14 @@
  *******************************************************************************/
 package net.hedtech.banner.security
 
+import grails.gorm.transactions.Transactional
 import groovy.util.logging.Log4j
 import net.hedtech.banner.css.Css
 import net.hedtech.banner.general.ConfigurationData
 import net.hedtech.banner.sspb.Page
 import net.hedtech.banner.virtualDomain.VirtualDomain
-import org.apache.log4j.Logger
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.transaction.annotation.Propagation
-import org.springframework.transaction.annotation.Transactional
 
 @Log4j
 @Transactional(readOnly = true, propagation = Propagation.SUPPORTS )
@@ -30,11 +29,6 @@ class DeveloperSecurityService {
     static final String PREVENT_IMPORT_BY_DEVELOPER = 'pagebuilder.security.preventImportByDeveloper'
     static final String DEVELOPER_READONLY='pagebuilder.security.developerReadOnly'
 
-
-    DeveloperSecurityService(){
-        log.debug('initialize Developer Security Service')
-        loadSecurityConfiguration()
-    }
 
     void loadSecurityConfiguration() {
         log.debug('loading security configuration - start')
@@ -202,6 +196,7 @@ class DeveloperSecurityService {
     }
 
     boolean isAllowModify(String constantName, String type){
+        loadSecurityConfiguration()
         if(isSuperUser()){
             return true
         }else if(productionMode){
@@ -216,6 +211,7 @@ class DeveloperSecurityService {
     }
 
     boolean isAllowUpdateOwner(String constantName, String type){
+        loadSecurityConfiguration()
         if(isSuperUser()){
             return true
         }else if(productionMode){

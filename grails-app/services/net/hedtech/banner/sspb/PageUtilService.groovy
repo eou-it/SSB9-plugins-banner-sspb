@@ -8,6 +8,8 @@ import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.util.Holders
 import groovy.util.logging.Log4j
+import net.hedtech.banner.security.PageSecurity
+import net.hedtech.banner.security.PageSecurityId
 import net.hedtech.banner.tools.PBUtilServiceBase
 import net.hedtech.banner.tools.i18n.SortedProperties
 
@@ -16,6 +18,7 @@ import net.hedtech.banner.tools.i18n.SortedProperties
 class PageUtilService extends PBUtilServiceBase {
     def pageService
     def pageSecurityService
+    def developerSecurityService
 
     def static final statusOk = 0
     def static final statusError = 1
@@ -38,7 +41,7 @@ class PageUtilService extends PBUtilServiceBase {
     }
 
     //Export one or more pages to the configured directory
-    void exportToFile(String pageName, String path=pagePath, Boolean skipDuplicates=false ) {
+    void exportToFile(String pageName, String path=pagePath, Boolean skipDuplicates=false, Boolean isAllowExportDSPermission=false ) {
         Page.findAllByConstantNameLike(pageName).each { page ->
             if (skipDuplicates && page.constantName.endsWith(".bak")) {
                 log.info message(code: "sspb.pageutil.export.skipDuplicate.message", args: [page.constantName])
@@ -47,6 +50,12 @@ class PageUtilService extends PBUtilServiceBase {
                 def file = new File("$path/${page.constantName}.json")
                 JSON.use("deep") {
                     def pageExport = new PageExport(page)
+                    if (isAllowExportDSPermission) {
+                        pageExport.owner = page.owner
+                        PageSecurity.fetchAllByPageId(page.id)?.each { ps ->
+                            pageExport.developerSecurity << [type: ps.type, name: ps.id.developerUserId, allowModify: ps.allowModifyInd]
+                        }
+                    }
                     def json = new JSON(pageExport)
                     def jsonString = json.toString(true)
                     log.info message(code:"sspb.pageutil.export.page.done.message", args:[page.constantName])
@@ -54,6 +63,11 @@ class PageUtilService extends PBUtilServiceBase {
                 }
             }
         }
+    }
+
+    void exportToFile(Map content) {
+        boolean isAllowExportDSPermission = content.isAllowExportDSPermission && "Y".equalsIgnoreCase(content.isAllowExportDSPermission)
+        exportToFile(content.constantName,pagePath,false,isAllowExportDSPermission)
     }
 
     //Load pages required for Page Builder administration
@@ -68,7 +82,7 @@ class PageUtilService extends PBUtilServiceBase {
         fileNames.eachLine {  fileName ->
             def pageName = fileName.substring(0,fileName.lastIndexOf(".json"))
             InputStream stream = PageUtilService.class.classLoader.getResourceAsStream( "data/install/$fileName" )
-            def loadResult = load(pageName, stream, mode, false )
+            def loadResult = load(pageName, stream, mode, false, true, true )
             needDeferred |= (loadResult.statusCode == statusDeferLoad)
             count += loadResult.loaded
 
@@ -86,11 +100,11 @@ class PageUtilService extends PBUtilServiceBase {
     }
 
     //Import/Install Utility
-    int importAllFromDir(String path=pagePath, mode=loadIfNew, ArrayList names = null, boolean updateSecurity = false) {
-        importAllFromDir(path, mode, false, names, updateSecurity)
+    int importAllFromDir(String path=pagePath, mode=loadIfNew, ArrayList names = null, boolean updateSecurity = false, boolean copyOwner = true, boolean copyDevSec = true) {
+        importAllFromDir(path, mode, false, names, updateSecurity, copyOwner, copyDevSec)
     }
 
-    int importAllFromDir(String path, mode, boolean deferred, ArrayList names, boolean updateSecurity) {
+    int importAllFromDir(String path, mode, boolean deferred, ArrayList names, boolean updateSecurity, boolean copyOwner, boolean copyDevSec) {
         def count=0
         def needDeferred = false
         if (!deferred) {
@@ -99,7 +113,7 @@ class PageUtilService extends PBUtilServiceBase {
         try {
             new File(path).eachFileMatch(jsonExt) { file ->
                 if (!names || names.contains(file.name.take(file.name.lastIndexOf('.')))) {
-                    def loadResult = load(file, mode, updateSecurity)
+                    def loadResult = load(file, mode, updateSecurity, copyOwner, copyDevSec)
                     needDeferred |= (loadResult.statusCode == statusDeferLoad)
                     finalizeFileImport(file, loadResult)
                     count += loadResult.loaded
@@ -113,7 +127,7 @@ class PageUtilService extends PBUtilServiceBase {
             if ( count > 0 && needDeferred) {
                 // attempt import files that could not be loaded because of missing parent
                 // which might have been imported if count > 0
-                def i = importAllFromDir(path, mode, true, names, updateSecurity)
+                def i = importAllFromDir(path, mode, true, names, updateSecurity, copyOwner,copyDevSec)
                 bootMsg "Pages loaded deferred: $i"
                 count += i
             }
@@ -145,13 +159,13 @@ class PageUtilService extends PBUtilServiceBase {
     }
 
     //Load a page, save and compile it
-    private def load(String name, InputStream stream, int mode, boolean updateSecurity) {
-        load(name,stream, null, mode, updateSecurity)
+    private def load(String name, InputStream stream, int mode, boolean updateSecurity, boolean copyOwner, boolean copyDevSec) {
+        load(name,stream, null, mode, updateSecurity, copyOwner, copyDevSec)
     }
-    private def load(File file, int mode, boolean updateSecurity) {
-        load(null, null, file, mode, updateSecurity)
+    private def load(File file, int mode, boolean updateSecurity, copyOwner, copyDevSec) {
+        load(null, null, file, mode, updateSecurity, copyOwner, copyDevSec)
     }
-    private def load( String name, InputStream stream, File file, int mode, boolean updateSecurity ) {
+    private def load( String name, InputStream stream, File file, int mode, boolean updateSecurity, boolean copyOwner, boolean copyDevSec ) {
         // either name + stream is needed or file
         def pageName = name?name:file.name.substring(0,file.name.lastIndexOf(".json"))
         def page = pageService.get(pageName)
@@ -177,6 +191,15 @@ class PageUtilService extends PBUtilServiceBase {
             JSON.use("deep") {
                 json = JSON.parse(jsonString)
             }
+            if(!currentAction && json.constantName) {
+                if (!developerSecurityService.isAllowImport(json.constantName, developerSecurityService.PAGE_IND)) {
+                    result.statusCode = statusError
+                    result.statusMessage = message(code: "sspb.renderer.page.deny.access", args: [json.constantName])
+                    log.error "Insufficient privileges to import page - ${json.constantName}"
+                    return result
+                }
+            }
+
             page = page ?: pageService.getNew(pageName)
             // when loading from resources (stream), check the file time stamp in the Json
             if ( stream && mode==loadIfNew ) {
@@ -190,6 +213,19 @@ class PageUtilService extends PBUtilServiceBase {
                 // if the json has a modelView the json is a marshaled page, otherwise it is just the modelView
                 page.modelView = json.has('modelView') ? json.modelView: jsonString
                 page.fileTimestamp = file?new Date(file.lastModified()):json2date(json.fileTimestamp)
+
+                //Copy owner and Dev Security
+                if(copyOwner) {
+                    page.owner = json.owner ?: null
+                } else {
+                    page.owner = PBUser.getTrimmed().oracleUserName
+                }
+                if(copyDevSec) {
+                    json.developerSecurity = json.developerSecurity ?: null
+                } else {
+                    json.developerSecurity = null
+                }
+
                 //Check to see if parent page exists
                 if (json.has('extendsPage') && json.extendsPage && json.extendsPage.constantName) {
                     page.extendsPage = pageService.get(json.extendsPage.constantName)
@@ -200,13 +236,14 @@ class PageUtilService extends PBUtilServiceBase {
 
                     }
                 }
-                associateRoles(page, json.pageRoles)
-                page = page.merge(validate: true, failOnError: true, flush: true)
+                page = page.merge(failOnError: true, flush: true)
                 if (result.statusCode == statusOk) {
-                    result = pageService.compileAndSavePage(page.constantName, page.mergedModelText, page.extendsPage)
+                    result = pageService.compileAndSavePage(page.constantName, page.mergedModelText, page.extendsPage, page.owner)
                     result.loaded = result.page?1:0
                     if (page) {
                         if (result.loaded) {
+                            associateRoles(page, json.pageRoles)
+                            associateDeveloperSecurity(page, json.developerSecurity)
                             // Create the requestmap record to allow access]
                             if (updateSecurity) {
                                 pageSecurityService.mergePage(result.page)
@@ -246,13 +283,42 @@ class PageUtilService extends PBUtilServiceBase {
         }
     }
 
+    //Associate Developer security
+    private def associateDeveloperSecurity(page, developerSecurity) {
+        def pageDevEntries = PageSecurity.fetchAllByPageId(page.id)
+        if(pageDevEntries) {
+            pageDevEntries.each {PageSecurity psObj ->
+                psObj.delete(flush:true)
+            }
+        }
+        developerSecurity.each { securityEntry ->
+            if ( securityEntry.name ) {
+                try {
+                    PageSecurity pageSecurityInstance = new PageSecurity()
+                    PageSecurityId pageSecurityIdInstance = new PageSecurityId()
+                    pageSecurityIdInstance.pageId = page.id
+                    pageSecurityIdInstance.developerUserId = securityEntry.name
+                    pageSecurityInstance.id = pageSecurityIdInstance
+                    pageSecurityInstance.type = securityEntry.type
+                    pageSecurityInstance.allowModifyInd = securityEntry.allowModify
+                    pageSecurityInstance.userId = securityEntry.name
+                    pageSecurityInstance.acitivityDate = new Date()
+                    pageSecurityInstance.save(flush: true)
+                } catch(e) {
+                    log.error "Exception associating Developer security: ${e.message}"
+                }
+            }
+        }
+
+    }
+
     def compileAll(String pattern) {
         def pat = pattern?pattern:"%"
         def pages = Page.findAllByConstantNameLike(pat)
         def errors =[]
         pages.each { page ->
             def model=page.extendsPage?page.mergedModelText:page.modelView
-            def result = pageService.compileAndSavePage(page.constantName, model, page.extendsPage)
+            def result = pageService.compileAndSavePage(page.constantName, model, page.extendsPage, page.owner)
             if (result.statusCode>0)
                 errors << result
             log.info result

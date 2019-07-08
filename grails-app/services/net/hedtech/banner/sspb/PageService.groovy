@@ -6,7 +6,8 @@ package net.hedtech.banner.sspb
 
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
-import org.springframework.context.i18n.LocaleContextHolder
+import net.hedtech.banner.security.DeveloperSecurityService
+import net.hedtech.restfulapi.AccessDeniedException
 
 @Transactional
 class PageService {
@@ -14,6 +15,8 @@ class PageService {
     def groovyPagesTemplateEngine
     def pageSecurityService
     def springSecurityService
+    def dateConverterService
+    def developerSecurityService
 
     @Transactional(readOnly = true)
     def get(String constantName) {
@@ -51,20 +54,13 @@ class PageService {
         }
 
         def listResult = []
-       Locale locale = LocaleContextHolder.getLocale()
-        String date_format = "dd/MM/yyyy"
-        if(locale && ['ar','fr_CA'].contains(locale.toString())){
-            date_format = "yyyy/MM/dd"
-        } else if("en_US".equals(locale.toString())){
-            date_format = "MM/dd/YYYY"
+        result.each{
+            listResult << [constantName: it.constantName, extendsPage: it.extendsPage?.constantName, id: it.id, version: it.version,
+                           dateCreated : it.dateCreated ? dateConverterService.parseGregorianToDefaultCalendar(it.dateCreated) : '',
+                           lastUpdated : it.lastUpdated ? dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated) : '',
+                           allowModify : !developerSecurityService.isAllowModify(it.constantName, developerSecurityService.PAGE_IND)
+            ]
         }
-        result.each {
-            //supplementPage( it )
-            // trim the object since we only need to return the constantName properties for listing
-            //listResult << [page : [constantName : it.constantName, id: it.id, version: it.version]]
-            listResult << [constantName : it.constantName,extendsPage:  it.extendsPage?.constantName, id: it.id, version: it.version, dateCreated:it.dateCreated?.format(date_format), lastUpdated:it.lastUpdated?.format(date_format)]
-        }
-
         log.trace "PageService.list is returning a ${result.getClass().simpleName} containing ${result.size()} pages"
         listResult
     }
@@ -106,7 +102,10 @@ class PageService {
         def result = null
         if (page) {
             String model = page.getMergedModelText(true) //Get the merged model with merge Info
-            result = [constantName: page.constantName, id: page.id, extendsPage: page.extendsPage, version: page.version, modelView: model]
+            result = [constantName: page.constantName, id: page.id, extendsPage: page.extendsPage, version: page.version,
+                      modelView: model, allowModify:developerSecurityService.isAllowModify(page.constantName, DeveloperSecurityService.PAGE_IND),
+                      allowUpdateOwner: developerSecurityService.isAllowUpdateOwner(page.constantName, DeveloperSecurityService.PAGE_IND),
+                    owner: page.owner]
         }
         result
     }
@@ -116,11 +115,17 @@ class PageService {
     // TODO for now update(post) handles both update and creation to simplify client side logic
     def create(Map content, ignore) {
         log.trace "PageService.create invoked"
+        if (!developerSecurityService.isAllowModify(content.pageName, developerSecurityService.PAGE_IND)) {
+            log.error('user not authorized to create page')
+            throw new AccessDeniedException("user.not.authorized.create", [PBUser.getTrimmed().loginName])
+        }
         def result
         Page.withTransaction {
             // compile first
-            result = compileAndSavePage(content.pageName, content.source, content.extendsPage)
+            result = compileAndSavePage(content.pageName, content.source, content.extendsPage , content.pageOwner)
         }
+        result <<[allowModify:developerSecurityService.isAllowModify(content.pageName,developerSecurityService.PAGE_IND) ,
+                  allowUpdateOwner: developerSecurityService.isAllowUpdateOwner(content.pageName, developerSecurityService.PAGE_IND)]
         log.trace "PageService.create returning $result"
         result
     }
@@ -128,10 +133,14 @@ class PageService {
     // update is not used to update pages since the client may not know if a page exists or not when submitting (concurrent editing)
     def update( /*def id,*/ Map content, params) {
         log.trace "PageService.update invoked"
+        if (!developerSecurityService.isAllowModify(content.pageName, developerSecurityService.PAGE_IND)) {
+            log.error('user not authorized to update page')
+            throw new AccessDeniedException("user.not.authorized.update", [PBUser.getTrimmed().loginName])
+        }
         create(content, params)
     }
 
-    def compileAndSavePage( pageName, pageSource, extendsPage) {
+    def compileAndSavePage( pageName, pageSource, extendsPage, pageOwner) {
         log.trace "in compileAndSavePage: pageName=$pageName"
         def pageInstance  = Page.findByConstantName(pageName)
         boolean isUpdated = updateConfigAttr(pageName, pageSource,pageInstance)
@@ -153,8 +162,9 @@ class PageService {
 
                 if (pageInstance) {
                     pageInstance.extendsPage = extendsPage ? Page.findByConstantName(extendsPage.constantName) : null
+                    pageInstance.owner = pageOwner
                 } else {
-                    pageInstance = new Page([constantName :pageName, extendsPage :extendsPage])
+                    pageInstance = new Page([constantName :pageName, extendsPage :extendsPage, owner: pageOwner])
                 }
                 pageInstance.modelView = pageSource
                 //remove merge Info if page is not extended
@@ -176,7 +186,7 @@ class PageService {
                         }
                     }
                     if (ret.statusCode == 0) {
-                        if (!ret.page.save(failOnError: true)) {
+                        if (!ret.page.save(flush: true)) {
                             ret.page.errors.allErrors.each { ret.statusMessage += it +"\n" }
                             ret.statusCode = 3
                         }
@@ -216,7 +226,7 @@ class PageService {
                 page.compiledView = compiledView
                 page.compiledController=compiledJSCode
                 compileService.updateProperties(validateResult.pageComponent)
-                result = [statusCode:0, statusMessage: message(code:'sspb.page.visualcomposer.compiledsaved.ok.message')]
+                result = [statusCode:0, statusMessage: message(code:"sspb.page.visualcomposer.compiledsaved.ok.message")]
             } catch (e)   {
                 result = [statusCode: 2, statusMessage: message(code:"sspb.page.visualcomposer.validation.error.message")]
                 log.error("Unexpected Exception in compile page\n"+e.printStackTrace())
@@ -232,6 +242,10 @@ class PageService {
 
     // note the content-type header still needs to be set in the request even we don't send in any content in the body
     void delete(Map ignore, params) {
+        if (!developerSecurityService.isAllowModify(params.id, developerSecurityService.PAGE_IND)) {
+            log.error('user not authorized to delete page')
+            throw new AccessDeniedException("user.not.authorized.delete", [PBUser.getTrimmed().loginName])
+        }
         pageSecurityService.delete([:],[constantName:params.id])
         Page.withTransaction {
             def page = Page.find{constantName==params.id}
