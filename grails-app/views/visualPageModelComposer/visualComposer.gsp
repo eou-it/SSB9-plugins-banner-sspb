@@ -385,7 +385,6 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
             };
 
             $scope.attributeIsTranslatable = function (attr) {
-
                 var attributes = ${raw(PageComponent.translatableAttributes.encodeAsJSON().decodeHTML())};
                 return (attributes.indexOf(attr) != -1); // seems not to work in IE8 - indexOf is added by one of the JS libraries
             };
@@ -607,6 +606,30 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
             };
             $scope.loadVdList();
 
+            // Fetch Page ownersList
+            // declare the virtual domain lookup resource  and functions for loading the resourse combo box
+            var VDOwnersList = $resource(resourceBase+'virtualDomains.pbadmUserDetails',{},{
+                list: {
+                    method:"GET",
+                    isArray:true,
+                    headers:{'Content-Type':'application/json', 'Accept':'application/json'}
+                }
+            });
+            $scope.pbUserList = [];
+            $scope.loadVdOwnersList = function() {
+                console.log("==== In loadVDOwnerList====");
+                VDOwnersList.list({}, function(data) {
+                    // only need the service_name
+                    $scope.pbUserList = [];
+
+                    //console.log("vdList = " + data);
+                    angular.forEach(data, function(vd){
+                        $scope.pbUserList.push(vd.USER_ID);
+                    });
+                });
+            };
+            $scope.loadVdOwnersList();
+
 
             // declare the Page resource
             var Page = $resource(resourceBase+'pages/:constantName',{},{
@@ -687,6 +710,9 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 
 
             $scope.getExtendsPage = function() {
+                if(!$scope.extendsPageName){
+                    $scope.extendsPageName =  document.getElementById('extendsPage').value;
+                }
                 Page.get({constantName: $scope.extendsPageName}, function (data) {
                     try {
                         $scope.extendsPage = data;
@@ -717,6 +743,9 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                         function(){$scope.pageName = $scope.pageCurName;});
                 }
                 if ( load || confirmed) {
+                    if(!$scope.pageName){
+                        $scope.pageName = document.getElementById('constantName').value;
+                    }
                     $scope.pageCurName = $scope.pageName; //Avoid flashing Page Name save as field
                     Page.get({constantName: $scope.pageName}, function (data) {
                         try {
@@ -726,6 +755,9 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                             $scope.resetSelected();
                             //$scope.handlePageTreeChange();
                             $scope.pageCurName = $scope.pageName;
+                            $scope.pageOwner = data.owner;
+                            $scope.allowUpdateOwner = data.allowUpdateOwner;
+                            $scope.allowModify = data.allowModify;
                             $scope.extendsPage = data.extendsPage;
                             $("#pageRoleId").val(data.id);
                             $scope.extendsPageName = $scope.extendsPage ? $scope.extendsPage.constantName : "";
@@ -766,6 +798,9 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                     $scope.pageSource[0] = {"type": "page", "name": $scope.pageName};
                     $scope.pageOneSource = $scope.pageSource[0];
                     $scope.resetSelected();
+                    $scope.pageOwner = user.oracleUserName;
+                    $scope.allowUpdateOwner = true;
+                    $scope.allowModify = true;
                     //$scope.handlePageTreeChange();
                     $scope.statusHolder.isPageModified = false;
                 }
@@ -831,7 +866,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                     return;
                 }
 
-              Page.save({pageName:$scope.pageCurName, source:$scope.pageSourceView, extendsPage:$scope.extendsPage},
+                Page.save({pageName:$scope.pageCurName, source:$scope.pageSourceView, extendsPage:$scope.extendsPage, pageOwner:$scope.pageOwner},
                     function(response) {
                         if (response.statusCode == 0) {
                             $scope.pageStatus.message = $scope.i18nGet(response.statusMessage);
@@ -841,6 +876,8 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                             }
                             $("#pageRoleId").val(response.page.id);
                             $scope.statusHolder.isPageModified = false;
+                            $scope.allowUpdateOwner = response.allowUpdateOwner;
+                            $scope.allowModify = response.allowModify;
                         }
                         else {
                             var msg = "${message(code:'sspb.page.validation.error.message', encodeAs: 'JavaScript')}";
@@ -858,6 +895,12 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                         }
                     },
                     function (response) {
+                        if(response && response.status == 403){
+                            var err = response.data && response.data.errors ? response.data.errors.errorMessage : "";
+                            note.message = err;
+                            note.type = noteType.error;
+                            $scope.alertNote(note);
+                        }else {
                         var msg = "${message(code: 'sspb.page.visualcomposer.page.submit.failed.message', encodeAs: 'JavaScript')}";
                         var err = response.data && response.data.errors ? response.data.errors[0].errorMessage : "";
                         msg = $scope.i18nGet(msg, [err]);
@@ -865,6 +908,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                         note.type = noteType.success;
                         $scope.alertNote(note);
                         }
+                    }
                 );
 
             };
@@ -886,44 +930,71 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                     $scope.alertError("${message(code:'sspb.page.visualbuilder.page.name.prompt.message', encodeAs: 'JavaScript')}");
                     return;
                 }
-            window.localStorage['pageName'] =$scope.pageCurName;
-            window.localStorage['pageId'] = pageId;
+                window.localStorage['allowModify'] = !$scope.allowModify;
+                updateLocalStorage($scope.pageCurName,pageId)
+                window.open(rootWebApp+'customPage/page/'+ 'pbadm.PageRoles', '_self');
+            };
 
-            window.open(rootWebApp+'customPage/page/pbadm.PageRoles', '_self');
-        };
+            $scope.getDeveloperSecurityPage = function(){
+
+                var pageId = document.getElementById('pageRoleId').value;
+                var pageName = $scope.pageName;
+                // var currentPage = $scope.pageCurName;
+                console.log(pageId);
+                console.log(pageName)
+                // alert(pageId +":"+pageName);
+                if (!$scope.pageCurName) {
+                    $scope.alertError("${message(code:'sspb.page.visualbuilder.page.name.prompt.message', encodeAs: 'JavaScript')}");
+                    return;
+                }
+
+                // updateDeveloperSecurityPage(pageName,pageId)
+                window.open(rootWebApp+'customPage/page/'+ 'pbadm.DeveloperPageSecurity', '_self');
+            };
 
 
 
-         $scope.deletePage = function () {
-             Page.remove({constantName:$scope.pageCurName }, function() {
-                 // on success
-                 $scope.alertNote({message: "${message(code:'sspb.page.visualbuilder.deletion.success.message', encodeAs: 'JavaScript')}"});
+            $scope.deletePage = function () {
+                Page.remove({constantName:$scope.pageCurName }, function() {
+                    // on success
+                    $scope.alertNote({message: "${message(code:'sspb.page.visualbuilder.deletion.success.message', encodeAs: 'JavaScript')}"});
 
-                 // clear the page name field and page source
-                 $scope.pageCurName = "";
-                 $scope.pageName = "";
-                 $scope.extendsPage = {};
-                 $scope.extendsPageName = "";
-                 $scope.resetSelected();
-                 $scope.statusHolder.noDirtyCheck = true;
-                 $scope.pageSource[0] = {};
-                 $scope.pageOneSource= undefined;
-                 $scope.statusHolder.isPageModified = false;
-                 // refresh the page list after a page is deleted
-                 //$scope.loadPageNames();
-                 $scope.pagemodelform.$setUntouched();
-                 $scope.resetPageNameData();
-             }, function(response) {
-                 var note={type: noteType.error, message: "${message(code:'sspb.page.visualbuilder.deletion.error.message', encodeAs: 'JavaScript')}",flash:true};
-                 if (response.data != undefined && response.data.errors != undefined) {
-                     note.message = $scope.i18nGet(note.message, [response.data.errors[0].errorMessage]);
-                 } else {
-                     note.message = $scope.i18nGet(note.message, ['']);
-                 }
-                 $scope.alertNote(note);
-             });
+                    // clear the page name field and page source
+                    $scope.pageCurName = "";
+                    $scope.pageName = "";
+                    $scope.extendsPage = {};
+                    $scope.extendsPageName = "";
+                    $scope.resetSelected();
+                    $scope.statusHolder.noDirtyCheck = true;
+                    $scope.pageSource[0] = {};
+                    $scope.pageOneSource= undefined;
+                    $scope.statusHolder.isPageModified = false;
+                    // refresh the page list after a page is deleted
+                    //$scope.loadPageNames();
+                    $scope.pagemodelform.$setUntouched();
+                    $scope.resetPageNameData();
+                }, function(response) {
+                    var note = {
+                        type: noteType.error,
+                        message: "${message(code:'sspb.page.visualbuilder.deletion.error.message', encodeAs: 'JavaScript')}",
+                        flash: true
+                    };
+                    if(response && response.status == 403){
+                        var err = response.data && response.data.errors ? response.data.errors.errorMessage : "";
+                        note.message = err;
+                        note.type = noteType.error;
+                        $scope.alertNote(note);
+                    }else {
+                        if (response.data != undefined && response.data.errors != undefined) {
+                            note.message = $scope.i18nGet(note.message, [response.data.errors[0].errorMessage]);
+                        } else {
+                            note.message = $scope.i18nGet(note.message, ['']);
+                        }
+                        $scope.alertNote(note);
+                    }
+                });
 
-         }
+            }
 
 
             $scope.deletePageSource = function () {
@@ -996,6 +1067,12 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 
                 });
             }
+
+            $scope.resetOwner = function (){
+                $scope.pageOwner = user.oracleUserName;
+                $scope.allowUpdateOwner = true;
+                $scope.allowModify = true;
+            }
             //run initialize when the controller is ready
             $scope.initialize();
 
@@ -1019,8 +1096,8 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         </select>
 
         <button id="reload-btn" ng-click='loadPageNames(); saveAs=false;' title="${message( code:'sspb.page.visualbuilder.reload.pages.label')}" ng-show="false" /> </i> </button>
-        <button ng-click='newPageSource();resetPageNameData();' class="primary"><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
-        <button ng-click='saveAs=true;' ng-show="pageName && pageName!=newPageName" class="secondary"> <g:message code="sspb.page.visualbuilder.save.as.label" /></button>
+        <button ng-click='newPageSource();resetPageNameData();' ng-disabled="${!isProductionReadOnlyMode}" class="primary"><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
+        <button ng-click='resetOwner(); saveAs=true;' ng-show="pageName && pageName!=newPageName" ng-disabled="${!isProductionReadOnlyMode}" class="secondary"> <g:message code="sspb.page.visualbuilder.save.as.label" /></button>
         <span ng-hide="pageCurName == pageName && !saveAs">
             <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.name.label" /></label>
             <input id="saveAsInput" class="vpc-name-input" type="text" name="constantNameEdit" ng-model="pageCurName" required maxlength="60"
@@ -1042,11 +1119,19 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         </select>
 
         <button ng-show="pageName && pageCurName && pageCurName != newPageName" ng-click='validateAndSubmitPageSource(); saveAs=false;updatePageName();'
-                ng-disabled='sourceEditEnabled || !pagemodelform.$valid' class="primary"><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
+                ng-disabled='sourceEditEnabled || !pagemodelform.$valid || !allowModify' class="primary"><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
         <button ng-show="pageName && pageName != newPageName" ng-click="getPageSource(); saveAs=false;" class="secondary" ><g:message code="sspb.page.visualbuilder.reload.label" /></button>
         <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click="previewPageSource()" class="secondary" ><g:message code="sspb.page.visualbuilder.preview.label" /></button>
-        <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click='deletePageSource(); saveAs=false;' class="secondary"><g:message code="sspb.page.visualbuilder.delete.label" /></button>
+        <button ng-show="pageName && pageCurName && pageName != newPageName"  ng-disabled="!allowModify"  ng-click='deletePageSource(); saveAs=false;' class="secondary"><g:message code="sspb.page.visualbuilder.delete.label" /></button>
         <button id="pageRoleId" value="" ng-show="pageName && pageName != newPageName"  ng-click="showRolesPage(); saveAs=false;" class="secondary" ><g:message code="sspb.page.visualbuilder.roles.label" /></button>
+        <button value="" ng-show="pageName && pageName != newPageName" ng-click="getDeveloperSecurityPage(); saveAs=false;" class="secondary" ><g:message code="sspb.css.cssManager.developer.label" /></button>
+        <span ng-show="pageName && pageCurName && pageName != newPageName" class="alignRight">
+            <label class="vpc-name-label dispInline"><g:message code="sspb.page.visualbuilder.pageowner.label" /></label>
+            <input style="display: none" ng-model="allowUpdateOwner"/>
+            <select class="owner-select" ng-model="pageOwner"  ng-disabled="!allowUpdateOwner">
+                <option ng-repeat="owner in pbUserList" value="{{owner}}" ng-selected="{{owner == pageOwner}}">{{owner}}</option>
+            </select>
+        </span>
     </div>
     <table style="height:80%; min-width: 60em">
         <tr>

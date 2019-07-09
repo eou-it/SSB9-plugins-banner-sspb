@@ -4,11 +4,14 @@
 package net.hedtech.banner.css
 
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import groovy.util.logging.Log4j
 import net.hedtech.banner.security.CssSecurity
 import net.hedtech.banner.security.CssSecurityId
 import net.hedtech.banner.tools.PBUtilServiceBase
+
 @Log4j
+@Transactional
 class CssUtilService extends PBUtilServiceBase {
 
     def static final actionImportInitally = 1
