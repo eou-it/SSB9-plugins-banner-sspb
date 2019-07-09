@@ -4,12 +4,14 @@
 
 package net.hedtech.banner.virtualDomain
 
+import grails.gorm.transactions.Transactional
 import net.hedtech.banner.security.VirtualDomainSecurity
 import net.hedtech.banner.sspb.CommonService
 import net.hedtech.banner.sspb.Page
 import net.hedtech.banner.sspb.PageComponent
 import org.hibernate.criterion.CriteriaSpecification
 
+@Transactional
 class VirtualDomainExportService {
     static transactional = false //Getting error connection closed without this
     def dateConverterService

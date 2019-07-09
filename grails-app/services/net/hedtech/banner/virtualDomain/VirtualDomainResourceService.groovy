@@ -3,6 +3,7 @@
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
+import grails.gorm.transactions.Transactional
 import groovy.util.logging.Log4j
 import net.hedtech.banner.security.DeveloperSecurityService
 import net.hedtech.banner.sspb.CommonService
@@ -12,6 +13,7 @@ import net.hedtech.restfulapi.AccessDeniedException
 import org.hibernate.HibernateException
 
 @Log4j
+@Transactional
 class VirtualDomainResourceService {
 
     def virtualDomainSqlService
@@ -29,7 +31,7 @@ class VirtualDomainResourceService {
     }
 
     // Interface for restful API - TODO may choose to put this in a separate service or move to VirtualDomainSqlService
-
+    @Transactional(readOnly = true)
     def list(Map params) {
         Map parameter = CommonService.decodeBase64(params)
         params.putAll(parameter);
@@ -49,10 +51,12 @@ class VirtualDomainResourceService {
         result
     }
 
+    @Transactional(readOnly = true)
     def show(Map params) {
         list(params)[0]
     }
 
+    @Transactional(readOnly = true)
     def count(Map params) {
         def queryResult
         def result

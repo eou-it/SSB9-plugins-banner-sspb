@@ -51,6 +51,11 @@ class PageSecurity implements Serializable{
     Long vpdiCode
 
 
+    static constraints = {
+        dataOrigin(nullable:true, maxSize:30)
+        vpdiCode(nullable:true, maxSize:19)
+    }
+
     public static def fetchAllByPageId(Long id) {
         if (id) {
             return PageSecurity.withSession { session -> session.getNamedQuery('PageSecurity.fetchAllByPageId').setLong('pageId', id).list() }

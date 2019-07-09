@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ * Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 
 package net.hedtech.banner.sspb
@@ -16,7 +16,7 @@ import org.springframework.util.StringUtils
 @Log4j
 @Transactional
 class PageSecurityService {
-    static transactional = true
+   // static transactional = true
     //static final datasource = 'sspb'
     def springSecurityService
 
@@ -143,8 +143,10 @@ class PageSecurityService {
             result = "IS_AUTHENTICATED_ANONYMOUSLY"
         } else if ( roleName.startsWith(admin) ) {
             def adminRoles = grails.util.Holders.config.pageBuilder.adminRoles.split(',')
+            def superAdminRoles =  grails.util.Holders.config.pageBuilder.superAdminRoles.split(',')
             def r = "ROLE_${roleName.minus(admin)}"
             result = adminRoles.find { it.startsWith(r) }
+            result = result?:superAdminRoles.find { it.startsWith(r) }
             result = result?"$result": "${r}_BAN_DEFAULT_M"
         } else {
             result = "ROLE_SELFSERVICE-${roleName}_BAN_DEFAULT_M"
