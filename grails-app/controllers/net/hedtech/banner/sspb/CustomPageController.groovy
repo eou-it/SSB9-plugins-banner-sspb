@@ -27,7 +27,7 @@ class CustomPageController {
         }
         if (grailsApplication.config.pageBuilder?.enabled) {
             def pageId = params.id
-            if(!StringUtils.isEmpty(params.format)){
+            if(params?.format){
                 pageId = params.id+"."+params.format
             }
             // render view page.gsp which will be including getHTML

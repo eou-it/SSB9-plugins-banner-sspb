@@ -13,7 +13,7 @@ import org.omg.CORBA.portable.ApplicationException
 import org.springframework.http.HttpMethod
 import org.springframework.util.StringUtils
 
-@Log4j
+
 @Transactional
 class PageSecurityService {
    // static transactional = true
@@ -189,7 +189,7 @@ class PageSecurityService {
         List<InterceptedUrl> data = new ArrayList<InterceptedUrl>()
         requestMapIndex.each { interceptMapping ->
             HttpMethod method = null
-            if(StringUtils.hasText(interceptMapping?.key) && interceptMapping?.value?.configAttribute?.size() > 0) {
+            if(StringUtils.hasText(interceptMapping?.key) && interceptMapping?.value?.configAttribute) {
                 String [] groupList = interceptMapping.value.configAttribute.split(',')
                 def accessList = new ArrayList()
                 groupList.each{it ->
