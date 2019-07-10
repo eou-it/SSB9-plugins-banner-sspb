@@ -5,11 +5,15 @@
 package net.hedtech.banner.sspb
 
 import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.InterceptedUrl
 import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.util.Holders
 import groovy.util.logging.Log4j
 import org.omg.CORBA.portable.ApplicationException
+import org.springframework.http.HttpMethod
+import org.springframework.util.StringUtils
 
-@Log4j
+
 @Transactional
 class PageSecurityService {
    // static transactional = true
@@ -42,6 +46,7 @@ class PageSecurityService {
             requestMapIndex = mergePages(requestMapIndex)
             applyRequestMapIndex(requestMapIndex)
             //Clear cache after changing the Requestmap.
+            clearIntercepturl(requestMapIndex)
             springSecurityService.clearCachedRequestmaps()
         }
     }
@@ -69,7 +74,7 @@ class PageSecurityService {
                 match = [domain: null]
                 requestMapIndex[it.pattern] = match
             }
-            match.configAttribute = getConfigAttribute(it.configAttributes)
+            match.configAttribute = getConfigAttribute(it.access)
         }
         requestMapIndex
     }
@@ -171,10 +176,29 @@ class PageSecurityService {
         } else {
             if (configAttribute) {
                 rm=new Requestmap (url: url, configAttribute: configAttribute)
-                rm.save()
+                rm.save(flush:true, failOnError:true)
                 log.debug "Created new Requestmap entry $url : $configAttribute"
             }
         }
         return rm
+    }
+
+
+    private def clearIntercepturl(requestMapIndex){
+        Holders.config.grails.plugin.springsecurity.interceptUrlMap.clear()
+        List<InterceptedUrl> data = new ArrayList<InterceptedUrl>()
+        requestMapIndex.each { interceptMapping ->
+            HttpMethod method = null
+            if(StringUtils.hasText(interceptMapping?.key) && interceptMapping?.value?.configAttribute) {
+                String [] groupList = interceptMapping.value.configAttribute.split(',')
+                def accessList = new ArrayList()
+                groupList.each{it ->
+                    accessList.add(it)
+                }
+                InterceptedUrl iu = new InterceptedUrl(interceptMapping.key, accessList,method)
+                Holders.config.grails.plugin.springsecurity.interceptUrlMap?.add(iu)
+                data.add(iu)
+            }
+        }
     }
 }

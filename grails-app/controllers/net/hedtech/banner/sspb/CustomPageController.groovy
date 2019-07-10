@@ -5,6 +5,7 @@
 package net.hedtech.banner.sspb
 
 import grails.core.GrailsApplication
+import org.springframework.util.StringUtils
 
 class CustomPageController {
 
@@ -25,8 +26,12 @@ class CustomPageController {
             }
         }
         if (grailsApplication.config.pageBuilder?.enabled) {
+            def pageId = params.id
+            if(params?.format){
+                pageId = params.id+"."+params.format
+            }
             // render view page.gsp which will be including getHTML
-            render(view: "page", model: [id: params.id])
+            render(view: "page", model: [id: pageId])
         } else {
             redirect(uri: '/themeEditor')
         }
