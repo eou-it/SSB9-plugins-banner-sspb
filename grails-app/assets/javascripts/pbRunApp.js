@@ -107,12 +107,12 @@ if (pageControllers) {
         }
     }
 }
-appModule.controller('homePageUrlCtr', function($scope, $window, $http) {
+appModule.controller('homePageUrlCtr', ['$scope', '$window', '$http', function($scope, $window, $http) {
    $window.onload = function() {
        var url = $('#homeURL').val();
        $('#branding').attr('href', url)
     };
-});
+}]);
 // below filter is used for pagination
 appModule.filter('startFrom', function() {
         return function(input, start) {
@@ -128,7 +128,7 @@ appModule.filter('to_trusted', ['$sce', function($sce){
 }]);
 
 
-appModule.run( function($templateCache )  {
+appModule.run(['$templateCache', function($templateCache )  {
     console.log("App module.run started" );
     $templateCache.put('gridFooter.html',
         "<div ng-show=\"showFooter\" class=\"ngFooterPanel\" ng-class=\"{'ui-widget-content': jqueryUITheme, 'ui-corner-bottom': jqueryUITheme}\" ng-style=\"footerStyle()\">" +
@@ -154,7 +154,7 @@ appModule.run( function($templateCache )  {
         "    <div style=\"position: absolute; bottom:2px;\" ng-style=\"{ {{i18n.styleRight}}:'2px'}\"> #gridControlPanel# </div>" +
         "</div>");
 
-});
+}]);
 
 //Add some functions to the scope
 appModule.factory('pbAddCommon', function() {
@@ -190,7 +190,7 @@ appModule.factory('pbAddCommon', function() {
 });
 
 //Factory for resources
-appModule.factory('pbResource', function($resource ) {
+appModule.factory('pbResource', ['$resource', function($resource ) {
     function PBResource(resourceName )  {
         //Expecting a resource name exposed at resourceBase+resourceName
         //For backwards compatibility, replace the location used in the alpha release with resourceBase
@@ -235,11 +235,11 @@ appModule.factory('pbResource', function($resource ) {
     }
 
     return PBResourceFactory;
-});
+}]);
 
 
 //Factory for data sets
-appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
+appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFactory, $parse ) {
     // Use function to create a post query function associated with
     // a DataSet instance
     console.log("========After Page load =========")
@@ -557,7 +557,7 @@ appModule.factory('pbDataSet', function( $cacheFactory, $parse ) {
     }
 
     return PBDataSetFactory;
-});
+}]);
 
 function initlizePopUp(params){
     try {
