@@ -260,7 +260,7 @@ pagebuilderModule.directive('pbUpload', function() {
     return {
         restrict:'E',
         scope:{label:'@', status:'=', pbChange:'&'},
-        templateUrl: '../assets/template/pbUpload.gsp',
+        templateUrl: '../assets/template/pbUpload.html',
         controller: ['$scope', '$element', '$attrs', '$transclude',
             function($scope, $element, $attrs, $transclude) {
                 $scope.complete = function(content, completed) {
@@ -289,11 +289,24 @@ pagebuilderModule.directive('pbUpload', function() {
                     dialogFade:true
                 };
 
+                $scope.i18n = {
+                    "sspb.css.cssManager.upload.label"  : $.i18n.prop("sspb.css.cssManager.upload.label"),
+                    "sspb.css.cssManager.cssName.label" : $.i18n.prop("sspb.css.cssManager.cssName.label"),
+                    "sspb.page.visualbuilder.name.invalid.pattern.message"  : $.i18n.prop("sspb.page.visualbuilder.name.invalid.pattern.message"),
+                    "sspb.page.visualbuilder.name.required.message" :   $.i18n.prop("sspb.page.visualbuilder.name.required.message"),
+                    "sspb.css.cssManager.description.label" :  $.i18n.prop("sspb.css.cssManager.description.label"),
+                    "sspb.css.cssManager.upload.file.label"  : $.i18n.prop("sspb.css.cssManager.upload.file.label"),
+                    "sspb.css.cssManager.upload.server.response.label"  : $.i18n.prop("sspb.css.cssManager.upload.server.response.label"),
+                    "pb.template.upload.ok.label":   $.i18n.prop("pb.template.upload.ok.label")
+
+                };
+
             }],
         replace:true
     }
 
 });
+
 
 
 
