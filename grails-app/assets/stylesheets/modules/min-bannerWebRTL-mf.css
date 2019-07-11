@@ -1,8 +1,6 @@
 /*
-*= require javascripts/modules/min-bannerWeb-mf.js
-*= require pageBuilderRTL-mf.css
-*= require plugins/sghe_aurora.git/grails-app/assets/stylesheets/modules/auroraRTL-mf.css
-*= require plugins/web-app-extensibility.git/grails-app/assets/stylesheets/modules/extensibilityCommonRTL-mf.css
+*= require modules/auroraRTL-mf.css
+*= require modules/extensibilityCommonRTL-mf.css
 *= require BannerXE/css/banner-ui-ss-rtl.css
 *= require BannerXE/css/banner-ui-ss-rtl-patch.css
 *= require BannerXE/css/notification-center-rtl.css
