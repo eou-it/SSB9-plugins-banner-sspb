@@ -56,10 +56,10 @@ Brief summary/description of the plugin.
 
     Closure doWithSpring() { {->
             // TODO Implement runtime spring config (optional)
-			String appId = Holders?.grailsApplication?.metadata?.get('app.appId')
+			/*String appId = Holders?.grailsApplication?.metadata?.get('app.appId')
 			if (appId && "EXTZ".equals(appId) && securityConfigType == 'Requestmap') {
 				objectDefinitionSource(RequestmapFilterInvocationDefinition)
-			}
+			}*/
         }
     }
 
