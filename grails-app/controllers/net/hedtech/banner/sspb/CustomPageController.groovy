@@ -20,16 +20,16 @@ class CustomPageController {
             render ""
             return
         }
-        if (params.id=="pbadm.ssoauth") {
+        def pageId = params.id
+        if(params?.format){
+            pageId = params.id+"."+params.format
+        }
+        if (pageId =="pbadm.ssoauth") {
             if (params.url) {
                 redirect(uri: params.url)
             }
         }
         if (grailsApplication.config.pageBuilder?.enabled) {
-            def pageId = params.id
-            if(params?.format){
-                pageId = params.id+"."+params.format
-            }
             // render view page.gsp which will be including getHTML
             render(view: "page", model: [id: pageId])
         } else {

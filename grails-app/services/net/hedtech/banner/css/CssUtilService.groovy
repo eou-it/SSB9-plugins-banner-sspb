@@ -8,6 +8,7 @@ import grails.gorm.transactions.Transactional
 import groovy.util.logging.Log4j
 import net.hedtech.banner.security.CssSecurity
 import net.hedtech.banner.security.CssSecurityId
+import net.hedtech.banner.sspb.PBUser
 import net.hedtech.banner.tools.PBUtilServiceBase
 
 @Log4j

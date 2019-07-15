@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
 class PageRole {
     static belongsTo = [page: Page]
-    @JsonIgnoreProperties("pageRoles")
+    @JsonIgnoreProperties(["pageRoles","extendsPage"])
     Page page
     String roleName
     Boolean allow = true     // assume access is allowed for a role - can change to temporarily disable
