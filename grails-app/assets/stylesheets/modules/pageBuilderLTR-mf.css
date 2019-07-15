@@ -3,4 +3,13 @@
 *= require modules/aurora-mf.css
 *= require custom-number-input/custom-number-input.css
 *= require pageBuilder-mf.css
+*=require BannerXE/css/jquery-ui.css
+*=require BannerXE/css/ng-grid.css
+*=require BannerXE/css/angular-ui.css
+*=require BannerXE/css/bootstrap.css
+*=require preference/userpreference.css
+*=require sspbmain/main.css
+*=require shortcuts/bannershortcuts.css
+*=require select2/select2.css
+*=require eds.css
 */
