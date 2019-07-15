@@ -104,8 +104,10 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         });
     </g:javascript>
 
-    <g:theme />
+
     <g:layoutHead />
+
+    <g:theme />
 
 
 </head>
