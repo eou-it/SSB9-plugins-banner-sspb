@@ -394,7 +394,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
                     //if (iVal == null || iVal == undefined){
                     //    iVal = this.currentRecord[this.selectValueKey];
                     //}
-                    model.assign($scope, iVal); console.log("========After Page load =========")
+                    model.assign($scope, iVal);
                     this.setCurrentRecord(iVal); //Adding this experimentally for xe-dropdown
                 }  else {
                     model.assign($scope, this.currentRecord);
