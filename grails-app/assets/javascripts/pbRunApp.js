@@ -243,7 +243,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
     // Use function to create a post query function associated with
     // a DataSet instance
     console.log("========After Page load =========")
-    var $scope;
+    eval("var $scope"+";");
     function CreatePostEventHandlers(instanceIn, userPostQuery, userOnError) {
         console.log("Post Query Constructor for DataSet " + instanceIn.componentId);
         this.go = function(it, response) {
@@ -330,8 +330,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
 
         this.get = function() {
             this.init();
-            var params = "";
-            eval("params="+this.queryParams+";");
+            eval("var params="+this.queryParams+";");
             console.log("Query Parameters:", params) ;
             this.data=[];
             this.data[0] = this.Resource.get(params, post.go, post.error);
@@ -350,12 +349,12 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
             } else {
                 this.init();
             }
-            var params;
-            if (!(p && p.all))
-                eval("params="+this.queryParams+";");
-            else
-                params={};
-
+            eval("var params;");
+            if (!(p && p.all)) {
+                params = eval("params="+this.queryParams+";");
+            } else {
+                params = {};
+            }
             if (this.pageSize>0) {
                 params.offset=(nvl(this.pagingOptions.currentPage,1)-1)*this.pagingOptions.pageSize;
                 params.max=this.pagingOptions.pageSize;
@@ -395,7 +394,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
                     //if (iVal == null || iVal == undefined){
                     //    iVal = this.currentRecord[this.selectValueKey];
                     //}
-                    model.assign($scope, iVal);
+                    model.assign($scope, iVal); console.log("========After Page load =========")
                     this.setCurrentRecord(iVal); //Adding this experimentally for xe-dropdown
                 }  else {
                     model.assign($scope, this.currentRecord);
@@ -553,6 +552,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
 
     function PBDataSetFactory(scopeIn, params) {
         $scope = scopeIn;
+        eval("typeof c !=='undefined'") ? eval("$scope = c"):null;
         return new PBDataSet(params);
     }
 
