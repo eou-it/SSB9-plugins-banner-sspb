@@ -3,7 +3,6 @@
  *******************************************************************************/
 package net.hedtech.banner.sspb
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import difflib.DiffUtils
 import difflib.Patch
 import grails.converters.JSON
@@ -16,7 +15,6 @@ class Page {
 
     private static final String deltaVersionSave = "1.0"
 
-    @JsonIgnoreProperties("extensions")
     Page extendsPage     //Optional parent page (super class), see constraints
 
     String constantName
@@ -555,6 +553,5 @@ class Page {
         owner column: "PAGE_OWNER"
         allowAllInd column: "PAGE_ALLOW_ALL_IND"
         tag column: "PAGE_TAG"
-        extendsPage lazy: false
     }
 }
