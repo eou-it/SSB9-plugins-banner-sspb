@@ -1,13 +1,12 @@
 /*
 *= require modules/min-bannerWebRTL-mf.css
-*= require modules/pageBuilder-mf.css
 *= require BannerXE/css/jquery-ui-rtl.css
 *= require BannerXE/css/ng-grid-rtl.css
 *= require BannerXE/css/angular-ui-rtl.css
 *= require BannerXE/css/bootstrap-rtl.css
-*= require BannerXE/css/xe-ui-components.min-rtl.css
+*= require modules/commonComponentsRTL-mf.css
 *= require banner-sspb-rtl-patch.css
-*= require sspbmain/main-rtl.css
+*= require sspbmain-rtl.css
 *= require pbDefault-rtl.css
 *= require eds-rtl.css
 */
