@@ -13,7 +13,7 @@ pagebuilderModule.directive('pbArrayofmap', function() {
         restrict:'E',
         //transclude: true,
         scope:{label:'@', array:'=', pbParent:'=', pbAttrname:'=', pbChange:'&'},
-        templateUrl: '../assets/template/pbArrayOfMap.html',
+        templateUrl: '../assets/angular/pbArrayOfMap.html',
         controller: ['$scope', '$element', '$attrs', '$transclude',
             function($scope, $element, $attrs, $transclude) {
                 // assign an empty array to the attribute if the map is undefined
@@ -91,7 +91,7 @@ pagebuilderModule.directive('pbMap', function() {
         restrict:'E',
         //transclude: true,
         scope:{label:'@', map:'=', pbParent:'=', pbAttrname:'=', pbChange:'&'},
-        templateUrl: '../assets/template/pbMap.html',
+        templateUrl: '../assets/angular/pbMap.html',
         controller: ['$scope', '$element', '$attrs', '$transclude',
             function($scope, $element, $attrs, $transclude) {
                 // assign an empty map to the attribute if the map is undefined
@@ -165,7 +165,7 @@ pagebuilderModule.directive('pbTextarea', function() {
         restrict:'E',
         //transclude: true,
         scope:{label:'@', value:'=', pbParent:'=', pbAttrname:'=', pbChange:'&'},
-        templateUrl:  '../assets/template/pbTextarea.html',
+        templateUrl:  '../assets/angular/pbTextarea.html',
         controller: ['$scope', '$element', '$attrs', '$transclude',
             function($scope, $element, $attrs, $transclude) {
                 // assign an empty map to the attribute if the map is undefined
@@ -260,7 +260,7 @@ pagebuilderModule.directive('pbUpload', function() {
     return {
         restrict:'E',
         scope:{label:'@', status:'=', pbChange:'&'},
-        templateUrl: '../assets/template/pbUpload.gsp',
+        templateUrl: '../assets/angular/pbUpload.html',
         controller: ['$scope', '$element', '$attrs', '$transclude',
             function($scope, $element, $attrs, $transclude) {
                 $scope.complete = function(content, completed) {
@@ -289,11 +289,24 @@ pagebuilderModule.directive('pbUpload', function() {
                     dialogFade:true
                 };
 
+                $scope.i18n = {
+                    "sspb.css.cssManager.upload.label"  : $.i18n.prop("sspb.css.cssManager.upload.label"),
+                    "sspb.css.cssManager.cssName.label" : $.i18n.prop("sspb.css.cssManager.cssName.label"),
+                    "sspb.page.visualbuilder.name.invalid.pattern.message"  : $.i18n.prop("sspb.page.visualbuilder.name.invalid.pattern.message"),
+                    "sspb.page.visualbuilder.name.required.message" :   $.i18n.prop("sspb.page.visualbuilder.name.required.message"),
+                    "sspb.css.cssManager.description.label" :  $.i18n.prop("sspb.css.cssManager.description.label"),
+                    "sspb.css.cssManager.upload.file.label"  : $.i18n.prop("sspb.css.cssManager.upload.file.label"),
+                    "sspb.css.cssManager.upload.server.response.label"  : $.i18n.prop("sspb.css.cssManager.upload.server.response.label"),
+                    "pb.template.upload.ok.label":   $.i18n.prop("pb.template.upload.ok.label")
+
+                };
+
             }],
         replace:true
     }
 
 });
+
 
 
 
