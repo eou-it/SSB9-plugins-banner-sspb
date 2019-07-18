@@ -1,9 +1,7 @@
 /*
+*= require modules/aurora-mf.css
 *= require banner-ui-ss.css
-*= require BannerXE/css/jquery-ui.css
-*= require themeroller/jquery-ui-1.8.13.custom.css
 *= require notification-center.css
 *= require jquery.ui.tooltip.css
 *= require backbone.pagingcontrols.css
-*= require BannerXE/css/extensibility-ss.css
 */
