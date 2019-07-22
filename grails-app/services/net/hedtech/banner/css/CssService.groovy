@@ -5,6 +5,7 @@
 package net.hedtech.banner.css
 
 import net.hedtech.banner.exceptions.ApplicationException
+import net.hedtech.banner.security.CssSecurity
 import net.hedtech.banner.security.DeveloperSecurityService
 import net.hedtech.banner.service.ServiceBase
 import net.hedtech.banner.sspb.CommonService
@@ -176,8 +177,14 @@ class CssService extends ServiceBase {
             log.error('user not authorized to delete css')
             throw new AccessDeniedException("user.not.authorized.delete", [PBUser.getTrimmed().loginName])
         }
-            def css = Css.fetchByConstantName(params.id)
-            super.delete(css)
+        def css = Css.fetchByConstantName(params.id)
+        def cssDevEntries = CssSecurity.fetchAllByCssId(css.id)
+        if (cssDevEntries) {
+            cssDevEntries.each { CssSecurity cssObj ->
+                cssObj.delete(flush: true)
+            }
+        }
+        super.delete(css)
     }
 
     private def validateInput(params) {
