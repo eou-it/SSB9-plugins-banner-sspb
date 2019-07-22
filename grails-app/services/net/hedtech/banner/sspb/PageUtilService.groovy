@@ -24,12 +24,18 @@ class PageUtilService extends PBUtilServiceBase {
     def static final statusError = 1
     def static final statusDeferLoad = 2
     def static final actionImportInitally = 1
-    def static final bundleLocation = getBundleLocation()
-    def static final bundleName = "pageBuilder"
+    def  bundleLocation
+    def bundleName = "pageBuilder"
     String pagePath = pbConfig.locations.page
     def currentAction = null
 
-    def static getBundleLocation() {
+
+    PageUtilService(){
+        super()
+        bundleLocation = getBundleLocation()
+    }
+
+    def  getBundleLocation() {
         if (bundleLocation) {//only need to determine location once
             return bundleLocation
         }

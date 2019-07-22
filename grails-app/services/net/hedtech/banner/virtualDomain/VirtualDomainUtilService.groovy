@@ -75,7 +75,7 @@ class VirtualDomainUtilService extends PBUtilServiceBase {
         exportToFile(content.serviceName, null, vdPath, false, isAllowExportDSPermission)
     }
 
-    static Date getTimestamp(String vdName, String path=pbConfig.locations.virtualDomain ) {
+     Date getTimestamp(String vdName, String path=vdPath ) {
         def file = new File( "$path/${vdName}.json")
         Date result
         if (file.exists())
