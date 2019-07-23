@@ -3,9 +3,10 @@
  *******************************************************************************/
 package net.hedtech.banner.security
 
+import org.hibernate.annotations.Generated
+import org.hibernate.annotations.GenerationTime
 
 import javax.persistence.*
-import javax.persistence.TemporalType
 
 @Entity
 @Table(name = "GBRPSEC")
@@ -24,6 +25,7 @@ class PageSecurity implements Serializable{
     PageSecurityId id
 
     @Column(name="GBRPSEC_SURROGATE_ID")
+    @Generated( value = GenerationTime.ALWAYS)
     @SequenceGenerator(name = 'GBRPSEC_SEQ_GENERATOR', sequenceName = 'SSPBMGR.GBRPSEC_SURROGATE_ID_SEQUENCE')
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = 'GBRPSEC_SEQ_GENERATOR')
     Long surrogateId

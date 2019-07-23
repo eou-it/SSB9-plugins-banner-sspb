@@ -4,6 +4,7 @@
 package net.hedtech.banner.virtualDomain
 
 import grails.gorm.transactions.Transactional
+import net.hedtech.banner.security.VirtualDomainSecurity
 import net.hedtech.banner.sspb.CommonService
 import org.hibernate.criterion.CriteriaSpecification
 import org.hibernate.criterion.Order
@@ -125,6 +126,12 @@ class VirtualDomainService {
     def delete(Map content, params) {
         log.trace "VirtualDomainService.delete invoked"
         def result = VirtualDomain.get(params.id?:content.id)
+        def vdDevEntries = VirtualDomainSecurity.fetchAllByVirtualDomainId(result.id)
+        if(vdDevEntries) {
+            vdDevEntries.each {VirtualDomainSecurity vdObj ->
+                vdObj.delete(flush:true)
+            }
+        }
         result.delete(flush:true, failOnError: true)
     }
 

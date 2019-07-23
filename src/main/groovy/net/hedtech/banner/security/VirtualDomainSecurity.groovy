@@ -3,9 +3,10 @@
  *******************************************************************************/
 package net.hedtech.banner.security
 
+import org.hibernate.annotations.Generated
+import org.hibernate.annotations.GenerationTime
 
 import javax.persistence.*
-import javax.persistence.TemporalType
 
 @Entity
 @Table(name = "GBRVSEC")
@@ -23,6 +24,7 @@ class VirtualDomainSecurity implements Serializable{
     VirtualDomainSecurityId id
 
     @Column(name="GBRVSEC_SURROGATE_ID")
+    @Generated( value = GenerationTime.ALWAYS)
     @SequenceGenerator(name = 'GBRVSEC_SEQ_GENERATOR', sequenceName = 'SSPBMGR.GBRVSEC_SURROGATE_ID_SEQUENCE')
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = 'GBRVSEC_SEQ_GENERATOR')
     Long surrogateId

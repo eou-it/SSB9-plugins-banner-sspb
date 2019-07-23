@@ -3,9 +3,10 @@
  *******************************************************************************/
 package net.hedtech.banner.security
 
+import org.hibernate.annotations.Generated
+import org.hibernate.annotations.GenerationTime
 
 import javax.persistence.*
-import javax.persistence.TemporalType
 
 @Entity
 @Table(name = "GBRCSEC")
@@ -25,6 +26,7 @@ class CssSecurity implements Serializable{
     CssSecurityId id
 
     @Column(name="GBRCSEC_SURROGATE_ID")
+    @Generated( value = GenerationTime.ALWAYS)
     @SequenceGenerator(name = 'GBRCSEC_SEQ_GENERATOR', sequenceName = 'SSPBMGR.GBRCSEC_SURROGATE_ID_SEQUENCE')
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = 'GBRCSEC_SEQ_GENERATOR')
     Long surrogateId

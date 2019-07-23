@@ -7,6 +7,7 @@ package net.hedtech.banner.sspb
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import net.hedtech.banner.security.DeveloperSecurityService
+import net.hedtech.banner.security.PageSecurity
 import net.hedtech.restfulapi.AccessDeniedException
 
 @Transactional
@@ -253,6 +254,12 @@ class PageService {
                 throw new RuntimeException( message(code:"sspb.page.visualComposer.deletion.failed.message",args: [page.extensions.constantName.join(", ")]))
             }
             else {
+                def pageDevEntries = PageSecurity.fetchAllByPageId(page.id)
+                if(pageDevEntries) {
+                    pageDevEntries.each {PageSecurity psObj ->
+                        psObj.delete(failOnError:true, flush:true)
+                    }
+                }
                 page.delete(failOnError:true, flush: true)
                 springSecurityService.clearCachedRequestmaps()
             }
