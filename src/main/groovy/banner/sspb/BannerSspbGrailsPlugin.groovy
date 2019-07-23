@@ -99,10 +99,10 @@ Brief summary/description of the plugin.
             //println "Added PersistenceListener to $datastore"
         }
         def pbConfig= Holders.getConfig().pageBuilder
-        def loc = pbConfig.locations.bundle?pbConfig.locations.bundle:System.getProperty("java.io.tmpdir")
+        def pbBundleLocation = pbConfig.locations.bundle?pbConfig.locations.bundle:System.getProperty("java.io.tmpdir")
         //Set up the externalMessageSource for Page Builder
         def externalMessageSource = new ExternalMessageSource(
-                loc, "pageBuilder",
+                pbBundleLocation, "pageBuilder",
                 "Banner configuration pageBuilder.locations.bundles default: \$temp or \$tmp")
         applicationContext.getBean("messageSource")?.setExternalMessageSource(externalMessageSource)
     }
@@ -121,6 +121,5 @@ Brief summary/description of the plugin.
     void onShutdown(Map<String, Object> event) {
         // TODO Implement code that is executed when the application shuts down (optional)
     }
-
 
 }
