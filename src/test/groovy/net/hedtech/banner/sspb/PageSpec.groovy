@@ -3,15 +3,12 @@
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
-import grails.test.mixin.TestFor
-import grails.test.mixin.TestMixin
-import grails.test.mixin.web.ControllerUnitTestMixin
-import spock.lang.*
+import grails.testing.gorm.DomainUnitTest
+import spock.lang.Specification
+import spock.lang.Unroll
 
 //Need next mixin for json converter
-@TestMixin(ControllerUnitTestMixin)
-@TestFor(Page)
-class PageSpec extends Specification {
+class PageSpec extends Specification implements DomainUnitTest<Page> {
 
     String baseModelView
 

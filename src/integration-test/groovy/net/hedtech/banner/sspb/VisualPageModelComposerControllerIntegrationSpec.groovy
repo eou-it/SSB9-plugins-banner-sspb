@@ -3,11 +3,10 @@
  ****************************************************************************** */
 package net.hedtech.banner.sspb
 
-import grails.test.spock.IntegrationSpec
+
 import spock.lang.Specification
 
-
-class VisualPageModelComposerControllerIntegrationSpec extends IntegrationSpec  {
+class VisualPageModelComposerControllerIntegrationSpec extends Specification  {
 
     VisualPageModelComposerController controller
     public void setup() {

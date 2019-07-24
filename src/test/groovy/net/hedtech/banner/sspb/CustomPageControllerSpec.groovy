@@ -4,16 +4,14 @@
 
 package net.hedtech.banner.sspb
 
-import grails.test.mixin.TestFor
+import grails.testing.web.controllers.ControllerUnitTest
 import grails.util.Holders
 import spock.lang.Specification
-
 
 /**
  * See the API for {@link grails.test.mixin.support.GrailsUnitTestMixin} for usage instructions
  */
-@TestFor(CustomPageController)
-class CustomPageControllerSpec extends Specification {
+class CustomPageControllerSpec extends Specification implements ControllerUnitTest<CustomPageController> {
 
     void "test page"() {
         given:

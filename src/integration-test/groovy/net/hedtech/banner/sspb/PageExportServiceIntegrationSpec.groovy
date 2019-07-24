@@ -3,10 +3,11 @@
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
-import grails.test.spock.IntegrationSpec
-import net.hedtech.banner.security.DeveloperSecurityService
 
-class PageExportServiceIntegrationSpec extends IntegrationSpec {
+import net.hedtech.banner.security.DeveloperSecurityService
+import spock.lang.Specification
+
+class PageExportServiceIntegrationSpec extends Specification {
     def pageExportService
     def pageService
 

@@ -3,9 +3,8 @@
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
-import grails.test.spock.IntegrationSpec
+
 import net.hedtech.banner.testing.BaseIntegrationTestCase
-import net.hedtech.banner.css.Css
 import org.junit.After
 import org.junit.Before
 import org.junit.Test

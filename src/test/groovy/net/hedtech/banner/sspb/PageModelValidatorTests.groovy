@@ -3,15 +3,14 @@
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
-import grails.test.mixin.TestFor
-import grails.test.GrailsUnitTestCase
-import org.codehaus.groovy.grails.commons.DefaultGrailsApplication
+import org.grails.testing.GrailsUnitTest
+import spock.lang.Specification
 
-class PageModelValidatorTests extends GrailsUnitTestCase   {
+class PageModelValidatorTests  implements GrailsUnitTest  {
     def pageModelValidator
 
     public void setUp() {
-        super.setUp()
+       // super.setUp()
         def defPath = "resource/PageModelDefinition.json"
         def pageDefText = this.class.classLoader.getResourceAsStream( 'PageModelDefinition.json' ).text
         //def pageDefText = new File(defPath).getText()
@@ -23,7 +22,7 @@ class PageModelValidatorTests extends GrailsUnitTestCase   {
     }
 
     public void tearDown() {
-        super.tearDown()
+      //  super.tearDown()
     }
 
 

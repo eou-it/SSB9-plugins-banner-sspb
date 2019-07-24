@@ -3,9 +3,9 @@
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
-import static org.junit.Assert.*
-import org.junit.*
-import grails.converters.JSON
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 
 class VirtualDomainIntegrationTests {
 

@@ -3,9 +3,10 @@
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
-import grails.test.spock.IntegrationSpec
 
-class PageIntegrationSpec extends IntegrationSpec {
+import spock.lang.Specification
+
+class PageIntegrationSpec extends Specification {
 
     def setup() {
     }
