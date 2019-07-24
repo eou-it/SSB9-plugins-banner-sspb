@@ -331,6 +331,8 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
         this.get = function() {
             this.init();
             eval("var params="+this.queryParams+";");
+            /*fix for minification issue , params will be replaced with variable b after minification*/
+            eval("typeof b !=='undefined'") ? eval("b = params"):null;
             console.log("Query Parameters:", params) ;
             this.data=[];
             this.data[0] = this.Resource.get(params, post.go, post.error);
@@ -552,6 +554,8 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
 
     function PBDataSetFactory(scopeIn, params) {
         $scope = scopeIn;
+        /* Fixing issue during minification setting the scope value in minfication, C will
+        * hold value of scope*/
         eval("typeof c !=='undefined'") ? eval("$scope = c"):null;
         return new PBDataSet(params);
     }
