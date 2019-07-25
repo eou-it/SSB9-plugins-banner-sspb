@@ -4,10 +4,11 @@
 
 package net.hedtech.banner.tools
 
-
+import grails.util.Holders
 import groovy.util.logging.Log4j
 import org.hibernate.HibernateException
 
+import javax.annotation.PostConstruct
 import java.text.ParseException
 
 @Log4j
@@ -17,9 +18,16 @@ public class PBUtilServiceBase {
     def final static loadSkipExisting=1
     def final static loadRenameExisting =2
     def final static loadIfNew=3
-    def static pbConfig = grails.util.Holders.getConfig().pageBuilder
-    def static locationsValidated = locationsValidated?:configLocations()
+    def  pbConfig
+    def  locationsValidated
     def jsonExt = ~/.*\.json/
+
+
+
+    PBUtilServiceBase(){
+        pbConfig= Holders.getConfig().pageBuilder
+        locationsValidated = locationsValidated?:configLocations()
+    }
 
     def static testWrite(location) {
         def existsAndWritable = true
@@ -34,7 +42,7 @@ public class PBUtilServiceBase {
         existsAndWritable
     }
 
-    def static configLocations() {
+    def configLocations() {
         if (locationsValidated) {
             return true
         }

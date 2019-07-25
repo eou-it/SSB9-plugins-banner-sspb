@@ -294,6 +294,9 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
 
         this.setResource(params.resource);
         this.queryParams=params.queryParams;
+        if(params.onSaveSuccess) {
+            onSaveSuccess = params.onSaveSuccess
+        }
         this.selectValueKey=params.selectValueKey;
         this.selectInitialValue=params.selectInitialValue;
         this.currentRecord=null;
@@ -335,6 +338,8 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
         this.get = function() {
             this.init();
             eval("var params="+this.queryParams+";");
+            /*fix for minification issue , params will be replaced with variable b after minification*/
+            eval("typeof b !=='undefined'") ? eval("b = params"):null;
             console.log("Query Parameters:", params) ;
             this.data=[];
             this.data[0] = this.Resource.get(params, post.go, post.error);
@@ -354,8 +359,10 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
                 this.init();
             }
             eval("var params;");
+            /* Fixing issue for minification , assigning params to variable a*/
             if (!(p && p.all)) {
                 params = eval("params="+this.queryParams+";");
+                eval("typeof b !=='undefined'") ? eval("b = params"):null;
             } else {
                 params = {};
             }
@@ -507,6 +514,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
 
             function successHandler(action) {
                 return function (response) {
+                    if(!params.onSaveSuccess){params.onSaveSuccess=onSaveSuccess}
                     if (params.onSaveSuccess) {
                         params.onSaveSuccess(response, action);
                     }
@@ -556,6 +564,8 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
 
     function PBDataSetFactory(scopeIn, params) {
         $scope = scopeIn;
+        /* Fixing issue during minification setting the scope value in minfication, c will
+        * hold value of scope*/
         eval("typeof c !=='undefined'") ? eval("$scope = c"):null;
         return new PBDataSet(params);
     }

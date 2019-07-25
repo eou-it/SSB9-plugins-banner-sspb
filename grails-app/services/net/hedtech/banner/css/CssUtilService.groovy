@@ -22,7 +22,7 @@ class CssUtilService extends PBUtilServiceBase {
     def cssService
     def developerSecurityService
 
-    static Date getTimestamp(String oName, String path=PBUtilServiceBase.pbConfig.locations.css ) {
+    Date getTimestamp(String oName, String path=cssPath ) {
         def file = new File( "$path/${oName}.json")
         Date result
         if (file.exists())
