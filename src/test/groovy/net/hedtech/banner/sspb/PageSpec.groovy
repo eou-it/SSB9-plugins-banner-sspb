@@ -4,11 +4,13 @@
 package net.hedtech.banner.sspb
 
 import grails.testing.gorm.DomainUnitTest
+import grails.testing.web.GrailsWebUnitTest
 import spock.lang.Specification
 import spock.lang.Unroll
 
 //Need next mixin for json converter
-class PageSpec extends Specification implements DomainUnitTest<Page> {
+@java.lang.SuppressWarnings("all")
+class PageSpec extends Specification implements DomainUnitTest<Page>, GrailsWebUnitTest {
 
     String baseModelView
 
@@ -221,7 +223,7 @@ class PageSpec extends Specification implements DomainUnitTest<Page> {
     }
 
     def setup() {
-        setupModels()
+       setupModels()
         setupPages()
         extensionMergedModelMap1 = Page.modelToMap(extensionMergedModelView1)
         extensionMergedModelMap2 = Page.modelToMap(extensionMergedModelView2)
