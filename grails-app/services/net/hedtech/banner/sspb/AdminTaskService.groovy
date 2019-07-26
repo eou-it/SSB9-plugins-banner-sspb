@@ -19,7 +19,7 @@ class AdminTaskService {
     def listCount = 0
     def listsStartedMilis = 0    // beginning of time
     def listTimeout = 300 * 1000 // milis
-    def pageBuilderLocation = pageUtilService.pbConfig?.locations
+    def pageBuilderLocation = pageUtilService?.pbConfig?.locations
 
     def create(Map content, ignore) {
         def result = [:]

@@ -40,5 +40,8 @@ class CssRenderControllerIntegrationSpec extends Specification {
         cssRenderController.loadCss()
         then:
         cssRenderController.response.status == 200
+        cssRenderController.response.content != null
+        cssRenderController.response.content != ""
+        String.valueOf(cssRenderController.response.content) == "body{color:red;}"
     }
 }
