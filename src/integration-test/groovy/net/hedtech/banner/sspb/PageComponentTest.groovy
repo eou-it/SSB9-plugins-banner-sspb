@@ -4,8 +4,12 @@
 
 package net.hedtech.banner.sspb
 
+import grails.gorm.transactions.Rollback
+import grails.testing.mixin.integration.Integration
 import spock.lang.Specification
 
+@Integration
+@Rollback
 class PageComponentTest extends Specification{
 
     def pageComponent

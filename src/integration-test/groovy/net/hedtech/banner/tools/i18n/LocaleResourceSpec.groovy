@@ -1,13 +1,31 @@
 /******************************************************************************
- *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 
 package net.hedtech.banner.tools.i18n
 
-
+import grails.gorm.transactions.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.util.GrailsWebMockUtil
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.context.WebApplicationContext
+import org.springframework.web.context.request.RequestContextHolder
 import spock.lang.Specification
 
+@Integration
+@Rollback
 class LocaleResourceSpec extends Specification {
+
+    @Autowired
+    WebApplicationContext ctx
+
+    def setup() {
+        GrailsWebMockUtil.bindMockWebRequest(ctx)
+    }
+
+    def cleanup() {
+        RequestContextHolder.resetRequestAttributes()
+    }
 
     void "Integration test importExisting for datepicker resources"() {
         expect:

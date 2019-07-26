@@ -45,9 +45,8 @@ class VirtualDomainComposerControllerIntegrationSpec extends Specification  {
         vdController.virtualDomainResourceService.metaClass.list = { Map params ->
             return [:]
         }
-        /*vdController.developerSecurityService = Stub(DeveloperSecurityService) {
-            isAllowModify(_,_) >> true
-        }*/
+        vdController.developerSecurityService.metaClass.isAllowModify = {String a, String b->return true}
+
         when: "saving the virtual domain"
         vdController.webRequest.params.putAll(params)
         vdController.saveVirtualDomain()
@@ -102,7 +101,7 @@ class VirtualDomainComposerControllerIntegrationSpec extends Specification  {
         vdController.saveVirtualDomain()
         then: "should not saves the virtual domain and renders the virtual domain composer page"
         vdController.response.status == 403
-        vdController.response.text == '_anonymousUser is not authorized to create record'
+        String.valueOf(vdController.response.content) == '_anonymousUser is not authorized to create record'
         VirtualDomain vd = VirtualDomain.findByServiceName(params.vdServiceName)
         null == vd
         where:
@@ -131,7 +130,7 @@ class VirtualDomainComposerControllerIntegrationSpec extends Specification  {
         vdController.deleteVirtualDomain()
         then:
         vdController.response.status == 403
-        vdController.response.text == '_anonymousUser is not authorized to delete record'
+        String.valueOf(vdController.response.content) == '_anonymousUser is not authorized to delete record'
         VirtualDomain vd1 = VirtualDomain.findByServiceName(params.vdServiceName)
         null != vd1
         where:

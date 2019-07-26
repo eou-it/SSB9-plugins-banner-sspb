@@ -3,12 +3,15 @@
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
-
+import grails.gorm.transactions.Rollback
+import grails.testing.mixin.integration.Integration
 import net.hedtech.banner.testing.BaseIntegrationTestCase
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 
+@Integration
+@Rollback
 class CompileServiceIntegrationTests extends BaseIntegrationTestCase  {
 
     @Before
@@ -25,7 +28,7 @@ class CompileServiceIntegrationTests extends BaseIntegrationTestCase  {
     void testCompileAll() {
         // test all page model compilation
         def modelIds = 1..6
-        def modelPath = "test/testData/model/PageModel"
+        def modelPath = "/testData/model/PageModel"
         def getModelPath = { id -> return modelPath + id + '.json' }
         def jsonSlurper = new groovy.json.JsonSlurper()
 
@@ -33,7 +36,7 @@ class CompileServiceIntegrationTests extends BaseIntegrationTestCase  {
             def modelFilePath = getModelPath(i)
             println "\n\ntesting $modelFilePath}"
 
-            def page = jsonSlurper.parseText(new File(modelFilePath).getText())
+            def page = jsonSlurper.parseText(this.class.getResource(modelFilePath).text)
 
             if ( !(page.constantName && page.modelView)) {
                 println "expected page source JSON object to have constantName and modelView properties"

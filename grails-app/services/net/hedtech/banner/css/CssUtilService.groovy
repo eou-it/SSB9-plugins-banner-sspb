@@ -96,6 +96,7 @@ class CssUtilService extends PBUtilServiceBase {
         bootMsg "Importing updated or new css files from $path."
         def count=0
         try {
+            path = path ?: cssPath
             new File(path).eachFileMatch(jsonExt) { file ->
                 if (!names || names.contains(file.name.take(file.name.lastIndexOf('.')))) {
                     count += loadFile(file, mode, copyOwner, copyDevSec)

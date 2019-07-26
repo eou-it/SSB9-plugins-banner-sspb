@@ -29,7 +29,7 @@ class AdminTaskServiceIntegrationSpec extends Specification {
               "/testData/model/PageModel1.json"
              ,"/testData/model/PageModel2.json"
              ,"/testData/virtualDomain/stvnation.json"
-         //    ,"/testData/css/testCss.json"
+             ,"/testData/css/testCss.json"
             ]
 
 
@@ -38,14 +38,18 @@ class AdminTaskServiceIntegrationSpec extends Specification {
     def setup() {
         pbConfig = grailsApplication.config.pageBuilder
         GrailsWebMockUtil.bindMockWebRequest(ctx)
-        adminTaskService.metaClass.pageBuilderLocation = pbConfig
+        adminTaskService.metaClass.pageBuilderLocation = pbConfig.locations
         adminTaskService.developerSecurityService.metaClass.isAllowModify = { String a, String b -> return true }
+        adminTaskService.developerSecurityService.metaClass.isAllowImport = { String a, String b -> return true }
         adminTaskService.developerSecurityService.metaClass.getImportConfigValue = { return false }
         adminTaskService.pageUtilService.developerSecurityService.metaClass.isAllowModify = { String a, String b -> return true }
+        adminTaskService.pageUtilService.developerSecurityService.metaClass.isAllowImport = { String a, String b -> return true }
         adminTaskService.pageUtilService.developerSecurityService.metaClass.getImportConfigValue = { return false }
         adminTaskService.cssUtilService.developerSecurityService.metaClass.isAllowModify = { String a, String b -> return true }
+        adminTaskService.cssUtilService.developerSecurityService.metaClass.isAllowImport = { String a, String b -> return true }
         adminTaskService.cssUtilService.developerSecurityService.metaClass.getImportConfigValue = { return false }
         adminTaskService.virtualDomainUtilService.developerSecurityService.metaClass.isAllowModify = { String a, String b -> return true }
+        adminTaskService.virtualDomainUtilService.developerSecurityService.metaClass.isAllowImport = { String a, String b -> return true }
         adminTaskService.virtualDomainUtilService.developerSecurityService.metaClass.getImportConfigValue = { return false }
 
         if(!pbConfig.locations.css){

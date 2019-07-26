@@ -92,7 +92,7 @@ class VirtualDomainUtilServiceTest extends Specification{
         given:
         def file = new File(externalLocation+"/integrationTest.json")
         when:
-        def res = VirtualDomainUtilService.getTimestamp('integrationTest',externalLocation)
+        def res = virtualDomainUtilService.getTimestamp('integrationTest',externalLocation)
         then:
         noExceptionThrown()
     }
@@ -108,11 +108,6 @@ class VirtualDomainUtilServiceTest extends Specification{
 
     void "test for importAllFromDir"(){
         given:
-       // def virtualDomainUtil = new VirtualDomainUtilService()
-        /*virtualDomainUtil.developerSecurityService = Stub(DeveloperSecurityService) {
-            getPreventImportByDeveloper() >> false
-            isAllowImport(_,_) >> true
-        }*/
         virtualDomainUtilService.developerSecurityService.metaClass.isAllowImport ={String a, String b->return true}
         when:
         def res = virtualDomainUtilService.importAllFromDir(pbConfig.locations.virtualDomain)

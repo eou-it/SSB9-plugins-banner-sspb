@@ -23,7 +23,7 @@ class PageUtilServiceIntegrationSpec extends Specification {
 
     def pageUtilService
     def workPath = "build/target/testData/model"
-    def sourcePath = "test/testData/model"
+    def sourcePath = "/testData/model"
 
     def setup() {
         GrailsWebMockUtil.bindMockWebRequest(ctx)
@@ -33,7 +33,7 @@ class PageUtilServiceIntegrationSpec extends Specification {
             file.delete()
         }
         new AntBuilder().copy(todir: workPath) {
-            fileset(dir: sourcePath)
+            fileset(dir: this.class.getResource(sourcePath).getPath())
         }
     }
 
