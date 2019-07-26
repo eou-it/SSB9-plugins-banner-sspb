@@ -75,7 +75,7 @@ class VirtualDomainUtilServiceTest extends Specification{
         given:
         def file = new File(externalLocation+"/integrationTest.json")
         when:
-        def res = VirtualDomainUtilService.getTimestamp('integrationTest',externalLocation)
+        def res = virtualDomainSqlService.getTimestamp('integrationTest',externalLocation)
         then:
         noExceptionThrown()
     }
