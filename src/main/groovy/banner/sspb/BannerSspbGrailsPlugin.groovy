@@ -1,8 +1,12 @@
+/******************************************************************************
+ *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.                   *
+ ******************************************************************************/
 package banner.sspb
 
 import grails.plugins.*
 
 import grails.util.Holders
+import net.hedtech.banner.tools.PBUtilServiceBase
 import org.grails.datastore.mapping.core.Datastore
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.MessageSource
@@ -13,7 +17,6 @@ import grails.plugin.springsecurity.web.access.intercept.RequestmapFilterInvocat
 
 import net.hedtech.banner.tools.PBPersistenceListener
 
-import net.hedtech.banner.sspb.PageUtilService
 import org.springframework.web.context.support.ServletContextResourcePatternResolver
 
 class BannerSspbGrailsPlugin extends Plugin {
@@ -98,9 +101,11 @@ Brief summary/description of the plugin.
             applicationContext.addApplicationListener new PBPersistenceListener(datastore)
             //println "Added PersistenceListener to $datastore"
         }
+        def pbConfig= Holders.getConfig().pageBuilder
+        def pbBundleLocation = pbConfig.locations.bundle?pbConfig.locations.bundle:System.getProperty("java.io.tmpdir")
         //Set up the externalMessageSource for Page Builder
         def externalMessageSource = new ExternalMessageSource(
-                PageUtilService.bundleLocation, PageUtilService.bundleName,
+                pbBundleLocation, "pageBuilder",
                 "Banner configuration pageBuilder.locations.bundles default: \$temp or \$tmp")
         applicationContext.getBean("messageSource")?.setExternalMessageSource(externalMessageSource)
     }
@@ -119,4 +124,5 @@ Brief summary/description of the plugin.
     void onShutdown(Map<String, Object> event) {
         // TODO Implement code that is executed when the application shuts down (optional)
     }
+
 }
