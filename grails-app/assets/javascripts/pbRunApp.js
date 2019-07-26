@@ -32,10 +32,6 @@ alert = function(message, params ){ //message,promptMessage,type,flash,prompts) 
 //Temporary fix for framework issue. ToDo remove when not needed any more.
 $(function() {
     _.defer( ContentManager.setContentPosition );
-    //Fix for WebLogic trailing slash issue
-    if($('#branding').attr('href') ==='/BannerExtensibility') {
-        $('#branding').attr('href', '/BannerExtensibility/')
-    }
 });
 
 //remove by value for arrays. Return if value was remove
