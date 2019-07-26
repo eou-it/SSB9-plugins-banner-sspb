@@ -4,6 +4,7 @@
 package net.hedtech.banner.security
 
 import grails.gorm.transactions.Transactional
+import grails.util.Holders
 import groovy.util.logging.Log4j
 import net.hedtech.banner.css.Css
 import net.hedtech.banner.general.ConfigurationData
@@ -32,7 +33,8 @@ class DeveloperSecurityService {
 
     void loadSecurityConfiguration() {
         log.debug('loading security configuration - start')
-        List<ConfigurationData> results = ConfigurationData.fetchByType("boolean", APP_ID)
+        def appId = Holders.config.app.appId
+        List<ConfigurationData> results = ConfigurationData.fetchByType("boolean", appId)
         results.each {
             switch (it.name){
                 case ENABLE_DEVELOPER_SECURITY :
@@ -49,7 +51,8 @@ class DeveloperSecurityService {
     }
 
     static def getImportConfigValue() {
-        def importData = ConfigurationData.fetchByNameAndType(PREVENT_IMPORT_BY_DEVELOPER, "boolean", APP_ID)
+        def appId = Holders.config.app.appId
+        def importData = ConfigurationData.fetchByNameAndType(PREVENT_IMPORT_BY_DEVELOPER, "boolean", appId)
         if (log.isDebugEnabled()) {
             log.debug('import config flag value is ' + importData?.value ?: false)
         }
