@@ -5,14 +5,23 @@ package net.hedtech.banner.css
 
 import grails.gorm.transactions.Rollback
 import grails.testing.mixin.integration.Integration
+import grails.util.GrailsWebMockUtil
 import net.hedtech.banner.security.DeveloperSecurityService
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.context.WebApplicationContext
+import org.springframework.web.context.request.RequestContextHolder
 import spock.lang.Specification
 
 @Integration
 @Rollback
 class CssExportServiceIntegrationSpec extends Specification  {
 
-    def cssExportService
+    @Autowired
+    CssExportService cssExportService
+
+    @Autowired
+    WebApplicationContext ctx
+
     def developerSecurityService
     def cssService
     def grailsApplication
@@ -21,6 +30,7 @@ class CssExportServiceIntegrationSpec extends Specification  {
     def path
 
     def setup() {
+        GrailsWebMockUtil.bindMockWebRequest(ctx)
         pbConfig = grailsApplication.config.pageBuilder
         path = pbConfig.locations.css
         cssService.developerSecurityService = developerSecurityService
@@ -35,6 +45,7 @@ class CssExportServiceIntegrationSpec extends Specification  {
     }
 
     def cleanup() {
+        RequestContextHolder.resetRequestAttributes()
         pbConfig = grailsApplication.config.pageBuilder
         path = pbConfig.locations.css
         def path = pbConfig.locations.css

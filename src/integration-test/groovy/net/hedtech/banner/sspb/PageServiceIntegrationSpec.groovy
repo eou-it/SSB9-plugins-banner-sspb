@@ -4,23 +4,33 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
+import grails.gorm.transactions.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.util.GrailsWebMockUtil
 import grails.validation.ValidationException
 import net.hedtech.banner.security.DeveloperSecurityService
 import net.hedtech.restfulapi.AccessDeniedException
 import org.grails.web.json.JSONObject
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.context.WebApplicationContext
+import org.springframework.web.context.request.RequestContextHolder
 import spock.lang.Specification
 
+@Integration
+@Rollback
 class PageServiceIntegrationSpec extends Specification {
+
+    @Autowired
+    WebApplicationContext ctx
 
     def pageService
 
     def setup() {
-        pageService.developerSecurityService = Stub(DeveloperSecurityService) {
-            isAllowModify(_,_) >> true
-        }
+        GrailsWebMockUtil.bindMockWebRequest(ctx)
     }
 
     def cleanup() {
+        RequestContextHolder.resetRequestAttributes()
     }
 
     void "Integration test create page and extension"() {
@@ -183,9 +193,7 @@ class PageServiceIntegrationSpec extends Specification {
 
     void "Integration test create when production is on"() {
         given:
-        pageService.developerSecurityService = Stub(DeveloperSecurityService) {
-            isAllowModify(_,_) >> false
-        }
+
         JSONObject extendsPage = null
         Map basePageMap = [pageName   : "stu.base",
                            source     : '''{

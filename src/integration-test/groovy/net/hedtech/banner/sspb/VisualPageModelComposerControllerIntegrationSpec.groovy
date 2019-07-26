@@ -3,16 +3,32 @@
  ****************************************************************************** */
 package net.hedtech.banner.sspb
 
-
+import grails.gorm.transactions.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.util.GrailsWebMockUtil
+import net.hedtech.banner.security.DeveloperSecurityService
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.context.WebApplicationContext
+import org.springframework.web.context.request.RequestContextHolder
 import spock.lang.Specification
 
+@Integration
+@Rollback
 class VisualPageModelComposerControllerIntegrationSpec extends Specification  {
 
-    VisualPageModelComposerController controller
-    public void setup() {
-        controller = new VisualPageModelComposerController()
-    }
+    @Autowired
+    WebApplicationContext ctx
 
+    VisualPageModelComposerController controller
+    def developerSecurityService
+    def setup() {
+        GrailsWebMockUtil.bindMockWebRequest(ctx)
+        controller               = new VisualPageModelComposerController()
+        controller.developerSecurityService = developerSecurityService
+    }
+    def cleanup() {
+        RequestContextHolder.resetRequestAttributes()
+    }
       void "Load page"(){
         when:
         controller.loadComposerPage()
