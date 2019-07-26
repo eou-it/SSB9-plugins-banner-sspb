@@ -3,11 +3,22 @@
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
+import grails.gorm.transactions.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.util.GrailsWebMockUtil
 import grails.util.Holders
 import org.apache.commons.codec.binary.Base64
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.context.WebApplicationContext
+import org.springframework.web.context.request.RequestContextHolder
 import spock.lang.Specification
 
+@Integration
+@Rollback
 class VirtualDomainResourceServiceTest extends Specification{
+
+    @Autowired
+    WebApplicationContext ctx
 
     def param=['url_encoding' :'utf-8' ,
                 'id' : '123456'
@@ -19,6 +30,7 @@ class VirtualDomainResourceServiceTest extends Specification{
 
 
     def setup(){
+        GrailsWebMockUtil.bindMockWebRequest(ctx)
         def vd = new VirtualDomain(serviceName: 'integrationTest', codeGet:
                 'select * from dual' , codeDelete: 'delete virtual_domain where service_name =:serviceName'
                 , codePost: 'select * from virtual_domain where id =:id',
@@ -38,7 +50,10 @@ class VirtualDomainResourceServiceTest extends Specification{
             vd.save(flush: true, failOnError: true)
         }
     }
+    def cleanup(){
+        RequestContextHolder.resetRequestAttributes()
 
+    }
     void "test for list"(){
         given:
         def params = encodeParams()

@@ -3,13 +3,15 @@
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
-
+import grails.gorm.transactions.Rollback
+import grails.testing.mixin.integration.Integration
 import grails.util.Holders
 import net.hedtech.banner.i18n.DateConverterService
 import net.hedtech.banner.security.DeveloperSecurityService
 import spock.lang.Specification
 
-//@TestMixin(GrailsUnitTestMixin)
+@Integration
+@Rollback
 class VirtualDomainSpec extends Specification {
 
     def params=['url_encoding' :'utf-8' ,

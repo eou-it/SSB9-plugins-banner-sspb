@@ -1,8 +1,7 @@
 package net.hedtech.banner.sspb
 
-import grails.transaction.Transactional
-import org.apache.commons.codec.binary.Base64
 
+import org.apache.commons.codec.binary.Base64
 
 class CommonService {
 

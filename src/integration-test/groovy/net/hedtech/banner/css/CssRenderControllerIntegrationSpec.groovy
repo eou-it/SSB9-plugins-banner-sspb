@@ -33,11 +33,15 @@ class CssRenderControllerIntegrationSpec extends Specification {
     void "test stylesheet upload"() {
         given:
         def content =  [cssName: "testCss", description: "test", source: "body{color:red;}"]
+        cssService.developerSecurityService.metaClass.isAllowModify  = { String a, String b -> return true}
         cssService.create(content, null)
         when:
         cssRenderController.params.name = "testCss"
         cssRenderController.loadCss()
         then:
         cssRenderController.response.status == 200
+        cssRenderController.response.content != null
+        cssRenderController.response.content != ""
+        String.valueOf(cssRenderController.response.content) == "body{color:red;}"
     }
 }

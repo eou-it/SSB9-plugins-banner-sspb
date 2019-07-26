@@ -14,18 +14,19 @@ import org.springframework.mock.web.MockMultipartHttpServletRequest
 import org.springframework.web.context.WebApplicationContext
 import org.springframework.web.context.request.RequestContextHolder
 import spock.lang.Specification
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 
 @Integration
 @Rollback
-class CssManagerControllerIntegrationSpec extends Specification {
+class CssManagerControllerIntegrationSpec extends Specification{
+    def cssDirPath   = "target/testData/css"
+    def cssString = "body {color: red;}"
+
+    @Autowired
+    WebApplicationContext ctx
 
     @Autowired
     CssManagerController controller
-    @Autowired
-    WebApplicationContext ctx
-    def cssDirPath   = "target/testData/css"
-    def cssString = "body {color: red;}"
+
     def setup() {
         GrailsWebMockUtil.bindMockWebRequest(ctx)
         controller.developerSecurityService = new DeveloperSecurityService()
@@ -34,8 +35,8 @@ class CssManagerControllerIntegrationSpec extends Specification {
     }
 
     def cleanup() {
-        RequestContextHolder.resetRequestAttributes()
         new File(cssDirPath+"/testCss.json").delete()
+        RequestContextHolder.resetRequestAttributes()
     }
 
     void "Integration test uploading of CSS file"() {
@@ -46,8 +47,8 @@ class CssManagerControllerIntegrationSpec extends Specification {
         def contentStream = new FileInputStream(cssDirPath + "/testCss.json")
         def file = new MockMultipartFile("file",
                 cssDirPath + "/testCss.json",
-                "text/css", contentStream.getBytes())
-
+                "text/css",
+                contentStream.getBytes())
         controller.metaClass.request = new MockMultipartHttpServletRequest()
         controller.request.addFile(file)
         when: "Upload CSS file"
@@ -60,30 +61,28 @@ class CssManagerControllerIntegrationSpec extends Specification {
         def resData = grails.converters.JSON.parse("$controller.response.content")
         resData!=null
         resData.statusCode == 0
-
     }
 
     void "Integration test uploading of CSS file with production mode on"() {
-               given: "mock multipart file "
-               controller.developerSecurityService.metaClass.isProductionReadOnlyMode = { return false}
-               controller.developerSecurityService.metaClass.isAllowModify  = { String a, String b -> return false}
-                controller.cssService.developerSecurityService = controller.developerSecurityService
-                def contentStream = new FileInputStream(cssDirPath + "/testCss.json")
-                def file = new MockMultipartFile("file",
-                               cssDirPath + "/testCss.json",
-                                "text/css",
-                                contentStream.getBytes())
-                controller.metaClass.request = new MockMultipartHttpServletRequest()
-                controller.request.addFile(file)
-                when: "Upload CSS file"
-                controller.params.cssName = "test"
-                controller.params.description = "test desc"
-                controller.params.file =  new File(cssDirPath + "/testCss.json")
-                controller.uploadCss()
-                then: "Exception has been thrown"
-                AccessDeniedException accessDeniedException = thrown()
-                accessDeniedException != null
-                accessDeniedException.httpStatusCode == 403
+        given: "mock multipart file "
+        controller.developerSecurityService.metaClass.isProductionReadOnlyMode = { return false}
+        controller.developerSecurityService.metaClass.isAllowModify  = { String a, String b -> return false}
+        controller.cssService.developerSecurityService = controller.developerSecurityService
+        def contentStream = new FileInputStream(cssDirPath + "/testCss.json")
+        def file = new MockMultipartFile("file",
+                cssDirPath + "/testCss.json",
+                "text/css",
+                contentStream.getBytes())
+        controller.metaClass.request = new MockMultipartHttpServletRequest()
+        controller.request.addFile(file)
+        when: "Upload CSS file"
+        controller.params.cssName = "test"
+        controller.params.description = "test desc"
+        controller.params.file =  new File(cssDirPath + "/testCss.json")
+        controller.uploadCss()
+        then: "Exception has been thrown"
+        AccessDeniedException accessDeniedException = thrown()
+        accessDeniedException != null
+        accessDeniedException.httpStatusCode == 403
     }
 }
-

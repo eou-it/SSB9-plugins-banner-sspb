@@ -3,12 +3,25 @@
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
+import grails.gorm.transactions.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.util.GrailsWebMockUtil
 import grails.util.Holders
 import net.hedtech.banner.security.DeveloperSecurityService
 import net.hedtech.banner.sspb.Page
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.context.WebApplicationContext
+import org.springframework.web.context.request.RequestContextHolder
 import spock.lang.Specification
 
+@Integration
+@Rollback
 class VirtualDomainUtilServiceTest extends Specification{
+
+    @Autowired
+    WebApplicationContext ctx
+    @Autowired
+    VirtualDomainUtilService virtualDomainUtilService
 
     def param=['url_encoding' :'utf-8' ,
                'sssid' : '123456'
@@ -16,9 +29,12 @@ class VirtualDomainUtilServiceTest extends Specification{
     def sessionFactory
     def virtualDomainSqlService
     def externalLocation = 'target/i18n'
-    def pbConfig = grails.util.Holders.getConfig().pageBuilder
+    def pbConfig
+    def grailsApplication
 
     def setup(){
+        GrailsWebMockUtil.bindMockWebRequest(ctx)
+        pbConfig = grailsApplication.config.pageBuilder
         if(!pbConfig.locations.virtualDomain){
             pbConfig.locations.virtualDomain = 'target/testData/virtualDomain'
         }
@@ -51,6 +67,7 @@ class VirtualDomainUtilServiceTest extends Specification{
     def cleanup() {
         def subDir = new File(externalLocation)
         subDir.deleteDir()
+        RequestContextHolder.resetRequestAttributes()
     }
 
     void "test for exportAllToFile"(){
@@ -75,7 +92,7 @@ class VirtualDomainUtilServiceTest extends Specification{
         given:
         def file = new File(externalLocation+"/integrationTest.json")
         when:
-        def res = virtualDomainSqlService.getTimestamp('integrationTest',externalLocation)
+        def res = VirtualDomainUtilService.getTimestamp('integrationTest',externalLocation)
         then:
         noExceptionThrown()
     }
@@ -91,13 +108,14 @@ class VirtualDomainUtilServiceTest extends Specification{
 
     void "test for importAllFromDir"(){
         given:
-        def virtualDomainUtil = new VirtualDomainUtilService()
-        virtualDomainUtil.developerSecurityService = Stub(DeveloperSecurityService) {
+       // def virtualDomainUtil = new VirtualDomainUtilService()
+        /*virtualDomainUtil.developerSecurityService = Stub(DeveloperSecurityService) {
             getPreventImportByDeveloper() >> false
             isAllowImport(_,_) >> true
-        }
+        }*/
+        virtualDomainUtilService.developerSecurityService.metaClass.isAllowImport ={String a, String b->return true}
         when:
-        def res = virtualDomainUtil.importAllFromDir(pbConfig.locations.virtualDomain)
+        def res = virtualDomainUtilService.importAllFromDir(pbConfig.locations.virtualDomain)
         then:
         res>=0
     }

@@ -1,39 +1,36 @@
 /******************************************************************************
- *  Copyright 2013-2018 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 package net.hedtech.banner.css
 
 import grails.gorm.transactions.Rollback
 import grails.testing.mixin.integration.Integration
 import grails.util.GrailsWebMockUtil
-import net.hedtech.banner.security.DeveloperSecurityService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.context.WebApplicationContext
-import org.springframework.web.context.request.RequestContextHolder
 import spock.lang.Specification
 
 @Integration
 @Rollback
 class CssExportServiceIntegrationSpec extends Specification  {
 
-    @Autowired
-    CssExportService cssExportService
-
-    @Autowired
-    WebApplicationContext ctx
-
-    def developerSecurityService
+    def cssExportService
     def cssService
     def grailsApplication
     def cssString = "body {color: red}"
     def pbConfig
     def path
 
+    @Autowired
+    WebApplicationContext ctx
+
     def setup() {
         GrailsWebMockUtil.bindMockWebRequest(ctx)
+
+        cssService.developerSecurityService.metaClass.isProductionReadOnlyMode = { return true}
+        cssService.developerSecurityService.metaClass.isAllowModify  = { String a, String b -> return true}
         pbConfig = grailsApplication.config.pageBuilder
         path = pbConfig.locations.css
-        cssService.developerSecurityService = developerSecurityService
 
         if(!pbConfig.locations.css){
             pbConfig.locations.css = 'target'
@@ -45,7 +42,6 @@ class CssExportServiceIntegrationSpec extends Specification  {
     }
 
     def cleanup() {
-        RequestContextHolder.resetRequestAttributes()
         pbConfig = grailsApplication.config.pageBuilder
         path = pbConfig.locations.css
         def path = pbConfig.locations.css

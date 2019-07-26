@@ -3,7 +3,6 @@ package net.hedtech.banner.sspb
 import grails.gorm.transactions.Rollback
 import grails.testing.mixin.integration.Integration
 import grails.util.GrailsWebMockUtil
-import net.hedtech.banner.security.DeveloperSecurityService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.context.WebApplicationContext
 import org.springframework.web.context.request.RequestContextHolder
@@ -24,10 +23,10 @@ class AdminTaskServiceIntegrationSpec extends Specification {
 
 
     def artifactFiles = [
-              "/src/test/testData/model/PageModel1.json"
-             ,"test/testData/model/PageModel2.json"
-             ,"test/testData/virtualDomain/stvnation.json"
-             ,"test/testData/css/testCss.json"
+              "/testData/model/PageModel1.json"
+             ,"/testData/model/PageModel2.json"
+             ,"/testData/virtualDomain/stvnation.json"
+         //    ,"/testData/css/testCss.json"
             ]
 
 
@@ -36,9 +35,16 @@ class AdminTaskServiceIntegrationSpec extends Specification {
     def setup() {
         pbConfig = grailsApplication.config.pageBuilder
         GrailsWebMockUtil.bindMockWebRequest(ctx)
-        adminTaskService.pageUtilService.developerSecurityService = adminTaskService.developerSecurityService
-        adminTaskService.cssUtilService.developerSecurityService = adminTaskService.developerSecurityService
-        adminTaskService.virtualDomainUtilService.developerSecurityService = adminTaskService.developerSecurityService
+        adminTaskService.metaClass.pageBuilderLocation = pbConfig
+        adminTaskService.developerSecurityService.metaClass.isAllowModify = { String a, String b -> return true }
+        adminTaskService.developerSecurityService.metaClass.getImportConfigValue = { return false }
+        adminTaskService.pageUtilService.developerSecurityService.metaClass.isAllowModify = { String a, String b -> return true }
+        adminTaskService.pageUtilService.developerSecurityService.metaClass.getImportConfigValue = { return false }
+        adminTaskService.cssUtilService.developerSecurityService.metaClass.isAllowModify = { String a, String b -> return true }
+        adminTaskService.cssUtilService.developerSecurityService.metaClass.getImportConfigValue = { return false }
+        adminTaskService.virtualDomainUtilService.developerSecurityService.metaClass.isAllowModify = { String a, String b -> return true }
+        adminTaskService.virtualDomainUtilService.developerSecurityService.metaClass.getImportConfigValue = { return false }
+
         if(!pbConfig.locations.css){
             pbConfig.locations.css = 'target/testData/css'
         }
@@ -55,7 +61,7 @@ class AdminTaskServiceIntegrationSpec extends Specification {
                 artifact: [
                     count:artifactFiles.size(),
                     index: idx,
-                    domain: (new File (fname) ).text
+                    domain: this.class.getResource(fname).text
                 ]
             ]
             artifacts << content
@@ -74,6 +80,6 @@ class AdminTaskServiceIntegrationSpec extends Specification {
         }
         expect:
         results.size() == artifacts.size()
-       // results[results.size()-1].digested == artifacts.size()
+        results[results.size()-1].digested == artifacts.size()
     }
 }

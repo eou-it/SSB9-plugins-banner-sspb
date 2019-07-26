@@ -45,6 +45,9 @@ class VirtualDomainComposerControllerIntegrationSpec extends Specification  {
         vdController.virtualDomainResourceService.metaClass.list = { Map params ->
             return [:]
         }
+        /*vdController.developerSecurityService = Stub(DeveloperSecurityService) {
+            isAllowModify(_,_) >> true
+        }*/
         when: "saving the virtual domain"
         vdController.webRequest.params.putAll(params)
         vdController.saveVirtualDomain()
@@ -64,6 +67,7 @@ class VirtualDomainComposerControllerIntegrationSpec extends Specification  {
         vdController.virtualDomainResourceService.metaClass.list = { Map params ->
             return [:]
         }
+        vdController.developerSecurityService.metaClass.isAllowModify = {String a, String b->return true}
         when: "saving the virtual domain"
         vdController.webRequest.params.putAll(params)
         vdController.saveVirtualDomain()
@@ -92,6 +96,7 @@ class VirtualDomainComposerControllerIntegrationSpec extends Specification  {
         vdController.virtualDomainResourceService.metaClass.list = { Map params ->
             return [:]
         }
+        vdController.developerSecurityService.metaClass.isAllowModify = {String a, String b-> return false}
         when: "saving the virtual domain"
         vdController.webRequest.params.putAll(params)
         vdController.saveVirtualDomain()
@@ -109,6 +114,7 @@ class VirtualDomainComposerControllerIntegrationSpec extends Specification  {
         vdController.virtualDomainResourceService.metaClass.list = { Map params ->
             return [:]
         }
+        vdController.developerSecurityService.metaClass.isAllowModify = {String a, String b-> return true}
         when: "saving the virtual domain"
         vdController.webRequest.params.putAll(params)
         vdController.saveVirtualDomain()
@@ -120,6 +126,7 @@ class VirtualDomainComposerControllerIntegrationSpec extends Specification  {
         null != vd
         vd.id == vdController.modelAndView.model.pageInstance.id
         when : "delete the virtual domain when isAllowModify is false"
+        vdController.developerSecurityService.metaClass.isAllowModify = {String a, String b->return false}
         vdController.webRequest.params.putAll(params)
         vdController.deleteVirtualDomain()
         then:
