@@ -1,23 +1,38 @@
 /******************************************************************************
- *  Copyright 2018-2019 Ellucian Company L.P. and its affiliates.                   *
+ *  Copyright 2019 Ellucian Company L.P. and its affiliates.                   *
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
+import grails.gorm.transactions.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.util.GrailsWebMockUtil
 import grails.util.Holders
 import net.hedtech.banner.sspb.Page
 import org.apache.commons.codec.binary.Base64
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.context.WebApplicationContext
+import org.springframework.web.context.request.RequestContextHolder
 import spock.lang.Specification
 
+@Integration
+@Rollback
 class VirtualDomainExportServiceTest extends Specification{
+
+    @Autowired
+    WebApplicationContext ctx
+    def grailsApplication
+
     def param=['url_encoding' :'utf-8' ,
                'sssid' : '123456'
     ]
     def sessionFactory
     def virtualDomainSqlService
-    def pbConfig = grails.util.Holders.getConfig().pageBuilder
+    def pbConfig /*= grails.util.Holders.getConfig().pageBuilder*/
 
 
     def setup(){
+        GrailsWebMockUtil.bindMockWebRequest(ctx)
+        pbConfig = grailsApplication.config.pageBuilder
         if(!pbConfig.locations.virtualDomain){
             pbConfig.locations.virtualDomain = 'target'
         }
@@ -43,6 +58,10 @@ class VirtualDomainExportServiceTest extends Specification{
         if(!vdExist) {
             vd.save(flush: true, failOnError: true)
         }
+    }
+
+    def cleanup(){
+        RequestContextHolder.resetRequestAttributes()
     }
 
     void "test for show"(){

@@ -1,11 +1,13 @@
 /******************************************************************************
- *  Copyright 2013-2018 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 package net.hedtech.banner.css
 
 import grails.gorm.transactions.Rollback
 import grails.testing.mixin.integration.Integration
-import net.hedtech.banner.security.DeveloperSecurityService
+import grails.util.GrailsWebMockUtil
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.context.WebApplicationContext
 import spock.lang.Specification
 
 @Integration
@@ -13,17 +15,22 @@ import spock.lang.Specification
 class CssExportServiceIntegrationSpec extends Specification  {
 
     def cssExportService
-    def developerSecurityService
     def cssService
     def grailsApplication
     def cssString = "body {color: red}"
     def pbConfig
     def path
 
+    @Autowired
+    WebApplicationContext ctx
+
     def setup() {
+        GrailsWebMockUtil.bindMockWebRequest(ctx)
+
+        cssService.developerSecurityService.metaClass.isProductionReadOnlyMode = { return true}
+        cssService.developerSecurityService.metaClass.isAllowModify  = { String a, String b -> return true}
         pbConfig = grailsApplication.config.pageBuilder
         path = pbConfig.locations.css
-        cssService.developerSecurityService = developerSecurityService
 
         if(!pbConfig.locations.css){
             pbConfig.locations.css = 'target'

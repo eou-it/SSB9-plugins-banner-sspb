@@ -8,6 +8,7 @@ import grails.gorm.transactions.Transactional
 import groovy.util.logging.Log4j
 import net.hedtech.banner.security.VirtualDomainSecurity
 import net.hedtech.banner.security.VirtualDomainSecurityId
+import net.hedtech.banner.sspb.PBUser
 import net.hedtech.banner.tools.PBUtilServiceBase
 
 @Log4j
@@ -104,6 +105,7 @@ class VirtualDomainUtilService extends PBUtilServiceBase {
         bootMsg "Importing updated or new virtual domains from $path."
         def count=0
         try {
+            path = path ?: vdPath
             new File(path).eachFileMatch(jsonExt) { file ->
                 if (!names || names.contains(file.name.take(file.name.lastIndexOf('.')))) {
                     count += loadFile(file, mode, copyOwner, copyDevSec)

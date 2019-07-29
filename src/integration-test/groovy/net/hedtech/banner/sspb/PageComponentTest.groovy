@@ -1,11 +1,15 @@
 /*******************************************************************************
- * Copyright 2018 Ellucian Company L.P. and its affiliates.
+ * Copyright 2019 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 
 package net.hedtech.banner.sspb
 
+import grails.gorm.transactions.Rollback
+import grails.testing.mixin.integration.Integration
 import spock.lang.Specification
 
+@Integration
+@Rollback
 class PageComponentTest extends Specification{
 
     def pageComponent

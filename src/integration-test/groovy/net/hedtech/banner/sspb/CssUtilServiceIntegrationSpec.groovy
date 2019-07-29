@@ -1,16 +1,29 @@
 /******************************************************************************
- *  Copyright 2013-2018 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
-
+import grails.gorm.transactions.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.util.GrailsWebMockUtil
 import net.hedtech.banner.css.Css
+import net.hedtech.banner.css.CssUtilService
 import net.hedtech.banner.security.DeveloperSecurityService
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.context.WebApplicationContext
+import org.springframework.web.context.request.RequestContextHolder
 import spock.lang.Specification
 
+@Integration
+@Rollback
 class CssUtilServiceIntegrationSpec extends Specification {
 
-    def cssUtilService
+    @Autowired
+    CssUtilService cssUtilService
+    @Autowired
+    WebApplicationContext ctx
+
+    //def cssUtilService
     def css
     def pbConfig
     def path
@@ -26,23 +39,21 @@ class CssUtilServiceIntegrationSpec extends Specification {
             "   \"version\": null\n" +
             "}"
     def setup() {
+
+        GrailsWebMockUtil.bindMockWebRequest(ctx)
         pbConfig = grails.util.Holders.getConfig().pageBuilder
         pbConfig.locations.css = 'target/testData/css'
-     //   path = System.getProperty("java.io.tmpdir");
         path = pbConfig.locations.css
         new File(path+"/testCss.json").write(cssString)
     }
 
     def cleanup() {
+        RequestContextHolder.resetRequestAttributes()
         new File(path+"/testCss.json").delete()
     }
 
     void "test Import CSS files"() {
         given:
-        cssUtilService.developerSecurityService = Stub(DeveloperSecurityService) {
-            getPreventImportByDeveloper() >> false
-            isAllowImport(_,_) >> true
-        }
         cssUtilService.importAllFromDir(path)
         when:
         def cssInstance  = Css.findByConstantName("testCss")

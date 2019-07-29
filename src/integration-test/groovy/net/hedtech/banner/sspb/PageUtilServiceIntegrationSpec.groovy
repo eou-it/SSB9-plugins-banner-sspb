@@ -5,32 +5,41 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
+import grails.gorm.transactions.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.util.GrailsWebMockUtil
 import net.hedtech.banner.security.DeveloperSecurityService
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.context.WebApplicationContext
+import org.springframework.web.context.request.RequestContextHolder
 import spock.lang.Specification
 
+@Integration
+@Rollback
 class PageUtilServiceIntegrationSpec extends Specification {
 
+    @Autowired
+    WebApplicationContext ctx
+
     def pageUtilService
-    def workPath = "target/testData/model"
-    def sourcePath = "test/testData/model"
+    def workPath = "build/target/testData/model"
+    def sourcePath = "/testData/model"
 
     def setup() {
-        pageUtilService.developerSecurityService =  Stub(DeveloperSecurityService) {
-            getImportConfigValue() >> false
-            isAllowImport(_,_) >> true
-        }
+        GrailsWebMockUtil.bindMockWebRequest(ctx)
         // Setup logic here
         new File(workPath).mkdirs()
         new File(workPath).eachFileMatch(~/.*.json.*/) { file ->
             file.delete()
         }
         new AntBuilder().copy(todir: workPath) {
-            fileset(dir: sourcePath)
+            fileset(dir: this.class.getResource(sourcePath).getPath())
         }
     }
 
 
     def cleanup() {
+        RequestContextHolder.resetRequestAttributes()
     }
 
 

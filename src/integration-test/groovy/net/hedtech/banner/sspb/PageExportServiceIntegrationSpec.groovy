@@ -3,23 +3,34 @@
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
-
+import grails.gorm.transactions.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.util.GrailsWebMockUtil
 import net.hedtech.banner.security.DeveloperSecurityService
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.context.WebApplicationContext
+import org.springframework.web.context.request.RequestContextHolder
 import spock.lang.Specification
 
+@Integration
+@Rollback
 class PageExportServiceIntegrationSpec extends Specification {
-    def pageExportService
+
+    @Autowired
+    PageExportService pageExportService
+    @Autowired
+    WebApplicationContext ctx
     def pageService
+    def grailsApplication
 
     def testPage
-    def pbConfig = grails.util.Holders.getConfig().pageBuilder
+    def pbConfig
 
     def setup() {
+        pbConfig = grailsApplication.config.pageBuilder
+        GrailsWebMockUtil.bindMockWebRequest(ctx)
         if(!pbConfig.locations.page){
             pbConfig.locations.page = 'target/testData/model'
-        }
-        pageService.developerSecurityService = Stub(DeveloperSecurityService) {
-            isAllowModify(_,_) >> true
         }
         Map pageMap = [pageName: "integrationTestPage",
                            source: '''{
@@ -35,7 +46,7 @@ class PageExportServiceIntegrationSpec extends Specification {
     }
 
     def cleanup() {
-       // pageService.delete([:], "integrationTestPage")
+        RequestContextHolder.resetRequestAttributes()
     }
 
     void "test show"() {

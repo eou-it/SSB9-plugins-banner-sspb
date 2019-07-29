@@ -107,7 +107,7 @@ class PageUtilService extends PBUtilServiceBase {
 
     //Import/Install Utility
     int importAllFromDir(String path=pagePath, mode=loadIfNew, ArrayList names = null, boolean updateSecurity = false, boolean copyOwner = true, boolean copyDevSec = true) {
-        importAllFromDir(path, mode, false, names, updateSecurity, copyOwner, copyDevSec)
+        importAllFromDir(path?:pagePath, mode, false, names, updateSecurity, copyOwner, copyDevSec)
     }
 
     int importAllFromDir(String path, mode, boolean deferred, ArrayList names, boolean updateSecurity, boolean copyOwner, boolean copyDevSec) {

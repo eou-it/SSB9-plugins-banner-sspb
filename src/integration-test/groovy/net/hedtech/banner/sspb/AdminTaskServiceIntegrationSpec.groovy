@@ -1,33 +1,57 @@
+/*******************************************************************************
+ * Copyright 2019 Ellucian Company L.P. and its affiliates.
+ ******************************************************************************/
 package net.hedtech.banner.sspb
 
-
-import net.hedtech.banner.security.DeveloperSecurityService
+import grails.gorm.transactions.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.util.GrailsWebMockUtil
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.context.WebApplicationContext
+import org.springframework.web.context.request.RequestContextHolder
 import spock.lang.Specification
 
+@Integration
+@Rollback
 class AdminTaskServiceIntegrationSpec extends Specification {
 
-    def adminTaskService
-    def pbConfig = grails.util.Holders.getConfig().pageBuilder
+    @Autowired
+    AdminTaskService adminTaskService
+    @Autowired
+    WebApplicationContext ctx
+
+    //def adminTaskService
+    def pbConfig
+    def grailsApplication
 
 
     def artifactFiles = [
-              "test/testData/model/PageModel1.json"
-             ,"test/testData/model/PageModel2.json"
-             ,"test/testData/virtualDomain/stvnation.json"
-             ,"test/testData/css/testCss.json"
+              "/testData/model/PageModel1.json"
+             ,"/testData/model/PageModel2.json"
+             ,"/testData/virtualDomain/stvnation.json"
+             ,"/testData/css/testCss.json"
             ]
 
 
     def artifacts = []
 
     def setup() {
-        adminTaskService.developerSecurityService =  Stub(DeveloperSecurityService) {
-            getImportConfigValue() >> false
-            isAllowImport(_,_) >> true
-        }
-        adminTaskService.pageUtilService.developerSecurityService = adminTaskService.developerSecurityService
-        adminTaskService.cssUtilService.developerSecurityService = adminTaskService.developerSecurityService
-        adminTaskService.virtualDomainUtilService.developerSecurityService = adminTaskService.developerSecurityService
+        pbConfig = grailsApplication.config.pageBuilder
+        GrailsWebMockUtil.bindMockWebRequest(ctx)
+        adminTaskService.metaClass.pageBuilderLocation = pbConfig.locations
+        adminTaskService.developerSecurityService.metaClass.isAllowModify = { String a, String b -> return true }
+        adminTaskService.developerSecurityService.metaClass.isAllowImport = { String a, String b -> return true }
+        adminTaskService.developerSecurityService.metaClass.getImportConfigValue = { return false }
+        adminTaskService.pageUtilService.developerSecurityService.metaClass.isAllowModify = { String a, String b -> return true }
+        adminTaskService.pageUtilService.developerSecurityService.metaClass.isAllowImport = { String a, String b -> return true }
+        adminTaskService.pageUtilService.developerSecurityService.metaClass.getImportConfigValue = { return false }
+        adminTaskService.cssUtilService.developerSecurityService.metaClass.isAllowModify = { String a, String b -> return true }
+        adminTaskService.cssUtilService.developerSecurityService.metaClass.isAllowImport = { String a, String b -> return true }
+        adminTaskService.cssUtilService.developerSecurityService.metaClass.getImportConfigValue = { return false }
+        adminTaskService.virtualDomainUtilService.developerSecurityService.metaClass.isAllowModify = { String a, String b -> return true }
+        adminTaskService.virtualDomainUtilService.developerSecurityService.metaClass.isAllowImport = { String a, String b -> return true }
+        adminTaskService.virtualDomainUtilService.developerSecurityService.metaClass.getImportConfigValue = { return false }
+
         if(!pbConfig.locations.css){
             pbConfig.locations.css = 'target/testData/css'
         }
@@ -44,7 +68,7 @@ class AdminTaskServiceIntegrationSpec extends Specification {
                 artifact: [
                     count:artifactFiles.size(),
                     index: idx,
-                    domain: (new File (fname) ).text
+                    domain: this.class.getResource(fname).text
                 ]
             ]
             artifacts << content
@@ -52,6 +76,7 @@ class AdminTaskServiceIntegrationSpec extends Specification {
     }
 
     def cleanup() {
+        RequestContextHolder.resetRequestAttributes()
     }
 
     void "test Import artifacts from client"() {

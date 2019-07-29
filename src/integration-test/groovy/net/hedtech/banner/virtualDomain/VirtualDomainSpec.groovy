@@ -1,15 +1,17 @@
 /*******************************************************************************
- * Copyright 2018 Ellucian Company L.P. and its affiliates.
+ * Copyright 2019 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
-
+import grails.gorm.transactions.Rollback
+import grails.testing.mixin.integration.Integration
 import grails.util.Holders
 import net.hedtech.banner.i18n.DateConverterService
 import net.hedtech.banner.security.DeveloperSecurityService
 import spock.lang.Specification
 
-//@TestMixin(GrailsUnitTestMixin)
+@Integration
+@Rollback
 class VirtualDomainSpec extends Specification {
 
     def params=['url_encoding' :'utf-8' ,

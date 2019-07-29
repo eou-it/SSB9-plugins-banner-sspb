@@ -1,15 +1,25 @@
 /******************************************************************************
- *  Copyright 2018 Ellucian Company L.P. and its affiliates.                   *
+ *  Copyright 2019 Ellucian Company L.P. and its affiliates.                   *
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
 import grails.converters.JSON
+import grails.gorm.transactions.Rollback
+import grails.testing.mixin.integration.Integration
+import grails.util.GrailsWebMockUtil
 import grails.util.Holders
 import net.hedtech.restfulapi.AccessDeniedException
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.context.WebApplicationContext
+import org.springframework.web.context.request.RequestContextHolder
 import spock.lang.Specification
 
-
+@Integration
+@Rollback
 class VirtualDomainSqlServiceTest extends Specification{
+
+    @Autowired
+    WebApplicationContext ctx
 
     def virtualDomainSqlService
     def params=['url_encoding' :'utf-8' ,
@@ -18,6 +28,14 @@ class VirtualDomainSqlServiceTest extends Specification{
 
 
     def sessionFactory
+
+    def setup(){
+        GrailsWebMockUtil.bindMockWebRequest(ctx)
+    }
+    def cleanup(){
+        RequestContextHolder.resetRequestAttributes()
+
+    }
 
     void "test for get"() {
         given:
