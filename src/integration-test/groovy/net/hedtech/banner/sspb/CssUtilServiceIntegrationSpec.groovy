@@ -42,7 +42,7 @@ class CssUtilServiceIntegrationSpec extends Specification {
 
         GrailsWebMockUtil.bindMockWebRequest(ctx)
         pbConfig = grails.util.Holders.getConfig().pageBuilder
-        pbConfig.locations.css = 'target/testData/css'
+        pbConfig.locations.css = 'build/target/testData/css'
         path = pbConfig.locations.css
         new File(path+"/testCss.json").write(cssString)
     }
