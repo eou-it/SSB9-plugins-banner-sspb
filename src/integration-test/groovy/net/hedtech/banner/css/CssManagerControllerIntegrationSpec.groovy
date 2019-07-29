@@ -29,7 +29,6 @@ class CssManagerControllerIntegrationSpec extends Specification{
 
     def setup() {
         GrailsWebMockUtil.bindMockWebRequest(ctx)
-        controller.developerSecurityService = new DeveloperSecurityService()
         new File(cssDirPath).mkdir()
         new File(cssDirPath+"/testCss.json").write(cssString)
     }
@@ -42,7 +41,9 @@ class CssManagerControllerIntegrationSpec extends Specification{
     void "Integration test uploading of CSS file"() {
         given: "mock multipart file "
         controller.developerSecurityService.metaClass.isProductionReadOnlyMode = { return true}
+        controller.developerSecurityService.metaClass.isAllowUpdateOwner  = { String a, String b -> return true}
         controller.developerSecurityService.metaClass.isAllowModify  = { String a, String b -> return true}
+
         controller.cssService.developerSecurityService = controller.developerSecurityService
         def contentStream = new FileInputStream(cssDirPath + "/testCss.json")
         def file = new MockMultipartFile("file",
@@ -66,6 +67,7 @@ class CssManagerControllerIntegrationSpec extends Specification{
     void "Integration test uploading of CSS file with production mode on"() {
         given: "mock multipart file "
         controller.developerSecurityService.metaClass.isProductionReadOnlyMode = { return false}
+        controller.developerSecurityService.metaClass.isAllowUpdateOwner  = { String a, String b -> return false}
         controller.developerSecurityService.metaClass.isAllowModify  = { String a, String b -> return false}
         controller.cssService.developerSecurityService = controller.developerSecurityService
         def contentStream = new FileInputStream(cssDirPath + "/testCss.json")
