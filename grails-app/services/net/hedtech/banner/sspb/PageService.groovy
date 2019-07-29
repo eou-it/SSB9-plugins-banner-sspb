@@ -5,11 +5,12 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
-import groovy.util.logging.Log4j
+import grails.gorm.transactions.Transactional
 import net.hedtech.banner.security.DeveloperSecurityService
+import net.hedtech.banner.security.PageSecurity
 import net.hedtech.restfulapi.AccessDeniedException
 
-@Log4j
+@Transactional
 class PageService {
     def compileService
     def groovyPagesTemplateEngine
@@ -18,6 +19,7 @@ class PageService {
     def dateConverterService
     def developerSecurityService
 
+    @Transactional(readOnly = true)
     def get(String constantName) {
         Page.findByConstantName(constantName)
     }
@@ -26,6 +28,7 @@ class PageService {
         new Page(constantName:constantName)
     }
 
+    @Transactional(readOnly = true)
     def list(Map params) {
         Map parameter = CommonService.decodeBase64(params)
         params.putAll(parameter);
@@ -63,7 +66,7 @@ class PageService {
         listResult
     }
 
-
+    @Transactional(readOnly = true)
     def count(Map params) {
         log.trace "PageService.count invoked"
         params = extractReqPrams(params)
@@ -80,7 +83,7 @@ class PageService {
 
     }
 
-
+    @Transactional(readOnly = true)
     def show(Map params) {
         if(params && params.containsKey('getGridData')) {
             def returnMap = [
@@ -101,7 +104,7 @@ class PageService {
         if (page) {
             String model = page.getMergedModelText(true) //Get the merged model with merge Info
             result = [constantName: page.constantName, id: page.id, extendsPage: page.extendsPage, version: page.version,
-                      modelView: model, allowModify:developerSecurityService.isAllowModify(page.constantName,DeveloperSecurityService.PAGE_IND) ,
+                      modelView: model, allowModify:developerSecurityService.isAllowModify(page.constantName, DeveloperSecurityService.PAGE_IND),
                       allowUpdateOwner: developerSecurityService.isAllowUpdateOwner(page.constantName, DeveloperSecurityService.PAGE_IND),
                     owner: page.owner]
         }
@@ -224,7 +227,7 @@ class PageService {
                 page.compiledView = compiledView
                 page.compiledController=compiledJSCode
                 compileService.updateProperties(validateResult.pageComponent)
-                result = [statusCode:0, statusMessage:"${message(code:'sspb.page.visualcomposer.compiledsaved.ok.message')}"]
+                result = [statusCode:0, statusMessage: message(code:"sspb.page.visualcomposer.compiledsaved.ok.message")]
             } catch (e)   {
                 result = [statusCode: 2, statusMessage: message(code:"sspb.page.visualcomposer.validation.error.message")]
                 log.error("Unexpected Exception in compile page\n"+e.printStackTrace())
@@ -251,6 +254,12 @@ class PageService {
                 throw new RuntimeException( message(code:"sspb.page.visualComposer.deletion.failed.message",args: [page.extensions.constantName.join(", ")]))
             }
             else {
+                def pageDevEntries = PageSecurity.fetchAllByPageId(page.id)
+                if(pageDevEntries) {
+                    pageDevEntries.each {PageSecurity psObj ->
+                        psObj.delete(failOnError:true, flush:true)
+                    }
+                }
                 page.delete(failOnError:true, flush: true)
                 springSecurityService.clearCachedRequestmaps()
             }

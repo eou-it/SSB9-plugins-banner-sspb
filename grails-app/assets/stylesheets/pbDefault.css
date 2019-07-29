@@ -1,0 +1,186 @@
+/*******************************************************************************
+ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
+*******************************************************************************/
+
+input, textarea, select {
+    line-height: normal;
+    border: 1px solid #B2B3B7;
+    border-radius: 3px;
+}
+
+input, textarea {
+    padding-left: 4px;
+}
+
+:focus, :visited{
+    border-color: #026BC8;
+}
+
+input.hasDatepicker.pb-datetime{
+    width: auto;
+    margin: 0;
+}
+
+div[ng-grid] {
+    font-size: 10px;
+}
+
+.pb-label {
+    font-weight: bold;    /* reset xe-ui-components non-bold label */
+}
+
+.pb-list-label {
+    display:block;
+}
+
+.pb-inline {
+    display: inline-block;
+}
+
+.btn-sm, .btn-xs {
+    line-height: normal;
+}
+
+/* container-fluid class missing in bootstrap 3.0.2 */
+.container-fluid {
+    width: 100%;
+}
+
+.table {
+    border: none;        /* disable border set in banner_ui_ss */
+}
+
+/* Disable breadcrumb-panel for now */
+#breadcrumb-panel {
+    height: 0;
+    min-height: 0;
+    border-bottom: none;
+}
+
+
+/* common components patch - pagination controls */
+.pagination-container {
+    direction: initial;
+}
+
+.pagination-container .pagination-controls button:hover, .pagination-container .pagination-controls button:focus {
+    background-color: #026BC8;
+    color: #FFFFFF;
+    border: none;
+}
+
+.pagination-container {
+    padding: 0;
+}
+
+#pbid-PageListDetail-record-control-container {
+    padding: 5px 5px;
+}
+
+#pbid-PageListDetail2-record-control-container {
+    padding: 5px 5px;
+}
+
+#pbid-visualPageComposer-container {
+    left: 35%;
+}
+
+#pbid-virtualDomainComposer-container {
+    left: 35%;
+}
+
+.ngGrid input[type="checkbox"] {
+    -webkit-transform:scale(0.6);
+    -moz-transform: scale(1.4);
+}
+
+@media screen and (min-width: 768px) {
+   #popupContainerDiv .xe-popup-container  {
+        width:42em !important;
+        height:30em !important;
+        padding:1.5em;
+        border-radius:6px;
+        padding:1.5em;
+        box-shadow:0 2px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    #popupContainerDiv div#buttonContainer.buttonContainer {
+        padding: 0.5em;
+    }
+}
+
+#popupContainerDiv .pagination-container .pagination-controls button {
+    width: 2.5em;
+    height: 2.5em;
+}
+
+#popupContainerDiv #pageInput {
+    padding-top: 3.8em;
+    padding-top: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-bottom: 0px;
+    width: 47px;
+    height: 26px;
+
+}
+
+#popupContainerDiv .table-container .caption caption .toolbar {
+    display: inline-block;
+    float: left;
+}
+#popupContainerDiv .table-container .caption caption {
+    line-height: 0;
+}
+#popupContainerDiv .pagination-container  {
+    direction: ltr;
+}
+
+#popupContainerDiv .search-container .simple-input-field {
+    width: 20em;
+    background-position: right;
+}
+
+#popupContainerDiv xe-button .primary {
+    width: 7em;
+    height: 3em;
+    border-radius: 2em;
+    padding: 0.5em 1.5em;
+}
+
+#popupContainerDiv .thead{
+    height: 38px;
+}
+
+#popupContainerDiv .table-container .thead thead tr th, .table-container .tbody thead tr th {
+    height: 1em;
+}
+
+.popupSelectBox  {
+    width: 17.5em;
+}
+
+.rTable {
+    display: block;
+    width: 100%;
+}
+
+.rTableCell, .rTableHead {
+    float: left;
+    overflow: hidden;
+    width: 50%;
+}
+
+.divAlignToRight {
+    text-align: right;
+}
+
+/* validation */
+input.ng-invalid.ng-touched, input.ng-invalid.ng-invalid-maxlength {
+    background-color: #FFFFFF;
+    color: #151618 !important;
+    border: 1px solid #FF3030 !important;
+}
+
+
+

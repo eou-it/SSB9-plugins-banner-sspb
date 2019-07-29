@@ -3,17 +3,18 @@
  *******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
+import grails.gorm.transactions.Transactional
 import groovy.json.JsonSlurper
 import groovy.sql.Sql
-import groovy.transform.*
 import groovy.util.logging.Log4j
 import net.hedtech.banner.sspb.PBUser
+import net.hedtech.banner.sspb.Page
 import net.hedtech.restfulapi.AccessDeniedException
 
 import java.sql.SQLException
-import net.hedtech.banner.sspb.Page
 
 @Log4j
+@Transactional
 class VirtualDomainSqlService {
 
     def sessionFactory    //injected by Spring
@@ -187,6 +188,7 @@ class VirtualDomainSqlService {
     refactoring pagination to restrict in the sql layer
 
     */
+    @Transactional(readOnly = true)
     def get(vd, params) {
         def parameters = getNormalized(params) // some tweaks and work arounds
         addUser(parameters)
@@ -241,13 +243,14 @@ class VirtualDomainSqlService {
             errorMessage=message(code:"sspb.virtualdomain.sqlservice.paging.message", args:[])
         }
         finally {
-            sql.close()
+            //sql.close()
         }
         log.debug logmsg
 
         return [error: errorMessage, rows:rows, totalCount: rows?.size(), debug: parameters.debug]
     }
 
+    @Transactional(readOnly = true)
     def count(vd, params) {
         def parameters = getNormalized(params) // some tweaks and work arounds
         addUser(parameters)
@@ -272,7 +275,7 @@ class VirtualDomainSqlService {
             logmsg += message(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
             errorMessage=privs.debug?logmsg : cleanSqlExceptionMessage(e,privs.debug) ?: "Unable to get resource count."
         } finally {
-            sql.close()
+            //sql.close()
         }
         log.debug logmsg
         return [error: errorMessage, totalCount:totalCount.longValue(),debug: parameters.debug]
@@ -297,7 +300,7 @@ class VirtualDomainSqlService {
             throw new VirtualDomainException( cleanSqlExceptionMessage(e,privs.debug) ?: "Unable to update resource.")
         }
         finally {
-            sql?.close()
+            //sql?.close()
         }
         data = data.findAll { it ->
             !it.key.startsWith('parm_')
@@ -332,7 +335,7 @@ class VirtualDomainSqlService {
             throw new VirtualDomainException( cleanSqlExceptionMessage(e,privs.debug) ?: "Unable to create resource.")
         }
         finally {
-            sql?.close()
+            //sql?.close()
         }
         return null //should return created object from db if changed in sql
     }
@@ -359,7 +362,7 @@ class VirtualDomainSqlService {
             throw new VirtualDomainException( cleanSqlExceptionMessage(e,privs.debug) ?: "Unable to delete resource.")
         }
         finally {
-            sql?.close()
+            //sql?.close()
         }
     }
 

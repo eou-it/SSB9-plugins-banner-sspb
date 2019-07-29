@@ -4,8 +4,10 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import net.hedtech.banner.tools.PBUtilServiceBase
 
+@Transactional
 class AdminTaskService {
 
     def pageUtilService
@@ -17,6 +19,7 @@ class AdminTaskService {
     def listCount = 0
     def listsStartedMilis = 0    // beginning of time
     def listTimeout = 300 * 1000 // milis
+    def pageBuilderLocation = pageUtilService?.pbConfig?.locations
 
     def create(Map content, ignore) {
         def result = [:]
@@ -24,17 +27,17 @@ class AdminTaskService {
             def copyOwner = content.copyOwner ?: false
             def copyDevSec =  content.copyDevSec ?: false
             if (content.virtualDomains) {
-                def count = virtualDomainUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.virtualDomain,
+                def count = virtualDomainUtilService.importAllFromDir(pageBuilderLocation?.virtualDomain,
                         PBUtilServiceBase.loadOverwriteExisting, null, copyOwner, copyDevSec)
                 result << [importedVirtualDomainsCount: count]
             }
             if (content.css) {
-                def count = cssUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.css,
+                def count = cssUtilService.importAllFromDir(pageBuilderLocation?.css,
                         PBUtilServiceBase.loadOverwriteExisting, null, copyOwner, copyDevSec)
                 result << [importedCssCount: count]
             }
             if (content.pages) {
-                def count = pageUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.page, PBUtilServiceBase.loadOverwriteExisting,
+                def count = pageUtilService.importAllFromDir(pageBuilderLocation?.page, pageUtilService.loadOverwriteExisting,
                         false, null, true, copyOwner, copyDevSec)
                 result << [importedPagesCount: count]
             }
@@ -59,7 +62,7 @@ class AdminTaskService {
                         result << [accessError: message(code: "sspb.renderer.page.deny.access", args: [objectName])]
                         return result
                         }
-                        def fileName = "${PBUtilServiceBase.pbConfig.locations[at.type]}/${at.name}.json"
+                        def fileName = "${pageUtilService.pbConfig.locations[at.type]}/${at.name}.json"
                         def file = new File(fileName)
                         file.text = content.artifact.domain
                         result = [imported: 1, type: at.type, name: at.name, location: fileName]
@@ -113,15 +116,15 @@ class AdminTaskService {
             def mode = PBUtilServiceBase.loadOverwriteExisting
             // copied all artifacts
             if (nameLists.css?.size() > 0){
-                importCount += cssUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.css, mode,
+                importCount += cssUtilService.importAllFromDir(pageBuilderLocation?.css, mode,
                         nameLists.css, copyOwner, copyDevSec)
             }
             if (nameLists.page?.size() > 0) {
-                importCount += pageUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.page, mode,
+                importCount += pageUtilService.importAllFromDir(pageBuilderLocation?.page, mode,
                         nameLists.page, true, copyOwner, copyDevSec)
             }
             if (nameLists.virtualDomain?.size() > 0) {
-                importCount += virtualDomainUtilService.importAllFromDir(PBUtilServiceBase.pbConfig.locations.virtualDomain,
+                importCount += virtualDomainUtilService.importAllFromDir(pageBuilderLocation?.virtualDomain,
                         mode, nameLists.virtualDomain, copyOwner, copyDevSec)
             }
         }

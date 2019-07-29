@@ -4,16 +4,21 @@
 package net.hedtech.banner.virtualDomain
 
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import groovy.util.logging.Log4j
 import net.hedtech.banner.security.VirtualDomainSecurity
 import net.hedtech.banner.security.VirtualDomainSecurityId
 import net.hedtech.banner.sspb.PBUser
+import net.hedtech.banner.tools.PBUtilServiceBase
 
 @Log4j
-class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
+@Transactional
+class VirtualDomainUtilService extends PBUtilServiceBase {
 
     def static final actionImportInitally = 1
     def currentAction = null
+    String vdPath = pbConfig.locations.virtualDomain
+
     def developerSecurityService
 
     //Used in integration test
@@ -23,7 +28,7 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
 
     //Export one or more virtual domains to the configured directory
     void exportToFile(String serviceName, String pageLike=null,
-                      String path=pbConfig.locations.virtualDomain,
+                      String path=vdPath,
                       Boolean skipDuplicates=false, Boolean isAllowExportDSPermission = false ) {
         def usedByPageLike
         if (pageLike) {
@@ -68,10 +73,10 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
 
     void exportToFile(Map content) {
         boolean isAllowExportDSPermission = content.isAllowExportDSPermission && "Y".equalsIgnoreCase(content.isAllowExportDSPermission)
-        exportToFile(content.serviceName, null, pbConfig.locations.virtualDomain, false, isAllowExportDSPermission)
+        exportToFile(content.serviceName, null, vdPath, false, isAllowExportDSPermission)
     }
 
-    static Date getTimestamp(String vdName, String path=pbConfig.locations.virtualDomain ) {
+     Date getTimestamp(String vdName, String path=vdPath ) {
         def file = new File( "$path/${vdName}.json")
         Date result
         if (file.exists())
@@ -96,10 +101,11 @@ class VirtualDomainUtilService extends net.hedtech.banner.tools.PBUtilServiceBas
 
 
     //Import/Install Utility
-    int importAllFromDir(String path=pbConfig.locations.virtualDomain, mode=loadIfNew, ArrayList names = null, copyOwner = true, copyDevSec = true) {
+    int importAllFromDir(String path=vdPath, mode=loadIfNew, ArrayList names = null, copyOwner = true, copyDevSec = true) {
         bootMsg "Importing updated or new virtual domains from $path."
         def count=0
         try {
+            path = path ?: vdPath
             new File(path).eachFileMatch(jsonExt) { file ->
                 if (!names || names.contains(file.name.take(file.name.lastIndexOf('.')))) {
                     count += loadFile(file, mode, copyOwner, copyDevSec)

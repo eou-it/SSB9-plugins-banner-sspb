@@ -4,20 +4,25 @@
 package net.hedtech.banner.css
 
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
 import groovy.util.logging.Log4j
 import net.hedtech.banner.security.CssSecurity
 import net.hedtech.banner.security.CssSecurityId
 import net.hedtech.banner.sspb.PBUser
 import net.hedtech.banner.tools.PBUtilServiceBase
+
 @Log4j
+@Transactional
 class CssUtilService extends PBUtilServiceBase {
 
     def static final actionImportInitally = 1
     def currentAction = null
+    def cssPath = pbConfig.locations.css
+
     def cssService
     def developerSecurityService
 
-    static Date getTimestamp(String oName, String path=PBUtilServiceBase.pbConfig.locations.css ) {
+    Date getTimestamp(String oName, String path=cssPath ) {
         def file = new File( "$path/${oName}.json")
         Date result
         if (file.exists())
@@ -27,7 +32,7 @@ class CssUtilService extends PBUtilServiceBase {
 
     //Export one or more virtual domains to the configured directory
     void exportToFile(String constantName, String pageLike=null,
-                      String path=PBUtilServiceBase.pbConfig.locations.css,
+                      String path=cssPath,
                       Boolean skipDuplicates=false, Boolean isAllowExportDSPermission = false ) {
         def usedByPageLike
         if (pageLike) {
@@ -69,7 +74,7 @@ class CssUtilService extends PBUtilServiceBase {
 
     void exportToFile(Map content) {
         boolean isAllowExportDSPermission = content.isAllowExportDSPermission && "Y".equalsIgnoreCase(content.isAllowExportDSPermission)
-        exportToFile(content.constantName,null,pbConfig.locations.css,false,isAllowExportDSPermission)
+        exportToFile(content.constantName,null,cssPath,false,isAllowExportDSPermission)
     }
 
     void importInitially(mode = PBUtilServiceBase.loadSkipExisting) {
@@ -87,10 +92,11 @@ class CssUtilService extends PBUtilServiceBase {
     }
 
     //Import/Install Utility
-    int importAllFromDir(String path=PBUtilServiceBase.pbConfig.locations.css, mode=PBUtilServiceBase.loadIfNew, ArrayList names = null, boolean copyOwner = true, boolean copyDevSec = true) {
+    int importAllFromDir(String path=cssPath, mode=PBUtilServiceBase.loadIfNew, ArrayList names = null, boolean copyOwner = true, boolean copyDevSec = true) {
         bootMsg "Importing updated or new css files from $path."
         def count=0
         try {
+            path = path ?: cssPath
             new File(path).eachFileMatch(jsonExt) { file ->
                 if (!names || names.contains(file.name.take(file.name.lastIndexOf('.')))) {
                     count += loadFile(file, mode, copyOwner, copyDevSec)
@@ -181,7 +187,7 @@ class CssUtilService extends PBUtilServiceBase {
     private def associateDeveloperSecurity(css, developerSecurity) {
         def cssDevEntries = CssSecurity.fetchAllByCssId(css.id)
         if(cssDevEntries) {
-            cssDevEntries.each {CssSecurity cssObj ->
+            cssDevEntries.each { CssSecurity cssObj ->
                 cssObj.delete(flush:true)
             }
         }
