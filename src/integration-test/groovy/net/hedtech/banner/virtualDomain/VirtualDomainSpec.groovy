@@ -22,13 +22,15 @@ class VirtualDomainSpec extends Specification {
     def vd
 
     def setup() {
-        virtualDomainService = new VirtualDomainService()
-        virtualDomainService.dateConverterService = new DateConverterService()
-        virtualDomainService.developerSecurityService = new DeveloperSecurityService()
+      //  virtualDomainService = new VirtualDomainService()
+      //  virtualDomainService.dateConverterService = new DateConverterService()
+        virtualDomainService.developerSecurityService.metaClass.isProductionReadOnlyMode = { return true}
+        virtualDomainService.developerSecurityService.metaClass.isAllowUpdateOwner  = { String a, String b -> return true}
+        virtualDomainService.developerSecurityService.metaClass.isAllowModify  = { String a, String b -> return true}
         vd = new VirtualDomain(serviceName: 'testPage', codeGet:
                 'select * from dual', typeOfCode: 'S')
         grails.util.Holders.config.pageBuilder.adminRoles = 'ROLE_GPBADMN_BAN_DEFAULT_PAGEBUILDER_M'
-        def grailsApplication =Holders.getGrailsApplication()
+      //  def grailsApplication =Holders.getGrailsApplication()
         def vdr = new VirtualDomainRole(allowGet: true, allowPost: true, allowDelete: true, allowPut: true , roleName: 'GUEST', virtualDomain: vd)
         def vdrSet = new HashSet<VirtualDomainRole>()
         vdrSet.add(vdr)

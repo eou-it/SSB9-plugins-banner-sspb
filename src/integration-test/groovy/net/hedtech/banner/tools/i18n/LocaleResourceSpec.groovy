@@ -10,6 +10,7 @@ import grails.util.GrailsWebMockUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.context.WebApplicationContext
 import org.springframework.web.context.request.RequestContextHolder
+import spock.lang.Ignore
 import spock.lang.Specification
 
 @Integration
@@ -27,6 +28,7 @@ class LocaleResourceSpec extends Specification {
         RequestContextHolder.resetRequestAttributes()
     }
 
+    @Ignore
     void "Integration test importExisting for datepicker resources"() {
         expect:
         LocaleResource.importExisting(plugin:'banner-sspb', dir: 'BannerXE/lib/jquery/i18n',
@@ -44,6 +46,7 @@ class LocaleResourceSpec extends Specification {
         'en-US' | null
     }
 
+    @Ignore
     void "Integration test importExisting for angularjs resources"() {
         expect:
         LocaleResource.importExisting(plugin:'', dir: 'BannerXE/lib/angular/i18n',

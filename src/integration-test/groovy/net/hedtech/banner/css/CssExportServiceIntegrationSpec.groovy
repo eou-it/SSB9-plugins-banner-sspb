@@ -28,6 +28,7 @@ class CssExportServiceIntegrationSpec extends Specification  {
         GrailsWebMockUtil.bindMockWebRequest(ctx)
 
         cssService.developerSecurityService.metaClass.isProductionReadOnlyMode = { return true}
+        cssService.developerSecurityService.metaClass.isAllowUpdateOwner  = { String a, String b -> return true}
         cssService.developerSecurityService.metaClass.isAllowModify  = { String a, String b -> return true}
         pbConfig = grailsApplication.config.pageBuilder
         path = pbConfig.locations.css
