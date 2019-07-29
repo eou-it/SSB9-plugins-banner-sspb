@@ -20,7 +20,7 @@ apply plugin:"org.grails.grails-plugin-publish"
 apply plugin:"asset-pipeline"
 apply plugin:"org.grails.grails-gsp"
 apply plugin: "java"
-apply plugin: 'net.saliman.cobertura'
+apply plugin:'net.saliman.cobertura'
 
 repositories {
     mavenLocal()
@@ -82,4 +82,14 @@ bootRun {
 bootRepackage.enabled = false
 assets {
     packagePlugin = true
+}
+
+apply plugin: 'codenarc'
+
+codenarc {
+    def codenarcRulePath = project(":banner-codenarc").projectDir.absolutePath + "/config/codenarc/rules.groovy"
+    configFile = file(codenarcRulePath)
+    maxPriority1Violations = Integer.MAX_VALUE
+    maxPriority2Violations = Integer.MAX_VALUE
+    maxPriority3Violations = Integer.MAX_VALUE
 }
