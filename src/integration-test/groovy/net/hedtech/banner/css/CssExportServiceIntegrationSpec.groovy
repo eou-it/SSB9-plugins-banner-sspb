@@ -74,7 +74,7 @@ class CssExportServiceIntegrationSpec extends Specification  {
 
     void "export css"(){
         when: "css, page details"
-        def params = [constantName: "pbDefault"]
+        def params = [constantName: "testExportCss.json"]
         def cssExport = cssExportService.show(params)
         then:
         cssExport
