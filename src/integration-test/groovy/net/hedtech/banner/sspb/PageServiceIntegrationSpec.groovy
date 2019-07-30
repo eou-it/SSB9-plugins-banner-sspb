@@ -101,23 +101,6 @@ class PageServiceIntegrationSpec extends Specification {
         extendedPage?.extendsPage == basePage
         println "Created page ${extendedPage?.constantName}"
 
-        when: "page deletion"
-
-        Map extendedPageMap1 = [pageName   : "ext.1", id : "ext.1",
-                               source     : '''{
-                                     "type": "page",
-                                     "name": "student",
-                                     "title": "Student Extended",
-                                     "scriptingLanguage": "JavaScript"
-                                     
-                                     }'''
-                               ]
-        result = pageService.delete([:], extendedPageMap1)
-
-        then: "able to delete page"
-        result == null
-
-
         when: "list the page"
 
         def res = pageService.list(params)
@@ -148,10 +131,26 @@ class PageServiceIntegrationSpec extends Specification {
         res > 0
 
         when: "get page"
-        String constantName = "pbadm.PageRoles"
+        String constantName = "ext.1"
         res = pageService.get(constantName)
         then:
-        res.constantName == "pbadm.PageRoles"
+        res.constantName == "ext.1"
+
+        when: "page deletion"
+
+        Map extendedPageMap1 = [pageName   : "ext.1", id : "ext.1",
+                                source     : '''{
+                                     "type": "page",
+                                     "name": "student",
+                                     "title": "Student Extended",
+                                     "scriptingLanguage": "JavaScript"
+                                     
+                                     }'''
+        ]
+        result = pageService.delete([:], extendedPageMap1)
+
+        then: "able to delete page"
+        result == null
 
 
     }

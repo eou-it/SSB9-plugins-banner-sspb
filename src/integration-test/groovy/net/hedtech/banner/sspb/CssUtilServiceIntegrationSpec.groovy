@@ -45,6 +45,7 @@ class CssUtilServiceIntegrationSpec extends Specification {
         pbConfig = grailsApplication.config.pageBuilder
         path = pbConfig.locations.css
         new File(path+"/testCss.json").write(cssString)
+        cssUtilService.developerSecurityService.metaClass.isAllowImport = { String a, String b -> return true }
     }
 
     def cleanup() {
