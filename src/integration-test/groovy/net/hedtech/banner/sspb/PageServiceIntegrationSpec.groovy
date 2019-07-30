@@ -26,6 +26,8 @@ class PageServiceIntegrationSpec extends Specification {
     def pageService
 
     def setup() {
+        pageService.developerSecurityService.metaClass.isAllowUpdateOwner = { String a, String b -> return true }
+
         pageService.developerSecurityService.metaClass.isAllowModify = { String a, String b -> return true }
 
         GrailsWebMockUtil.bindMockWebRequest(ctx)
@@ -195,6 +197,7 @@ class PageServiceIntegrationSpec extends Specification {
 
     void "Integration test create when production is on"() {
         given:
+        pageService.developerSecurityService.metaClass.isAllowUpdateOwner = { String a, String b -> return false }
         pageService.developerSecurityService.metaClass.isAllowModify = { String a, String b -> return false }
         JSONObject extendsPage = null
         Map basePageMap = [pageName   : "stu.base",
