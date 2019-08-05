@@ -35,6 +35,7 @@ class PageUtilServiceIntegrationSpec extends Specification {
         new AntBuilder().copy(todir: workPath) {
             fileset(dir: this.class.getResource(sourcePath).getPath())
         }
+        pageUtilService.developerSecurityService.metaClass.isAllowImport = {String a, String b -> return true}
     }
 
 

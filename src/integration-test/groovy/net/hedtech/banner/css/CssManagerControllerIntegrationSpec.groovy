@@ -18,7 +18,7 @@ import spock.lang.Specification
 @Integration
 @Rollback
 class CssManagerControllerIntegrationSpec extends Specification{
-    def cssDirPath   = "target/testData/css"
+    def cssDirPath
     def cssString = "body {color: red;}"
 
     @Autowired
@@ -27,9 +27,15 @@ class CssManagerControllerIntegrationSpec extends Specification{
     @Autowired
     CssManagerController controller
 
-    def setup() {
+    def grailsApplication
+    def pbConfig
+
+    def setup() {CssManagerControllerIntegrationSpec
         GrailsWebMockUtil.bindMockWebRequest(ctx)
-        new File(cssDirPath).mkdir()
+        //  new File(cssDirPath).mkdir()
+        pbConfig = grailsApplication.config.pageBuilder
+
+        cssDirPath = pbConfig.locations.css
         new File(cssDirPath+"/testCss.json").write(cssString)
     }
 
