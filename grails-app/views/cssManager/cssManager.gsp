@@ -220,6 +220,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                     $scope.cssName = "";
                     $scope.description = "";
                     $scope.cssSource= undefined;
+                    $scope.resetCssNameData();
                     // $scope.loadCssNames();
 
                 }, function(response) {
