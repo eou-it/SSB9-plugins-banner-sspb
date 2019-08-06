@@ -19,12 +19,12 @@ class VisualPageModelComposerControllerIntegrationSpec extends Specification  {
     @Autowired
     WebApplicationContext ctx
 
+    @Autowired
     VisualPageModelComposerController controller
-    def developerSecurityService
+
     def setup() {
         GrailsWebMockUtil.bindMockWebRequest(ctx)
-        controller               = new VisualPageModelComposerController()
-        controller.developerSecurityService = developerSecurityService
+        controller.developerSecurityService.metaClass.isProductionReadOnlyMod = { return true }
     }
     def cleanup() {
         RequestContextHolder.resetRequestAttributes()

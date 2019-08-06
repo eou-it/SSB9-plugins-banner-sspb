@@ -40,7 +40,9 @@ class PageExportServiceIntegrationSpec extends Specification {
                                      "scriptingLanguage": "JavaScript",
                                      "components": null
                                      }''']
-
+        pageService.developerSecurityService.metaClass.isProductionReadOnlyMode = { return true}
+        pageService.developerSecurityService.metaClass.isAllowUpdateOwner  = { String a, String b -> return true}
+        pageService.developerSecurityService.metaClass.isAllowModify  = { String a, String b -> return true}
         testPage = pageService.create(pageMap,[:])
         assert testPage.statusCode == 0
     }

@@ -76,10 +76,21 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         <asset:stylesheet href="modules/pageBuilderLTR-mf.css"/>
     </g:else>
     <asset:javascript src="modules/jquery-mf.js"/>
-
-    <g:javascript>
+    <asset:script>
         var extensibilityInfo = ${extensibilityInfo.encodeAsRaw()}
         window.mepCode='${session.mep}';
+    </asset:script>
+
+    <script type="text/javascript">
+        var mepcodeChanged='${request.mepcodeChanged}';
+        if(null !== mepcodeChanged && undefined !== mepcodeChanged && mepcodeChanged == "true"){
+            $(document).bind('notification-use-ready', function (e) {
+                mepcodeNotificationAddition(window.mepCode)
+            });
+        }
+    </script>
+
+    <g:javascript>
         var rootWebApp = "${createLink(uri: '/')}";
         var resourceBase = "${createLink(uri: '/') + grails.util.Holders.config.sspb.apiPath +'/' }";
         var templatesLocation = "${assetPath(src: 'template')}";

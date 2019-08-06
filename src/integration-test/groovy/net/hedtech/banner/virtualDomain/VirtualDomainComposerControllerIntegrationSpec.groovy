@@ -23,6 +23,7 @@ class VirtualDomainComposerControllerIntegrationSpec extends Specification  {
     VirtualDomainComposerController vdController
     def setup() {
         GrailsWebMockUtil.bindMockWebRequest(ctx)
+        vdController.developerSecurityService.metaClass.isProductionReadOnlyMode = {return true}
     }
 
     def cleanup() {
@@ -46,6 +47,7 @@ class VirtualDomainComposerControllerIntegrationSpec extends Specification  {
             return [:]
         }
         vdController.developerSecurityService.metaClass.isAllowModify = {String a, String b->return true}
+        vdController.developerSecurityService.metaClass.isAllowUpdateOwner = {String a, String b->return true}
 
         when: "saving the virtual domain"
         vdController.webRequest.params.putAll(params)
@@ -66,6 +68,7 @@ class VirtualDomainComposerControllerIntegrationSpec extends Specification  {
         vdController.virtualDomainResourceService.metaClass.list = { Map params ->
             return [:]
         }
+        vdController.developerSecurityService.metaClass.isAllowUpdateOwner = {String a, String b->return true}
         vdController.developerSecurityService.metaClass.isAllowModify = {String a, String b->return true}
         when: "saving the virtual domain"
         vdController.webRequest.params.putAll(params)
@@ -95,6 +98,7 @@ class VirtualDomainComposerControllerIntegrationSpec extends Specification  {
         vdController.virtualDomainResourceService.metaClass.list = { Map params ->
             return [:]
         }
+        vdController.developerSecurityService.metaClass.isAllowUpdateOwner = {String a, String b-> return false}
         vdController.developerSecurityService.metaClass.isAllowModify = {String a, String b-> return false}
         when: "saving the virtual domain"
         vdController.webRequest.params.putAll(params)
@@ -113,6 +117,7 @@ class VirtualDomainComposerControllerIntegrationSpec extends Specification  {
         vdController.virtualDomainResourceService.metaClass.list = { Map params ->
             return [:]
         }
+        vdController.developerSecurityService.metaClass.isAllowUpdateOwner = {String a, String b-> return true}
         vdController.developerSecurityService.metaClass.isAllowModify = {String a, String b-> return true}
         when: "saving the virtual domain"
         vdController.webRequest.params.putAll(params)

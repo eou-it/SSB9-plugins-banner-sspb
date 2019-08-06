@@ -293,6 +293,9 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
         if(params.onSaveSuccess) {
             onSaveSuccess = params.onSaveSuccess
         }
+        if(params.onSave) {
+            onSave = params.onSave
+        }
         this.selectValueKey=params.selectValueKey;
         this.selectInitialValue=params.selectInitialValue;
         this.currentRecord=null;
@@ -518,6 +521,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
             }
 
             var replaces = false;
+            if(!params.onSave) {params.onSave=onSave}
             if (params.onSave) {
                 replaces = params.onSave();
                 if (replaces) {
