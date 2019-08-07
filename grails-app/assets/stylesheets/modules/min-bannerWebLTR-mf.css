@@ -2,6 +2,6 @@
 *= require modules/aurora-mf.css
 *= require banner-ui-ss.css
 *= require notification-center.css
-*= require jquery.ui.tooltip.css
+*= require jquery/jquery.ui.tooltip.css
 *= require backbone.pagingcontrols.css
 */
