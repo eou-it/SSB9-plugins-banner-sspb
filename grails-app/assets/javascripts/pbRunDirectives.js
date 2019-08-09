@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2013-2016 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 'use strict';
 
@@ -11,7 +11,7 @@ var pbRunModule = angular.module('pbrun.directives', []);
 //Better number directive
 //With minor modifications from:
 //http://www.anicehumble.com/2013/07/seamless-numeric-localization-with-angularjs.html
-pbRunModule.directive('pbNumber', function($filter, $locale) {
+pbRunModule.directive('pbNumber', ['$filter', '$locale', function($filter, $locale) {
     return {
         require: 'ngModel',
         //scope: { ngModel: '=' },
@@ -79,4 +79,4 @@ pbRunModule.directive('pbNumber', function($filter, $locale) {
             */
         } // link
     }; // return
-}); // module
+}]); // module
