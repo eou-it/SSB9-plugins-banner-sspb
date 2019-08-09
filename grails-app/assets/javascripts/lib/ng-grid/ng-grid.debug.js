@@ -1446,6 +1446,7 @@ var ngGrid = function ($scope, options, sortService, domUtilityService, $filter,
     
     //Templates
     // test templates for urls and get the tempaltes via synchronous ajax calls
+    // Custom code - Modified $http handlers to fix Angular 1.7.x upgrade issue
     self.getTemplate = function (key) {
         var t = self.config[key];
         var uKey = self.gridId + key + ".html";
@@ -1454,11 +1455,11 @@ var ngGrid = function ($scope, options, sortService, domUtilityService, $filter,
             $http.get(t, {
                 cache: $templateCache
             })
-            .success(function(data){
-                $templateCache.put(uKey, data);
+            .then(function(response){
+                $templateCache.put(uKey, response.data);
                 p.resolve();
             })
-            .error(function(err){
+            .catch(function(response){
                 p.reject("Could not load template: " + t);
             });
         } else if (t) {
