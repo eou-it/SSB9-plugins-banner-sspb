@@ -105,6 +105,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                         $scope.cssOwner = data.owner;
                         $scope.allowUpdateOwner = data.allowUpdateOwner;
                         $scope.allowModify = data.allowModify;
+                        $scope.resetCssNameData();
                     } catch(ex) {
                         alert($scope.i18nGet("${message(code:'sspb.css.cssManager.parsing.error.message')}",[ex]),{type:"error"});
                     }
@@ -177,6 +178,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                         note = {type: "success", flash: true};
                         $scope.allowUpdateOwner = response.allowUpdateOwner;
                         $scope.allowModify = response.allowModify;
+                        $scope.resetCssNameData();
                     } else {
                         var msg="${message(code:'sspb.css.cssManager.validation.error.message', encodeAs: 'JavaScript')}";
                         if (response.cssValidationResult != undefined)
@@ -273,7 +275,6 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         <select id="cssConstantName" name="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'csses','id':'cssConstantName'}"
                 ng-model="cssName"
                 ng-change="getCssSource()">
-            <option label="{{cssName}}" value="{{cssName}}">{{cssName}}</option>
         </select>
 
         <button class="secondary" ng-click='loadCssNames()' ng-show="false" ><g:message code="sspb.css.cssManager.reload.pages.label" /></button>
