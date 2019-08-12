@@ -207,11 +207,14 @@ angular.module('ui.directives').directive('uiDate', [
         /* If we have a controller (i.e. ngModelController) then wire it up
         */
 
-        if (controller != null) {
+        if (controller) {
           updateModel = function(value, picker) {
-            return scope.$apply(function() {
-              return controller.$setViewValue(element.datepicker("getDate"));
-            });
+              /***
+               * https://jirateams.ellucian.com/browse/EXTZ-3637
+               * Fix for Angular 1.7 upgrade issue
+               * Fix taken from https://github.com/angular-ui/ui-date/blob/0.0.2/src/date.js
+               ***/
+              return controller.$setViewValue.call(controller, element.datepicker("getDate"));
           };
           if (opts.onSelect != null) {
             /* Caller has specified onSelect to call this as well as updating the model
