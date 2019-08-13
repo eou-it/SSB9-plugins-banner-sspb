@@ -17,7 +17,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
     %>
 
     <g:set var="mep" value="${org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes()?.request?.session?.getAttribute('ssbMepDesc')}"/>
-    <g:set var="hideSSBHeaderComps" value="${session.hideSSBHeaderComps?session.hideSSBHeaderComps: params?.hideSSBHeaderComps? params.hideSSBHeaderComps:false} " scope="session" />
+    <g:set var="hideSSBHeaderComps" value="${session.hideSSBHeaderComps ? session.hideSSBHeaderComps : (Boolean.parseBoolean(params?.hideSSBHeaderComps)) ? params.hideSSBHeaderComps : false}" scope="session"/>
 
     <meta charset="${message(code: 'default.character.encoding')}"/>
     <meta name="dir" content="${message(code:'default.language.direction')}"/>
@@ -37,7 +37,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
     <meta name="guestLoginEnabled" content="${grails.util.Holders.config.guestLoginEnabled}"/>
     <meta name="userLocale" content="${LocaleContextHolder.getLocale()}"/>
     <meta name="footerFadeAwayTime" content="${grails.util.Holders.config.footerFadeAwayTime}"/>
-    <meta name="hideSSBHeaderComps" content="${session?.hideSSBHeaderComps?.trim()}"/>
+    <meta name="hideSSBHeaderComps" content="${session?.hideSSBHeaderComps}">
     <meta name="menuEndPoint" content="${request.contextPath}/ssb/menu"/>
     <meta name="menuBaseURL" content="${request.contextPath}/ssb"/>
     <g:set var="aboutServiceUrl" value="${net.hedtech.banner.controllers.ControllerUtils.aboutServiceUrl()}" />
