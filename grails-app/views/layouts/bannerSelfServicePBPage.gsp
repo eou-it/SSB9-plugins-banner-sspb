@@ -4,7 +4,6 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="net.hedtech.banner.sspb.PBUser;" contentType="text/html;charset=UTF-8" %>
 <%@ page import="net.hedtech.banner.security.DeveloperSecurityService" contentType="text/html;charset=UTF-8" %>
-<%@ page import="net.hedtech.banner.tools.i18n.LocaleResource;" contentType="text/html;charset=UTF-8" %>
 <%@ page import="org.springframework.context.i18n.LocaleContextHolder" %>
 
 <!DOCTYPE html>
@@ -168,11 +167,11 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
             <g:i18nJavaScript/>
             <g:pageAccessAudit/>
         </asset:script>
-
         <g:layoutBody/>
         <asset:deferredScripts/>
-
         <g:customJavaScriptIncludes/>
+        <asset:javascript src="lib/jquery/i18n/jquery.ui.datepicker-${localeBrowserFull.toLowerCase()}.js" />
+        <asset:javascript src="lib/angular/i18n/angular-locale_${localeBrowserFull.toLowerCase()}.js" />
     </body>
 </html>
 

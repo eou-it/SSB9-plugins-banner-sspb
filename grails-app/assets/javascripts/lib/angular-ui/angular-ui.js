@@ -193,7 +193,7 @@ angular.module('ui.directives').directive('uiCodemirror', ['ui.config', '$parse'
 */
 
 angular.module('ui.directives').directive('uiDate', [
-  'ui.config', function(uiConfig) {
+  'ui.config', '$timeout', function(uiConfig, $timeout) {
     var options;
     options = {};
     if (uiConfig.date != null) {
@@ -207,14 +207,20 @@ angular.module('ui.directives').directive('uiDate', [
         /* If we have a controller (i.e. ngModelController) then wire it up
         */
 
+        // If we have a controller (i.e. ngModelController) then wire it up
         if (controller) {
-          updateModel = function(value, picker) {
-              /***
-               * https://jirateams.ellucian.com/browse/EXTZ-3637
-               * Fix for Angular 1.7 upgrade issue
-               * Fix taken from https://github.com/angular-ui/ui-date/blob/0.0.2/src/date.js
-               ***/
-              return controller.$setViewValue.call(controller, element.datepicker("getDate"));
+          // Override ngModelController's $setViewValue
+          // so that we can ensure that a Date object is being pass down the $parsers
+          // This is to handle the case where the user types directly into the input box
+          var _$setViewValue = controller.$setViewValue;
+          var settingValue = false;
+          controller.$setViewValue = function () {
+            if ( !settingValue ) {
+              settingValue = true;
+              element.datepicker("setDate", element.datepicker("getDate"));
+              _$setViewValue.call(controller, element.datepicker("getDate"));
+              $timeout(function() {settingValue = false;});
+            }
           };
           if (opts.onSelect != null) {
             /* Caller has specified onSelect to call this as well as updating the model
@@ -247,7 +253,7 @@ angular.module('ui.directives').directive('uiDate', [
         /* Create the datepicker widget
         */
 
-        return element.datepicker(opts);
+        return $(element).datepicker(opts); //Fix for issues post angular 1.7 upgrade
       }
     };
   }
