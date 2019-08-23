@@ -105,6 +105,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                         $scope.cssOwner = data.owner;
                         $scope.allowUpdateOwner = data.allowUpdateOwner;
                         $scope.allowModify = data.allowModify;
+                        $scope.resetCssNameData();
                     } catch(ex) {
                         alert($scope.i18nGet("${message(code:'sspb.css.cssManager.parsing.error.message')}",[ex]),{type:"error"});
                     }
@@ -177,6 +178,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                         note = {type: "success", flash: true};
                         $scope.allowUpdateOwner = response.allowUpdateOwner;
                         $scope.allowModify = response.allowModify;
+                        $scope.resetCssNameData();
                     } else {
                         var msg="${message(code:'sspb.css.cssManager.validation.error.message', encodeAs: 'JavaScript')}";
                         if (response.cssValidationResult != undefined)
@@ -220,6 +222,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                     $scope.cssName = "";
                     $scope.description = "";
                     $scope.cssSource= undefined;
+                    $scope.resetCssNameData();
                     // $scope.loadCssNames();
 
                 }, function(response) {
@@ -251,6 +254,15 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 
             }
 
+            $scope.resetCssNameData = function(){
+                $("#cssConstantName option").each(function() {
+                    $(this).text($scope.cssName);
+                    $(this).val($scope.cssName);
+                    $(this).attr('label', $scope.cssName);
+                    $(this).attr('selected', 'selected');
+
+                });
+            }
 
         }
     </script>
@@ -263,13 +275,12 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         <select id="cssConstantName" name="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'csses','id':'cssConstantName'}"
                 ng-model="cssName"
                 ng-change="getCssSource()">
-            <option label="{{cssName}}" value="{{cssName}}">{{cssName}}</option>
         </select>
 
         <button class="secondary" ng-click='loadCssNames()' ng-show="false" ><g:message code="sspb.css.cssManager.reload.pages.label" /></button>
     </div>
     <div class="btn-section-2">
-        <button class="primary" ng-click='newCssSource()' ng-disabled="${!isProductionReadOnlyMode}" ><g:message code="sspb.css.cssManager.newCss.label" /></button>
+        <button class="primary" ng-click='newCssSource();resetCssNameData();' ng-disabled="${!isProductionReadOnlyMode}" ><g:message code="sspb.css.cssManager.newCss.label" /></button>
         <button class="secondary" ng-click='submitCssSource()' ng-disabled="${!isProductionReadOnlyMode} || !(allowModify == null ? true :allowModify)"><g:message code="sspb.css.cssManager.save.label" /></button>
         <span ng-show="${isProductionReadOnlyMode}">
             <pb-Upload label='Upload Stylesheet' status='cssStatus' pb-change=''></pb-Upload>

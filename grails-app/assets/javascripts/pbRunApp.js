@@ -290,8 +290,13 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
 
         this.setResource(params.resource);
         this.queryParams=params.queryParams;
+        var onSaveSuccess;
         if(params.onSaveSuccess) {
             onSaveSuccess = params.onSaveSuccess
+        }
+        var onSave;
+        if(params.onSave) {
+            onSave = params.onSave
         }
         this.selectValueKey=params.selectValueKey;
         this.selectInitialValue=params.selectInitialValue;
@@ -510,7 +515,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
 
             function successHandler(action) {
                 return function (response) {
-                    if(!params.onSaveSuccess){params.onSaveSuccess=onSaveSuccess}
+                    if(!params.onSaveSuccess && onSaveSuccess){params.onSaveSuccess=onSaveSuccess}
                     if (params.onSaveSuccess) {
                         params.onSaveSuccess(response, action);
                     }
@@ -518,6 +523,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
             }
 
             var replaces = false;
+            if(!params.onSave && onSave) {params.onSave=onSave}
             if (params.onSave) {
                 replaces = params.onSave();
                 if (replaces) {
