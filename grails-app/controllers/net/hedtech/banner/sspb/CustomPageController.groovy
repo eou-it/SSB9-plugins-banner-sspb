@@ -4,12 +4,15 @@
 
 package net.hedtech.banner.sspb
 
+import grails.core.GrailsApplication
+import org.springframework.util.StringUtils
+
 class CustomPageController {
 
     static defaultAction = "page"
     def groovyPagesTemplateEngine
     def compileService
-    def grailsApplication
+    GrailsApplication grailsApplication
     def pageService
 
     def page() {
@@ -17,14 +20,18 @@ class CustomPageController {
             render ""
             return
         }
-        if (params.id=="pbadm.ssoauth") {
+        def pageId = params.id
+        if(params?.format){
+            pageId = params.id+"."+params.format
+        }
+        if (pageId =="pbadm.ssoauth") {
             if (params.url) {
                 redirect(uri: params.url)
             }
         }
         if (grailsApplication.config.pageBuilder?.enabled) {
             // render view page.gsp which will be including getHTML
-            render(view: "page", model: [id: params.id])
+            render(view: "page", model: [id: pageId])
         } else {
             redirect(uri: '/themeEditor')
         }

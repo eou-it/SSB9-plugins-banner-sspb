@@ -5,16 +5,17 @@
 package net.hedtech.banner.sspb
 
 import grails.converters.JSON
+import grails.gorm.transactions.Transactional
+import grails.util.Holders
 import groovy.util.logging.Log4j
 import net.hedtech.banner.security.PageSecurity
 import net.hedtech.banner.security.PageSecurityId
-import org.codehaus.groovy.grails.web.context.ServletContextHolder
-import org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes
-import org.springframework.context.ApplicationContext
+import net.hedtech.banner.tools.PBUtilServiceBase
 import net.hedtech.banner.tools.i18n.SortedProperties
 
 @Log4j
-class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
+@Transactional
+class PageUtilService extends PBUtilServiceBase {
     def pageService
     def pageSecurityService
     def developerSecurityService
@@ -23,12 +24,18 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     def static final statusError = 1
     def static final statusDeferLoad = 2
     def static final actionImportInitally = 1
-    def static final bundleLocation = getBundleLocation()
-    def static final bundleName = "pageBuilder"
-
+    def  bundleLocation
+    def bundleName = "pageBuilder"
+    String pagePath = pbConfig.locations.page
     def currentAction = null
 
-    def static getBundleLocation() {
+
+    PageUtilService(){
+        super()
+        bundleLocation = getBundleLocation()
+    }
+
+    def  getBundleLocation() {
         if (bundleLocation) {//only need to determine location once
             return bundleLocation
         }
@@ -40,7 +47,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     //Export one or more pages to the configured directory
-    void exportToFile(String pageName, String path=pbConfig.locations.page, Boolean skipDuplicates=false, Boolean isAllowExportDSPermission=false ) {
+    void exportToFile(String pageName, String path=pagePath, Boolean skipDuplicates=false, Boolean isAllowExportDSPermission=false ) {
         Page.findAllByConstantNameLike(pageName).each { page ->
             if (skipDuplicates && page.constantName.endsWith(".bak")) {
                 log.info message(code: "sspb.pageutil.export.skipDuplicate.message", args: [page.constantName])
@@ -66,7 +73,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
 
     void exportToFile(Map content) {
         boolean isAllowExportDSPermission = content.isAllowExportDSPermission && "Y".equalsIgnoreCase(content.isAllowExportDSPermission)
-        exportToFile(content.constantName,pbConfig.locations.page,false,isAllowExportDSPermission)
+        exportToFile(content.constantName,pagePath,false,isAllowExportDSPermission)
     }
 
     //Load pages required for Page Builder administration
@@ -99,8 +106,8 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     //Import/Install Utility
-    int importAllFromDir(String path=pbConfig.locations.page, mode=loadIfNew, ArrayList names = null, boolean updateSecurity = false, boolean copyOwner = true, boolean copyDevSec = true) {
-        importAllFromDir(path, mode, false, names, updateSecurity, copyOwner, copyDevSec)
+    int importAllFromDir(String path=pagePath, mode=loadIfNew, ArrayList names = null, boolean updateSecurity = false, boolean copyOwner = true, boolean copyDevSec = true) {
+        importAllFromDir(path?:pagePath, mode, false, names, updateSecurity, copyOwner, copyDevSec)
     }
 
     int importAllFromDir(String path, mode, boolean deferred, ArrayList names, boolean updateSecurity, boolean copyOwner, boolean copyDevSec) {
@@ -126,7 +133,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
             if ( count > 0 && needDeferred) {
                 // attempt import files that could not be loaded because of missing parent
                 // which might have been imported if count > 0
-                def i = importAllFromDir(path, mode, true, names, updateSecurity)
+                def i = importAllFromDir(path, mode, true, names, updateSecurity, copyOwner,copyDevSec)
                 bootMsg "Pages loaded deferred: $i"
                 count += i
             }
@@ -235,7 +242,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
 
                     }
                 }
-                page=page.merge()
+                page = page.merge(failOnError: true, flush: true)
                 if (result.statusCode == statusOk) {
                     result = pageService.compileAndSavePage(page.constantName, page.mergedModelText, page.extendsPage, page.owner)
                     result.loaded = result.page?1:0
@@ -326,8 +333,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     def compileMissingProperties() {
-        def messageSource = ServletContextHolder.getServletContext()
-                .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT).getBean("messageSource")
+        def messageSource = Holders.grailsApplication.mainContext.getBean("messageSource")
         def externalMessageSource = messageSource?.externalMessageSource
         // Check if properties files exist, if not we will compile pages if non-baseline pages exist
         if (externalMessageSource.basenamesExposed.size()==0){
@@ -345,9 +351,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
 
     // Handler for Page properties
     void updateProperties( Map properties, String baseName){
-        ApplicationContext applicationContext = (ApplicationContext) ServletContextHolder.getServletContext()
-                .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT);
-        def messageSource = applicationContext.getBean("messageSource")
+        def messageSource = Holders.grailsApplication.mainContext.getBean("messageSource")
         def isBaseline = false
         if ( baseName.startsWith('pbadm') || baseName.startsWith(PageComponent.globalPropertiesName) || currentAction == actionImportInitally ) {
             def props = messageSource.getPropertiesByNormalizedName("plugins/banner-sspb/$baseName", new Locale("root"))
@@ -378,9 +382,7 @@ class PageUtilService extends net.hedtech.banner.tools.PBUtilServiceBase {
     }
 
     def reloadBundles = {
-        ApplicationContext applicationContext = (ApplicationContext) ServletContextHolder.getServletContext()
-                .getAttribute(GrailsApplicationAttributes.APPLICATION_CONTEXT);
-        def messageSource = applicationContext.getBean("messageSource")
+        def messageSource = Holders.grailsApplication.mainContext.getBean("messageSource")
         messageSource.clearCache()
         messageSource.externalMessageSource?.clearCache()
     }

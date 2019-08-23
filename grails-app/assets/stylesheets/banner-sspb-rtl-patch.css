@@ -1,0 +1,96 @@
+/*******************************************************************************
+ Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+*******************************************************************************/
+.paging-control.last.enabled     {
+    background-position:0 0;
+    width:22px;
+    height:23px;
+}
+.paging-control.first.enabled      {
+    background-position:0 -112px;
+    width:22px;
+    height:23px;
+}
+.paging-control.previous.enabled      {
+    background-position:0 -224px;
+    width:22px;
+    height:23px;
+}
+.paging-control.next.enabled  {
+    background-position:0 -336px;
+    width:22px;
+    height:23px;
+}
+
+.paging-control.last     {
+    background-position:0 -28px;
+    width:22px;
+    height:23px;
+}
+.paging-control.first      {
+    background-position:0 -140px;
+    width:22px;
+    height:23px;
+}
+.paging-control.previous      {
+    background-position:0 -252px;
+    width:22px;
+    height:23px;
+}
+.paging-control.next  {
+    background-position:0 -364px;
+    width:22px;
+    height:23px;
+}
+
+.paging-control.last.enabled:hover     {
+    background-position:0 -84px;
+    width:22px;
+    height:23px;
+}
+.paging-control.first.enabled:hover      {
+    background-position:0 -196px;
+    width:22px;
+    height:23px;
+}
+.paging-control.previous.enabled:hover      {
+    background-position:0 -308px;
+    width:22px;
+    height:23px;
+}
+.paging-control.next.enabled:hover  {
+    background-position:0 -420px;
+    width:22px;
+    height:23px;
+}
+
+.paging-container .divider {
+    border-right: 1px none rgb(0, 0, 0);
+    float: right;
+    height: 17px;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 8px;
+    width: 1px;
+}
+
+
+.ngHeaderButton {
+    right:initial;
+    left: 3px;
+
+}
+.ngColMenu {
+    right:initial;
+    left: 2px;
+}
+
+
+.ngHeaderGrip {
+    right:initial;
+    left: -5px;
+}
+
+.ngVerticalBar {
+    right:initial;
+}

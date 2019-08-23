@@ -4,16 +4,15 @@
 
 package net.hedtech.banner.css
 
-import groovy.util.logging.Log4j
 import net.hedtech.banner.exceptions.ApplicationException
+import net.hedtech.banner.security.CssSecurity
 import net.hedtech.banner.security.DeveloperSecurityService
 import net.hedtech.banner.service.ServiceBase
 import net.hedtech.banner.sspb.CommonService
 import net.hedtech.banner.sspb.PBUser
 import net.hedtech.restfulapi.AccessDeniedException
-import org.codehaus.groovy.grails.web.util.WebUtils
+import org.grails.web.util.WebUtils
 
-@Log4j
 class CssService extends ServiceBase {
 
     static transactional = true
@@ -160,7 +159,7 @@ class CssService extends ServiceBase {
                     cssInstance = new Css([constantName: cssName, description: description, css: cssSource, owner:owner])
                     super.create(cssInstance)
                 }
-                ret = [statusCode:0, statusMessage:"${message(code:'sspb.css.cssManager.saved.message')}"]
+                ret = [statusCode:0, statusMessage: message(code:'sspb.css.cssManager.saved.message')]
             } else {
                 ret = [statusCode: 2, statusMessage:message(code:"sspb.css.cssManager.stylesheet.validation.error.message")]
                 ret << [cssValidationResult:[errors: validateResult.error.join('\n')] ]
@@ -178,8 +177,14 @@ class CssService extends ServiceBase {
             log.error('user not authorized to delete css')
             throw new AccessDeniedException("user.not.authorized.delete", [PBUser.getTrimmed().loginName])
         }
-            def css = Css.fetchByConstantName(params.id)
-            super.delete(css)
+        def css = Css.fetchByConstantName(params.id)
+        def cssDevEntries = CssSecurity.fetchAllByCssId(css.id)
+        if (cssDevEntries) {
+            cssDevEntries.each { CssSecurity cssObj ->
+                cssObj.delete(flush: true)
+            }
+        }
+        super.delete(css)
     }
 
     private def validateInput(params) {
@@ -210,5 +215,6 @@ class CssService extends ServiceBase {
         }
 
         params << reqParams
+        return params
     }
 }
