@@ -153,7 +153,7 @@ class PageService {
             def pageJSON = JSON.parse(pageSource)
             def duplicateObjects
             if(pageJSON.objectName) {
-                duplicateObjects = Page.findAllByModelViewLikeAndConstantNameNotEqual("%\"objectName\": \"" + pageJSON.objectName.trim().toUpperCase() + "\"%", pageJSON.name)
+                duplicateObjects = Page.findAllByModelViewLikeAndConstantNameNotEqual("%\"objectName\": \"" + pageJSON.objectName.trim().toUpperCase() + "\"%", pageName)
             }
             if (!duplicateObjects) {
                 if (!(extendsPage instanceof Page)) {

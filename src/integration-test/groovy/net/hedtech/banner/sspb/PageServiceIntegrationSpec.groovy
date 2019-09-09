@@ -215,5 +215,55 @@ class PageServiceIntegrationSpec extends Specification {
          exception != null
     }
 
+    void "Integration test create a new page with object name" (){
+        given:
+        Map basePageMap = [pageName   : "Page_Test",
+                           source     : '''{
+                                     "type": "page",
+                                     "name": "PageTest",
+                                     "title": "Test Page",
+                                     "objectName": "OBJECTFORTES",
+                                     "scriptingLanguage": "JavaScript",
+                                     "components": null
+                                     }''']
+        def params = ['constantName': 'Page_Test']
+
+        when: "Creat a page with Object name"
+        def result = pageService.create(basePageMap, [:])
+        then: "Results"
+        result.statusCode == 0
+    }
+
+    void "Integration test create a page with duplicate object"(){
+        given:
+        Map basePageMap = [pageName   : "Page_Test",
+                           source     : '''{
+                                     "type": "page",
+                                     "name": "PageTest",
+                                     "title": "Test Page",
+                                     "objectName": "OBJECTFORTES",
+                                     "scriptingLanguage": "JavaScript",
+                                     "components": null
+                                     }''']
+        def params = ['constantName': 'Page_Test']
+
+        when: "Creat a page with Object name"
+        def result = pageService.create(basePageMap, [:])
+        then: "Results"
+        result.statusCode == 0
+        when: "create a page with duplicate object"
+        Map basePageMapt = [pageName   : "Page_TestT",
+                            source     : '''{
+                                     "type": "page",
+                                     "name": "PageTest",
+                                     "title": "Test Page",
+                                     "objectName": "OBJECTFORTES",
+                                     "scriptingLanguage": "JavaScript",
+                                     "components": null
+                                     }''']
+        def relt = pageService.create(basePageMapt, [:])
+        then:"Results"
+        relt.statusCode == 4
+    }
 
 }
