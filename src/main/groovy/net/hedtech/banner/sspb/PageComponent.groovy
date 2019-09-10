@@ -8,6 +8,7 @@ import groovy.json.StringEscapeUtils
 import groovy.util.logging.Log4j
 import net.hedtech.banner.css.Css
 import net.hedtech.banner.exceptions.ApplicationException
+import org.springframework.context.i18n.LocaleContextHolder
 
 import java.util.regex.Pattern
 
@@ -372,7 +373,28 @@ class PageComponent {
     def recordControlPanel()  {
         def button = "button"
         def dataSet    =  "${name}DS"
-        def result = """|
+        def local = LocaleContextHolder.getLocale()
+        def result
+        if(local.getLanguage().equals("ar")){
+             result = """|
+                   |<!-- pagination -->
+                   |<div class="pagination-container">
+                   |    <div ${idAttribute('-pagination-container')} class="pagination-controls" ng-show='${dataSet}.totalCount > ${dataSet}.pagingOptions.pageSize'>
+                   |        <$button ${idAttribute('-pagination-next-button')} class="secondary next" ng-disabled="${dataSet}.pagingOptions.currentPage >= ${dataSet}.totalCount/${dataSet}.pagingOptions.pageSize "
+                   |            ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1">
+                   |        </button>
+                   |        <span ${idAttribute('-pagination-page-count')}>
+                   |        {{${dataSet}.numberOfPages()}}/{{${dataSet}.pagingOptions.currentPage}}
+                   |        </span>
+                   |        
+                   |      <$button ${idAttribute('-pagination-prev-button')} class="secondary previous" ng-disabled="${dataSet}.pagingOptions.currentPage == 1"
+                   |            ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1">
+                   |        </button>
+                   |    </div>
+                   |</div>
+                   |""".stripMargin()
+        }else{
+             result = """|
                    |<!-- pagination -->
                    |<div class="pagination-container">
                    |    <div ${idAttribute('-pagination-container')} class="pagination-controls" ng-show='${dataSet}.totalCount > ${dataSet}.pagingOptions.pageSize'>
@@ -388,6 +410,7 @@ class PageComponent {
                    |    </div>
                    |</div>
                    |""".stripMargin()
+        }
         def changeData = ""
         def btnLabel
         if (allowNew) {
