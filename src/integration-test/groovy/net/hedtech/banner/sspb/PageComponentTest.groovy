@@ -40,4 +40,22 @@ class PageComponentTest extends Specification{
         then:
         res.length()>0
     }
+
+    void "test Boolean type expression for compileCtrlFunction" () {
+        when :
+        Boolean expression1 = true
+        def res = pageComponent.compileCtrlFunction(expression1)
+        then:
+        res != null
+        expression1 == res
+    }
+
+    void "test Integer type expression for compileCtrlFunction" () {
+        when :
+        Integer expression1 = 1
+        def res = pageComponent.compileCtrlFunction(expression1)
+        then:
+        res != null
+        expression1 == res
+    }
 }

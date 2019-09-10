@@ -1648,7 +1648,11 @@ class PageComponent {
         if (expression == null) {
             log.debug "Compile Expression: skip null"
             return expression
+        } else if(target == ExpressionTarget.CtrlFunction && (expression instanceof  Boolean || expression instanceof Integer)) {
+            log.debug "Compile Expression: skip boolean or Integer of source parameters"
+            return expression
         }
+
         def result = expression
         log.debug "Compile Expression: $expression"
         result = escapeDollar(result)
