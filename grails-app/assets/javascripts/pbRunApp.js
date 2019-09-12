@@ -346,49 +346,77 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
             this.data[0] = this.Resource.get(params, post.go, post.error);
         };
 
-        this.load = function(p) {
-            if (p && p.clearCache)
-                this.cache.removeAll();
-            if (p && p.paging) {
-                if (this.pagingOptions.currentPage && this.pagingOptions.pageSize) {
-                    this.currentRecord = null;
-                    this.selectedRecords.removeAll();
-                } else {
-                    return; //abort load, watch fired for undefined currentPage or pageSize
-                }
-            } else {
-                this.init();
-            }
-            eval("var params;");
-            /* Fixing issue for minification , assigning params to variable a*/
-            if (!(p && p.all)) {
-                params = eval("params="+this.queryParams+";");
-                eval("typeof b !=='undefined'") ? eval("b = params"):null;
-            } else {
-                params = {};
-            }
-            if (this.pageSize>0) {
-                params.offset=(nvl(this.pagingOptions.currentPage,1)-1)*this.pagingOptions.pageSize;
-                params.max=this.pagingOptions.pageSize;
-            }
-            if (this.sortInfo.fields.length>0) {
-                params.sortby=[];
-                for (var ix = 0;ix< this.sortInfo.fields.length;ix++){
-                    params.sortby[ix] = this.sortInfo.fields[ix] +' '+ this.sortInfo.directions[ix] ;
-                }
-            }
-            var parameter={};
-            Object.keys(params).forEach(function(key) {
-                var bkey = Base64.encode(getRandomArbitrary(0,99));
-                var bval = Base64.encode(getRandomArbitrary(0,99));
-                parameter[bkey+Base64.encode(key)]=(params[key]!=null && params[key]!=undefined)?bval+Base64.encode(params[key]):bval+params[key];
+        this.confirmPageAction =  function(p) {
+            var msg = $.i18n.prop("sspb.page.visualbuilder.loadpage.unsaved.changes.message");
+            var note = {type: 'warning', message: msg};
+            note.message = note.message.replace(/\n/g, "<br />");
+            note.flash = false;
+            var n = new Notification( note );
+
+            n.addPromptAction( $.i18n.prop("sspb.page.visualbuilder.page.cancel.message"), function() {
+                notifications.remove( n );
             });
-            parameter["encoded"]=true;
-            params = parameter;
-            console.log("Query Parameters:", params) ;
-            //If an id parameter exists use get
-            var res = (params.id === undefined) ? this.Resource.list(params, post.go, post.error) : this.Resource.get(params, post.go, post.error);
-            this.data = (Array.isArray(res))?res:[res];
+            $scope.parent = this;
+            n.addPromptAction( $.i18n.prop("sspb.page.visualbuilder.page.continue.message"), function() {
+                notifications.remove( n );
+                $scope.parent.load(p,true);
+                $scope.parent.added=[];
+                $scope.parent.deleted=[];
+                $scope.parent.modified=[];
+            });
+
+            notifications.addNotification( n );
+        };
+
+        this.load = function(p,confirmed) {
+            var iload = confirmed || !this.dirty();
+            if (!iload) {
+                this.confirmPageAction(p);
+            }
+            if (iload) {
+                if (p && p.clearCache)
+                    this.cache.removeAll();
+                if (p && p.paging) {
+                    if (this.pagingOptions.currentPage && this.pagingOptions.pageSize) {
+                        this.currentRecord = null;
+                        this.selectedRecords.removeAll();
+                    } else {
+                        return; //abort load, watch fired for undefined currentPage or pageSize
+                    }
+                } else {
+                    this.init();
+                }
+                eval("var params;");
+                /* Fixing issue for minification , assigning params to variable a*/
+                if (!(p && p.all)) {
+                    params = eval("params=" + this.queryParams + ";");
+                    eval("typeof b !=='undefined'") ? eval("b = params") : null;
+                } else {
+                    params = {};
+                }
+                if (this.pageSize > 0) {
+                    params.offset = (nvl(this.pagingOptions.currentPage, 1) - 1) * this.pagingOptions.pageSize;
+                    params.max = this.pagingOptions.pageSize;
+                }
+                if (this.sortInfo.fields.length > 0) {
+                    params.sortby = [];
+                    for (var ix = 0; ix < this.sortInfo.fields.length; ix++) {
+                        params.sortby[ix] = this.sortInfo.fields[ix] + ' ' + this.sortInfo.directions[ix];
+                    }
+                }
+                var parameter = {};
+                Object.keys(params).forEach(function (key) {
+                    var bkey = Base64.encode(getRandomArbitrary(0, 99));
+                    var bval = Base64.encode(getRandomArbitrary(0, 99));
+                    parameter[bkey + Base64.encode(key)] = (params[key] != null && params[key] != undefined) ? bval + Base64.encode(params[key]) : bval + params[key];
+                });
+                parameter["encoded"] = true;
+                params = parameter;
+                console.log("Query Parameters:", params);
+                //If an id parameter exists use get
+                var res = (params.id === undefined) ? this.Resource.list(params, post.go, post.error) : this.Resource.get(params, post.go, post.error);
+                this.data = (Array.isArray(res)) ? res : [res];
+            }
 
         };
 
@@ -548,7 +576,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
         };
 
         this.dirty = function() {
-            return this.added.length + this.modified.length + this.deleted.length>0
+            return this.added.length + this.modified.length + this.deleted.length>0;
         };
 
         this.onUpdate=params.onUpdate;
