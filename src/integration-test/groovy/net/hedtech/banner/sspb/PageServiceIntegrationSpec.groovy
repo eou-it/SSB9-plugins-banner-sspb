@@ -266,4 +266,68 @@ class PageServiceIntegrationSpec extends Specification {
         relt.statusCode == 4
     }
 
+ void "Integration test case for Grid & Detail component with Number and boolean parameter"(){
+     given:
+     JSONObject extendsPage = null
+     Map pageMap = [pageName: "stu.base",
+                        source  : '''{
+                                     "type": "page",
+                                     "name": "student",
+                                     "title": "Student Base",
+                                     "scriptingLanguage": "JavaScript",
+                                      "components":[
+                                        {
+                                              "resource": "pages",
+                                              "name": "pageDataResource",
+                                              "type": "resource",
+                                              "staticData": []
+                                        },
+                                        {
+                                              "allowDelete": false,
+                                              "components": [],
+                                              "allowNew": false,
+                                              "name": "pageDataGrid",
+                                              "allowModify": false,
+                                              "pageSize": 5,
+                                              "model": "pageDataResource",
+                                              "allowReload": false,
+                                              "loadInitially": true,
+                                              "type": "grid",
+                                              "parameters": {
+                                                    "id": 1,
+                                                    "key": true
+                                              }
+                                        },
+                                        {
+                                          "allowDelete": false,
+                                          "allowNew": false,
+                                          "name": "pageDataDetail",
+                                          "allowModify": false,
+                                          "pageSize": 5,
+                                          "model": "pageDataResource",
+                                          "allowReload": false,
+                                          "loadInitially": true,
+                                          "type": "detail",
+                                          "parameters": {
+                                                "id": 1,
+                                                "key": true
+                                          }
+                                    }
+                                      ]
+                                     
+                                     }''',
+                        extendsPage: extendsPage]
+
+     when: "page create with Grid component with parameters"
+     def res
+     res = pageService.create(pageMap, [:])
+     Page basePage = res?.page
+     then: "able to create page that is not an extension"
+     res.statusCode == 0
+     basePage?.id != null
+     basePage?.constantName == "stu.base"
+     basePage?.extendsPage == null
+
+ }
+
 }
