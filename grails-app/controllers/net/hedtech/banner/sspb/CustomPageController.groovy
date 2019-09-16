@@ -5,6 +5,7 @@
 package net.hedtech.banner.sspb
 
 import grails.core.GrailsApplication
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.util.StringUtils
 
 class CustomPageController {
@@ -50,6 +51,7 @@ class CustomPageController {
 
 
     def getHTML() {
+        def local = LocaleContextHolder.getLocale()
         try {
             def pageId = params.id
             def html
@@ -60,7 +62,7 @@ class CustomPageController {
                 html = compileService.assembleFinalPage(page.compiledView, page.compiledController)
             }
             if (html) {
-                def pageName = pageId+'_'+page.version+".gsp"
+                def pageName = pageId+'_'+local.getLanguage()+page.version+".gsp"
                  if(!groovyPagesTemplateEngine.pageCache.get(pageName)){
                      pageService.compilePage(page)
                 }
