@@ -4,12 +4,15 @@
 package net.hedtech.banner.virtualDomain
 
 import grails.gorm.transactions.Transactional
+import grails.io.IOUtils
 import groovy.json.JsonSlurper
 import groovy.sql.Sql
 import groovy.util.logging.Log4j
 import net.hedtech.banner.sspb.PBUser
 import net.hedtech.banner.sspb.Page
 import net.hedtech.restfulapi.AccessDeniedException
+import oracle.sql.BLOB
+import sun.misc.BASE64Encoder
 
 import java.sql.SQLException
 
@@ -233,6 +236,7 @@ class VirtualDomainSqlService {
             rows = sql.rows(statement,parameters,metaData)
             rows = idEncodeRows(rows)
             rows = handleClobRows(rows)
+            rows = handleBlobRows(rows)
             logmsg += " "+message(code:"sspb.virtualdomain.sqlservice.numberrows", args:[rows?.size(),parameters.offset])
 
         } catch(SQLException e) {
@@ -455,6 +459,34 @@ class VirtualDomainSqlService {
                 }
             }
             if (!foundClob)
+                return rows // no need to traverse the whole array if first row doesn't have a CLOB
+        }
+        return rows
+    }
+
+    private def handleBlobRows(rows) {
+        def foundBlob=false
+        for ( row in rows )  {
+            for (col in row ) {
+                if (col.value.getClass().getName().endsWith("BLOB")) {
+                    if (col.value instanceof java.sql.Blob) {
+
+                        byte[] returnBytes
+                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
+                        BLOB blob = col.value
+                        InputStream inputStream = blob.getBinaryStream()
+                        int inByte;
+                        while ((inByte = inputStream.read()) != -1)
+                        {
+                            byteArrayOutputStream.write(inByte)
+                        }
+                        returnBytes = byteArrayOutputStream.toByteArray()
+                        col.value = Base64.getEncoder().encodeToString(returnBytes)
+                        foundBlob = true
+                    }
+                }
+            }
+            if (!foundBlob)
                 return rows // no need to traverse the whole array if first row doesn't have a CLOB
         }
         return rows
