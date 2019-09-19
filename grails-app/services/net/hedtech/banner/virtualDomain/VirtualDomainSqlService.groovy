@@ -14,6 +14,7 @@ import net.hedtech.restfulapi.AccessDeniedException
 import oracle.sql.BLOB
 import sun.misc.BASE64Encoder
 
+import java.sql.Blob
 import java.sql.SQLException
 
 @Log4j
@@ -473,7 +474,7 @@ class VirtualDomainSqlService {
 
                         byte[] returnBytes
                         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
-                        BLOB blob = col.value
+                        Blob blob = col.value
                         InputStream inputStream = blob.getBinaryStream()
                         int inByte;
                         while ((inByte = inputStream.read()) != -1)
