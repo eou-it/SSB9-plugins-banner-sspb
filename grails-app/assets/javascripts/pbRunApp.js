@@ -374,7 +374,6 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
         this.load = function(p,confirmed) {
             var iload = confirmed || !$scope.changed;
             if (!iload) {
-                console.log(this.queryParams);
                 $scope.iqueryParams.push(this);
                 this.confirmPageActionMain(function(){
                     $scope.changed = false;
