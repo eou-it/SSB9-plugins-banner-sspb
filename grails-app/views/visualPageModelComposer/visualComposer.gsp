@@ -1079,9 +1079,10 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         }
 
         function upperCaseF(e) {
-            setTimeout(function () {
-                e.value = e.value.toUpperCase();
-            }, 1);
+            if(e.name == "prop_objectName"){
+                    e.value = e.value.toUpperCase();
+            }
+
         }
     </script>
 
@@ -1199,7 +1200,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                                     ng-model="dataHolder.selectedComponent[attr.name]" ng-change="handleAttrChange()"></select>
                             <%--HvT re-introduced ng-change in previous line because changing type may cause issues. Seems to help. Not sure why it was removed?--%>
                             <input ng-switch-when="text" name="{{'prop_'+attr.name}}" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name]);'
-                                   ng-model="dataHolder.selectedComponent[attr.name]"  onkeydown="upperCaseF(this)" ng-required="attr.required"/>
+                                   ng-model="dataHolder.selectedComponent[attr.name]"  onkeyup="upperCaseF(this)" ng-required="attr.required"/>
                             <%-- validation name text --%>
                             <input ng-switch-when="nameText" name="{{'prop_'+attr.name}}" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-model="dataHolder.selectedComponent[attr.name]" ng-pattern="/^[a-zA-Z]\w*$/" ng-required="attr.required"/>
