@@ -1,13 +1,13 @@
 /*******************************************************************************
- * Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
+ * Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 
 package net.hedtech.banner.sspb
 
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 import net.hedtech.banner.exceptions.ApplicationException
 
-@Log4j
+@Slf4j
 class CompileService {
 
     def static pageBuilderModel
