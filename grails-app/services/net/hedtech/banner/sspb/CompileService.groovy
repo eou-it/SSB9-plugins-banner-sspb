@@ -1,17 +1,16 @@
 /*******************************************************************************
- * Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
+ * Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 
 package net.hedtech.banner.sspb
 
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 import net.hedtech.banner.exceptions.ApplicationException
 
-@Log4j
+@Slf4j
 class CompileService {
 
-    def static final pageBuilderModel = (new groovy.json.JsonSlurper())
-            .parseText(CompileService.class.classLoader.getResourceAsStream('PageModelDefinition.json').text)
+    def static pageBuilderModel
     // TODO configure Hibernate
     def transactional = false
 
@@ -34,6 +33,11 @@ class CompileService {
         try {
             // first validate the raw JSON page model
             def pageModelValidator = new PageModelValidator()
+            if (!pageBuilderModel) {
+                log.debug("pageBuilderModel is null so re-slurping PageModelDefinition.json")
+                pageBuilderModel = (new groovy.json.JsonSlurper())
+                        .parseText(CompileService.class.classLoader.getResourceAsStream('PageModelDefinition.json').text)
+            }
             pageModelValidator.setPageBuilderModel(pageBuilderModel)
             // validate the raw Page JSON data
             def validateResult = pageModelValidator.parseAndValidatePage(json) //
