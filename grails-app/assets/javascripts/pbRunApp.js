@@ -580,7 +580,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
             });
             this.modified = [];
             this.deleted.forEach( function(item)  {
-                item.$delete({id: item.id, item:item}, successHandler('D'), post.error);
+                item.$delete({id: item.id}, successHandler('D'), post.error);
             });
             this.deleted = [];
             this.cache.removeAll();

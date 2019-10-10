@@ -353,9 +353,6 @@ class VirtualDomainSqlService {
             throw new AccessDeniedException("user.not.authorized.delete",["${parameters.parm_user_loginName} "])
             //throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
         }
-        if(params.item){
-            addParams(params)
-        }
         parameters.id = urlPathDecode(parameters.id)
         def sql
         try {
