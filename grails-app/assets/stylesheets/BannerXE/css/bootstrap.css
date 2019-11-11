@@ -175,6 +175,7 @@ legend {
 }
 textarea {
   overflow: auto;
+  vertical-align: top;
 }
 optgroup {
   font-weight: bold;
