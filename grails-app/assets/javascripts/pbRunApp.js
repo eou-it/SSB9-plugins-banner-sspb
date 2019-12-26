@@ -251,6 +251,17 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
             var uf=userPostQuery;
             var size = Array.isArray(it)?it.length:1;
             console.log("Executing Post Load for DataSet="+instance.componentId+" size="+size);
+            if(instance.added.length > 0){
+                instance.tempAdded = JSON.parse(JSON.stringify( instance.added ));
+                instance.added.removeAll();
+            }
+            instance.tempAdded.forEach(function(item) {
+                instance.add(item);
+            }, instance);
+            if(instance.tempAdded.length > 0){
+                $scope.changed=false;
+            }
+            instance.tempAdded.removeAll();
             instance.currentRecord=instance.data[0];  //set the current record
             instance.setInitialRecord();
             instance.totalCount=parseInt(response("X-hedtech-totalCount")) ;
@@ -306,6 +317,9 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
         this.modified = [];
         this.added = [];
         this.deleted = [];
+        this.tempAdded = [];
+       // this.tempModified = [];
+        // this.tempDeleted = [];
         if (this.data === undefined)  {
             this.data = [];
         }
@@ -571,20 +585,45 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
                 }
             }
             $scope.changed=false;
+            var addedCount = JSON.parse(JSON.stringify( this.added )).length;
+            var currentObject = this;
             this.added.forEach( function(item)  {
-                item.$save({},successHandler('C'), post.error);
+                addedCount--;
+                item.$save({},successHandler('C'), post.error).then(function (response) {
+                    currentObject.added.remove(response);
+                    if(addedCount === 0){
+                        currentObject.tempAdded = JSON.parse(JSON.stringify( currentObject.added ));
+                        currentObject.load();
+                        currentObject.added.removeAll();
+                    }
+                });
             });
-            this.added = [];
+          //  this.added = [];
             this.modified.forEach( function(item)  {
-                item.$update({}, successHandler('U'), post.error);
+                if(item.id) {
+                    item.$update({}, successHandler('U'), post.error);
+                }else {
+                    //item.$save({},successHandler('C'), post.error);
+                    console.error("item cannot update without id" + item);
+                }
             });
             this.modified = [];
+            var deleteCount = JSON.parse(JSON.stringify( this.deleted )).length;;
             this.deleted.forEach( function(item)  {
-                item.$delete({id: item.id}, successHandler('D'), post.error);
+                deleteCount--;
+                if(item.id) {
+                    item.$delete({id: item.id}, successHandler('D'), post.error).then(function (response) {
+                        currentObject.deleted.remove(response);
+                        if (deleteCount===0) {
+                            currentObject.load();
+                        }
+                    });
+                }else {
+                    console.error("item cannot delete without id" + item);
+                }
             });
             this.deleted = [];
             this.cache.removeAll();
-            this.load();
         };
 
         this.dirty = function() {
