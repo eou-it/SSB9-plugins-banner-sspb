@@ -527,6 +527,9 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
                 if (this.selectedRecords) {
                     this.selectedRecords.remove(items);
                 }
+                if(this.added){
+                    this.added.remove(items);
+                }
             } else {
                 // we got an array of records to delete
                 items.forEach(function(item) {
@@ -535,6 +538,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
                             this.deleted.push(item);
                         }
                         this.selectedRecords.remove(item);
+                        this.added.remove(item);
                     }
                 }, this);
             }
