@@ -251,17 +251,17 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
             var uf=userPostQuery;
             var size = Array.isArray(it)?it.length:1;
             console.log("Executing Post Load for DataSet="+instance.componentId+" size="+size);
-            if(instance.added.length > 0){
-                instance.tempAdded = JSON.parse(JSON.stringify( instance.added ));
-                instance.added.removeAll();
+            if (instance && instance.pagingOptions && instance.pagingOptions.currentPage) {
+                if(instance.added.length > 0){
+                    instance.tempAdded = JSON.parse(JSON.stringify( instance.added ));
+                    instance.added.removeAll();
+                }
+                instance.tempAdded.forEach(function(item) {
+                    instance.add(item);
+                }, instance);
+                instance.tempAdded.removeAll();
             }
-            instance.tempAdded.forEach(function(item) {
-                instance.add(item);
-            }, instance);
-            if(instance.tempAdded.length > 0){
-                $scope.changed=false;
-            }
-            instance.tempAdded.removeAll();
+
             instance.currentRecord=instance.data[0];  //set the current record
             instance.setInitialRecord();
             instance.totalCount=parseInt(response("X-hedtech-totalCount")) ;
@@ -389,7 +389,9 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
             var iload = confirmed || !$scope.changed;
             if (!iload) {
                 $scope.iqueryParams.push(this);
+                var currentInstance = this;
                 this.confirmPageActionMain(function(){
+                    currentInstance.added.removeAll();
                     $scope.changed = false;
                     $scope.iqueryParams[0].load(p,true);
                     $scope.iqueryParams=[];
