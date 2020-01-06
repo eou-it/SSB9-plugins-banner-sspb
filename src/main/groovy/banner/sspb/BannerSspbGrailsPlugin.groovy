@@ -104,8 +104,7 @@ Brief summary/description of the plugin.
         }
 
         def pbConfig= Holders.getConfig().pageBuilder
-        def pageUtilService=new PageUtilService()
-        def pbBundleLocation = pageUtilService.bundleLocation
+        def pbBundleLocation = applicationContext.pageUtilService.bundleLocation
         //Set up the externalMessageSource for Page Builder
         def externalMessageSource = new ExternalMessageSource(
                 pbBundleLocation, "pageBuilder",
