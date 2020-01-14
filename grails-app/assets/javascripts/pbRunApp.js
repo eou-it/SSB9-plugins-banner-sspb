@@ -614,15 +614,10 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
                 }
             });
             this.modified = [];
-            var deleteCount = JSON.parse(JSON.stringify( this.deleted )).length;;
             this.deleted.forEach( function(item)  {
-                deleteCount--;
                 if(item.id) {
                     item.$delete({id: item.id}, successHandler('D'), post.error).then(function (response) {
-                        currentObject.deleted.remove(response);
-                        if (deleteCount===0) {
-                            currentObject.load();
-                        }
+                        console.log("Item has been deleted successfully "+ response.id)
                     });
                 }else {
                     console.error("item cannot delete without id" + item);
