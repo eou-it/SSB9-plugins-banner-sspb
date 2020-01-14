@@ -1,14 +1,12 @@
 /*******************************************************************************
- Copyright 2017-2019 Ellucian Company L.P. and its affiliates.
+ Copyright 2017-2020 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 package net.hedtech.banner.sspb
 
 import difflib.DiffUtils
 import difflib.Patch
 import grails.converters.JSON
-import groovy.util.logging.Log4j
 
-@Log4j
 class Page {
 
     static hasMany = [pageRoles: PageRole, extensions: Page] //Optional child page(s) (sub classes)

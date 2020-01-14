@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2018-2019 Ellucian Company L.P. and its affiliates.
+ Copyright 2018-2020 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
@@ -7,7 +7,6 @@ import grails.gorm.transactions.Transactional
 import grails.io.IOUtils
 import groovy.json.JsonSlurper
 import groovy.sql.Sql
-import groovy.util.logging.Log4j
 import net.hedtech.banner.sspb.PBUser
 import net.hedtech.banner.sspb.Page
 import net.hedtech.restfulapi.AccessDeniedException
@@ -17,7 +16,6 @@ import sun.misc.BASE64Encoder
 import java.sql.Blob
 import java.sql.SQLException
 
-@Log4j
 @Transactional
 class VirtualDomainSqlService {
 

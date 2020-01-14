@@ -1,11 +1,8 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ * Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 package net.hedtech.banner.css
 
-import groovy.util.logging.Log4j
-
-@Log4j
 class CssRenderController {
     static defaultAction = "loadCss"
     static rtlReplace = [[from:"\$start"        , to:"right"],
