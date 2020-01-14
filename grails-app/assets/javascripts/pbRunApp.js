@@ -251,7 +251,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
             var uf=userPostQuery;
             var size = Array.isArray(it)?it.length:1;
             console.log("Executing Post Load for DataSet="+instance.componentId+" size="+size);
-            if (instance && instance.pagingOptions && instance.pagingOptions.currentPage) {
+            if (instance) {
                 if(instance.added.length > 0){
                     instance.tempAdded = JSON.parse(JSON.stringify( instance.added ));
                     instance.added.removeAll();
