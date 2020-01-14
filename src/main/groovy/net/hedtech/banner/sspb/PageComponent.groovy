@@ -1,18 +1,18 @@
 /*******************************************************************************
- * Copyright 2018-2019 Ellucian Company L.P. and its affiliates.
+ * Copyright 2018-2020 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 
 package net.hedtech.banner.sspb
 
 import groovy.json.StringEscapeUtils
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 import net.hedtech.banner.css.Css
 import net.hedtech.banner.exceptions.ApplicationException
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.util.regex.Pattern
 
-@Log4j
+@Slf4j
 class PageComponent {
 
     final static def globalPropertiesName = "pageGlobal" //Properties file name with internal props in pages
@@ -534,8 +534,10 @@ class PageComponent {
         def dataSet = "${name}DS"
         def code = """
         \$scope.\$watch('${dataSet}.pagingOptions', function(newVal, oldVal) {
-            if (newVal !== oldVal ) {
-                \$scope.${dataSet}.load({all:false,paging:true});
+            if (newVal !== oldVal) {
+                if( newVal.currentPage && oldVal.currentPage ) {
+                    \$scope.${dataSet}.load({all:false,paging:true});
+                }
             }
         }, true);
         \$scope.\$watch('${dataSet}.sortInfo', function(newVal, oldVal) {
