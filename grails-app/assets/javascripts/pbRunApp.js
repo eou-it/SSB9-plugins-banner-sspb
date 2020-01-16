@@ -318,8 +318,6 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
         this.added = [];
         this.deleted = [];
         this.tempAdded = [];
-       // this.tempModified = [];
-        // this.tempDeleted = [];
         if (this.data === undefined)  {
             this.data = [];
         }
@@ -388,13 +386,11 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
         this.load = function(p,confirmed) {
             var iload = confirmed || !$scope.changed;
             if (!iload) {
-                $scope.iqueryParams.push(this);
                 var currentInstance = this;
                 this.confirmPageActionMain(function(){
-                    currentInstance.added.removeAll();
+                    currentInstance.load(p,true);
                     $scope.changed = false;
-                    $scope.iqueryParams[0].load(p,true);
-                    $scope.iqueryParams=[];
+                    currentInstance.init();
                 });
             }
             if (iload) {
@@ -594,9 +590,17 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
             var addedCount = JSON.parse(JSON.stringify( this.added )).length;
             var currentObject = this;
             this.added.forEach( function(item)  {
-                addedCount--;
-                item.$save({},successHandler('C'), post.error).then(function (response) {
+                item.$save({},successHandler('C')).then(function (response) {
                     currentObject.added.remove(response);
+                    addedCount--;
+                    if(addedCount === 0){
+                        currentObject.tempAdded = JSON.parse(JSON.stringify( currentObject.added ));
+                        currentObject.load();
+                        currentObject.added.removeAll();
+                    }
+                }).catch(function (errorResponse) {
+                    addedCount--;
+                    post.error(errorResponse);
                     if(addedCount === 0){
                         currentObject.tempAdded = JSON.parse(JSON.stringify( currentObject.added ));
                         currentObject.load();
