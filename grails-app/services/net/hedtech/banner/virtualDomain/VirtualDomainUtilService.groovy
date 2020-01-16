@@ -36,7 +36,7 @@ class VirtualDomainUtilService extends PBUtilServiceBase {
         VirtualDomain.findAllByServiceNameLike(serviceName).each { vd ->
             if (usedByPageLike==null || usedByPageLike.contains(vd.serviceName)) {
                 if (skipDuplicates && vd.serviceName.endsWith(".bak"))
-                    log.info message(code:"sspb.virtualdomain.export.skipDuplicate.message", args:[vd.serviceName])
+                    log.info "${message(code:'sspb.virtualdomain.export.skipDuplicate.message', args:[vd.serviceName])}"
                 else {
                     def file = new File("$path/${vd.serviceName}.json")
                     JSON.use("deep") {
@@ -61,7 +61,7 @@ class VirtualDomainUtilService extends PBUtilServiceBase {
 
                         def json = new JSON(vdStripped)
                         def jsonString = json.toString(true)
-                        log.info message(code:"sspb.virtualdomain.export.done.message", args:[vd.serviceName])
+                        log.info "${message(code:'sspb.virtualdomain.export.done.message', args:[vd.serviceName])}"
                         file.text = jsonString
                     }
                 }
