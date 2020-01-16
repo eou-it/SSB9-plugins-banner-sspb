@@ -40,7 +40,7 @@ class VirtualDomainSqlServiceTest extends Specification{
     void "test for get"() {
         given:
         def vd = new VirtualDomain(serviceName: 'testPage', codeGet:
-                'select * from dual', typeOfCode: 's', id: 0)
+                'select * from dual;;', typeOfCode: 's', id: 0)
         virtualDomainSqlService = new VirtualDomainSqlService()
         virtualDomainSqlService.grailsApplication = Holders.getGrailsApplication()
         virtualDomainSqlService.sessionFactory = sessionFactory
