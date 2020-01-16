@@ -1,17 +1,17 @@
 /******************************************************************************
- *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2020 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 
 package net.hedtech.banner.tools
 
 import grails.util.Holders
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 import org.hibernate.HibernateException
 
 import javax.annotation.PostConstruct
 import java.text.ParseException
 
-@Log4j
+@Slf4j
 public class PBUtilServiceBase {
 
     def final static loadOverwriteExisting=0

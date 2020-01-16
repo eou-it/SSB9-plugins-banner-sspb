@@ -1,17 +1,15 @@
 /*******************************************************************************
- Copyright 2017-2019 Ellucian Company L.P. and its affiliates.
+ Copyright 2017-2020 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
-import groovy.util.logging.Log4j
 import net.hedtech.banner.security.VirtualDomainSecurity
 import net.hedtech.banner.security.VirtualDomainSecurityId
 import net.hedtech.banner.sspb.PBUser
 import net.hedtech.banner.tools.PBUtilServiceBase
 
-@Log4j
 @Transactional
 class VirtualDomainUtilService extends PBUtilServiceBase {
 

@@ -1,11 +1,10 @@
 /*******************************************************************************
- Copyright 2019 Ellucian Company L.P. and its affiliates.
+ Copyright 2019-2020 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 package net.hedtech.banner.security
 
 import grails.gorm.transactions.Transactional
 import grails.util.Holders
-import groovy.util.logging.Log4j
 import net.hedtech.banner.css.Css
 import net.hedtech.banner.general.ConfigurationData
 import net.hedtech.banner.sspb.Page
@@ -13,7 +12,6 @@ import net.hedtech.banner.virtualDomain.VirtualDomain
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.transaction.annotation.Propagation
 
-@Log4j
 @Transactional(readOnly = true, propagation = Propagation.SUPPORTS )
 class DeveloperSecurityService {
 

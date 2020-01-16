@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
+ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 
 package net.hedtech.banner.sspb
@@ -7,13 +7,12 @@ package net.hedtech.banner.sspb
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.util.Holders
-import groovy.util.logging.Log4j
 import net.hedtech.banner.security.PageSecurity
 import net.hedtech.banner.security.PageSecurityId
 import net.hedtech.banner.tools.PBUtilServiceBase
 import net.hedtech.banner.tools.i18n.SortedProperties
 
-@Log4j
+
 @Transactional
 class PageUtilService extends PBUtilServiceBase {
     def pageService
