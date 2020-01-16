@@ -40,7 +40,7 @@ class CssUtilService extends PBUtilServiceBase {
         Css.fetchAllByConstantNameLike(constantName).each { css ->
             if (usedByPageLike==null || usedByPageLike.contains(css.constantName)) {
                 if (skipDuplicates && css.constantName.endsWith(".bak"))
-                    log.info message(code:"sspb.css.export.skipDuplicate.message", args:[css.constantName])
+                    log.info "${message(code:'sspb.css.export.skipDuplicate.message', args:[css.constantName])}"
                 else {
                     def file = new File("$path/${css.constantName}.json")
                     JSON.use("deep") {
@@ -62,7 +62,7 @@ class CssUtilService extends PBUtilServiceBase {
 
                         def json = new JSON(cssStripped)
                         def jsonString = json.toString(true)
-                        log.info message(code: "sspb.css.export.done.message", args: [css.constantName])
+                        log.info "${message(code: 'sspb.css.export.done.message', args: [css.constantName])}"
                         file.text = jsonString
                     }
                 }
