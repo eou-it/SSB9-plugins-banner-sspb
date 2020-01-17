@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2019 Ellucian Company L.P. and its affiliates.                   *
+ *  Copyright 2019-2020 Ellucian Company L.P. and its affiliates.                   *
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
@@ -40,7 +40,7 @@ class VirtualDomainSqlServiceTest extends Specification{
     void "test for get"() {
         given:
         def vd = new VirtualDomain(serviceName: 'testPage', codeGet:
-                'select * from dual;;', typeOfCode: 's', id: 0)
+                'select * from dual', typeOfCode: 's', id: 0)
         virtualDomainSqlService = new VirtualDomainSqlService()
         virtualDomainSqlService.grailsApplication = Holders.getGrailsApplication()
         virtualDomainSqlService.sessionFactory = sessionFactory
@@ -203,4 +203,45 @@ class VirtualDomainSqlServiceTest extends Specification{
         then:
         noExceptionThrown()
     }
+
+    void "test for gets with collon"() {
+        given:
+        def vd = new VirtualDomain(serviceName: 'testPage', codeGet:
+                'select * from page;;;', typeOfCode: 's', id: 0)
+        virtualDomainSqlService = new VirtualDomainSqlService()
+        grails.util.Holders.config.pageBuilder.adminRoles = 'ROLE_GPBADMN_BAN_DEFAULT_PAGEBUILDER_M'
+        def grailsApplication =Holders.getGrailsApplication()
+        virtualDomainSqlService.grailsApplication = Holders.getGrailsApplication()
+        virtualDomainSqlService.sessionFactory = sessionFactory
+        def vdr = new VirtualDomainRole(allowGet: true, allowPost: true, allowDelete: true, allowPut: true , id: 0, roleName: 'GUEST')
+        def vdrSet = new HashSet<VirtualDomainRole>()
+        vdrSet.add(vdr)
+        vd.virtualDomainRoles=vdrSet
+        params << [sortby:'CONSTANT_NAME asc']
+        when:
+        def res = virtualDomainSqlService.get(vd, params)
+        then:
+        res.totalCount >0
+    }
+
+    void "test for count with params"(){
+        given:
+        def vd = new VirtualDomain(serviceName: 'testPage', codeGet:
+                'select * from dual;;' , typeOfCode: 's', id: 0)
+        virtualDomainSqlService = new VirtualDomainSqlService()
+        grails.util.Holders.config.pageBuilder.adminRoles = 'ROLE_GPBADMN_BAN_DEFAULT_PAGEBUILDER_M'
+        def grailsApplication =Holders.getGrailsApplication()
+        virtualDomainSqlService.grailsApplication = Holders.getGrailsApplication()
+        virtualDomainSqlService.sessionFactory = sessionFactory
+        def vdr = new VirtualDomainRole(allowGet: true, allowPost: true, allowDelete: true, allowPut: true , id: 0, roleName: 'GUEST')
+        def vdrSet = new HashSet<VirtualDomainRole>()
+        vdrSet.add(vdr)
+        vd.virtualDomainRoles=vdrSet
+
+        when:
+        def count = virtualDomainSqlService.count(vd,params)
+        then:
+        count.totalCount >0
+    }
 }
+
