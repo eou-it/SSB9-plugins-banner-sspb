@@ -618,15 +618,28 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
                 }
             });
             this.modified = [];
+            var deletedCount = JSON.parse(JSON.stringify( this.deleted )).length;
             this.deleted.forEach( function(item)  {
                 if(item.id) {
-                    item.$delete({id: item.id}, successHandler('D'), post.error).then(function (response) {
+                    item.$delete({id: item.id}, successHandler('D')).then(function (response) {
                         console.log("Item has been deleted successfully "+ response.id)
+                        deletedCount--;
+                        if(deletedCount === 0 && currentObject.added.length === 0){
+                            currentObject.load();
+                        }
+                    }).catch(function (errorResponse) {
+                        deletedCount--;
+                        post.error(errorResponse);
+                        if(addedCount === 0 && currentObject.added.length === 0){
+                            currentObject.load();
+                        }
                     });
                 }else {
+                    deletedCount--;
                     console.error("item cannot delete without id" + item);
                 }
             });
+
             this.deleted = [];
             this.cache.removeAll();
         };
