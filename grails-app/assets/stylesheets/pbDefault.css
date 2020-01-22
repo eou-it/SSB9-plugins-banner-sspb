@@ -217,4 +217,9 @@ label.dispInline{
     display:inline;
 }
 
-
+/* fix for css print issue in Edge this css is picked from common-platform.css which is being overiden here*/
+@media print {
+    #content {
+        position: relative  ;
+    }
+}
