@@ -1,19 +1,21 @@
 /*******************************************************************************
- Copyright 2018-2019 Ellucian Company L.P. and its affiliates.
+ Copyright 2018-2020 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
 import grails.gorm.transactions.Transactional
+import grails.io.IOUtils
 import groovy.json.JsonSlurper
 import groovy.sql.Sql
-import groovy.util.logging.Log4j
 import net.hedtech.banner.sspb.PBUser
 import net.hedtech.banner.sspb.Page
 import net.hedtech.restfulapi.AccessDeniedException
+import oracle.sql.BLOB
+import sun.misc.BASE64Encoder
 
+import java.sql.Blob
 import java.sql.SQLException
 
-@Log4j
 @Transactional
 class VirtualDomainSqlService {
 
@@ -200,7 +202,7 @@ class VirtualDomainSqlService {
         }
         def sql = getSql()
         def errorMessage = ""
-        def statement = vd.codeGet
+        def statement = vd.codeGet?.replaceAll(";","")
         //maybe remove metaData - what value?
         def metaData = { meta ->
             logmsg += message(code:"sspb.virtualdomain.sqlservice.numbercolumns", args:[meta.columnCount])
@@ -233,6 +235,7 @@ class VirtualDomainSqlService {
             rows = sql.rows(statement,parameters,metaData)
             rows = idEncodeRows(rows)
             rows = handleClobRows(rows)
+            rows = handleBlobRows(rows)
             logmsg += " "+message(code:"sspb.virtualdomain.sqlservice.numberrows", args:[rows?.size(),parameters.offset])
 
         } catch(SQLException e) {
@@ -264,7 +267,7 @@ class VirtualDomainSqlService {
         def errorMessage = ""
         // Add a dummy bind variable to Groovy SQL to workaround an issue related to passing a map
         // to a query without bind variables
-        def statement="select count(*) COUNT from (${vd.codeGet}) where (1=1 or :x is null)"
+        def statement="select count(*) COUNT from (${vd.codeGet?.replaceAll(";","")}) where (1=1 or :x is null)"
         def rows
         def totalCount=-1
         try {
@@ -347,9 +350,6 @@ class VirtualDomainSqlService {
         if (!privs.delete){
             throw new AccessDeniedException("user.not.authorized.delete",["${parameters.parm_user_loginName} "])
             //throw(new org.springframework.security.access.AccessDeniedException("Deny access for ${parameters.parm_user_loginName}"))
-        }
-        if(params.item){
-            addParams(params)
         }
         parameters.id = urlPathDecode(parameters.id)
         def sql
@@ -455,6 +455,34 @@ class VirtualDomainSqlService {
                 }
             }
             if (!foundClob)
+                return rows // no need to traverse the whole array if first row doesn't have a CLOB
+        }
+        return rows
+    }
+
+    private def handleBlobRows(rows) {
+        def foundBlob=false
+        for ( row in rows )  {
+            for (col in row ) {
+                if (col.value.getClass().getName().endsWith("BLOB")) {
+                    if (col.value instanceof java.sql.Blob) {
+
+                        byte[] returnBytes
+                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
+                        Blob blob = col.value
+                        InputStream inputStream = blob.getBinaryStream()
+                        int inByte;
+                        while ((inByte = inputStream.read()) != -1)
+                        {
+                            byteArrayOutputStream.write(inByte)
+                        }
+                        returnBytes = byteArrayOutputStream.toByteArray()
+                        col.value = Base64.getEncoder().encodeToString(returnBytes)
+                        foundBlob = true
+                    }
+                }
+            }
+            if (!foundBlob)
                 return rows // no need to traverse the whole array if first row doesn't have a CLOB
         }
         return rows

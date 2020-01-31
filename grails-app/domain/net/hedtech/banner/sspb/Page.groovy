@@ -1,14 +1,14 @@
 /*******************************************************************************
- Copyright 2017-2019 Ellucian Company L.P. and its affiliates.
+ Copyright 2017-2020 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 package net.hedtech.banner.sspb
 
 import difflib.DiffUtils
 import difflib.Patch
 import grails.converters.JSON
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 
-@Log4j
+@Slf4j
 class Page {
 
     static hasMany = [pageRoles: PageRole, extensions: Page] //Optional child page(s) (sub classes)
@@ -516,7 +516,7 @@ class Page {
                 } else {
                     resolvedStatusMessage = "Extension cannot be applied as component ${ conflict.comp.name } appears to be removed from parent page"
                 }
-                log.warn resolvedStatusMessage
+                log.warn "${resolvedStatusMessage}"
                 conflict.statusMessage = resolvedStatusMessage
             }
         }
@@ -530,7 +530,7 @@ class Page {
             component.meta?.nextSibling ? decomposedModel.components[component.meta?.nextSibling] : null
         }
         def next = decomposedModel.components[parent.meta.firstChild]
-        log.info "Executing getComponents for parent ${ parent.name }, first = ${ next.name }"
+        log.info ("Executing getComponents for parent ${ parent.name }, first = ${ next.name }")
         while (next != null) {
             if (next.mergeInfo.noReference == false) {
                 log.warn "Prevented adding existing child ${ next.name } of ${ parent.name }. Sequence is broken. \n    TODO: check all items with parent ${ parent.name } are included"

@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
+ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 
 package net.hedtech.banner.sspb
@@ -7,13 +7,11 @@ package net.hedtech.banner.sspb
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.util.Holders
-import groovy.util.logging.Log4j
 import net.hedtech.banner.security.PageSecurity
 import net.hedtech.banner.security.PageSecurityId
 import net.hedtech.banner.tools.PBUtilServiceBase
 import net.hedtech.banner.tools.i18n.SortedProperties
 
-@Log4j
 @Transactional
 class PageUtilService extends PBUtilServiceBase {
     def pageService
@@ -50,7 +48,7 @@ class PageUtilService extends PBUtilServiceBase {
     void exportToFile(String pageName, String path=pagePath, Boolean skipDuplicates=false, Boolean isAllowExportDSPermission=false ) {
         Page.findAllByConstantNameLike(pageName).each { page ->
             if (skipDuplicates && page.constantName.endsWith(".bak")) {
-                log.info message(code: "sspb.pageutil.export.skipDuplicate.message", args: [page.constantName])
+                log.info "${message(code: 'sspb.pageutil.export.skipDuplicate.message', args: [page.constantName])}"
             }
             else {
                 def file = new File("$path/${page.constantName}.json")
@@ -64,7 +62,7 @@ class PageUtilService extends PBUtilServiceBase {
                     }
                     def json = new JSON(pageExport)
                     def jsonString = json.toString(true)
-                    log.info message(code:"sspb.pageutil.export.page.done.message", args:[page.constantName])
+                    log.info "${message(code:'sspb.pageutil.export.page.done.message', args:[page.constantName])}"
                     file.text = jsonString
                 }
             }
@@ -145,7 +143,7 @@ class PageUtilService extends PBUtilServiceBase {
     //Helper method for Import/Install Utility
     private def finalizeFileImport(file, statusRecord){
         if (statusRecord.statusCode > statusOk ){
-            log.error statusRecord
+            log.error "Error in file ${statusRecord}"
             def errorFile = new File(file.getCanonicalPath() + ".err")
             errorFile.text = statusRecord
         } else {
@@ -190,7 +188,7 @@ class PageUtilService extends PBUtilServiceBase {
         else {
             result.statusCode = statusError
             result.statusMessage = "Error, either file or stream and name is required, both cannot be null"
-            log.error result.statusMessage
+            log.error "${result.statusMessage}"
         }
         if (jsonString) {
             def json
@@ -327,7 +325,7 @@ class PageUtilService extends PBUtilServiceBase {
             def result = pageService.compileAndSavePage(page.constantName, model, page.extendsPage, page.owner)
             if (result.statusCode>0)
                 errors << result
-            log.info result
+            log.info "${result}"
         }
         errors
     }

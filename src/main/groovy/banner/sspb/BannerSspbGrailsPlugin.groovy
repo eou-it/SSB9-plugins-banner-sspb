@@ -1,11 +1,12 @@
 /******************************************************************************
- *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.                   *
+ *  Copyright 2013-2020 Ellucian Company L.P. and its affiliates.                   *
  ******************************************************************************/
 package banner.sspb
 
 import grails.plugins.*
 
 import grails.util.Holders
+import net.hedtech.banner.sspb.PageUtilService
 import net.hedtech.banner.tools.PBUtilServiceBase
 import org.grails.datastore.mapping.core.Datastore
 import org.springframework.context.ConfigurableApplicationContext
@@ -101,8 +102,9 @@ Brief summary/description of the plugin.
             applicationContext.addApplicationListener new PBPersistenceListener(datastore)
             //println "Added PersistenceListener to $datastore"
         }
+
         def pbConfig= Holders.getConfig().pageBuilder
-        def pbBundleLocation = pbConfig.locations.bundle?pbConfig.locations.bundle:System.getProperty("java.io.tmpdir")
+        def pbBundleLocation = applicationContext.pageUtilService.bundleLocation
         //Set up the externalMessageSource for Page Builder
         def externalMessageSource = new ExternalMessageSource(
                 pbBundleLocation, "pageBuilder",

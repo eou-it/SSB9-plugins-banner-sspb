@@ -108,17 +108,17 @@ if (pageControllers) {
     }
 }
 appModule.controller('homePageUrlCtr', ['$scope', '$window', '$http', function($scope, $window, $http) {
-   $window.onload = function() {
-       var url = $('#homeURL').val();
-       $('#branding').attr('href', url)
+    $window.onload = function() {
+        var url = $('#homeURL').val();
+        $('#branding').attr('href', url)
     };
 }]);
 // below filter is used for pagination
 appModule.filter('startFrom', function() {
-        return function(input, start) {
-            start = +start; //parse to int
-            return input.slice(start);
-        }
+    return function(input, start) {
+        start = +start; //parse to int
+        return input.slice(start);
+    }
 });
 
 appModule.filter('to_trusted', ['$sce', function($sce){
@@ -197,7 +197,7 @@ appModule.factory('pbResource', ['$resource', function($resource ) {
         this.resourceURL=resourceName.startsWith("$$contextRoot/")?
             resourceName.replace("$$contextRoot/",rootWebApp):
             resourceName.startsWith("/")?
-            resourceName.replace(rootWebApp+'internal/', resourceBase):resourceBase+resourceName;
+                resourceName.replace(rootWebApp+'internal/', resourceBase):resourceBase+resourceName;
         this.Resource=null;
 
         //get a new resource from the factory
@@ -251,6 +251,17 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
             var uf=userPostQuery;
             var size = Array.isArray(it)?it.length:1;
             console.log("Executing Post Load for DataSet="+instance.componentId+" size="+size);
+            if (instance) {
+                if(instance.added.length > 0){
+                    instance.tempAdded = JSON.parse(JSON.stringify( instance.added ));
+                    instance.added.removeAll();
+                }
+                instance.tempAdded.forEach(function(item) {
+                    instance.add(item);
+                }, instance);
+                instance.tempAdded.removeAll();
+            }
+
             instance.currentRecord=instance.data[0];  //set the current record
             instance.setInitialRecord();
             instance.totalCount=parseInt(response("X-hedtech-totalCount")) ;
@@ -306,6 +317,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
         this.modified = [];
         this.added = [];
         this.deleted = [];
+        this.tempAdded = [];
         if (this.data === undefined)  {
             this.data = [];
         }
@@ -319,6 +331,8 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
         this.numberOfPages = function () {
             return this.pageSize === 0? 1 : Math.max(1,Math.ceil(this.totalCount/this.pagingOptions.pageSize));
         };
+
+        $scope.iqueryParams =[];
 
 
 
@@ -346,49 +360,83 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
             this.data[0] = this.Resource.get(params, post.go, post.error);
         };
 
-        this.load = function(p) {
-            if (p && p.clearCache)
-                this.cache.removeAll();
-            if (p && p.paging) {
-                if (this.pagingOptions.currentPage && this.pagingOptions.pageSize) {
-                    this.currentRecord = null;
-                    this.selectedRecords.removeAll();
-                } else {
-                    return; //abort load, watch fired for undefined currentPage or pageSize
+        this.confirmPageActionMain =  function(success,cancelAction) {
+            var msg = $.i18n.prop("sspb.page.visualbuilder.loadpage.unsaved.changes.message");
+            var note = {type: 'warning', message: msg};
+            note.message = note.message.replace(/\n/g, "<br />");
+            note.flash = false;
+            var n = new Notification( note );
+
+            n.addPromptAction( $.i18n.prop("sspb.page.visualbuilder.page.cancel.message"), function() {
+                notifications.remove( n );
+                if (cancelAction) {
+                    cancelAction();
                 }
-            } else {
-                this.init();
-            }
-            eval("var params;");
-            /* Fixing issue for minification , assigning params to variable a*/
-            if (!(p && p.all)) {
-                params = eval("params="+this.queryParams+";");
-                eval("typeof b !=='undefined'") ? eval("b = params"):null;
-            } else {
-                params = {};
-            }
-            if (this.pageSize>0) {
-                params.offset=(nvl(this.pagingOptions.currentPage,1)-1)*this.pagingOptions.pageSize;
-                params.max=this.pagingOptions.pageSize;
-            }
-            if (this.sortInfo.fields.length>0) {
-                params.sortby=[];
-                for (var ix = 0;ix< this.sortInfo.fields.length;ix++){
-                    params.sortby[ix] = this.sortInfo.fields[ix] +' '+ this.sortInfo.directions[ix] ;
-                }
-            }
-            var parameter={};
-            Object.keys(params).forEach(function(key) {
-                var bkey = Base64.encode(getRandomArbitrary(0,99));
-                var bval = Base64.encode(getRandomArbitrary(0,99));
-                parameter[bkey+Base64.encode(key)]=(params[key]!=null && params[key]!=undefined)?bval+Base64.encode(params[key]):bval+params[key];
             });
-            parameter["encoded"]=true;
-            params = parameter;
-            console.log("Query Parameters:", params) ;
-            //If an id parameter exists use get
-            var res = (params.id === undefined) ? this.Resource.list(params, post.go, post.error) : this.Resource.get(params, post.go, post.error);
-            this.data = (Array.isArray(res))?res:[res];
+            $scope.parent = this;
+            n.addPromptAction( $.i18n.prop("sspb.page.visualbuilder.page.continue.message"), function() {
+                notifications.remove( n );
+                success();
+
+            });
+
+            notifications.addNotification( n );
+        };
+
+        this.load = function(p,confirmed) {
+            var iload = confirmed || !$scope.changed;
+            if (!iload) {
+                var currentInstance = this;
+                this.confirmPageActionMain(function(){
+                    currentInstance.load(p,true);
+                    $scope.changed = false;
+                    currentInstance.init();
+                });
+            }
+            if (iload) {
+                if (p && p.clearCache)
+                    this.cache.removeAll();
+                if (p && p.paging) {
+                    if (this.pagingOptions.currentPage && this.pagingOptions.pageSize) {
+                        this.currentRecord = null;
+                        this.selectedRecords.removeAll();
+                    } else {
+                        return; //abort load, watch fired for undefined currentPage or pageSize
+                    }
+                } else {
+                    this.init();
+                }
+                eval("var params;");
+                /* Fixing issue for minification , assigning params to variable a*/
+                if (!(p && p.all)) {
+                    params = eval("params=" + this.queryParams + ";");
+                    eval("typeof b !=='undefined'") ? eval("b = params") : null;
+                } else {
+                    params = {};
+                }
+                if (this.pageSize > 0) {
+                    params.offset = (nvl(this.pagingOptions.currentPage, 1) - 1) * this.pagingOptions.pageSize;
+                    params.max = this.pagingOptions.pageSize;
+                }
+                if (this.sortInfo.fields.length > 0) {
+                    params.sortby = [];
+                    for (var ix = 0; ix < this.sortInfo.fields.length; ix++) {
+                        params.sortby[ix] = this.sortInfo.fields[ix] + ' ' + this.sortInfo.directions[ix];
+                    }
+                }
+                var parameter = {};
+                Object.keys(params).forEach(function (key) {
+                    var bkey = Base64.encode(getRandomArbitrary(0, 99));
+                    var bval = Base64.encode(getRandomArbitrary(0, 99));
+                    parameter[bkey + Base64.encode(key)] = (params[key] != null && params[key] != undefined) ? bval + Base64.encode(params[key]) : bval + params[key];
+                });
+                parameter["encoded"] = true;
+                params = parameter;
+                console.log("Query Parameters:", params);
+                //If an id parameter exists use get
+                var res = (params.id === undefined) ? this.Resource.list(params, post.go, post.error) : this.Resource.get(params, post.go, post.error);
+                this.data = (Array.isArray(res)) ? res : [res];
+            }
 
         };
 
@@ -438,7 +486,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
                     } else {
                         //assume item is of the right type
                         this.currentRecord=item;
-                    }
+                        }
                 }
                 if (this.selectValueKey) {  //we have a select -- Next assignment may not be needed as item is already the model
                     if (this.currentRecord && this.currentRecord.hasOwnProperty(this.selectValueKey))
@@ -451,8 +499,10 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
         };
 
         this.setModified = function(item) {
-            if (this.modified.indexOf(item) == -1 && this.added.indexOf(item) == -1)
+            if (this.modified.indexOf(item) == -1 && this.added.indexOf(item) == -1) {
                 this.modified.push(item);
+                $scope.changed = true;
+            }
         };
 
         this.add = function(item) {
@@ -460,11 +510,13 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
             this.added.push(newItem);
             // add the new item to the beginning of the array so they show up on the top of the table
             this.data.unshift(newItem);
+            $scope.changed = true;
             // TODO - clear the add control content
         };
 
         //delete selected record(s)
         this.deleteRecords = function(items) {
+            $scope.changed = true;
             if (this.data.remove(items) ) {
                 // we got a single record
                 if (this.deleted.indexOf(items) == -1) {
@@ -472,6 +524,9 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
                 }
                 if (this.selectedRecords) {
                     this.selectedRecords.remove(items);
+                }
+                if(this.added){
+                    this.added.remove(items);
                 }
             } else {
                 // we got an array of records to delete
@@ -481,6 +536,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
                             this.deleted.push(item);
                         }
                         this.selectedRecords.remove(item);
+                        this.added.remove(item);
                     }
                 }, this);
             }
@@ -498,13 +554,13 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
                     a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);
                     if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);
                 return t},_utf8_encode:function(e){e=e.toString().replace(/\r\n/g,"n");var t="";for(var n=0;n<e.length;n++)
-                {var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048)
-                {t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else
-                    {t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);
-                        t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e)
+            {var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048)
+            {t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else
+            {t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);
+                t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e)
             {var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}
             else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else
-                {c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}
+            {c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}
                 return t}}
 
         function getRandomArbitrary(min, max) {
@@ -530,25 +586,66 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
                     return;
                 }
             }
-
+            $scope.changed=false;
+            var addedCount = JSON.parse(JSON.stringify( this.added )).length;
+            var currentObject = this;
             this.added.forEach( function(item)  {
-                item.$save({},successHandler('C'), post.error);
+                item.$save({},successHandler('C')).then(function (response) {
+                    currentObject.added.remove(response);
+                    addedCount--;
+                    if(addedCount === 0){
+                        currentObject.tempAdded = JSON.parse(JSON.stringify( currentObject.added ));
+                        currentObject.load();
+                        currentObject.added.removeAll();
+                    }
+                }).catch(function (errorResponse) {
+                    addedCount--;
+                    post.error(errorResponse);
+                    if(addedCount === 0){
+                        currentObject.tempAdded = JSON.parse(JSON.stringify( currentObject.added ));
+                        currentObject.load();
+                        currentObject.added.removeAll();
+                    }
+                });
             });
-            this.added = [];
+          //  this.added = [];
             this.modified.forEach( function(item)  {
-                item.$update({}, successHandler('U'), post.error);
+                if(item.id) {
+                    item.$update({}, successHandler('U'), post.error);
+                }else {
+                    //item.$save({},successHandler('C'), post.error);
+                    console.error("item cannot update without id" + item);
+                }
             });
             this.modified = [];
+            var deletedCount = JSON.parse(JSON.stringify( this.deleted )).length;
             this.deleted.forEach( function(item)  {
-               item.$delete({id: item.id, item:item}, successHandler('D'), post.error);
+                if(item.id) {
+                    item.$delete({id: item.id}, successHandler('D')).then(function (response) {
+                        console.log("Item has been deleted successfully "+ response.id)
+                        deletedCount--;
+                        if(deletedCount === 0 && currentObject.added.length === 0){
+                            currentObject.load();
+                        }
+                    }).catch(function (errorResponse) {
+                        deletedCount--;
+                        post.error(errorResponse);
+                        if(addedCount === 0 && currentObject.added.length === 0){
+                            currentObject.load();
+                        }
+                    });
+                }else {
+                    deletedCount--;
+                    console.error("item cannot delete without id" + item);
+                }
             });
+
             this.deleted = [];
             this.cache.removeAll();
-            this.load();
         };
 
         this.dirty = function() {
-            return this.added.length + this.modified.length + this.deleted.length>0
+            return this.added.length + this.modified.length + this.deleted.length>0;
         };
 
         this.onUpdate=params.onUpdate;
@@ -580,7 +677,7 @@ function initlizePopUp(params){
         if (angular.module("modalPopup") && angular.module("xe-ui-components")) {
             var popupContainerDiv = document.getElementById('popupContainerDiv');
             if (null != popupContainerDiv && undefined != popupContainerDiv) {
-               dialogPopUp(params);
+                dialogPopUp(params);
             }
         }
     } catch (e) {
@@ -628,8 +725,8 @@ function dialogPopUp(params) {
             '<popup-content>' +
             '<div id="namePopupGrid" class="demo-container"> \n' +
             '    <xe-table-grid table-id="nameDataTable" \n'+
-             '                   header="'+columnRefName+'"  \n'+
-             '                   end-point="urlTest" \n' +
+            '                   header="'+columnRefName+'"  \n'+
+            '                   end-point="urlTest" \n' +
             '                   fetch="getData(query)" on-row-click="onRowClick(data,index)"\n' +
             '                   post-fetch="postFetch(response, oldResult)" \n' +
             '                   content="content"  results-found="resultsFound" toolbar="true"\n' +
@@ -656,17 +753,17 @@ function dialogPopUp(params) {
         angular.element(document.getElementsByClassName('column-filter-container ng-scope')).remove();
         scope = angular.element(document.getElementById('popupContainerDiv')).scope();
     }else{
-       $("th.constantName").removeClass("focus-ring ascending decending");
-       $("th.dateCreated").removeClass("focus-ring ascending decending");
-       $("th.lastUpdated").removeClass("focus-ring ascending decending");
-       $("th.serviceName").removeClass("focus-ring ascending decending");
+        $("th.constantName").removeClass("focus-ring ascending decending");
+        $("th.dateCreated").removeClass("focus-ring ascending decending");
+        $("th.lastUpdated").removeClass("focus-ring ascending decending");
+        $("th.serviceName").removeClass("focus-ring ascending decending");
         angular.element(document.getElementsByClassName('secondary first')).click();
         var perPageEle = angular.element(document.getElementsByClassName('per-page-select'));
         if($($(perPageEle)[0]).attr("value") != 'number:5'){
             $($(perPageEle)[0]).val("number:5");
             perPageEle.trigger('change');
         }
-            dataFetch = true;
+        dataFetch = true;
     }
     scope.$apply(function(){
         scope.excludePage = params.excludePage;
@@ -749,8 +846,8 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
                 }
 
                 if(pageName && pbDataOptions.isPbPage != 'true' && pbDataOptions.id == 'constantName'){
-                  scope.pageName = pageName;
-                  scope.getPageSource();
+                    scope.pageName = pageName;
+                    scope.getPageSource();
                 }
 
                 updateLocalStorage("","");

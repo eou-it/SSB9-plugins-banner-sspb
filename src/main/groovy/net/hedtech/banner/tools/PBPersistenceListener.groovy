@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ * Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 package net.hedtech.banner.tools
 
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 import org.grails.datastore.mapping.core.Datastore
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEvent
 import org.grails.datastore.mapping.engine.event.AbstractPersistenceEventListener
@@ -11,7 +11,7 @@ import org.grails.datastore.mapping.engine.event.EventType
 import org.hibernate.PropertyValueException
 import org.springframework.context.ApplicationEvent
 
-@Log4j
+@Slf4j
 class PBPersistenceListener extends AbstractPersistenceEventListener {
     public PBPersistenceListener(final Datastore datastore) {
         super(datastore)
@@ -50,7 +50,7 @@ class PBPersistenceListener extends AbstractPersistenceEventListener {
                 entity.lastUpdated = new Date()
             }
             catch (PropertyValueException e) {
-                log.error "error adding last updated", e
+                log.error "error adding last updated ${e}"
             }
         }
     }
@@ -60,7 +60,7 @@ class PBPersistenceListener extends AbstractPersistenceEventListener {
                 entity.dateCreated = new Date()
             }
             catch (PropertyValueException e) {
-                log.error "error adding date created", e
+                log.error "error adding date created ${e}"
             }
         }
     }

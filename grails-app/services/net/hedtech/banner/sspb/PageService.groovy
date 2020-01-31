@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2018-2019 Ellucian Company L.P. and its affiliates.
+ Copyright 2018-2020 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 
 package net.hedtech.banner.sspb
@@ -153,7 +153,7 @@ class PageService {
             def pageJSON = JSON.parse(pageSource)
             def duplicateObjects
             if(pageJSON.objectName) {
-                duplicateObjects = Page.findAllByModelViewLikeAndConstantNameNotEqual("%\"objectName\": \"" + pageJSON.objectName.trim().toUpperCase() + "\"%", pageJSON.name)
+                duplicateObjects = Page.findAllByModelViewLikeAndConstantNameNotEqual("%\"objectName\": \"" + pageJSON.objectName.trim().toUpperCase() + "\"%", pageName)
             }
             if (!duplicateObjects) {
                 if (!(extendsPage instanceof Page)) {
@@ -230,7 +230,7 @@ class PageService {
                 result = [statusCode:0, statusMessage: message(code:"sspb.page.visualcomposer.compiledsaved.ok.message")]
             } catch (e)   {
                 result = [statusCode: 2, statusMessage: message(code:"sspb.page.visualcomposer.validation.error.message")]
-                log.error("Unexpected Exception in compile page\n"+e.printStackTrace())
+                log.error "Unexpected Exception in compile page -> ${e.printStackTrace()}"
             }
             result << [page: page] // pass the page in the result
         } else {

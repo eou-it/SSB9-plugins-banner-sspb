@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2020 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
@@ -215,5 +215,119 @@ class PageServiceIntegrationSpec extends Specification {
          exception != null
     }
 
+    void "Integration test create a new page with object name" (){
+        given:
+        Map basePageMap = [pageName   : "Page_Test",
+                           source     : '''{
+                                     "type": "page",
+                                     "name": "PageTest",
+                                     "title": "Test Page",
+                                     "objectName": "OBJECTFORTES",
+                                     "scriptingLanguage": "JavaScript",
+                                     "components": null
+                                     }''']
+        def params = ['constantName': 'Page_Test']
+
+        when: "Creat a page with Object name"
+        def result = pageService.create(basePageMap, [:])
+        then: "Results"
+        result.statusCode == 0
+    }
+
+    void "Integration test create a page with duplicate object"(){
+        given:
+        Map basePageMap = [pageName   : "Page_Test",
+                           source     : '''{
+                                     "type": "page",
+                                     "name": "PageTest",
+                                     "title": "Test Page",
+                                     "objectName": "OBJECTFORTES",
+                                     "scriptingLanguage": "JavaScript",
+                                     "components": null
+                                     }''']
+        def params = ['constantName': 'Page_Test']
+
+        when: "Creat a page with Object name"
+        def result = pageService.create(basePageMap, [:])
+        then: "Results"
+        result.statusCode == 0
+        when: "create a page with duplicate object"
+        Map basePageMapt = [pageName   : "Page_TestT",
+                            source     : '''{
+                                     "type": "page",
+                                     "name": "PageTest",
+                                     "title": "Test Page",
+                                     "objectName": "OBJECTFORTES",
+                                     "scriptingLanguage": "JavaScript",
+                                     "components": null
+                                     }''']
+        def relt = pageService.create(basePageMapt, [:])
+        then:"Results"
+        relt.statusCode == 4
+    }
+
+ void "Integration test case for Grid & Detail component with Number and boolean parameter"(){
+     given:
+     JSONObject extendsPage = null
+     Map pageMap = [pageName: "stu.base",
+                        source  : '''{
+                                     "type": "page",
+                                     "name": "student",
+                                     "title": "Student Base",
+                                     "scriptingLanguage": "JavaScript",
+                                      "components":[
+                                        {
+                                              "resource": "pages",
+                                              "name": "pageDataResource",
+                                              "type": "resource",
+                                              "staticData": []
+                                        },
+                                        {
+                                              "allowDelete": false,
+                                              "components": [],
+                                              "allowNew": false,
+                                              "name": "pageDataGrid",
+                                              "allowModify": false,
+                                              "pageSize": 5,
+                                              "model": "pageDataResource",
+                                              "allowReload": false,
+                                              "loadInitially": true,
+                                              "type": "grid",
+                                              "parameters": {
+                                                    "id": 1,
+                                                    "key": true
+                                              }
+                                        },
+                                        {
+                                          "allowDelete": false,
+                                          "allowNew": false,
+                                          "name": "pageDataDetail",
+                                          "allowModify": false,
+                                          "pageSize": 5,
+                                          "model": "pageDataResource",
+                                          "allowReload": false,
+                                          "loadInitially": true,
+                                          "type": "detail",
+                                          "parameters": {
+                                                "id": 1,
+                                                "key": true
+                                          }
+                                    }
+                                      ]
+                                     
+                                     }''',
+                        extendsPage: extendsPage]
+
+     when: "page create with Grid component with parameters"
+     def res
+     res = pageService.create(pageMap, [:])
+     Page basePage = res?.page
+     then: "able to create page that is not an extension"
+     res.statusCode == 0
+     basePage?.id != null
+     basePage?.constantName == "stu.base"
+     basePage?.extendsPage == null
+
+ }
 
 }
