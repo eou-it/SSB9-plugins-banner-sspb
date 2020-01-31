@@ -1,12 +1,11 @@
 /*******************************************************************************
- Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
+ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 
 package net.hedtech.banner.sspb
 
 import grails.core.GrailsApplication
 import org.springframework.context.i18n.LocaleContextHolder
-import org.springframework.util.StringUtils
 
 class CustomPageController {
 
