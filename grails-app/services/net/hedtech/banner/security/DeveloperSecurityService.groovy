@@ -54,7 +54,7 @@ class DeveloperSecurityService {
         def appId = Holders.config.app.appId
         def importData = ConfigurationData.fetchByNameAndType(PREVENT_IMPORT_BY_DEVELOPER, "boolean", appId)
         if (log.isDebugEnabled()) {
-            log.debug('import config flag value is ' + importData?.value ?: false)
+            log.debug "import config flag value is ${importData?.value ?: false}"
         }
         return importData ? importData.value : false
     }
@@ -72,7 +72,7 @@ class DeveloperSecurityService {
 
         }
         if (log.isDebugEnabled()) {
-            log.debug('login user is a super user -> ' + isSupUser)
+            log.debug "login user is a super user -> ${isSupUser}"
         }
          return isSupUser
     }
@@ -95,7 +95,7 @@ class DeveloperSecurityService {
         }
 
         if (log.isDebugEnabled()) {
-            log.debug('login user has privilege to access on '+ constantName+" -> " + hasPrivilage)
+            log.debug "login user has privilege to access on  ${constantName} -> ${hasPrivilage}"
         }
 
         return hasPrivilage

@@ -50,7 +50,7 @@ class PBPersistenceListener extends AbstractPersistenceEventListener {
                 entity.lastUpdated = new Date()
             }
             catch (PropertyValueException e) {
-                log.error "error adding last updated", e
+                log.error "error adding last updated ${e}"
             }
         }
     }
@@ -60,7 +60,7 @@ class PBPersistenceListener extends AbstractPersistenceEventListener {
                 entity.dateCreated = new Date()
             }
             catch (PropertyValueException e) {
-                log.error "error adding date created", e
+                log.error "error adding date created ${e}"
             }
         }
     }

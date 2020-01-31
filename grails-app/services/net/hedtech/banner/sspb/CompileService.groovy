@@ -56,7 +56,7 @@ class CompileService {
             valid = pageValidation.valid
             errors += pageValidation.errors
         } catch (ApplicationException e) {
-            log.error "Parsing page model exception: ", org.codehaus.groovy.runtime.StackTraceUtils.sanitize( e )
+            log.error "Parsing page model exception:  ${org.codehaus.groovy.runtime.StackTraceUtils.sanitize( e )}"
             errors << PageModelErrors.getError(error: PageModelErrors.MODEL_UNKNOWN_ERR, args: [e.message])
             valid = false
         }

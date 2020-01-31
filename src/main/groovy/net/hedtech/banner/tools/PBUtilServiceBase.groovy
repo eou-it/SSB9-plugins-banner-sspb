@@ -86,7 +86,7 @@ public class PBUtilServiceBase {
         try {
             savedObject = o.merge(flush:true)
         } catch (HibernateException e ) {
-            log.error "Exception in saveObject", e
+            log.error "Exception in saveObject ${e}"
             return null
         }
         return savedObject
@@ -97,7 +97,7 @@ public class PBUtilServiceBase {
         try {
             date = s?javax.xml.bind.DatatypeConverter.parseDateTime(s).time:null
         } catch (ParseException e) {
-            log.error "Exception in json2date", e
+            log.error "Exception in json2date ${e}"
         }
         date
     }

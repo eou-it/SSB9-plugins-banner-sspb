@@ -516,7 +516,7 @@ class Page {
                 } else {
                     resolvedStatusMessage = "Extension cannot be applied as component ${ conflict.comp.name } appears to be removed from parent page"
                 }
-                log.warn resolvedStatusMessage
+                log.warn "${resolvedStatusMessage}"
                 conflict.statusMessage = resolvedStatusMessage
             }
         }

@@ -230,7 +230,7 @@ class PageService {
                 result = [statusCode:0, statusMessage: message(code:"sspb.page.visualcomposer.compiledsaved.ok.message")]
             } catch (e)   {
                 result = [statusCode: 2, statusMessage: message(code:"sspb.page.visualcomposer.validation.error.message")]
-                log.error("Unexpected Exception in compile page\n"+e.printStackTrace())
+                log.error "Unexpected Exception in compile page -> ${e.printStackTrace()}"
             }
             result << [page: page] // pass the page in the result
         } else {

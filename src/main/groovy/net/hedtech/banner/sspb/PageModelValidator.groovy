@@ -35,7 +35,7 @@ class PageModelValidator {
      */
     def parseAndValidatePage(pageSource) {
         if (!typeDef) {
-            log.error("typeDef and pageBuilderModel is not initialized", typeDef, pageBuilderModel)
+            log.error "typeDef and pageBuilderModel is not initialized, ${typeDef}, ${pageBuilderModel}"
             def error = PageModelErrors.getError(error: PageModelErrors.MODEL_MISSING_DEFINITION_ERR)
             def ex = [errorCode:error.code, errorMessage:error.message] as PageModelValidationException
             throw ex

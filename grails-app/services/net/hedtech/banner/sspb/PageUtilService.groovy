@@ -188,7 +188,7 @@ class PageUtilService extends PBUtilServiceBase {
         else {
             result.statusCode = statusError
             result.statusMessage = "Error, either file or stream and name is required, both cannot be null"
-            log.error result.statusMessage
+            log.error "${result.statusMessage}"
         }
         if (jsonString) {
             def json
@@ -325,7 +325,7 @@ class PageUtilService extends PBUtilServiceBase {
             def result = pageService.compileAndSavePage(page.constantName, model, page.extendsPage, page.owner)
             if (result.statusCode>0)
                 errors << result
-            log.info result
+            log.info "${result}"
         }
         errors
     }
