@@ -583,6 +583,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
             if (params.onSave) {
                 replaces = params.onSave();
                 if (replaces) {
+                    $scope.changed = false;
                     return;
                 }
             }
