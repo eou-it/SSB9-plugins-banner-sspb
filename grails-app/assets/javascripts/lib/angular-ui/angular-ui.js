@@ -39,7 +39,7 @@ angular.module('ui.directives').directive('uiAnimate', ['ui.config', '$timeout',
         }
       }
       opts = angular.extend({'class': 'ui-animate'}, options, opts);
-      
+
       element.addClass(opts['class']);
       $timeout(function(){
         element.removeClass(opts['class']);
@@ -145,11 +145,11 @@ angular.module('ui.directives').directive('uiCodemirror', ['ui.config', '$parse'
       require: 'ngModel',
       link: function(scope, element, attrs, controller) {
         var opts, // instance-specific options
-          renderview, 
+          renderview,
           value;
-      
+
         opts = angular.extend({}, options, scope.$eval(attrs.uiCurrency));
-        
+
         renderview = function(viewvalue) {
           var num;
           num = viewvalue * 1;
@@ -175,20 +175,20 @@ angular.module('ui.directives').directive('uiCodemirror', ['ui.config', '$parse'
           }
           return true;
         };
-        
+
         controller.$render = function() {
           value = controller.$viewValue;
           element.val(value);
           renderview(value);
         };
-        
+
       }
     };
   }]);
 
 /*
  jQuery UI Datepicker plugin wrapper
- 
+
  @param [ui-date] {object} Options to pass to $.fn.datepicker() merged onto ui.config
 */
 
@@ -253,7 +253,7 @@ angular.module('ui.directives').directive('uiDate', [
         /* Create the datepicker widget
         */
 
-        return $(element).datepicker(opts); //Fix for issues post angular 1.7 upgrade
+        return element.datepicker(opts); //Fix for issues post angular 1.7 upgrade
       }
     };
   }
@@ -267,7 +267,7 @@ angular.module('ui.directives').directive('uiDate', [
  *
  * @example <input ui-event="{ focus : 'counter++', blur : 'someCallback()' }">
  * @example <input ui-event="{ myCustomEvent : 'myEventHandler($event, $params)'}">
- * 
+ *
  * @param ui-event {string|object literal} The event to bind to as a string or a hash of events with their callbacks
  */
 angular.module('ui.directives').directive('uiEvent', ['$parse',
@@ -304,7 +304,7 @@ angular.module('ui.directives').directive('uiIf', [function() {
         iterStartElement[0].doNotMove = true;
         var expression = attr.uiIf;
         var lastElement;
-        var lastScope; 
+        var lastScope;
         scope.$watch(expression, function(newValue) {
           if (lastElement) {
             lastElement.remove();
@@ -329,23 +329,23 @@ angular.module('ui.directives').directive('uiIf', [function() {
 
 /**
  * General-purpose jQuery wrapper. Simply pass the plugin name as the expression.
- * 
+ *
  * It is possible to specify a default set of parameters for each jQuery plugin.
  * Under the jq key, namespace each plugin by that which will be passed to ui-jq.
  * Unfortunately, at this time you can only pre-define the first parameter.
  * @example { jq : { datepicker : { showOn:'click' } } }
- * 
+ *
  * @param ui-jq {string} The $elm.[pluginName]() to call.
  * @param [ui-options] {mixed} Expression to be evaluated and passed as options to the function
  *   	Multiple parameters can be separated by commas
  *    Set {ngChange:false} to disable passthrough support for change events ( since angular watches 'input' events, not 'change' events )
- * 
+ *
  * @example <input ui-jq="datepicker" ui-options="{showOn:'click'},secondParameter,thirdParameter">
  */
 angular.module('ui.directives').directive('uiJq', ['ui.config', function(uiConfig) {
 	return {
 		restrict: 'A',
-		compile: function(tElm, tAttrs) {  
+		compile: function(tElm, tAttrs) {
 			if (!angular.isFunction(tElm[tAttrs.uiJq])) {
 				throw new Error('ui-jq: The "'+tAttrs.uiJq+'" function does not exist');
 				return;
@@ -358,9 +358,9 @@ angular.module('ui.directives').directive('uiJq', ['ui.config', function(uiConfi
 					linkOptions = scope.$eval('['+attrs.uiOptions+']');
 					if (angular.isObject(options) && angular.isObject(linkOptions[0])) {
 						linkOptions[0] = angular.extend(options, linkOptions[0]);
-					} 
+					}
 				} else if (options) {
-					linkOptions = [options]; 
+					linkOptions = [options];
 				}
 				if (attrs.ngModel && elm.is('select,input,textarea')) {
 					if (linkOptions && angular.isObject(linkOptions[0]) && linkOptions[0].ngChange !== undefined) {
@@ -484,7 +484,7 @@ angular.module('ui.directives').directive('uiKeypress', ['$parse', function($par
     });
   }
 
-  app.directive('uiMap', 
+  app.directive('uiMap',
   ['ui.config', '$parse', function(uiConfig, $parse) {
 
     var mapEvents = 'bounds_changed center_changed click dblclick drag dragend '+
@@ -492,7 +492,7 @@ angular.module('ui.directives').directive('uiKeypress', ['$parse', function($par
     'mouseover projection_changed resize rightclick tilesloaded tilt_changed '+
     'zoom_changed';
     var options = uiConfig.map || {};
-    
+
     return {
       restrict: 'A',
       //doesn't work as E for unknown reason
@@ -502,14 +502,14 @@ angular.module('ui.directives').directive('uiKeypress', ['$parse', function($par
         var model = $parse(attrs.uiMap);
 
         //Set scope variable for the map
-        model.assign(scope, map); 
+        model.assign(scope, map);
 
         bindMapEvents(scope, mapEvents, map, elm);
       }
     };
   }]);
 
-  app.directive('uiMapInfoWindow', 
+  app.directive('uiMapInfoWindow',
   ['ui.config', '$parse', '$compile', function(uiConfig, $parse, $compile) {
 
     var infoWindowEvents = 'closeclick content_change domready '+
@@ -546,7 +546,7 @@ angular.module('ui.directives').directive('uiKeypress', ['$parse', function($par
     };
   }]);
 
-  /* 
+  /*
   * Map overlay directives all work the same. Take map marker for example
   * <ui-map-marker="myMarker"> will $watch 'myMarker' and each time it changes,
   * it will hook up myMarker's events to the directive dom element.  Then
@@ -565,27 +565,27 @@ angular.module('ui.directives').directive('uiKeypress', ['$parse', function($par
     }]);
   };
 
-  mapOverlayDirective('uiMapMarker', 
+  mapOverlayDirective('uiMapMarker',
     'animation_changed click clickable_changed cursor_changed '+
     'dblclick drag dragend draggable_changed dragstart flat_changed icon_changed '+
     'mousedown mouseout mouseover mouseup position_changed rightclick '+
     'shadow_changed shape_changed title_changed visible_changed zindex_changed');
-  
-  mapOverlayDirective('uiMapPolyline', 
+
+  mapOverlayDirective('uiMapPolyline',
     'click dblclick mousedown mousemove mouseout mouseover mouseup rightclick');
-  
-  mapOverlayDirective('uiMapPolygon', 
+
+  mapOverlayDirective('uiMapPolygon',
     'click dblclick mousedown mousemove mouseout mouseover mouseup rightclick');
-  
-  mapOverlayDirective('uiMapRectangle', 
+
+  mapOverlayDirective('uiMapRectangle',
     'bounds_changed click dblclick mousedown mousemove mouseout mouseover '+
     'mouseup rightclick');
-  
-  mapOverlayDirective('uiMapCircle', 
+
+  mapOverlayDirective('uiMapCircle',
     'center_changed click dblclick mousedown mousemove '+
     'mouseout mouseover mouseup radius_changed rightclick');
-  
-  mapOverlayDirective('uiMapGroundOverlay', 
+
+  mapOverlayDirective('uiMapGroundOverlay',
     'click dblclick');
 
 })();
@@ -835,7 +835,7 @@ angular.module('ui.directives').directive('uiShow', [function() {
 				elm.addClass('ui-show');
 			} else {
 				elm.removeClass('ui-show');
-			}	
+			}
 		});
 	};
 }])
@@ -1035,7 +1035,7 @@ angular.module('ui.directives').directive('uiValidate', function () {
 });
 
 /**
- * Wraps the 
+ * Wraps the
  * @param text {string} haystack to search through
  * @param search {string} needle to search for
  * @param [caseSensitive] {boolean} optional boolean to use case-sensitive searching
@@ -1065,7 +1065,7 @@ angular.module('ui.filters').filter('highlight', function() {
  * @example {{ 'Here Is my_phoneNumber' | inflector:'humanize' }} => Here Is My Phone Number
  *          {{ 'Here Is my_phoneNumber' | inflector:'underscore' }} => here_is_my_phone_number
  *          {{ 'Here Is my_phoneNumber' | inflector:'variable' }} => hereIsMyPhoneNumber
- */ 
+ */
 angular.module('ui.filters').filter('inflector', function () {
 	function ucwords(text) {
 		return text.replace(/^([a-z])|\s+([a-z])/g, function ($1) {
