@@ -83,15 +83,6 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
         window.mepCode='${session.mep}';
     </asset:script>
 
-    <script type="text/javascript">
-        var mepcodeChanged='${request.mepcodeChanged}';
-        if(null !== mepcodeChanged && undefined !== mepcodeChanged && mepcodeChanged == "true"){
-            $(document).bind('notification-use-ready', function (e) {
-                mepcodeNotificationAddition(window.mepCode)
-            });
-        }
-    </script>
-
     <g:javascript>
         var rootWebApp = "${createLink(uri: '/')}";
         var resourceBase = "${createLink(uri: '/') + grails.util.Holders.config.sspb.apiPath +'/' }";
@@ -170,6 +161,14 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             <g:i18nJavaScript/>
             <g:pageAccessAudit/>
         </asset:script>
+            <script type="text/javascript">
+                var mepcodeChanged='${request.mepcodeChanged}';
+                if(null !== mepcodeChanged && undefined !== mepcodeChanged && mepcodeChanged == "true"){
+                    $(document).bind('notification-use-ready', function (e) {
+                        mepcodeNotificationAddition(window.mepCode)
+                    });
+                }
+            </script>
         <g:layoutBody/>
         <asset:deferredScripts/>
         <g:customJavaScriptIncludes/>
