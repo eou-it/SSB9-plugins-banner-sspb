@@ -1,17 +1,15 @@
 /*******************************************************************************
- Copyright 2017-2019 Ellucian Company L.P. and its affiliates.
+ Copyright 2017-2020 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
-import groovy.util.logging.Log4j
 import net.hedtech.banner.security.VirtualDomainSecurity
 import net.hedtech.banner.security.VirtualDomainSecurityId
 import net.hedtech.banner.sspb.PBUser
 import net.hedtech.banner.tools.PBUtilServiceBase
 
-@Log4j
 @Transactional
 class VirtualDomainUtilService extends PBUtilServiceBase {
 
@@ -38,7 +36,7 @@ class VirtualDomainUtilService extends PBUtilServiceBase {
         VirtualDomain.findAllByServiceNameLike(serviceName).each { vd ->
             if (usedByPageLike==null || usedByPageLike.contains(vd.serviceName)) {
                 if (skipDuplicates && vd.serviceName.endsWith(".bak"))
-                    log.info message(code:"sspb.virtualdomain.export.skipDuplicate.message", args:[vd.serviceName])
+                    log.info "${message(code:'sspb.virtualdomain.export.skipDuplicate.message', args:[vd.serviceName])}"
                 else {
                     def file = new File("$path/${vd.serviceName}.json")
                     JSON.use("deep") {
@@ -63,7 +61,7 @@ class VirtualDomainUtilService extends PBUtilServiceBase {
 
                         def json = new JSON(vdStripped)
                         def jsonString = json.toString(true)
-                        log.info message(code:"sspb.virtualdomain.export.done.message", args:[vd.serviceName])
+                        log.info "${message(code:'sspb.virtualdomain.export.done.message', args:[vd.serviceName])}"
                         file.text = jsonString
                     }
                 }

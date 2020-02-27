@@ -1,8 +1,11 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ * Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
+import groovy.util.logging.Slf4j
+
+@Slf4j
 class PageModelValidator {
 
     def pageBuilderModel
@@ -32,6 +35,7 @@ class PageModelValidator {
      */
     def parseAndValidatePage(pageSource) {
         if (!typeDef) {
+            log.error "typeDef and pageBuilderModel is not initialized, ${typeDef}, ${pageBuilderModel}"
             def error = PageModelErrors.getError(error: PageModelErrors.MODEL_MISSING_DEFINITION_ERR)
             def ex = [errorCode:error.code, errorMessage:error.message] as PageModelValidationException
             throw ex

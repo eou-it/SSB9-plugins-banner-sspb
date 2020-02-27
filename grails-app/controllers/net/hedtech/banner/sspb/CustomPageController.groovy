@@ -1,11 +1,11 @@
 /*******************************************************************************
- Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
+ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 
 package net.hedtech.banner.sspb
 
 import grails.core.GrailsApplication
-import org.springframework.util.StringUtils
+import org.springframework.context.i18n.LocaleContextHolder
 
 class CustomPageController {
 
@@ -50,6 +50,7 @@ class CustomPageController {
 
 
     def getHTML() {
+        def local = LocaleContextHolder.getLocale()
         try {
             def pageId = params.id
             def html
@@ -60,7 +61,7 @@ class CustomPageController {
                 html = compileService.assembleFinalPage(page.compiledView, page.compiledController)
             }
             if (html) {
-                def pageName = pageId+'_'+page.version+".gsp"
+                def pageName = pageId+'_'+local.getLanguage()+page.version+".gsp"
                  if(!groovyPagesTemplateEngine.pageCache.get(pageName)){
                      pageService.compilePage(page)
                 }

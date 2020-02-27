@@ -1,11 +1,10 @@
 /*******************************************************************************
- * Copyright 2013-2016 Ellucian Company L.P. and its affiliates.
+ * Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 package net.hedtech.banner.sspb
 import grails.util.Environment
 import groovy.json.StringEscapeUtils
-import groovy.util.logging.Log4j
-
+import groovy.util.logging.Slf4j
 import net.hedtech.banner.exceptions.ApplicationException
 
 import javax.script.ScriptContext
@@ -13,7 +12,7 @@ import javax.script.SimpleScriptContext
 import javax.script.ScriptEngineManager
 //import jdk.nashorn.api.scripting.NashornScriptEngineFactory
 
-@Log4j
+@Slf4j
 class ComponentTemplateEngine {
 
     static final def resourcePath ="data/componentTemplates"

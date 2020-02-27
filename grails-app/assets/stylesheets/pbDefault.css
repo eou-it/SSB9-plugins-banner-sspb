@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
+ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 *******************************************************************************/
 
 input, textarea, select {
@@ -217,4 +217,9 @@ label.dispInline{
     display:inline;
 }
 
-
+/* fix for css print issue in Edge this css is picked from common-platform.css which is being overiden here*/
+@media print {
+    #content {
+        position: relative  ;
+    }
+}

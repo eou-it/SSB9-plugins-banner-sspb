@@ -1,11 +1,11 @@
 /*******************************************************************************
- Copyright 2019 Ellucian Company L.P. and its affiliates.
+ Copyright 2019-2020 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 package net.hedtech.banner.security
 
 import grails.gorm.transactions.Transactional
 import grails.util.Holders
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 import net.hedtech.banner.css.Css
 import net.hedtech.banner.general.ConfigurationData
 import net.hedtech.banner.sspb.Page
@@ -13,7 +13,7 @@ import net.hedtech.banner.virtualDomain.VirtualDomain
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.transaction.annotation.Propagation
 
-@Log4j
+@Slf4j
 @Transactional(readOnly = true, propagation = Propagation.SUPPORTS )
 class DeveloperSecurityService {
 
@@ -54,7 +54,7 @@ class DeveloperSecurityService {
         def appId = Holders.config.app.appId
         def importData = ConfigurationData.fetchByNameAndType(PREVENT_IMPORT_BY_DEVELOPER, "boolean", appId)
         if (log.isDebugEnabled()) {
-            log.debug('import config flag value is ' + importData?.value ?: false)
+            log.debug "import config flag value is ${importData?.value ?: false}"
         }
         return importData ? importData.value : false
     }
@@ -72,7 +72,7 @@ class DeveloperSecurityService {
 
         }
         if (log.isDebugEnabled()) {
-            log.debug('login user is a super user -> ' + isSupUser)
+            log.debug "login user is a super user -> ${isSupUser}"
         }
          return isSupUser
     }
@@ -95,7 +95,7 @@ class DeveloperSecurityService {
         }
 
         if (log.isDebugEnabled()) {
-            log.debug('login user has privilege to access on '+ constantName+" -> " + hasPrivilage)
+            log.debug "login user has privilege to access on  ${constantName} -> ${hasPrivilage}"
         }
 
         return hasPrivilage

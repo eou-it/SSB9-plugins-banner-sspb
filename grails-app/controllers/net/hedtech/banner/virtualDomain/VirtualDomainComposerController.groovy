@@ -1,16 +1,14 @@
 /*******************************************************************************
- * Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
+ * Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 package net.hedtech.banner.virtualDomain
 
 import grails.gorm.transactions.Transactional
-import groovy.util.logging.Log4j
 import net.hedtech.banner.security.DeveloperSecurityService
 import net.hedtech.banner.sspb.PBUser
 
 import javax.servlet.http.HttpSession
 
-@Log4j
 @Transactional
 class VirtualDomainComposerController {
     static defaultAction = "loadVirtualDomain"

@@ -1,17 +1,17 @@
 /******************************************************************************
- *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2020 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 
 package net.hedtech.banner.tools
 
 import grails.util.Holders
-import groovy.util.logging.Log4j
+import groovy.util.logging.Slf4j
 import org.hibernate.HibernateException
 
 import javax.annotation.PostConstruct
 import java.text.ParseException
 
-@Log4j
+@Slf4j
 public class PBUtilServiceBase {
 
     def final static loadOverwriteExisting=0
@@ -86,7 +86,7 @@ public class PBUtilServiceBase {
         try {
             savedObject = o.merge(flush:true)
         } catch (HibernateException e ) {
-            log.error "Exception in saveObject", e
+            log.error "Exception in saveObject ${e}"
             return null
         }
         return savedObject
@@ -97,7 +97,7 @@ public class PBUtilServiceBase {
         try {
             date = s?javax.xml.bind.DatatypeConverter.parseDateTime(s).time:null
         } catch (ParseException e) {
-            log.error "Exception in json2date", e
+            log.error "Exception in json2date ${e}"
         }
         date
     }

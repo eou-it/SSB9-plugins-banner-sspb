@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2019 Ellucian Company L.P. and its affiliates.
+ * Copyright 2019-2020 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 
 package net.hedtech.banner.sspb
@@ -39,5 +39,23 @@ class PageComponentTest extends Specification{
         def res = pageComponent.initNewRecordJS()
         then:
         res.length()>0
+    }
+
+    void "test Boolean type expression for compileCtrlFunction" () {
+        when :
+        Boolean expression1 = true
+        def res = pageComponent.compileCtrlFunction(expression1)
+        then:
+        res != null
+        expression1 == res
+    }
+
+    void "test Integer type expression for compileCtrlFunction" () {
+        when :
+        Integer expression1 = 1
+        def res = pageComponent.compileCtrlFunction(expression1)
+        then:
+        res != null
+        expression1 == res
     }
 }

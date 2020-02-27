@@ -1,5 +1,5 @@
 <%--
-Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="net.hedtech.banner.sspb.PBUser;" contentType="text/html;charset=UTF-8" %>
@@ -21,6 +21,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
     <meta charset="${message(code: 'default.character.encoding')}"/>
     <meta name="dir" content="${message(code:'default.language.direction')}"/>
     <meta name="synchronizerToken" content="${org.grails.web.servlet.mvc.SynchronizerTokensHolder.store( session ).generateToken(request.forwardURI)}" />
+
     <meta name="logLevel" content="${g.logLevel()}"/>
     <meta name="maxInactiveInterval" content="${session.maxInactiveInterval}"/>
     <meta name="transactionTimeout" content="${session.getServletContext().transactionTimeout}"/>
@@ -40,10 +41,12 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
     <meta name="menuEndPoint" content="${request.contextPath}/ssb/menu"/>
     <meta name="menuBaseURL" content="${request.contextPath}/ssb"/>
     <g:set var="aboutServiceUrl" value="${net.hedtech.banner.controllers.ControllerUtils.aboutServiceUrl()}" />
+    <g:set var="privacyPolicyUrl" value="${net.hedtech.banner.controllers.ControllerUtils.privacyPolicyUrl()}"/>
     <meta name="aboutUrl" content="${!aboutServiceUrl ? '' : aboutServiceUrl}"/>
     <meta name="aboutUrlContextPath" content="${request.contextPath}/ssb"/>
     <meta name="contextPath" content="${request.contextPath}"/>
     <meta name="headerAttributes" content=""/>
+    <meta name="privacyPolicyUrl" content="${!privacyPolicyUrl ? '' : privacyPolicyUrl}"/>
 
     <asset:link rel="apple-touch-icon" sizes="57x57" href="eds/apple-touch-icon-57x57.png"/>
     <asset:link rel="apple-touch-icon" sizes="60x60" href="eds/apple-touch-icon-60x60.png"/>
@@ -79,15 +82,6 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         var extensibilityInfo = ${extensibilityInfo.encodeAsRaw()}
         window.mepCode='${session.mep}';
     </asset:script>
-
-    <script type="text/javascript">
-        var mepcodeChanged='${request.mepcodeChanged}';
-        if(null !== mepcodeChanged && undefined !== mepcodeChanged && mepcodeChanged == "true"){
-            $(document).bind('notification-use-ready', function (e) {
-                mepcodeNotificationAddition(window.mepCode)
-            });
-        }
-    </script>
 
     <g:javascript>
         var rootWebApp = "${createLink(uri: '/')}";
@@ -167,6 +161,14 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
             <g:i18nJavaScript/>
             <g:pageAccessAudit/>
         </asset:script>
+            <script type="text/javascript">
+                var mepcodeChanged='${request.mepcodeChanged}';
+                if(null !== mepcodeChanged && undefined !== mepcodeChanged && mepcodeChanged == "true"){
+                    $(document).bind('notification-use-ready', function (e) {
+                        mepcodeNotificationAddition(window.mepCode)
+                    });
+                }
+            </script>
         <g:layoutBody/>
         <asset:deferredScripts/>
         <g:customJavaScriptIncludes/>
