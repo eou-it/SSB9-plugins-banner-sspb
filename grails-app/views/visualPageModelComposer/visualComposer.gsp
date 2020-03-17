@@ -713,7 +713,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
                 if(!$scope.extendsPageName){
                     $scope.extendsPageName =  document.getElementById('extendsPage').value;
                 }
-                if($scope.extendsPageName === '' || $scope.extendsPageName === null || $scope.extendsPageName === undefined){
+                if(!$scope.extendsPageName){
                     return ;
                 }
                 Page.get({constantName: $scope.extendsPageName}, function (data) {
