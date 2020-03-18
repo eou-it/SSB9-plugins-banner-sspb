@@ -1,5 +1,5 @@
 <%--
-Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page import="net.hedtech.banner.sspb.PageComponent" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
@@ -712,6 +712,9 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
             $scope.getExtendsPage = function() {
                 if(!$scope.extendsPageName){
                     $scope.extendsPageName =  document.getElementById('extendsPage').value;
+                }
+                if(!$scope.extendsPageName){
+                    return ;
                 }
                 Page.get({constantName: $scope.extendsPageName}, function (data) {
                     try {
