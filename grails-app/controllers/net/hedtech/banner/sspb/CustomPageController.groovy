@@ -6,6 +6,7 @@ package net.hedtech.banner.sspb
 
 import grails.core.GrailsApplication
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.security.core.context.SecurityContextHolder
 
 class CustomPageController {
 
@@ -14,6 +15,11 @@ class CustomPageController {
     def compileService
     GrailsApplication grailsApplication
     def pageService
+
+    def userSessionValidationCheck() {
+        def userIn = SecurityContextHolder?.context?.authentication?.principal
+        render(status: 200, text: userIn?.class?.name?.endsWith('BannerUser'))
+    }
 
     def page() {
         if (params.id=="menu") {    //Work around aurora issue calling this 'page'. Todo: analyse and provide better fix
