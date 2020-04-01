@@ -1,5 +1,5 @@
 <%--
-Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page import="net.hedtech.banner.virtualDomain.VirtualDomain" %>
 <!DOCTYPE html>
@@ -159,10 +159,30 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         function testApi() {
             var param = \$("#vdTestParameters").val();
             param =  param.replace(/%/g,'%25');
-            \$.get("${createLink(uri: '/')}${grailsApplication.config.sspb.adminApiPath}/virtualDomains.${pageInstance?.vdServiceName}?debug=true&"+param, {},
-                    function(data) {
-                        \$('#testarea1').val(JSON.stringify(data));
-                    });
+            const Url = "${createLink(uri: '/')}${grailsApplication.config.sspb.adminApiPath}/virtualDomains.${pageInstance?.vdServiceName}?debug=true&"+param;
+            \$.ajax( {
+                    url : Url,
+                    type : "GET",
+                    success : function(result) {
+                             \$('#testarea1').val(JSON.stringify(result));
+                    },
+                    error : function(jqXHR) {
+                           var errorResponse = \$.parseJSON(jqXHR.responseText);
+                           var errorMsg = errorResponse.errors.errorMessage;
+                           var msg = \$.i18n.prop("js.net.hedtech.banner.ajax.error.message", [ errorMsg ]);
+                           var n = new Notification( {
+                                message: msg,
+                                type:"error",
+                                promptMessage: \$.i18n.prop("js.net.hedtech.banner.ajax.reload.prompt")
+                           });
+
+                           n.addPromptAction( \$.i18n.prop("js.net.hedtech.banner.ajax.reload.button"),
+                           function() { window.location.reload() });
+                           n.addPromptAction( \$.i18n.prop("js.net.hedtech.banner.ajax.continue.button"),
+                           function() { notifications.remove( n ); });
+                           notifications.addNotification( n );
+                    }
+            });
             return false;
         };
         \$("#getDataButton").click(function() {

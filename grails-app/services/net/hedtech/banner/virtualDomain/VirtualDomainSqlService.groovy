@@ -240,7 +240,8 @@ class VirtualDomainSqlService {
 
         } catch(SQLException e) {
             logmsg += message(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
-            errorMessage = privs.debug ? logmsg : cleanSqlExceptionMessage(e,privs.debug) ?: "Unable to get resources."
+            def oracleErrorMsg = message(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
+            errorMessage = privs.debug ? oracleErrorMsg : cleanSqlExceptionMessage(e,privs.debug) ?: "Unable to get resources."
         } catch(NumberFormatException e) {
             logmsg += e.getLocalizedMessage()
             errorMessage=message(code:"sspb.virtualdomain.sqlservice.paging.message", args:[])
