@@ -5,6 +5,7 @@
 package net.hedtech.banner.sspb
 
 import grails.core.GrailsApplication
+import net.hedtech.banner.exceptions.MepCodeNotFoundException
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.security.core.context.SecurityContextHolder
 
@@ -75,7 +76,10 @@ class CustomPageController {
             } else {
                 invalidPage(message(code: "sspb.renderer.page.does.not.exist"))
             }
-        } catch ( RuntimeException ex ) {
+        } catch(MepCodeNotFoundException mex){
+            throw mex
+        } 
+        catch ( RuntimeException ex ) {
             ex.printStackTrace()
             invalidPage( message( code: "sspb.renderer.page.does.not.exist"))
         }
