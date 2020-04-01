@@ -76,12 +76,11 @@ class CustomPageController {
             } else {
                 invalidPage(message(code: "sspb.renderer.page.does.not.exist"))
             }
-        } catch(MepCodeNotFoundException mex){
+        } catch (MepCodeNotFoundException mex) {
             throw mex
-        } 
-        catch ( RuntimeException ex ) {
+        } catch (RuntimeException ex) {
             ex.printStackTrace()
-            invalidPage( message( code: "sspb.renderer.page.does.not.exist"))
+            invalidPage(message(code: "sspb.renderer.page.does.not.exist"))
         }
     }
 

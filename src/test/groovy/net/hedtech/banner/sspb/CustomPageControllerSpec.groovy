@@ -6,6 +6,11 @@ package net.hedtech.banner.sspb
 
 import grails.testing.web.controllers.ControllerUnitTest
 import grails.util.Holders
+import net.hedtech.banner.exceptions.MepCodeNotFoundException
+import net.hedtech.banner.security.BannerAuthenticationProvider
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.context.SecurityContextHolder
 import spock.lang.Specification
 
 /**
@@ -71,4 +76,28 @@ class CustomPageControllerSpec extends Specification implements ControllerUnitTe
         controller.response.status == 404
 
     }
+
+    void "test get HTML with MEPNotFoundException"() {
+        given:
+        def param2 = [id:"menu"]
+        when:
+        controller.request.parameters = param2
+        Page.metaClass.static.findByConstantName = { constName ->
+            println(constName)
+            throw new MepCodeNotFoundException(mepCode: "MEPCODENOTFOUND")
+        }
+        controller.getHTML()
+
+        then:
+        MepCodeNotFoundException e = thrown()
+        'mepcode.invalid.message' == e.message
+    }
+
+    void "test userSessionValidationCheck"() {
+        when:
+        controller.userSessionValidationCheck()
+        then:
+        controller.response.status == 200
+    }
+
 }
