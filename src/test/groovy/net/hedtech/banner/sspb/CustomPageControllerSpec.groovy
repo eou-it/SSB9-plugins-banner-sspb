@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2018 Ellucian Company L.P. and its affiliates.
+ Copyright 2018-2020 Ellucian Company L.P. and its affiliates.
  ****************************************************************************** */
 
 package net.hedtech.banner.sspb
@@ -7,10 +7,6 @@ package net.hedtech.banner.sspb
 import grails.testing.web.controllers.ControllerUnitTest
 import grails.util.Holders
 import net.hedtech.banner.exceptions.MepCodeNotFoundException
-import net.hedtech.banner.security.BannerAuthenticationProvider
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.Authentication
-import org.springframework.security.core.context.SecurityContextHolder
 import spock.lang.Specification
 
 /**
@@ -83,7 +79,6 @@ class CustomPageControllerSpec extends Specification implements ControllerUnitTe
         when:
         controller.request.parameters = param2
         Page.metaClass.static.findByConstantName = { constName ->
-            println(constName)
             throw new MepCodeNotFoundException(mepCode: "MEPCODENOTFOUND")
         }
         controller.getHTML()
