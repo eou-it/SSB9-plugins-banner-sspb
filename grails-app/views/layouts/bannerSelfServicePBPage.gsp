@@ -115,6 +115,9 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                       if(data === 'false'){
                           var ele =  document.getElementById('signOut');
                           if(ele) {
+                              if($('meta[name=logoutEndpoint]').attr("content") === "") {
+                                  $('meta[name=logoutEndpoint]').attr("content",'${request.contextPath}/logout')
+                              }
                               ele.click();
                           }
                       }
