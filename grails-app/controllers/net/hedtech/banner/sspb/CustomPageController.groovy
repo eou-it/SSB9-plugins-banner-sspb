@@ -7,7 +7,6 @@ package net.hedtech.banner.sspb
 import grails.core.GrailsApplication
 import net.hedtech.banner.exceptions.MepCodeNotFoundException
 import org.springframework.context.i18n.LocaleContextHolder
-import org.springframework.security.core.context.SecurityContextHolder
 
 class CustomPageController {
 
@@ -16,10 +15,10 @@ class CustomPageController {
     def compileService
     GrailsApplication grailsApplication
     def pageService
+    def springSecurityService
 
     def userSessionValidationCheck() {
-        def userIn = SecurityContextHolder?.context?.authentication?.principal
-        render(status: 200, text: userIn?.class?.name?.endsWith('BannerUser'))
+        render(status: 200, text: springSecurityService.isLoggedIn())
     }
 
     def page() {
