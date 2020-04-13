@@ -109,22 +109,6 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
           document.getElementsByName('headerAttributes')[0].content = JSON.stringify({
             "pageTitle": "<g:layoutTitle/>"
         });
-          document.addEventListener( 'visibilitychange' , function() {
-              if (!document.hidden && user.authenticated === true) {
-                  $.get('${request.contextPath}/customPage/userSessionValidationCheck', {}, function(data) {
-                      if(data === 'false'){
-                          var ele =  document.getElementById('signOut');
-                          if(ele) {
-                              if($('meta[name=logoutEndpoint]').attr("content") === "") {
-                                  $('meta[name=logoutEndpoint]').attr("content",'${request.contextPath}/logout')
-                              }
-                              ele.click();
-                          }
-                      }
-                  });
-              }
-              }, false );
-
     </g:javascript>
 
 
