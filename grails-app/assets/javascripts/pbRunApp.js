@@ -110,7 +110,6 @@ if (pageControllers) {
 appModule.controller('homePageUrlCtr', ['$scope', '$window', '$http', function($scope, $window, $http) {
     $window.onload = function() {
         var url = $('#homeURL').val();
-        debugger;
         if(url && url.indexOf('applicationNavigator')!=-1){
             $('#branding').attr('target','_top')
         }
