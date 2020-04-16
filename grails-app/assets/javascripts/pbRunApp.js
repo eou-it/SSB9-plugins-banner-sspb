@@ -110,7 +110,11 @@ if (pageControllers) {
 appModule.controller('homePageUrlCtr', ['$scope', '$window', '$http', function($scope, $window, $http) {
     $window.onload = function() {
         var url = $('#homeURL').val();
-        $('#branding').attr('href', url)
+        if(url && url.indexOf('applicationNavigator')!=-1){
+            $('#branding').attr('target','_top')
+        }
+        $('#branding').attr('href', url);
+
     };
 }]);
 // below filter is used for pagination
