@@ -202,7 +202,8 @@ class VirtualDomainSqlService {
         }
         def sql = getSql()
         def errorMessage = ""
-        def statement = vd.codeGet?.replaceAll(";","")
+        def regEx = /[^a-z0-9A-Z_'",#@:<>.()%!&*]+;*$/
+        def statement = vd.codeGet?.replaceAll(regEx,"")
         //maybe remove metaData - what value?
         def metaData = { meta ->
             logmsg += message(code:"sspb.virtualdomain.sqlservice.numbercolumns", args:[meta.columnCount])
@@ -268,7 +269,8 @@ class VirtualDomainSqlService {
         def errorMessage = ""
         // Add a dummy bind variable to Groovy SQL to workaround an issue related to passing a map
         // to a query without bind variables
-        def statement="select count(*) COUNT from (${vd.codeGet?.replaceAll(";","")}) where (1=1 or :x is null)"
+        def regEx = /[^a-z0-9A-Z_'",#@:<>.()%!&*]+;*$/
+        def statement="select count(*) COUNT from (${vd.codeGet?.replaceAll(regEx,"")}) where (1=1 or :x is null)"
         def rows
         def totalCount=-1
         try {
