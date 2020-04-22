@@ -243,5 +243,24 @@ class VirtualDomainSqlServiceTest extends Specification{
         then:
         count.totalCount >0
     }
+
+    void "test for gets with semicolon"() {
+        given:
+        def vd = new VirtualDomain(serviceName: 'testPage', codeGet:
+                "select 'data:image/jpeg;base64' as imageName from dual;", typeOfCode: 's', id: 0)
+        virtualDomainSqlService = new VirtualDomainSqlService()
+        grails.util.Holders.config.pageBuilder.adminRoles = 'ROLE_GPBADMN_BAN_DEFAULT_PAGEBUILDER_M'
+        def grailsApplication =Holders.getGrailsApplication()
+        virtualDomainSqlService.grailsApplication = Holders.getGrailsApplication()
+        virtualDomainSqlService.sessionFactory = sessionFactory
+        def vdr = new VirtualDomainRole(allowGet: true, allowPost: true, allowDelete: true, allowPut: true , id: 0, roleName: 'GUEST')
+        def vdrSet = new HashSet<VirtualDomainRole>()
+        vdrSet.add(vdr)
+        vd.virtualDomainRoles=vdrSet
+        when:
+        def res = virtualDomainSqlService.get(vd, params)
+        then:
+        res.rows.imageName[0] =="data:image/jpeg;base64"
+    }
 }
 
