@@ -51,7 +51,7 @@ dependencies {
     provided "org.grails:grails-plugin-services"
     provided "org.grails:grails-plugin-domain-class"
 
-    runtime "com.bertramlabs.plugins:asset-pipeline-grails:2.15.1"
+    runtime "com.bertramlabs.plugins:asset-pipeline-grails:3.0.6"
 
     compile "org.grails:grails-gorm-testing-support"
     compile "org.grails:grails-plugin-testing"
@@ -62,6 +62,11 @@ dependencies {
     compile "org.hibernate:hibernate-core:5.1.17.Final"
     compile "org.hibernate:hibernate-ehcache:5.1.17.Final"
     compile "org.grails.plugins:spring-security-core:3.2.3"
+}
+
+configurations {
+    runtime.exclude group: "org.springframework.boot", module: "spring-boot-starter-actuator"
+    runtime.exclude group: "org.grails", module: "grails-gorm-testing-support"
 }
 
 grails{
