@@ -44,7 +44,8 @@ class VirtualDomainResourceService {
         if (queryResult.error == "") {
             result = queryResult.rows
         } else {
-            throw new VirtualDomainException( queryResult.error )
+            log.error "In VirtualDomainResourceService list - Error noticed in query ${queryResult.error}"
+            throw new RuntimeException( queryResult.error )
         }
         result
     }
