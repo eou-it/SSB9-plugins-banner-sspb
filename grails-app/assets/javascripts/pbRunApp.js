@@ -389,7 +389,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
 
         this.load = function(p,confirmed) {
             var iload = confirmed || !$scope.changed;
-            if (!iload) {
+            if (!iload  && this.dirty()) {
                 var currentInstance = this;
                 this.confirmPageActionMain(function(){
                     currentInstance.load(p,true);
