@@ -4,6 +4,7 @@
 
 package net.hedtech.banner.sspb
 
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.testing.web.controllers.ControllerUnitTest
 import grails.util.Holders
 import net.hedtech.banner.exceptions.MepCodeNotFoundException
@@ -89,6 +90,9 @@ class CustomPageControllerSpec extends Specification implements ControllerUnitTe
     }
 
     void "test userSessionValidationCheck"() {
+        given:
+        controller.springSecurityService = new SpringSecurityService()
+        controller.springSecurityService.metaClass.isLoggedIn = {return false}
         when:
         controller.userSessionValidationCheck()
         then:
