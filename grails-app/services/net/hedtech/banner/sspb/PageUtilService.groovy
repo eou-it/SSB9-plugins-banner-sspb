@@ -376,6 +376,8 @@ class PageUtilService extends PBUtilServiceBase {
             }
             temp.putAll(properties)
             new org.springframework.util.DefaultPropertiesPersister().store(temp, new OutputStreamWriter(new FileOutputStream(bundle), "UTF-8"), "")
+           //clear and reset props
+            messageSource?.getNormalizedNames()
         }
     }
 
