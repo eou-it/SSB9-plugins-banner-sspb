@@ -137,17 +137,17 @@ appModule.run(['$templateCache', function($templateCache )  {
     $templateCache.put('gridFooter.html',
         "<div ng-show=\"showFooter\" class=\"ngFooterPanel\" ng-class=\"{'ui-widget-content': jqueryUITheme, 'ui-corner-bottom': jqueryUITheme}\" ng-style=\"footerStyle()\">" +
         "    <div id=\"paging-container-#gridName#\" class=\"paging-container \" ng-show=\"enablePaging\" >" +
-        "        <div class=\"paging-control first {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageToFirst()\"></div>"+
-        "        <div class=\"paging-control previous {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageBackward()\"></div>"+
-        "        <span class=\"paging-text page\"> {{i18n.pageLabel}}</span>"+
-        "        <input class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"1\" max=\"{{maxPages()}}\" type=\"number\" ng-model=\"pagingOptions.currentPage\" style=\"width: 40px; display: inline;\"/>" +
+        "        <div class=\"paging-control first {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageToFirst()\" tabindex='0' aria-label=\"First Page\" role=\"button\"></div>"+
+        "        <div class=\"paging-control previous {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageBackward()\" tabindex='0' aria-label=\"Previous Page\" role=\"button\"></div>"+
+        "        <span class=\"paging-text page\" id=\"pbid-Grid-Page\">{{i18n.pageLabel}}</span>"+
+        "        <input class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"1\" max=\"{{maxPages()}}\" type=\"number\" ng-model=\"pagingOptions.currentPage\" style=\"width: 40px; display: inline;\" tabindex='0' aria-labelledby=\"pbid-Grid-Page\"/>" +
         "        <span class=\"paging-text page-of\"> {{i18n.maxPageLabel}} </span> <span class=\"paging-text total-pages\"> {{maxPages()}}  </span>"+
-        "        <div class=\"paging-control next {{!cantPageForward() && 'enabled'||''}}\" ng-click=\"pageForward()\"></div>" +
-        "        <div class=\"paging-control last {{!cantPageToLast()  && 'enabled'||''}}\" ng-click=\"pageToLast()\" ></div>"+
+        "        <div class=\"paging-control next {{!cantPageForward() && 'enabled'||''}}\" ng-click=\"pageForward()\" tabindex='0' aria-label=\"Next Page\" role=\"button\"></div>" +
+        "        <div class=\"paging-control last {{!cantPageToLast()  && 'enabled'||''}}\" ng-click=\"pageToLast()\" tabindex='0' aria-label=\"Last Page\" role=\"button\"></div>"+
         "        <div class=\"divider\"></div>" +
-        "        <span class=\"paging-text page-per\"> {{i18n.ngPageSizeLabel}} </span>" +
+        "        <span class=\"paging-text page-per\" id=\"pbid-Grid-RecordsPerPage\"> {{i18n.ngPageSizeLabel}} </span>" +
         "        <div class=\"page-size-select-wrapper\" >" +
-        "            <select page-size-select  ng-model=\"pagingOptions.pageSize\" ng-options=\"s as s for s in pagingOptions.pageSizes\" style=\"width: 100%; \"> "+
+        "            <select page-size-select  ng-model=\"pagingOptions.pageSize\" tabindex='0' ng-options=\"s as s for s in pagingOptions.pageSizes\" style=\"width: 100%; \" aria-labelledby=\"pbid-Grid-RecordsPerPage\"> "+
         "             </select>" +
         "        </div>"+
         "    </div>" +

@@ -587,6 +587,9 @@ class PageComponent {
         def onClickCode=parent.onClick?"\$parent.${parent.name}_onClick(row.entity, col);":""
         //Do not remove setCurrentRecord without checking all is good (may be done 2x but need to make sure it is before onClickCode)
         def ngClick="""ng-click="\$parent.${parent.name}DS.setCurrentRecord(row.entity);$onClickCode" """
+        def ariaLabel = "aria-label=\"${tran("label",ESC_JS)}\""
+        def ariaLabelledBy = "aria-labelledby=\"{{col.field}}-col{{col.index}}-label\""
+        def role = ""
         def typeInternal = type
         if (type == COMP_TYPE_NUMBER ) {
             //angular-ui doesn't use localized validators - use own (but rather limited still)
@@ -605,8 +608,8 @@ class PageComponent {
                 def arrayName = "${name}DS.data"
                 readonlyAt = (parent.allowModify && !ro)?"":"disabled" //select doesn't have readonly
                 ngChange="ng-change=\""+(onUpdate?"${name}DS.onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity);${name}DS.setCurrentRecord(row.entity.$model);\""
-                placeholderAt = placeholder?"""<option value="">${tran("placeholder")}</option>""":""
-                return """<select ${styleAt} $ngModel $readonlyAt $ngChange $ngClick ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName"> $placeholderAt </select>"""
+                placeholderAt = placeholder?"""<option value="" aria-labelledby="pbid-$name${idTxtParam?idTxtParam:""}-label" role="menuitem">${tran("placeholder")}</option>""":""
+                return """<select ${idForAttribute(idTxtParam+"-label")} role="menu" $ariaLabelledBy ${styleAt} $ngModel $readonlyAt $ngChange $ngClick ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName"> $placeholderAt </select>"""
             case [COMP_TYPE_TEXT, COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER, COMP_TYPE_DATETIME, COMP_TYPE_EMAIL, COMP_TYPE_TEL] :
                 validateAt = validationAttributes()
                 placeholderAt=placeholder?"placeholder=\"${tran("placeholder")}\"":""
@@ -615,9 +618,12 @@ class PageComponent {
                 typeAt = "type=\"checkbox\""
                 styleAt="style=\"background-color:transparent; border:0; width: 30%; height:{{rowHeight}}px\""
                 specialAt ="""${booleanTrueValue?"ng-true-value=\"${htmlValue(booleanTrueValue,"\\\'")}\"":""} ${booleanFalseValue?"ng-false-value=\"${htmlValue(booleanFalseValue,"\\\'")}\"":""}  """
+                role= "role=checkbox"
+                ariaLabelledBy = ariaLabel
                 break
             case COMP_TYPE_DISPLAY:
                 typeAt=""
+                ariaLabelledBy = ""
                 if (asHtml) {
                     tagStart="<span"
                     tagEnd="></span>"
@@ -633,7 +639,7 @@ class PageComponent {
             default :
                 log.info "***No ng-grid html edit template for $type ${name?name:model}"
         }
-        def result = "$tagStart $nameAt $typeAt $styleAt $specialAt $readonlyAt $requiredAt $validateAt $placeholderAt" +
+        def result = "$tagStart $nameAt $typeAt $styleAt $specialAt $readonlyAt $requiredAt $validateAt $placeholderAt $role $ariaLabelledBy" +
                      " $ngModel $ngChange $ngClick $tagEnd"
         return result
     }
@@ -1143,7 +1149,7 @@ class PageComponent {
                 def borderpx=2
                 //headerRowHeight doesn't work in {{ expression }} - assume same as rowHeight hence pageSize+1
                 //style="...{{expression }}..."  does not evaluate properly in IE8 - fixed using ng-style
-                return """\n$heading\n<div ${idAttribute(idTxtParam)} class="gridStyle" ng-grid="${name}Grid" $styleStr ng-style="{height: (${borderpx*2}+${pageSize+1}*rowHeight+footerRowHeight) + 'px' }"></div>\n"""
+                return """\n$heading\n<div ${idAttribute(idTxtParam)} class="gridStyle" role="grid" ng-grid="${name}Grid" $styleStr ng-style="{height: (${borderpx*2}+${pageSize+1}*rowHeight+footerRowHeight) + 'px'}" aria-labelledby="pbid-$name${idTxtParam?idTxtParam:""}-label"></div>\n"""
             case COMP_TYPE_DATATABLE:
                 return dataTableCompile(depth+1)
             case COMP_TYPE_DETAIL:
