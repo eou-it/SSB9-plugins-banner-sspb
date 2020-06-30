@@ -978,7 +978,7 @@ class PageComponent {
                 result = """
                   |<div class="$valueStyle" ng-repeat="$SELECT_ITEM in $arrayName" $initTxt>
                   | <label ${idAttribute("-label-$idxStr")} ${idForAttribute("-radio-$idxStr")} $radioLabelStyleStr>
-                  | <input ${idAttribute("-radio-$idxStr")} type="radio" ng-model=$ngModel name="$nameTxt" $ngChange value="{{$SELECT_ITEM.$valueKey}}"/>
+                  | <input ${idAttribute("-radio-$idxStr")} type="radio" number-to-string ng-model=$ngModel name="$nameTxt" $ngChange value="{{$SELECT_ITEM.$valueKey}}"/>
                   | <span>{{$SELECT_ITEM.$labelKey}}</span></label>
                   |</div>""".stripMargin()
 
