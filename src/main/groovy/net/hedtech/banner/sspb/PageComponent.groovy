@@ -971,7 +971,7 @@ class PageComponent {
                     ngModel =  "\$parent.$ngModel"
                     idxStr= "{{\$index}}"
                 }
-                ngChange += onUpdate?"${name}DS.onUpdate();":""
+                ngChange += onUpdate?"${name}DS.onUpdate(item);":""
                 ngChange = ngChange?"ng-change=\"$ngChange\"":""
                 def radioLabelStyleStr= """class="pb-${parent.type} pb-item pb-radiolabel $labelStyle" """
 
