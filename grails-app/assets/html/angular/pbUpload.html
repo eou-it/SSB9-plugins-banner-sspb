@@ -14,36 +14,36 @@
             <!-- css file upload form TODO put in a modal dialog -->
             <form id="upload" name="uploadform" ng-upload method="POST" action="{{rootWebApp + 'uploadCss?delay=yes'}}">
                 <div>
-                    <label>{{i18n["sspb.css.cssManager.cssName.label"]}}</label>
-                    <input name="cssName" ng-model='cssName'
+                    <label for="pbid-cssName-upload">{{i18n["sspb.css.cssManager.cssName.label"]}}</label>
+                    <input name="cssName" id="pbid-cssName-upload" ng-model='cssName'
                            required maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/"/>
-                    <div ng-messages="uploadform.cssName.$error" role="alert" class="fieldValidationMessage">
-                        <span ng-message="pattern" >
+                    <div ng-messages="uploadform.cssName.$error" class="fieldValidationMessage" >
+                        <span ng-message="pattern" role="alert">
                             {{i18n["sspb.page.visualbuilder.name.invalid.pattern.message"]}}
                         </span>
-                        <span ng-message="required" >
+                        <span ng-message="required" role="alert">
                             {{i18n["sspb.page.visualbuilder.name.required.message"]}}
                         </span>
                     </div>
                 </div>
                 <div>
-                    <label>
+                    <label for="pbid-cssDesc-upload">
                         {{i18n["sspb.css.cssManager.description.label"]}}
                     </label>
-                    <input name="description" ng-model='description' maxlength="255"/>
+                    <input name="description" id="pbid-cssDesc-upload" ng-model='description' maxlength="255"/>
                 </div>
 
                 <div>
-                    <label>
+                    <label for="pbid-cssFile-upload">
                         {{i18n["sspb.css.cssManager.upload.file.label"]}}
                     </label>
-                    <input type="file" name="file" accept=".css" />
+                    <input type="file" id="pbid-cssFile-upload" name="file" accept=".css" />
                 </div>
                 <div>
-                    <input class="primary" upload-submit="complete(content, completed)" type="submit" class="btn btn-primary" value="Submit" />
+                    <input class="primary" upload-submit="complete(content, completed)" type="submit" class="btn btn-primary" value="Submit" role="button" aria-label="submit"/>
                 </div>
             </form>
-            <div class="alert alert-info">
+            <div class="alert alert-info" role="alert">
                  {{i18n["sspb.css.cssManager.upload.server.response.label"]}} {{uploadResponse}}</div>
 
         </div>

@@ -399,13 +399,13 @@ class PageComponent {
                    |<div class="pagination-container">
                    |    <div ${idAttribute('-pagination-container')} class="pagination-controls" ng-show='${dataSet}.totalCount > ${dataSet}.pagingOptions.pageSize'>
                    |        <$button ${idAttribute('-pagination-prev-button')} class="secondary previous" ng-disabled="${dataSet}.pagingOptions.currentPage == 1"
-                   |            ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1" type="button">
+                   |            ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1" type="button" aria-label="Previous Page">
                    |        </button>
                    |        <span ${idAttribute('-pagination-page-count')}>
                    |        {{${dataSet}.pagingOptions.currentPage}}/{{${dataSet}.numberOfPages()}}
                    |        </span>
                    |        <$button ${idAttribute('-pagination-next-button')} class="secondary next" ng-disabled="${dataSet}.pagingOptions.currentPage >= ${dataSet}.totalCount/${dataSet}.pagingOptions.pageSize "
-                   |            ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1" type="button">
+                   |            ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1" type="button" aria-label="Next Page">
                    |        </button>
                    |    </div>
                    |</div>
@@ -670,8 +670,8 @@ class PageComponent {
             def deleteLabel=deleteRecordLabel?tran("deleteRecordLabel"):tranGlobal("delete.label","Delete")
             thead = "<th ${idAttribute('delete-column-header')}>$deleteLabel</th>"
             items = """
-                  |<td ${idAttribute('delete-column-data'+idTxtParam)}>
-                  |<input ${idAttribute('delete-column-checkbox'+idTxtParam)} ng-click="${dataSet}.deleteRecords($GRID_ITEM)" type="checkbox" />
+                  |<td ${idAttribute('delete-column-data'+idTxtParam)} role="gridcell">
+                  |<input ${idAttribute('delete-column-checkbox'+idTxtParam)} ng-click="${dataSet}.deleteRecords($GRID_ITEM)" type="checkbox" aria-label="Delete Record"/>
                   |</td>
                   |""".stripMargin()
         }
@@ -690,7 +690,7 @@ class PageComponent {
                 thead+="<th ${idAttribute('data-header-'+child.name)} $labelStyleStr>${child.tran("label")}</th>"
                 //get the child components
                 child.label=""
-                items+="<td ${idAttribute('-td-' + child.name + idTxtParam )}>${child.compileComponent("", depth)}</td>\n"
+                items+="<td ${idAttribute('-td-' + child.name + idTxtParam )} role=\"gridcell\">${child.compileComponent("", depth)}</td>\n"
             }
         }
         def click_txt=""
@@ -698,12 +698,12 @@ class PageComponent {
             click_txt = "ng-click=${name}_onClick($GRID_ITEM)"
 
         def result =  """
-                   |  <table ${idAttribute()} $styleStr>
+                   |  <table ${idAttribute()} $styleStr role="grid" aria-labelledby="pbid-$name-label">
                    |    <caption>$heading</caption>
-                   |    <thead ${idAttribute('-th')} ><tr ${idAttribute('-thr')} >$thead</tr></thead>
-                   |    <tbody ${idAttribute('-tb')} >
+                   |    <thead ${idAttribute('-th')} role="rowgroup"><tr ${idAttribute('-thr')} role="row">$thead</tr></thead>
+                   |    <tbody ${idAttribute('-tb')} role="rowgroup">
                    |      <!-- Do this for every object in objects -->
-                   |      <tr ${idAttribute('-tr'+idTxtParam)}  ng-repeat="$repeat" $click_txt>
+                   |      <tr ${idAttribute('-tr'+idTxtParam)}  ng-repeat="$repeat" $click_txt role="row">
                    |        $items
                    |      </tr>
                    |    </tbody>
@@ -725,7 +725,7 @@ class PageComponent {
 
         if (label)
             result += "<label class=\"pb-$type pb-label\" ${idAttribute('label')}>${tran("label")}</label>\n"
-        result +="""<div ${idAttribute("container" + idTxtParam)} class="pb-$type-record" ng-repeat="$repeat" >\n"""
+        result +="""<div ${idAttribute("container" + idTxtParam)} class="pb-$type-record" ng-repeat="$repeat">\n"""
 
 
         // generate all table columns from the data model
@@ -737,7 +737,7 @@ class PageComponent {
             def idTag="delete-checkbox" + idTxtParam
             result += """
                     |<div style="text-align:right" ${idAttribute("delete-container" + idTxtParam)}>
-                    |    <input ${idAttribute(idTag)} ng-click="${dataSet}.deleteRecords($GRID_ITEM)" type="checkbox" />
+                    |    <input ${idAttribute(idTag)} ng-click="${dataSet}.deleteRecords($GRID_ITEM)" type="checkbox" aria-label="Delete"/>
                     |<label style="text-align:left" ${idAttribute("delete-label" + idTxtParam)} ${idForAttribute(idTag)}> <strong>${tranGlobal("delete.label","Delete")}</strong></label>
                     |</div>
                     |""".stripMargin()
@@ -893,7 +893,7 @@ class PageComponent {
         txt +=
             """<ul ${idAttribute('-ul')} class = "pb-ul">
             <li ${idAttribute("-li" + idTxtParam)} class="pb-list-item" $click_txt ng-repeat="$repeat">
-             ${onClick?"<a ${idAttribute('-a'+ idTxtParam)} href=\"\">":""} {{$LIST_ITEM.$value}}  ${onClick?"</a>":""}
+             ${onClick?"<a ${idAttribute('-a'+ idTxtParam)} href=\"\" aria-label=\"${LIST_ITEM.value}\">":""} {{$LIST_ITEM.$value}}  ${onClick?"</a>":""}
             </li>
             </ul>
             """
@@ -982,17 +982,16 @@ class PageComponent {
                 def radioLabelStyleStr= """class="pb-${parent.type} pb-item pb-radiolabel $labelStyle" """
 
                 result = """
-                  |<div class="$valueStyle" ng-repeat="$SELECT_ITEM in $arrayName" $initTxt>
-                  | <label ${idAttribute("-label-$idxStr")} ${idForAttribute("-radio-$idxStr")} $radioLabelStyleStr>
-                  | <input ${idAttribute("-radio-$idxStr")} type="radio" ng-model=$ngModel name="$nameTxt" $ngChange value="{{$SELECT_ITEM.$valueKey}}"/>
-                  | <span>{{$SELECT_ITEM.$labelKey}}</span></label>
+                  |<div class="$valueStyle" ng-repeat="$SELECT_ITEM in $arrayName" $initTxt role="radiogroup" aria-labelledby="$tranLabel">
+                  |    <label ${idAttribute("-label-$idxStr")} ${idForAttribute("-radio-$idxStr")} $radioLabelStyleStr>
+                  |    <input ${idAttribute("-radio-$idxStr")} type="radio" ng-model=$ngModel name="$nameTxt" $ngChange value="{{$SELECT_ITEM.$valueKey}}" aria-checked="false"/>
+                  |    <span>{{$SELECT_ITEM.$labelKey}}</span></label>
                   |</div>""".stripMargin()
-
                 result = """<div ${idAttribute(idTxtParam)} $autoStyleStr> $result </div>"""
                 break;
             case COMP_TYPE_LITERAL:
                 //Todo: should we do something for safe/unsafe binding as in next item type?
-                result = "<span ${idAttribute(idTxtParam)}  $ngClick $autoStyleStr>" + tran(propertiesBaseKey()+".value",compileDOMDisplay(value) ) + "</span>\n"
+                result = "<span ${idAttribute(idTxtParam)}  $ngClick $autoStyleStr aria-label=\"$name\">" + tran(propertiesBaseKey()+".value",compileDOMDisplay(value) ) + "</span>\n"
                 break;
             case COMP_TYPE_DISPLAY: //migrated to use template engine
                 if (type != COMP_TYPE_DATETIME) {
@@ -1280,7 +1279,7 @@ class PageComponent {
         |</script>
         |</head>
         |<body>
-        |   <div id="content" ng-controller="$controllerName"  class="customPage container-fluid">
+        |   <div id="content" role="main" ng-controller="$controllerName"  class="customPage container-fluid">
         |   ${label?"<h1 ${idAttribute('label')}>${tran("label")}</h1>":""}
          """.stripMargin()
     }
@@ -1558,7 +1557,7 @@ class PageComponent {
     // into an array of [ preBra: Li, expression, postKet: Lj ]
     // where bra = {{ AngularJS expression start
     //   and ket = }} AngularJS expression end
-    def static splitAngularBrackets( String expr ) {
+    def static  splitAngularBrackets( String expr ) {
         def prep = expr.split(Pattern.quote(exprBra))
         def parts = []
         prep.eachWithIndex { str, i ->

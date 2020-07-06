@@ -2,7 +2,7 @@
     <!--Copyright 2013-2018 Ellucian Company L.P. and its affiliates.-->
     <!--TODO referencing $parent.i18nGet, should not have this dependency-->
     <!--label>{{label}}</label-->
-    <input style="text-align:start;" readonly value='{{map}}'></input> <button class="btn btn-xs" ng-click='openMapEditModal(map)'>...</button>
+    <input style="text-align:start;" aria-label="{{i18nGet('attribute.'+attr.name)}}" readonly value='{{map}}'></input> <button class="btn btn-xs" ng-click='openMapEditModal(map)'>...</button>
 
     <!-- map editing modal body-->
     <div modal="mapEditShouldBeOpen"  options="mapEditModalOpts">
@@ -28,19 +28,19 @@
 
             <form>
                 <div><label for="label">{{$parent.i18nGet('pb.template.map.new.key.label') }}</label><input id="label" ng-model="newKey" required> </div>
-                <div><label>{{$parent.i18nGet('pb.template.map.new.value.label') }}</label>
-                    <div> {{$parent.i18nGet('pb.template.map.value.select.label')}}
-                        <div>
-                        <input type="radio" ng-model="newType" value="text"/> {{$parent.i18nGet('type.text')}}
-                        <input type="radio" ng-model="newType" value="number"/> {{$parent.i18nGet('type.number')}}
-                        <input type="radio" ng-model="newType" value="checkbox" ng-click='newValue=true'/> {{$parent.i18nGet('type.boolean')}}
+                <div role="region">
+                    <label id="pbid-SelectNewValue-label">{{$parent.i18nGet('pb.template.map.new.value.label') }}</label>
+                    <div>{{$parent.i18nGet('pb.template.map.value.select.label')}}
+                        <div role="radiogroup" aria-labelledby="pbid-SelectNewValue-label">
+                            <input type="radio" ng-model="newType" value="text" id="pbid-text-r1" name="inputType" aria-checked="false"/> <label for="pbid-text-r1">{{$parent.i18nGet('type.text')}}</label>
+                            <input type="radio" ng-model="newType" value="number" id="pbid-number-r2" name="inputType" aria-checked="false"/> <label for="pbid-text-r1">{{$parent.i18nGet('type.number')}}</label>
+                            <input type="radio" ng-model="newType" value="checkbox" ng-click='newValue=true' id="pbid-checkbox-r3" name="inputType" aria-checked="false"/> <label for="pbid-text-r1">{{$parent.i18nGet('type.boolean')}}</label>
                         </div>
-
-                        <div>{{$parent.i18nGet('pb.template.map.value.enter.label')}}
-                        <input ng-show='newType=="text"' type='text' ng-model="newValue" required/>
-                        <input ng-show='newType=="number"' type='number' ng-model="newValue" required/>
-                        <!-- TODO resolve issue with uncheck box cannot be submmitted -->
-                        <input ng-show='newType=="checkbox"' type='checkbox' ng-model="newValue"/>
+                        <div id="Pbid-NewValue-label">{{$parent.i18nGet('pb.template.map.value.enter.label')}}
+                             <input ng-show='newType=="text"' type='text' ng-model="newValue" required aria-labelledby="Pbid-NewValue-label"/>
+                             <input ng-show='newType=="number"' type='number' ng-model="newValue" required aria-labelledby="Pbid-NewValue-label"/>
+                             <!-- TODO resolve issue with uncheck box cannot be submmitted -->
+                             <input ng-show='newType=="checkbox"' type='checkbox' ng-model="newValue" aria-labelledby="Pbid-NewValue-label"/>
                         </div>
                     </div>
                 </div>

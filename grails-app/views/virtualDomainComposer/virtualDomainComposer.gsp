@@ -55,16 +55,15 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
     </Script>
     <!-- g:set var="pageSource" value="test test" scope="page" /-->
 </head>
-
 <body>
-<div id="content"  class="customPage container-fluid vdPage" >
+<div id="content"  class="customPage container-fluid vdPage" role="main">
     <h3><g:message code="sspb.page.virtualdomain.heading" /></h3>
     <div class="vd-section">
-        <g:form name="LoadVDForm" action="loadVirtualDomain">
-            <label><g:message code="sspb.page.virtualdomain.select.label" /></label>
+        <g:form name="LoadVDForm" action="loadVirtualDomain" aria-label="Load Virtual Domain">
+            <label for="vdServiceName"><g:message code="sspb.page.virtualdomain.select.label" /></label>
 
-            <g:select id="vdServiceName" name="vdServiceName" class="popupSelectBox pbPopupDataGrid:{'serviceNameType':'virtualdomains','id':'vdServiceName'}"
-                      from="${[['serviceName': (pageInstance?.vdServiceName?:'')]]}"
+            <g:select id="vdServiceName" name="vdServiceName" from="${[['serviceName': (pageInstance?.vdServiceName?:'')]]}"
+                      class="popupSelectBox pbPopupDataGrid:{'serviceNameType':'virtualdomains','id':'vdServiceName'}"
                       value="${pageInstance?.vdServiceName}"
                       noSelection="${['null':message(code:"sspb.page.virtualdomain.select.noselection.label")]}"
                       optionKey="serviceName"
@@ -81,14 +80,14 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             <label><g:message code="sspb.page.virtualdomain.servicename.label" /></label>
             <input maxlength="60"  pattern="^[a-zA-Z]+[a-zA-Z0-9_-]*$" type="text" name="vdServiceName" value="${pageInstance?.vdServiceName}" required />
 
-            <g:actionSubmit action="saveVirtualDomain" ng-disabled="${!isProductionReadOnlyMode || !(pageInstance?.allowModify==null ? true: pageInstance?.allowModify)}" class="primary" value="${message(code:"sspb.page.virtualdomain.save.label")}" />
-            <g:actionSubmit action="deleteVirtualDomain" ng-disabled="${!isProductionReadOnlyMode || !(pageInstance?.allowModify==null ? true: pageInstance?.allowModify)}"  class="secondary" value="${message(code:"sspb.page.virtualdomain.delete.label")}" />
+            <g:actionSubmit action="saveVirtualDomain" role="button" ng-disabled="${!isProductionReadOnlyMode || !(pageInstance?.allowModify==null ? true: pageInstance?.allowModify)}" class="primary" value="${message(code:"sspb.page.virtualdomain.save.label")}" />
+            <g:actionSubmit action="deleteVirtualDomain" role="button" ng-disabled="${!isProductionReadOnlyMode || !(pageInstance?.allowModify==null ? true: pageInstance?.allowModify)}"  class="secondary" value="${message(code:"sspb.page.virtualdomain.delete.label")}" />
             <g:if test="${pageInstance?.vdServiceName}">
-                <input type="button" class="secondary" value="${message(code:"sspb.page.virtualdomain.roles.label")}" onclick="showDomainRoles('${pageInstance?.id}','${pageInstance?.vdServiceName}')"/>
-                <input type="button" class="secondary" value="${message(code:"sspb.css.cssManager.developer.label")}" onclick="getDeveloperSecurityPage('${pageInstance?.id}','${pageInstance?.vdServiceName}')"/>
+                <input type="button" class="secondary" role="button" value="${message(code:"sspb.page.virtualdomain.roles.label")}" onclick="showDomainRoles('${pageInstance?.id}','${pageInstance?.vdServiceName}')"/>
+                <input type="button" class="secondary" role="button" value="${message(code:"sspb.css.cssManager.developer.label")}" onclick="getDeveloperSecurityPage('${pageInstance?.id}','${pageInstance?.vdServiceName}')"/>
                 <span class="alignRight">
-                    <label class="vpc-name-label dispInline"><g:message code="sspb.vd.visualbuilder.vdowner.label" /></label>
-                    <g:select class="owner-select alignRight" name="owner" ng-disabled="${!(pageInstance?.allowUpdateOwner==null ? true: pageInstance?.allowUpdateOwner)}" noSelection="${['null':'']}"
+                    <label class="vpc-name-label dispInline" for="vdOwner"><g:message code="sspb.vd.visualbuilder.vdowner.label" /></label>
+                    <g:select id="vdOwner" class="owner-select alignRight" name="owner" ng-disabled="${!(pageInstance?.allowUpdateOwner==null ? true: pageInstance?.allowUpdateOwner)}" noSelection="${['null':'']}"
                               value="${pageInstance?.owner?:''}" from="${userDetailsInList}" optionKey="USER_ID" optionValue="USER_ID">
                     </g:select>
                    %{-- <select class="owner-select vd-select-width" id="pageOwner" onchange="onChangeOfOwner()">
@@ -101,32 +100,39 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
         </div>
 
 
-        <table>
-            <tr>
-                <th align = left><g:message code="sspb.page.virtualdomain.query.heading" /></th> <th align = left><g:message code="sspb.page.virtualdomain.delete.heading" /></th>
-            </tr>
-            <tr>
-                <td>
-                    <g:textArea name="vdQueryView" value="${pageInstance?.vdQueryView}" rows="20" cols="60" style="width:100%" required="true" />
-                </td>
-                <td>
-                    <g:textArea name="vdDeleteView" value="${pageInstance?.vdDeleteView}" rows="20" cols="60" style="width:100%" />
-                </td>
-            </tr>
+        <table role="grid">
+            <thead role="rowgroupw">
+                <tr role="row">
+                    <th align = left id="vdQueryStatement" ><g:message code="sspb.page.virtualdomain.query.heading"/></th> <th align = left id="vdDeleteStatement"><g:message code="sspb.page.virtualdomain.delete.heading" /></th>
+                </tr>
+            </thead>
+            <tbody role="rowgroup">
+                <tr role="row">
+                    <td role="gridcell">
+                        <g:textArea name="vdQueryView" aria-labelledby="vdQueryStatement" value="${pageInstance?.vdQueryView}" rows="20" cols="60" style="width:100%" required="true" tabindex="-1"/>
+                    </td>
+                    <td role="gridcell">
+                        <g:textArea name="vdDeleteView" aria-labelledby="vdDeleteStatement" value="${pageInstance?.vdDeleteView}" rows="20" cols="60" style="width:100%" tabindex="-1"/>
+                    </td>
+                </tr>
+            </tbody>
         </table>
-        <table>
-            <tr>
-                <th align = left><g:message code="sspb.page.virtualdomain.post.heading" /></th> <th align = left><g:message code="sspb.page.virtualdomain.put.heading" /></th>
-            </tr>
-            <tr>
-                <td>
-                    <g:textArea name="vdPostView" value="${pageInstance?.vdPostView}" rows="20" cols="60" style="width:100%"  />
-                </td>
-                <td>
-                    <g:textArea name="vdPutView" value="${pageInstance?.vdPutView}" rows="20" cols="60" style="width:100%" />
-                </td>
-            </tr>
-
+        <table role="grid">
+            <thead role="rowgroup">
+                <tr role="row">
+                    <th align = left id="vdPostStatement"><g:message code="sspb.page.virtualdomain.post.heading" /></th> <th align = left id="vdPutStatement"><g:message code="sspb.page.virtualdomain.put.heading" /></th>
+                </tr>
+            </thead>
+            <tbody role="rowgroup">
+                <tr role="row">
+                    <td role="gridcell">
+                        <g:textArea name="vdPostView" aria-labelledby="vdPostStatement" value="${pageInstance?.vdPostView}" rows="20" cols="60" style="width:100%"  tabindex="-1"/>
+                    </td>
+                    <td role="gridcell">
+                        <g:textArea name="vdPutView" aria-labelledby="vdPutStatement" value="${pageInstance?.vdPutView}" rows="20" cols="60" style="width:100%" tabindex="-1"/>
+                    </td>
+                </tr>
+            </tbody>
         </table>
         <br/>
 
@@ -136,14 +142,14 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
         <%
             if (pageInstance?.vdServiceName)  {
                 out << """
-    <h4>${message(code:"sspb.page.virtualdomain.query.result.label")} </h4>
-    ${message(code:"sspb.page.virtualdomain.query.result.parameters.label")}
+    <h4 id="vdQueryResult">${message(code:"sspb.page.virtualdomain.query.result.label")} </h4>
+    <label for"vdTestParameters"> ${message(code:"sspb.page.virtualdomain.query.result.parameters.label")}</label>
     <input type="text" id="vdTestParameters" name="vdTestParameters" value="${pageInstance.vdTestParameters?pageInstance.vdTestParameters:""}" />
     <input type="hidden"  name="vdServiceName" value="${pageInstance?.vdServiceName}" />
-    <input type="button" class="primary" value="${message(code:"sspb.page.virtualdomain.query.result.test.label")}" id="getDataButton"/>
+    <input type="button" class="primary" role="button" aria-label="${message(code:"sspb.page.virtualdomain.query.result.test.label")}" value="${message(code:"sspb.page.virtualdomain.query.result.test.label")}" id="getDataButton"/>
     <br/>
     <br/>
-    <textarea id="testarea1" rows="5" readonly style="width:98%"></textarea>
+    <textarea id="testarea1" rows="5" readonly style="width:98%" aria-labelledby="vdQueryResult"></textarea>
     """
 //It should not be very difficult to write an AngularJS page to submit the JSON shown in the texarea above.
 //When debug=true, the service should add a rollback statement to the DML statement...

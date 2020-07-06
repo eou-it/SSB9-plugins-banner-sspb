@@ -269,9 +269,9 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 </head>
 <body>
     <asset:javascript src="modules/pageBuilderDev-mf.js"/>
-    <div id="content" ng-controller="CssManagerController" class="customPage container-fluid cssPage">
+    <div id="content" ng-controller="CssManagerController" class="customPage container-fluid cssPage" role="main">
     <div class="btn-section">
-        <label><g:message code="sspb.css.cssManager.load.label" /></label>
+        <label for="cssConstantName"><g:message code="sspb.css.cssManager.load.label" /></label>
         <select id="cssConstantName" name="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'csses','id':'cssConstantName'}"
                 ng-model="cssName"
                 ng-change="getCssSource()">
@@ -292,9 +292,9 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
         </span>
 
         <span ng-show="cssName" class="alignRight">
-            <label class="vpc-name-label dispInline"><g:message code="sspb.css.visualbuilder.cssowner.label" /></label>
+            <label class="vpc-name-label dispInline" for="pbid-cssOwner"><g:message code="sspb.css.visualbuilder.cssowner.label" /></label>
             <input style="display: none" ng-model="allowUpdateOwner"/>
-            <select class="owner-select alignRight" ng-model="cssOwner"  ng-disabled="!allowUpdateOwner">
+            <select id="pbid-cssOwner" class="owner-select alignRight" ng-model="cssOwner"  ng-disabled="!allowUpdateOwner">
                 <option ng-repeat="owner in pbUserList" value="{{owner}}" ng-selected="{{owner == pageOwner}}">{{owner}}</option>
             </select>
         </span>
@@ -324,7 +324,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
             </div>
         </div>
     </div>
-    <textArea name="statusMessage" readonly="true" ng-model="cssStatus.message"
+    <textArea name="statusMessage" readonly="true" ng-model="cssStatus.message" aria-label="Status Message"
               rows="3" cols="120" style="width:99%; height:10%"></textArea>
 </div>
 
