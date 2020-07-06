@@ -126,6 +126,8 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             <div id="spinner" class="spinner spinner-img" style="display:none;">
         </div>
 
+        <g:analytics/>
+        
         <asset:javascript src="modules/pageBuilder-mf.js"/>
 
         <asset:script type="text/javascript">
