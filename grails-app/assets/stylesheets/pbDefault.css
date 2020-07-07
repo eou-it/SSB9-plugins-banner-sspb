@@ -181,6 +181,25 @@ input.ng-invalid.ng-touched, input.ng-invalid.ng-invalid-maxlength {
     color: #151618 !important;
     border: 1px solid #FF3030 !important;
 }
+
+input[type="radio"].ng-invalid.ng-touched {
+    background-color: #FFFFFF;
+    color: #151618 !important;
+    outline: 1px solid #FF3030 !important;
+}
+
+textarea.ng-invalid.ng-touched, textarea.ng-invalid.ng-invalid-maxlength {
+    background-color: #FFFFFF;
+    color: #151618 !important;
+    border: 1px solid #FF3030 !important;
+}
+
+select.ng-invalid.ng-touched {
+    background-color: #FFFFFF;
+    color: #151618 !important;
+    border: 1px solid #FF3030 !important;
+}
+
 /** Owner Field in VPC, VDC, CSSM - copied from previous releases*/
 select.owner-select {
     color:#026BC8;
@@ -223,3 +242,4 @@ label.dispInline{
         position: relative  ;
     }
 }
+

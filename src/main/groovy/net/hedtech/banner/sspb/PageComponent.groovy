@@ -936,7 +936,7 @@ class PageComponent {
                 // SELECT must have a model
                 def arrayName = "${name}DS.data"
                 def ngModel = name
-                def placeholderStr = placeholder?"""<option value="">${tran("placeholder")}</option>""":""
+                def placeholderStr = placeholder?"""<option value="">${tran("placeholder")}</option>""":""" <option style="display:none" value=""></option> """
                 ngChange = "" //override default
                 if(isDataSetEditControl(parent)) {
                     ngModel =  "$GRID_ITEM.${model}"
@@ -947,8 +947,8 @@ class PageComponent {
                 ngChange += onUpdate?"${name}DS.onUpdate(item);":""
                 ngChange = ngChange?"ng-change=\"$ngChange\"":""
                 result = """
-                           |<select  ${idAttribute(idTxtParam)} $autoStyleStr ng-model="$ngModel" $ngChange  ${defaultValue()}
-                           |  ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName">
+                           |<select ${required?"required":""}  ${idAttribute(idTxtParam)} $autoStyleStr ng-model="$ngModel" $ngChange  ${defaultValue()} 
+                           |  ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName"> 
                            |  $placeholderStr
                            |</select>""".stripMargin()
 
@@ -978,7 +978,7 @@ class PageComponent {
                 result = """
                   |<div class="$valueStyle" ng-repeat="$SELECT_ITEM in $arrayName" $initTxt>
                   | <label ${idAttribute("-label-$idxStr")} ${idForAttribute("-radio-$idxStr")} $radioLabelStyleStr>
-                  | <input ${idAttribute("-radio-$idxStr")} type="radio" number-to-string ng-model=$ngModel name="$nameTxt" $ngChange value="{{$SELECT_ITEM.$valueKey}}"/>
+                  | <input ${required?"required":""} ${idAttribute("-radio-$idxStr")} type="radio" number-to-string ng-model=$ngModel name="$nameTxt" $ngChange value="{{$SELECT_ITEM.$valueKey}}"/>
                   | <span>{{$SELECT_ITEM.$labelKey}}</span></label>
                   |</div>""".stripMargin()
 
@@ -1050,7 +1050,7 @@ class PageComponent {
                 }
                 if (type == COMP_TYPE_TEXTAREA) {
                     tag = COMP_TYPE_TEXTAREA
-                    endTag = "></$COMP_TYPE_TEXTAREA>"
+                    endTag = "${required?"required":""} "+"></$COMP_TYPE_TEXTAREA>"
                 }
 
                 // for datetime input do NOT assign an ID otherwise it won't work!
