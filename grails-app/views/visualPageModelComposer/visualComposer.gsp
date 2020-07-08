@@ -1269,7 +1269,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
     <!--input type="checkbox" ng-model="(index == statusHolder.selectedIndex)" ng-init="index=index+1" /-->
 
     <ul ng-show="showChildren" style="list-style: none;">
-        <li ng-repeat="data in data.components"   ng-include="'tree_item_renderer.html'"></li>
+        <li ng-repeat="data in data.components track by $index"   ng-include="'tree_item_renderer.html'"></li>
     </ul>
     </script>
 
