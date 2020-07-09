@@ -1122,7 +1122,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 
     <div class="btn-section-2">
         <label class="vpc-name-label" for="extendsPage"><g:message code="sspb.page.visualbuilder.extends.label" /></label>
-        <select id="extendsPage" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'extendsPage'}1`" name="extendsPage"
+        <select id="extendsPage" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'extendsPage'}" name="extendsPage"
                 ng-model="extendsPageName"
                 ng-change="getExtendsPage();saveAs=false;">
             <option label="{{extendsPageName}}" value="{{extendsPageName}}">{{extendsPageName}}</option>

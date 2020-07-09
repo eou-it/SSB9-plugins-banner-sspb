@@ -803,7 +803,21 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
                 if(scope.options.id == 'extendsPage') {
                     scope.options.excludePage = scope.pageName;
                 }
-                scope.loadPopup(scope.options)
+                if(event.type == 'mousedown' || event.type =='click' || event.type =='enter')
+                    scope.loadPopup(scope.options);
+                else {
+                    var keycode = (event.keyCode ? event.keyCode : event.which);
+                    if(keycode == '13')
+                        scope.loadPopup(scope.options);
+                    else {
+                        var valueOfSelectTag = document.getElementById(attrs.id).value;
+                        if((valueOfSelectTag == '' || valueOfSelectTag == 'null') && scope.options.id != 'extendsPage')
+                            scope.loadPopup(scope.options);
+                        else if(event.type =='keydown')
+                            document.getElementById(attrs.id).blur();
+
+                    }
+                }
                 event.preventDefault();
                 event.stopPropagation();
             }
