@@ -124,9 +124,11 @@ class VirtualDomainSqlService {
         def result=statement
         if (orderBy && statement) {
             def orderByList=[]
-            if (orderBy instanceof String)
+            if (orderBy instanceof String && orderBy?.contains(',')) {
+                orderByList = orderBy.split(',')
+            } else if (orderBy instanceof String) {
                 orderByList << orderBy
-            else {
+            } else {
                 orderByList = orderBy
             }
             def ob="order by"
