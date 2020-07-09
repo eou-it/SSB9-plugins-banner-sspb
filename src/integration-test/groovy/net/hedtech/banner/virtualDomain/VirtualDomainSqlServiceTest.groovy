@@ -289,7 +289,7 @@ class VirtualDomainSqlServiceTest extends Specification{
         def actualRows = getSqlQueryResults('order by rownum desc')
         def vd = mockVirtualDomain()
         when:
-        params << [sortby:'rownum desc']
+        params << [sortby:'ROWNUM desc']
         def res = virtualDomainSqlService.get(vd, params)
         then:
         res.totalCount == actualRows.size()
@@ -310,7 +310,7 @@ class VirtualDomainSqlServiceTest extends Specification{
         def actualRows = getSqlQueryResults('order by dummy_table_id asc, dummy_table_name desc')
         def vd = mockVirtualDomain()
         when:
-        params << [sortby:'dummy_table_id asc, dummy_table_name desc']
+        params << [sortby:'DUMMY_TABLE_ID asc, DUMMY_TABLE_NAME desc']
         def res = virtualDomainSqlService.get(vd, params)
         then:
         res.totalCount == actualRows.size()
@@ -330,7 +330,7 @@ class VirtualDomainSqlServiceTest extends Specification{
         def actualRows = getSqlQueryResults('order by dummy_table_id desc, dummy_table_name asc')
         def vd = mockVirtualDomain()
         when:
-        params << [sortby: ['dummy_table_id asc', 'dummy_table_name desc']]
+        params << [sortby: ['DUMMY_TABLE_ID asc', 'DUMMY_TABLE_NAME desc']]
         def res = virtualDomainSqlService.get(vd, params)
         then:
         res.totalCount == actualRows.size()
@@ -350,7 +350,7 @@ class VirtualDomainSqlServiceTest extends Specification{
         def actualRows = getSqlQueryResults('order by id asc')
         def vd = mockVirtualDomain()
         when:
-        params << [sortby: 'id asc']
+        params << [sortby: 'ID asc']
         def res = virtualDomainSqlService.get(vd, params)
         then:
         res.totalCount == actualRows.size()
@@ -370,7 +370,7 @@ class VirtualDomainSqlServiceTest extends Specification{
         def actualRows = getSqlQueryResults('order by dummy_table_id asc, dummy_table_name desc')
         def vd = mockVirtualDomain('order by rownum desc')
         when:
-        params << [sortby:'dummy_table_id asc, dummy_table_name desc']
+        params << [sortby:'DUMMY_TABLE_ID asc, DUMMY_TABLE_NAME desc']
         def res = virtualDomainSqlService.get(vd, params)
         then:
         res.totalCount == actualRows.size()
