@@ -59,9 +59,6 @@ div[ng-grid] {
 
 
 /* common components patch - pagination controls */
-.pagination-container {
-    direction: initial;
-}
 
 .pagination-container .pagination-controls button:hover, .pagination-container .pagination-controls button:focus {
     background-color: #026BC8;
