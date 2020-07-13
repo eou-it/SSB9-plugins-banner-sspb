@@ -124,9 +124,11 @@ class VirtualDomainSqlService {
         def result=statement
         if (orderBy && statement) {
             def orderByList=[]
-            if (orderBy instanceof String)
+            if (orderBy instanceof String && orderBy?.contains(',')) {
+                orderByList = orderBy.split(',')
+            } else if (orderBy instanceof String) {
                 orderByList << orderBy
-            else {
+            } else {
                 orderByList = orderBy
             }
             def ob="order by"
@@ -234,8 +236,7 @@ class VirtualDomainSqlService {
             }
             rows = sql.rows(statement,parameters,metaData)
             rows = idEncodeRows(rows)
-            rows = handleClobRows(rows)
-            rows = handleBlobRows(rows)
+            rows = handleClobBlobTimestampRows(rows)
             logmsg += " "+message(code:"sspb.virtualdomain.sqlservice.numberrows", args:[rows?.size(),parameters.offset])
 
         } catch(SQLException e) {
@@ -444,7 +445,7 @@ class VirtualDomainSqlService {
         return rows
     }
 
-    private def handleClobRows(rows) {
+    private def handleClobBlobTimestampRows(rows) {
         def foundClob=false
         for ( row in rows )  {
             for (col in row ) {
@@ -454,21 +455,8 @@ class VirtualDomainSqlService {
                         col.value = s
                         foundClob = true
                     }
-                }
-            }
-            if (!foundClob)
-                return rows // no need to traverse the whole array if first row doesn't have a CLOB
-        }
-        return rows
-    }
-
-    private def handleBlobRows(rows) {
-        def foundBlob=false
-        for ( row in rows )  {
-            for (col in row ) {
-                if (col.value.getClass().getName().endsWith("BLOB")) {
+                }else if(col.value.getClass().getName().endsWith("BLOB")){
                     if (col.value instanceof java.sql.Blob) {
-
                         byte[] returnBytes
                         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
                         Blob blob = col.value
@@ -482,9 +470,12 @@ class VirtualDomainSqlService {
                         col.value = Base64.getEncoder().encodeToString(returnBytes)
                         foundBlob = true
                     }
+                }else if (col.value instanceof oracle.sql.TIMESTAMP) {
+                    col.value = col.value.dateValue()
+                    foundClob = true
                 }
             }
-            if (!foundBlob)
+            if (!foundClob)
                 return rows // no need to traverse the whole array if first row doesn't have a CLOB
         }
         return rows

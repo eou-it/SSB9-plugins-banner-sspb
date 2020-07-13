@@ -10,7 +10,7 @@ buildscript {
     }
 }
 
-version "9.6"
+version "9.7"
 group "banner.sspb"
 
 apply plugin:"eclipse"
@@ -65,11 +65,9 @@ dependencies {
 }
 
 configurations {
-    if(!project.gradle.startParameter.taskNames.contains('test')){
+    if(project.gradle.startParameter.taskNames.intersect([':cobertura','test']).isEmpty()){
         runtime.exclude group: "org.grails", module: "grails-gorm-testing-support"
     }
-    runtime.exclude group: "org.springframework.boot", module: "spring-boot-starter-actuator"
-
 }
 
 grails{
