@@ -243,3 +243,21 @@ label.dispInline{
     }
 }
 
+.dispInline{
+    display:inline;
+}
+
+.align-left{
+    float: left !important;
+}
+
+select.per-page-select, select.per-page-select:focus {
+    border: 1px solid #026BC8 !important;
+}
+
+select.per-page-select:hover{
+    color: #FFFFFF;
+    background-color: #026BC8 !important;
+}
+
+
