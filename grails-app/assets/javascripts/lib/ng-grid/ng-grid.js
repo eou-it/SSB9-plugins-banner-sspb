@@ -3185,7 +3185,7 @@ angular.module("ngGrid").run(["$templateCache", function($templateCache) {
     "</div>" +
     "<div class=\"ngViewport\" unselectable=\"on\" ng-viewport ng-class=\"{'ui-widget-content': jqueryUITheme}\" ng-style=\"viewportStyle()\" role=\"rowgroup\" tabindex=\"0\">" +
     "    <div class=\"ngCanvas\" ng-style=\"canvasStyle()\" tabindex=\"0\">" +
-    "        <div ng-style=\"rowStyle(row)\" ng-repeat=\"row in renderedRows\" role=\"row\" aria-selected=\"true\" ng-click=\"row.toggleSelected($event)\" ng-class=\"row.alternatingRowClass()\" ng-row></div>" +
+    "        <div ng-style=\"rowStyle(row)\" ng-repeat=\"row in renderedRows\" role=\"row\" aria-selected=\"true\" ng-click=\"row.toggleSelected($event)\" tabindex=\"0\" ng-class=\"row.alternatingRowClass()\" ng-row></div>" +
     "    </div>" +
     "</div>" +
     "<div ng-grid-footer></div>" +
@@ -3193,10 +3193,10 @@ angular.module("ngGrid").run(["$templateCache", function($templateCache) {
   );
 
   $templateCache.put("headerCellTemplate.html",
-    "<div class=\"ngHeaderSortColumn {{col.headerClass}}\" role=\"columnheader\" ng-style=\"{'cursor': col.cursor}\" ng-class=\"{ 'ngSorted': !noSortVisible }\" tabindex='0'>" +
-    "    <div id=\"{{col.field}}-col{{col.index}}-label\" ng-click=\"col.sort($event)\" ng-class=\"'colt' + col.index\" class=\"ngHeaderText\" role=\"button\">{{col.displayName}}</div>" +
-    "    <div class=\"ngSortButtonDown\" ng-show=\"col.showSortButtonDown()\"></div>" +
-    "    <div class=\"ngSortButtonUp\" ng-show=\"col.showSortButtonUp()\"></div>" +
+    "<div class=\"ngHeaderSortColumn {{col.headerClass}}\" role=\"columnheader\" ng-style=\"{'cursor': col.cursor}\" ng-class=\"{ 'ngSorted': !noSortVisible }\" tabindex='0' aria-label=\"{{col.displayName}}\">" +
+    "    <div id=\"{{col.field}}-col{{col.index}}-label\" ng-click=\"col.sort($event)\" ng-class=\"'colt' + col.index\" class=\"ngHeaderText\" role=\"button\" tabindex='0'>{{col.displayName}}</div>" +
+    "    <div class=\"ngSortButtonDown\" ng-show=\"col.showSortButtonDown()\" aria-label='Ascending'></div>" +
+    "    <div class=\"ngSortButtonUp\" ng-show=\"col.showSortButtonUp()\" aria-label='Descending'></div>" +
     "    <div class=\"ngSortPriority\">{{col.sortPriority}}</div>" +
     "    <div ng-class=\"{ ngPinnedIcon: col.pinned, ngUnPinnedIcon: !col.pinned }\" ng-click=\"togglePin(col)\" ng-show=\"col.pinnable\"></div>" +
     "</div>" +
