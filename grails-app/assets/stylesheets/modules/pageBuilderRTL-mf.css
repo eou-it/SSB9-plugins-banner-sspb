@@ -4,6 +4,7 @@
 *= require BannerXE/css/ng-grid-rtl.css
 *= require BannerXE/css/angular-ui-rtl.css
 *= require bootstrap/css/bootstrap-rtl.css
+*= require BannerXE/css/bootstrap-rtl.css
 *= require modules/commonComponentsRTL-mf.css
 *= require banner-sspb-rtl-patch.css
 *= require sspbmain-rtl.css
