@@ -59,9 +59,6 @@ div[ng-grid] {
 
 
 /* common components patch - pagination controls */
-.pagination-container {
-    direction: initial;
-}
 
 .pagination-container .pagination-controls button:hover, .pagination-container .pagination-controls button:focus {
     background-color: #026BC8;
@@ -242,4 +239,22 @@ label.dispInline{
         position: relative  ;
     }
 }
+
+.dispInline{
+    display:inline;
+}
+
+.align-left{
+    float: left !important;
+}
+
+select.per-page-select, select.per-page-select:focus {
+    border: 1px solid #026BC8 !important;
+}
+
+select.per-page-select:hover{
+    color: #FFFFFF;
+    background-color: #026BC8 !important;
+}
+
 
