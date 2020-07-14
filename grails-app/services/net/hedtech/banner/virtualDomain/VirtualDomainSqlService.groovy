@@ -238,12 +238,14 @@ class VirtualDomainSqlService {
             rows = idEncodeRows(rows)
             rows = handleClobBlobTimestampRows(rows)
             logmsg += " "+message(code:"sspb.virtualdomain.sqlservice.numberrows", args:[rows?.size(),parameters.offset])
-
+            log.debug("In VirtualDomainSqlService get - executed SQL GET statement")
         } catch(SQLException e) {
+            log.debug("In VirtualDomainSqlService get - SQLException ${e.getMessage()}")
             logmsg += message(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
             def oracleErrorMsg = message(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
             errorMessage = privs.debug ? oracleErrorMsg : cleanSqlExceptionMessage(e,privs.debug) ?: "Unable to get resources."
         } catch(NumberFormatException e) {
+            log.debug("In VirtualDomainSqlService get - NumberFormatException ${e.getMessage()}")
             logmsg += e.getLocalizedMessage()
             errorMessage=message(code:"sspb.virtualdomain.sqlservice.paging.message", args:[])
         }
