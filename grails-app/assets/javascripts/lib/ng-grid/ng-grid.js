@@ -1094,43 +1094,57 @@ var ngFooter = function ($scope, grid) {
         } else {
             $scope.pagingOptions.currentPage++;
         }
+        $scope.enableDisablePagination();
     };
 
     $scope.pageBackward = function() {
         var page = $scope.pagingOptions.currentPage;
         $scope.pagingOptions.currentPage = Math.max(page - 1, 1);
+        $scope.enableDisablePagination();
     };
 
     $scope.pageToFirst = function() {
         $scope.pagingOptions.currentPage = 1;
+        $scope.enableDisablePagination();
     };
 
     $scope.pageToLast = function() {
         var maxPages = $scope.maxPages();
         $scope.pagingOptions.currentPage = maxPages;
+        $scope.enableDisablePagination();
     };
 
     $scope.cantPageForward = function() {
         var curPage = $scope.pagingOptions.currentPage;
         var maxPages = $scope.maxPages();
         if ($scope.totalServerItems > 0) {
-            return curPage >= maxPages;
+            $scope.nextLast = curPage >= maxPages;
         } else {
-            return grid.data.length < 1;
+            $scope.nextLast = grid.data.length < 1;
         }
+        return $scope.nextLast;
 
     };
     $scope.cantPageToLast = function() {
         if ($scope.totalServerItems > 0) {
             return $scope.cantPageForward();
         } else {
+            $scope.nextLast=true;
             return true;
         }
+
     };
     $scope.cantPageBackward = function() {
         var curPage = $scope.pagingOptions.currentPage;
-        return curPage <= 1;
+        $scope.firstPrev=(curPage? curPage<= 1:true);
+        return $scope.firstPrev;
     };
+
+    $scope.enableDisablePagination = function(){
+        $scope.cantPageForward();
+        $scope.cantPageBackward();
+        $scope.cantPageToLast();
+    }
 };
 
 var ngGrid = function ($scope, options, sortService, domUtilityService, $filter, $templateCache, $utils, $timeout, $parse, $http, $q) {
@@ -1556,16 +1570,16 @@ var ngGrid = function ($scope, options, sortService, domUtilityService, $filter,
             var i;
             if (index === 0) {
                 var kgHeaderText = $(elem).find('.ngHeaderText');
-                i = $utils.visualLength(kgHeaderText) + 10; 
+                i = $utils.visualLength(kgHeaderText) + 10;
             } else {
                 var ngCellText = $(elem).find('.ngCellText');
-                i = $utils.visualLength(ngCellText) + 10; 
+                i = $utils.visualLength(ngCellText) + 10;
             }
             if (i > longest) {
                 longest = i;
             }
         });
-        col.width = col.longest = Math.min(col.maxWidth, longest + 7); 
+        col.width = col.longest = Math.min(col.maxWidth, longest + 7);
         domUtilityService.BuildStyles($scope, self, true);
     };
     self.lastSortedColumns = [];

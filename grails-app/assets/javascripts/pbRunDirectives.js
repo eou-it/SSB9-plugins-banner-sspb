@@ -87,10 +87,10 @@ pbRunModule.directive('numberToString', function () {
         require: 'ngModel',
         link: function (scope, element, attrs, ngModel) {
             ngModel.$parsers.push(function (value) {
-                return '' + value;
+                return value === undefined || value === null ? value : value + '';
             });
             ngModel.$formatters.push(function (value) {
-                return value + '';
+                return value === undefined || value === null ? value : value + '';
             });
         }
     }

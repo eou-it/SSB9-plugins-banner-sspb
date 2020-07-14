@@ -135,6 +135,15 @@ appModule.filter('to_trusted', ['$sce', function($sce){
 appModule.run(['$templateCache', function($templateCache )  {
     console.log("App module.run started" );
     $templateCache.put('gridFooter.html',
+        "<div ng-show=\"showFooter\" class=\"ngFooterPanel  pagination-container\" ng-class=\"{'ui-widget-content': jqueryUITheme, 'ui-corner-bottom': jqueryUITheme}\" ng-style=\"footerStyle()\">" +
+        "    <div id=\"paging-container-#gridName#\" class=\"pagination-controls align-left\" ng-show=\"enablePaging\" >" +
+        "           {{enableDisablePagination()}}"+
+        /*"        <div class=\"paging-control first {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageToFirst()\"></div>"+
+        "        <div class=\"paging-control previous {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageBackward()\"></div>"+*/
+        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"first\" xe-aria-label=\"{{::'pagination.first.label' | xei18n}}\" xe-btn-click=\"pageToFirst()\" xe-disabled=\"firstPrev\" ng-cloak></xe-button>\n" +
+        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"previous\" xe-aria-label=\"{{::'pagination.previous.label' | xei18n}}\" xe-btn-click=\"pageBackward()\" xe-disabled=\"firstPrev\" ng-cloak></xe-button>\n"+
+        "        <span class=\"paging-text page\"> {{i18n.pageLabel}}</span>"+
+        "        <input class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"1\" max=\"{{maxPages()}}\" type=\"number\" ng-model=\"pagingOptions.currentPage\" style=\"width: 40px; display: inline;\"/>" +
         "<div ng-show=\"showFooter\" class=\"ngFooterPanel\" ng-class=\"{'ui-widget-content': jqueryUITheme, 'ui-corner-bottom': jqueryUITheme}\" ng-style=\"footerStyle()\">" +
         "    <div id=\"paging-container-#gridName#\" class=\"paging-container \" ng-show=\"enablePaging\" >" +
         "        <div class=\"paging-control first {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageToFirst()\" tabindex='0' aria-label=\"First Page\" role=\"button\"></div>"+
@@ -142,6 +151,14 @@ appModule.run(['$templateCache', function($templateCache )  {
         "        <span class=\"paging-text page\" id=\"pbid-Grid-Page\">{{i18n.pageLabel}}</span>"+
         "        <input class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"1\" max=\"{{maxPages()}}\" type=\"number\" ng-model=\"pagingOptions.currentPage\" style=\"width: 40px; display: inline;\" tabindex='0' aria-labelledby=\"pbid-Grid-Page\"/>" +
         "        <span class=\"paging-text page-of\"> {{i18n.maxPageLabel}} </span> <span class=\"paging-text total-pages\"> {{maxPages()}}  </span>"+
+      /*  "        <div class=\"paging-control next {{!cantPageForward() && 'enabled'||''}}\" ng-click=\"pageForward()\"></div>" +
+        "        <div class=\"paging-control last {{!cantPageToLast()  && 'enabled'||''}}\" ng-click=\"pageToLast()\" ></div>"+*/
+        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"next\" xe-aria-label=\"{{::'pagination.next.label' | xei18n}}\" xe-btn-click=\"pageForward()\"  xe-disabled=\"nextLast\" ng-cloak></xe-button>\n" +
+        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"last\" xe-aria-label=\"{{::'pagination.last.label' | xei18n}}\" xe-btn-click=\"pageToLast()\"  xe-disabled=\"nextLast\" ng-cloak></xe-button>\n"+
+        "        <div class=\"divider dispInline\"></div>" +
+        "        <span class=\"paging-text page-per\"> {{i18n.ngPageSizeLabel}} </span>" +
+        "        <div class=\"page-size-select-wrapper dispInline\" >" +
+        "            <select page-size-select  class=\"per-page-select\" ng-model=\"pagingOptions.pageSize\" ng-options=\"s as s for s in pagingOptions.pageSizes\" > "+
         "        <div class=\"paging-control next {{!cantPageForward() && 'enabled'||''}}\" ng-click=\"pageForward()\" tabindex='0' aria-label=\"Next Page\" role=\"button\"></div>" +
         "        <div class=\"paging-control last {{!cantPageToLast()  && 'enabled'||''}}\" ng-click=\"pageToLast()\" tabindex='0' aria-label=\"Last Page\" role=\"button\"></div>"+
         "        <div class=\"divider\"></div>" +
@@ -155,7 +172,7 @@ appModule.run(['$templateCache', function($templateCache )  {
         "        <span class=\"ngLabel\">{{i18n.ngTotalItemsLabel}} {{maxRows()}}</span>" +
         "        <span ng-show=\"filterText.length > 0\" class=\"ngLabel\">({{i18n.ngShowingItemsLabel}} {{totalFilteredItemsLength()}})</span>" +
         "    </div>" +
-        "    <div style=\"position: absolute; bottom:2px;\" ng-style=\"{ {{i18n.styleRight}}:'2px'}\"> #gridControlPanel# </div>" +
+        "    <div style=\"position: absolute; bottom:3px;\" ng-style=\"{ {{i18n.styleRight}}:'2px'}\"> #gridControlPanel# </div>" +
         "</div>");
 
 }]);
