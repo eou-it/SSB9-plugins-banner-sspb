@@ -989,7 +989,7 @@ class PageComponent {
                 break;
             case COMP_TYPE_LITERAL:
                 //Todo: should we do something for safe/unsafe binding as in next item type?
-                result = "<span ${idAttribute(idTxtParam)}  $ngClick $autoStyleStr><label> " + tran(propertiesBaseKey()+".value",compileDOMDisplay(value) ) + "</label></span>\n"
+                result = "<span ${idAttribute(idTxtParam)}  $ngClick $autoStyleStr>" + tran(propertiesBaseKey()+".value",compileDOMDisplay(value) ) + "</span>\n"
                 break;
             case COMP_TYPE_DISPLAY: //migrated to use template engine
                 if (type != COMP_TYPE_DATETIME) {
