@@ -587,8 +587,7 @@ class PageComponent {
         def onClickCode=parent.onClick?"\$parent.${parent.name}_onClick(row.entity, col);":""
         //Do not remove setCurrentRecord without checking all is good (may be done 2x but need to make sure it is before onClickCode)
         def ngClick="""ng-click="\$parent.${parent.name}DS.setCurrentRecord(row.entity);$onClickCode" """
-        def ariaLabel = "aria-label=\"${tran("label",ESC_JS)}\""
-        def ariaLabelledBy = "aria-labelledby=\"{{col.field}}-col{{col.index}}-label\""
+        def ariaLabel = "aria-label=\"COL_FIELD\""
         def role = ""
         def typeInternal = type
         if (type == COMP_TYPE_NUMBER ) {
@@ -608,8 +607,8 @@ class PageComponent {
                 def arrayName = "${name}DS.data"
                 readonlyAt = (parent.allowModify && !ro)?"":"disabled" //select doesn't have readonly
                 ngChange="ng-change=\""+(onUpdate?"${name}DS.onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity);${name}DS.setCurrentRecord(row.entity.$model);\""
-                placeholderAt = placeholder?"""<option value="" aria-labelledby="pbid-$name${idTxtParam?idTxtParam:""}-label" role="menuitem">${tran("placeholder")}</option>""":""
-                return """<select ${idForAttribute(idTxtParam+"-label")} role="menu" $ariaLabelledBy ${styleAt} $ngModel $readonlyAt $ngChange $ngClick ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName"> $placeholderAt </select>"""
+                placeholderAt = placeholder?"""<option value="" role="menuitem">${tran("placeholder")}</option>""":""
+                return """<select ${idForAttribute(idTxtParam+"-label")} role="menu" $ariaLabel ${styleAt} $ngModel $readonlyAt $ngChange $ngClick ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName"> $placeholderAt </select>"""
             case [COMP_TYPE_TEXT, COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER, COMP_TYPE_DATETIME, COMP_TYPE_EMAIL, COMP_TYPE_TEL] :
                 validateAt = validationAttributes()
                 placeholderAt=placeholder?"placeholder=\"${tran("placeholder")}\"":""
@@ -619,11 +618,10 @@ class PageComponent {
                 styleAt="style=\"background-color:transparent; border:0; width: 30%; height:{{rowHeight}}px\""
                 specialAt ="""${booleanTrueValue?"ng-true-value=\"${htmlValue(booleanTrueValue,"\\\'")}\"":""} ${booleanFalseValue?"ng-false-value=\"${htmlValue(booleanFalseValue,"\\\'")}\"":""}  """
                 role= "role=checkbox"
-                ariaLabelledBy = ariaLabel
+                ariaLabel = "aria-label=\"${tran("label",ESC_JS)}\""
                 break
             case COMP_TYPE_DISPLAY:
                 typeAt=""
-                ariaLabelledBy = ""
                 if (asHtml) {
                     tagStart="<span"
                     tagEnd="></span>"
@@ -639,7 +637,7 @@ class PageComponent {
             default :
                 log.info "***No ng-grid html edit template for $type ${name?name:model}"
         }
-        def result = "$tagStart $nameAt $typeAt $styleAt $specialAt $readonlyAt $requiredAt $validateAt $placeholderAt $role $ariaLabelledBy" +
+        def result = "$tagStart $nameAt $typeAt $styleAt $specialAt $readonlyAt $requiredAt $validateAt $placeholderAt $role $ariaLabel" +
                      " $ngModel $ngChange $ngClick $tagEnd"
         return result
     }
@@ -687,7 +685,7 @@ class PageComponent {
             }   else {
                 def labelStyleStr=child.labelStyle?"class=\"$child.labelStyle\"":""
                 //get the labels from child components
-                thead+="<th ${idAttribute('data-header-'+child.name)} $labelStyleStr>${child.tran("label")}</th>"
+                thead+="<th ${idAttribute('data-header-'+child.name)} $labelStyleStr role=\"columnheader\">${child.tran("label")}</th>"
                 //get the child components
                 child.label=""
                 items+="<td ${idAttribute('-td-' + child.name + idTxtParam )} role=\"gridcell\">${child.compileComponent("", depth)}</td>\n"
@@ -936,7 +934,7 @@ class PageComponent {
         def typeInternal=t
         if (t == COMP_TYPE_DATETIME && readonly) // need to render as display item as date picker isn't disabled.
                 typeInternal=COMP_TYPE_DISPLAY
-
+    
         switch (typeInternal) {
             case COMP_TYPE_SELECT:
                 // SELECT must have a model
@@ -968,7 +966,7 @@ class PageComponent {
 
                 ngChange = "" //override default
                 def idxStr
-                if(parent.type == COMP_TYPE_DETAIL || parent.type == COMP_TYPE_HTABLE) {
+                if(parent.type == COMP_TYPE_DETAIL || parent.type == z) {
                     ngModel =  "\$parent.$GRID_ITEM.${model}"
                     ngChange +="\$parent.\$parent.${parent.name}DS.setModified(\$parent.$GRID_ITEM);"
                     nameTxt = "{{'${parent.name}_${name}' + \$parent.\$index}}"
@@ -991,7 +989,7 @@ class PageComponent {
                 break;
             case COMP_TYPE_LITERAL:
                 //Todo: should we do something for safe/unsafe binding as in next item type?
-                result = "<span ${idAttribute(idTxtParam)}  $ngClick $autoStyleStr aria-label=\"$name\">" + tran(propertiesBaseKey()+".value",compileDOMDisplay(value) ) + "</span>\n"
+                result = "<span ${idAttribute(idTxtParam)}  $ngClick $autoStyleStr><label> " + tran(propertiesBaseKey()+".value",compileDOMDisplay(value) ) + "</label></span>\n"
                 break;
             case COMP_TYPE_DISPLAY: //migrated to use template engine
                 if (type != COMP_TYPE_DATETIME) {

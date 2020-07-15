@@ -2641,7 +2641,7 @@ ngGridDirectives.directive('ngCell', ['$compile', '$domUtilityService', function
                     var cellElement = $compile(html)($scope);
 
                     if ($scope.enableCellSelection && cellElement[0].className.indexOf('ngSelectionCell') === -1) {
-                        /*cellElement[0].setAttribute('tabindex', 0);*/
+                        cellElement[0].setAttribute('tabindex', 0);
                         cellElement.addClass('ngCellElement');
                     }
 
@@ -3178,7 +3178,7 @@ angular.module("ngGrid").run(["$templateCache", function($templateCache) {
   );
 
   $templateCache.put("gridTemplate.html",
-    "<div class=\"ngTopPanel\" ng-class=\"{'ui-widget-header':jqueryUITheme, 'ui-corner-top': jqueryUITheme}\" ng-style=\"topPanelStyle()\" role=\"rowgroup\" tabindex=\"0\">" +
+    "<div class=\"ngTopPanel\" ng-class=\"{'ui-widget-header':jqueryUITheme, 'ui-corner-top': jqueryUITheme}\" ng-style=\"topPanelStyle()\">" +
     "    <div class=\"ngGroupPanel\" ng-show=\"showGroupPanel()\" ng-style=\"groupPanelStyle()\">" +
     "        <div class=\"ngGroupPanelDescription\" ng-show=\"configGroups.length == 0\">{{i18n.ngGroupPanelDescription}}</div>" +
     "        <ul ng-show=\"configGroups.length > 0\" class=\"ngGroupList\">" +
@@ -3192,14 +3192,14 @@ angular.module("ngGrid").run(["$templateCache", function($templateCache) {
     "            </li>" +
     "        </ul>" +
     "    </div>" +
-    "    <div class=\"ngHeaderContainer\" ng-style=\"headerStyle()\">" +
-    "        <div class=\"ngHeaderScroller\" ng-style=\"headerScrollerStyle()\" role=\"row\" ng-include=\"gridId + 'headerRowTemplate.html'\"></div>" +
+    "    <div class=\"ngHeaderContainer\" ng-style=\"headerStyle()\" role=\"rowgroup\" >" +
+    "        <div class=\"ngHeaderScroller\" ng-style=\"headerScrollerStyle()\" role=\"row\" ng-include=\"gridId + 'headerRowTemplate.html'\" tabindex=\"0\"></div>" +
     "    </div>" +
     "    <div ng-grid-menu></div>" +
     "</div>" +
-    "<div class=\"ngViewport\" unselectable=\"on\" ng-viewport ng-class=\"{'ui-widget-content': jqueryUITheme}\" ng-style=\"viewportStyle()\" role=\"rowgroup\" tabindex=\"0\">" +
-    "    <div class=\"ngCanvas\" ng-style=\"canvasStyle()\" tabindex=\"0\">" +
-    "        <div ng-style=\"rowStyle(row)\" ng-repeat=\"row in renderedRows\" role=\"row\" aria-selected=\"true\" ng-click=\"row.toggleSelected($event)\" tabindex=\"0\" ng-class=\"row.alternatingRowClass()\" ng-row></div>" +
+    "<div class=\"ngViewport\" unselectable=\"on\" ng-viewport ng-class=\"{'ui-widget-content': jqueryUITheme}\" ng-style=\"viewportStyle()\" role=\"rowgroup\">" +
+    "    <div class=\"ngCanvas\" ng-style=\"canvasStyle()\">" +
+    "        <div ng-style=\"rowStyle(row)\" ng-repeat=\"row in renderedRows\" role=\"row\" aria-selected=\"true\" ng-click=\"row.toggleSelected($event)\" ng-class=\"row.alternatingRowClass()\" ng-row></div>" +
     "    </div>" +
     "</div>" +
     "<div ng-grid-footer></div>" +
@@ -3207,8 +3207,8 @@ angular.module("ngGrid").run(["$templateCache", function($templateCache) {
   );
 
   $templateCache.put("headerCellTemplate.html",
-    "<div class=\"ngHeaderSortColumn {{col.headerClass}}\" role=\"columnheader\" ng-style=\"{'cursor': col.cursor}\" ng-class=\"{ 'ngSorted': !noSortVisible }\" tabindex='0' aria-label=\"{{col.displayName}}\">" +
-    "    <div id=\"{{col.field}}-col{{col.index}}-label\" ng-click=\"col.sort($event)\" ng-class=\"'colt' + col.index\" class=\"ngHeaderText\" role=\"button\" tabindex='0'>{{col.displayName}}</div>" +
+    "<div class=\"ngHeaderSortColumn {{col.headerClass}}\" ng-style=\"{'cursor': col.cursor}\" ng-class=\"{ 'ngSorted': !noSortVisible }\">" +
+    "    <div ng-click=\"col.sort($event)\" ng-class=\"'colt' + col.index\" class=\"ngHeaderText\" role=\"button\" tabindex='0'>{{col.displayName}}</div>" +
     "    <div class=\"ngSortButtonDown\" ng-show=\"col.showSortButtonDown()\" aria-label='Ascending'></div>" +
     "    <div class=\"ngSortButtonUp\" ng-show=\"col.showSortButtonUp()\" aria-label='Descending'></div>" +
     "    <div class=\"ngSortPriority\">{{col.sortPriority}}</div>" +
@@ -3218,7 +3218,7 @@ angular.module("ngGrid").run(["$templateCache", function($templateCache) {
   );
 
   $templateCache.put("headerRowTemplate.html",
-    "<div ng-style=\"{ height: col.headerRowHeight }\" ng-repeat=\"col in renderedColumns\" ng-class=\"col.colIndex()\" class=\"ngHeaderCell\">" +
+    "<div ng-style=\"{ height: col.headerRowHeight }\" role=\"columnheader\" ng-repeat=\"col in renderedColumns\" ng-class=\"col.colIndex()\" class=\"ngHeaderCell\" tabindex=\"0\">" +
     "	<div class=\"ngVerticalBar\" ng-style=\"{height: col.headerRowHeight}\" ng-class=\"{ ngVerticalBarVisible: !$last }\">&nbsp;</div>" +
     "	<div ng-header-cell></div>" +
     "</div>"
@@ -3246,7 +3246,7 @@ angular.module("ngGrid").run(["$templateCache", function($templateCache) {
   );
 
   $templateCache.put("rowTemplate.html",
-    "<div ng-style=\"{ 'cursor': row.cursor }\" role=\"gridcell\" aria-labelledby=\"{{col.field}}-col.index-label\" ng-repeat=\"col in renderedColumns\" ng-class=\"col.colIndex()\" class=\"ngCell {{col.cellClass}}\" tabindex=\"0\">" +
+    "<div ng-style=\"{ 'cursor': row.cursor }\" role=\"gridcell\" ng-repeat=\"col in renderedColumns\" ng-class=\"col.colIndex()\" class=\"ngCell {{col.cellClass}}\">" +
     "	<div class=\"ngVerticalBar\" ng-style=\"{height: rowHeight}\" ng-class=\"{ ngVerticalBarVisible: !$last }\">&nbsp;</div>" +
     "	<div ng-cell></div>" +
     "</div>"

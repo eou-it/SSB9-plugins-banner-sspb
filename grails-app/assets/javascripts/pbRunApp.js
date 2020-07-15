@@ -140,31 +140,19 @@ appModule.run(['$templateCache', function($templateCache )  {
         "           {{enableDisablePagination()}}"+
         /*"        <div class=\"paging-control first {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageToFirst()\"></div>"+
         "        <div class=\"paging-control previous {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageBackward()\"></div>"+*/
-        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"first\" xe-aria-label=\"{{::'pagination.first.label' | xei18n}}\" xe-btn-click=\"pageToFirst()\" xe-disabled=\"firstPrev\" ng-cloak></xe-button>\n" +
-        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"previous\" xe-aria-label=\"{{::'pagination.previous.label' | xei18n}}\" xe-btn-click=\"pageBackward()\" xe-disabled=\"firstPrev\" ng-cloak></xe-button>\n"+
-        "        <span class=\"paging-text page\"> {{i18n.pageLabel}}</span>"+
-        "        <input class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"1\" max=\"{{maxPages()}}\" type=\"number\" ng-model=\"pagingOptions.currentPage\" style=\"width: 40px; display: inline;\"/>" +
-        "<div ng-show=\"showFooter\" class=\"ngFooterPanel\" ng-class=\"{'ui-widget-content': jqueryUITheme, 'ui-corner-bottom': jqueryUITheme}\" ng-style=\"footerStyle()\">" +
-        "    <div id=\"paging-container-#gridName#\" class=\"paging-container \" ng-show=\"enablePaging\" >" +
-        "        <div class=\"paging-control first {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageToFirst()\" tabindex='0' aria-label=\"First Page\" role=\"button\"></div>"+
-        "        <div class=\"paging-control previous {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageBackward()\" tabindex='0' aria-label=\"Previous Page\" role=\"button\"></div>"+
-        "        <span class=\"paging-text page\" id=\"pbid-Grid-Page\">{{i18n.pageLabel}}</span>"+
-        "        <input class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"1\" max=\"{{maxPages()}}\" type=\"number\" ng-model=\"pagingOptions.currentPage\" style=\"width: 40px; display: inline;\" tabindex='0' aria-labelledby=\"pbid-Grid-Page\"/>" +
+        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"first\" xe-aria-label=\"{{::'pagination.first.label' | xei18n}}\" xe-btn-click=\"pageToFirst()\" xe-disabled=\"firstPrev\" tabindex='0' ng-cloak></xe-button>\n" +
+        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"previous\" xe-aria-label=\"{{::'pagination.previous.label' | xei18n}}\" xe-btn-click=\"pageBackward()\" xe-disabled=\"firstPrev\" tabindex='0' ng-cloak></xe-button>\n"+
+        "        <span class=\"paging-text page\" id=\"pbid-Grid-Page\"> {{i18n.pageLabel}}</span>"+
+        "        <input class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"1\" max=\"{{maxPages()}}\" type=\"number\" ng-model=\"pagingOptions.currentPage\" tabindex='0' style=\"width: 40px; display: inline;\" aria-labelledby=\"pbid-Grid-Page\"/>" +
         "        <span class=\"paging-text page-of\"> {{i18n.maxPageLabel}} </span> <span class=\"paging-text total-pages\"> {{maxPages()}}  </span>"+
       /*  "        <div class=\"paging-control next {{!cantPageForward() && 'enabled'||''}}\" ng-click=\"pageForward()\"></div>" +
         "        <div class=\"paging-control last {{!cantPageToLast()  && 'enabled'||''}}\" ng-click=\"pageToLast()\" ></div>"+*/
-        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"next\" xe-aria-label=\"{{::'pagination.next.label' | xei18n}}\" xe-btn-click=\"pageForward()\"  xe-disabled=\"nextLast\" ng-cloak></xe-button>\n" +
-        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"last\" xe-aria-label=\"{{::'pagination.last.label' | xei18n}}\" xe-btn-click=\"pageToLast()\"  xe-disabled=\"nextLast\" ng-cloak></xe-button>\n"+
+        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"next\" xe-aria-label=\"{{::'pagination.next.label' | xei18n}}\" xe-btn-click=\"pageForward()\"  xe-disabled=\"nextLast\" tabindex='0' ng-cloak></xe-button>\n" +
+        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"last\" xe-aria-label=\"{{::'pagination.last.label' | xei18n}}\" xe-btn-click=\"pageToLast()\"  xe-disabled=\"nextLast\" tabindex='0' ng-cloak></xe-button>\n"+
         "        <div class=\"divider dispInline\"></div>" +
-        "        <span class=\"paging-text page-per\"> {{i18n.ngPageSizeLabel}} </span>" +
-        "        <div class=\"page-size-select-wrapper dispInline\" >" +
-        "            <select page-size-select  class=\"per-page-select\" ng-model=\"pagingOptions.pageSize\" ng-options=\"s as s for s in pagingOptions.pageSizes\" > "+
-        "        <div class=\"paging-control next {{!cantPageForward() && 'enabled'||''}}\" ng-click=\"pageForward()\" tabindex='0' aria-label=\"Next Page\" role=\"button\"></div>" +
-        "        <div class=\"paging-control last {{!cantPageToLast()  && 'enabled'||''}}\" ng-click=\"pageToLast()\" tabindex='0' aria-label=\"Last Page\" role=\"button\"></div>"+
-        "        <div class=\"divider\"></div>" +
         "        <span class=\"paging-text page-per\" id=\"pbid-Grid-RecordsPerPage\"> {{i18n.ngPageSizeLabel}} </span>" +
-        "        <div class=\"page-size-select-wrapper\" >" +
-        "            <select page-size-select  ng-model=\"pagingOptions.pageSize\" tabindex='0' ng-options=\"s as s for s in pagingOptions.pageSizes\" style=\"width: 100%; \" aria-labelledby=\"pbid-Grid-RecordsPerPage\"> "+
+        "        <div class=\"page-size-select-wrapper dispInline\" >" +
+        "            <select page-size-select  class=\"per-page-select\" ng-model=\"pagingOptions.pageSize\" ng-options=\"s as s for s in pagingOptions.pageSizes\" tabindex='0' aria-labelledby=\"pbid-Grid-RecordsPerPage\"> "+
         "             </select>" +
         "        </div>"+
         "    </div>" +
@@ -898,4 +886,3 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
         }
     };
 }]);
-
