@@ -1105,7 +1105,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 
         </select>
 
-        <button id="reload-btn" ng-click='loadPageNames(); saveAs=false;' title="${message( code:'sspb.page.visualbuilder.reload.pages.label')}" ng-show="false" /> </i> </button>
+        <button id="reload-btn" ng-click='loadPageNames(); saveAs=false;' title="${message( code:'sspb.page.visualbuilder.reload.pages.label')}" ng-show="false" aria-label="Reload"/> </i> </button>
         <button ng-click='newPageSource();resetPageNameData();' ng-disabled="${!isProductionReadOnlyMode}" class="primary" ><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
         <button ng-click='resetOwner(); saveAs=true;' ng-show="pageName && pageName!=newPageName" ng-disabled="${!isProductionReadOnlyMode}" class="secondary"> <g:message code="sspb.page.visualbuilder.save.as.label" /></button>
         <span ng-hide="pageCurName == pageName && !saveAs">
@@ -1137,7 +1137,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
         <button value="" ng-show="pageName && pageName != newPageName" ng-click="getDeveloperSecurityPage(); saveAs=false;" class="secondary"><g:message code="sspb.css.cssManager.developer.label" /></button>
         <span ng-show="pageName && pageCurName && pageName != newPageName" class="alignRight">
             <label class="vpc-name-label dispInline" for="visualPageOwner"><g:message code="sspb.page.visualbuilder.pageowner.label" /></label>
-            <input style="display: none" ng-model="allowUpdateOwner"/>
+            <input style="display: none" ng-model="allowUpdateOwner" aria-label="Allow Update Owner"/>
             <select id="visualPageOwner" class="owner-select" ng-model="pageOwner"  ng-disabled="!allowUpdateOwner">
                 <option ng-repeat="owner in pbUserList" value="{{owner}}" ng-selected="{{owner == pageOwner}}">{{owner}}</option>
             </select>

@@ -1042,7 +1042,7 @@ class PageComponent {
             case COMP_TYPE_HIDDEN:
                 def tag = "input"
                 def endTag = "/>"
-                def attributes = "${validationAttributes()} ${required?"required":""} ${placeholder?"placeholder=\"${tran("placeholder")}\"":""}".trim()
+                def attributes = "${validationAttributes()} ${required?"required":""} ${placeholder?"placeholder=\"${tran("placeholder")}\"":""} ${labelTxt?"":"aria-label=\"${tran("placeholder")}\""}".trim()
                 def typeString= "type=\"$t\""
                 if (type == COMP_TYPE_NUMBER) {  // angular-ui doesn't use localized validators
                     typeString="""type="text" pb-number ${fractionDigits?"fraction-digits=\"$fractionDigits\"":""} """

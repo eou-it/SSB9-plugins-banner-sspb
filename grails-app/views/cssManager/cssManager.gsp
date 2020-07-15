@@ -293,7 +293,7 @@ Copyright 2013-2019 Ellucian Company L.P. and its affiliates.
 
         <span ng-show="cssName" class="alignRight">
             <label class="vpc-name-label dispInline" for="pbid-cssOwner"><g:message code="sspb.css.visualbuilder.cssowner.label" /></label>
-            <input style="display: none" ng-model="allowUpdateOwner"/>
+            <input style="display: none" ng-model="allowUpdateOwner" aria-label="Allow Update Owner"/>
             <select id="pbid-cssOwner" class="owner-select alignRight" ng-model="cssOwner"  ng-disabled="!allowUpdateOwner">
                 <option ng-repeat="owner in pbUserList" value="{{owner}}" ng-selected="{{owner == pageOwner}}">{{owner}}</option>
             </select>
