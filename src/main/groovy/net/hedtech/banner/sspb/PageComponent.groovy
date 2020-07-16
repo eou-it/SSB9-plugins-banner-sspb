@@ -587,6 +587,7 @@ class PageComponent {
         def onClickCode=parent.onClick?"\$parent.${parent.name}_onClick(row.entity, col);":""
         //Do not remove setCurrentRecord without checking all is good (may be done 2x but need to make sure it is before onClickCode)
         def ngClick="""ng-click="\$parent.${parent.name}DS.setCurrentRecord(row.entity);$onClickCode" """
+        def ngKeyDown="""ng-keydown="\$parent.${parent.name}DS.setCurrentRecord(row.entity);$onClickCode" """
         def ariaLabel = "aria-label=\"COL_FIELD\""
         def role = ""
         def typeInternal = type
@@ -608,7 +609,7 @@ class PageComponent {
                 readonlyAt = (parent.allowModify && !ro)?"":"disabled" //select doesn't have readonly
                 ngChange="ng-change=\""+(onUpdate?"${name}DS.onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity);${name}DS.setCurrentRecord(row.entity.$model);\""
                 placeholderAt = placeholder?"""<option value="" role="menuitem">${tran("placeholder")}</option>""":""
-                return """<select ${idForAttribute(idTxtParam+"-label")} role="menu" $ariaLabel ${styleAt} $ngModel $readonlyAt $ngChange $ngClick ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName"> $placeholderAt </select>"""
+                return """<select ${idForAttribute(idTxtParam+"-label")} role="menu" $ariaLabel ${styleAt} $ngModel $readonlyAt $ngChange $ngClick $ngKeyDown ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName"> $placeholderAt </select>"""
             case [COMP_TYPE_TEXT, COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER, COMP_TYPE_DATETIME, COMP_TYPE_EMAIL, COMP_TYPE_TEL] :
                 validateAt = validationAttributes()
                 placeholderAt=placeholder?"placeholder=\"${tran("placeholder")}\"":""
@@ -632,13 +633,13 @@ class PageComponent {
                 }
                 break
             case COMP_TYPE_LITERAL:
-                return "<span $styleAt $ngClick>" + tran(propertiesBaseKey()+".value",compileDOMDisplay(value).replaceAll("item.","row.entity.") ) + "</span>"
+                return "<span $styleAt $ngClick $ngKeyDown>" + tran(propertiesBaseKey()+".value",compileDOMDisplay(value).replaceAll("item.","row.entity.") ) + "</span>"
                 break
             default :
                 log.info "***No ng-grid html edit template for $type ${name?name:model}"
         }
         def result = "$tagStart $nameAt $typeAt $styleAt $specialAt $readonlyAt $requiredAt $validateAt $placeholderAt $role $ariaLabel" +
-                     " $ngModel $ngChange $ngClick $tagEnd"
+                     " $ngModel $ngChange $ngClick $ngKeyDown $tagEnd"
         return result
     }
 
