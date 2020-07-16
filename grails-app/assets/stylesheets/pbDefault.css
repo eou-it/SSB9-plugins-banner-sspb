@@ -256,5 +256,9 @@ select.per-page-select:hover{
     color: #FFFFFF;
     background-color: #026BC8 !important;
 }
+.modal-body{
+    max-height: calc(80vh - 210px);
+    overflow-y: auto;
+}
 
 
