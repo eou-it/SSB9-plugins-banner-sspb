@@ -2,7 +2,7 @@
    "constantName": "pbadm.AdminTasks",
    "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2020-07-15T09:11:13Z",
+   "fileTimestamp": "2020-07-16T05:25:26Z",
    "modelView": {
       "components": [
          {
@@ -132,13 +132,14 @@
                   ],
                   "allowNew": false,
                   "documentation": "",
-                  "name": "artifacts",
                   "pageSize": 5,
+                  "loadInitially": false,
+                  "label": "Uploaded Files",
+                  "type": "grid",
+                  "name": "artifacts",
                   "allowModify": false,
                   "model": "uploadFiles",
                   "allowReload": false,
-                  "loadInitially": false,
-                  "type": "grid",
                   "parameters": {}
                },
                {
