@@ -2,7 +2,7 @@
    "constantName": "pbadm.LandingPage",
    "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2020-07-15T09:15:19Z",
+   "fileTimestamp": "2020-07-16T04:52:54Z",
    "modelView": {
       "components": [
          {
@@ -255,12 +255,6 @@
                         "allowDelete": false,
                         "components": [
                            {
-                              "name": "optionMenu",
-                              "style": "more-option ui-widget-hidden",
-                              "type": "literal",
-                              "value": "<a href=\"#\"></a>"
-                           },
-                           {
                               "valueStyle": "",
                               "name": "EditPage",
                               "style": "edit-page",
@@ -334,14 +328,6 @@
                      {
                         "allowDelete": false,
                         "components": [
-                           {
-                              "valueStyle": "",
-                              "name": "optionMenu2",
-                              "style": "more-option ui-widget-hidden",
-                              "label": "",
-                              "type": "literal",
-                              "value": "<a href=\"#\"></a>"
-                           },
                            {
                               "valueStyle": "",
                               "name": "EditPage2",
