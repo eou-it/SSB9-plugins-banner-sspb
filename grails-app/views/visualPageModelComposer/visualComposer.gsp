@@ -1094,10 +1094,10 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 <body>
 <asset:javascript src="modules/pageBuilderDev-mf.js"/>
 
-<div id="content" ng-controller="VisualPageComposerController" class="customPage container-fluid" ng-form="pagemodelform">
+<div id="content" role="main" ng-controller="VisualPageComposerController" class="customPage container-fluid" ng-form="pagemodelform">
 
     <div class="btn-section">
-        <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.load.label" /> </label>
+        <label class="vpc-name-label" for="constantName"><g:message code="sspb.page.visualbuilder.load.label" /> </label>
         <select id="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'constantName'}" name="constantName"
                 ng-model="pageName"
                 ng-change="getPageSource();saveAs=false;">
@@ -1105,11 +1105,11 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 
         </select>
 
-        <button id="reload-btn" ng-click='loadPageNames(); saveAs=false;' title="${message( code:'sspb.page.visualbuilder.reload.pages.label')}" ng-show="false" /> </i> </button>
-        <button ng-click='newPageSource();resetPageNameData();' ng-disabled="${!isProductionReadOnlyMode}" class="primary"><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
+        <button id="reload-btn" ng-click='loadPageNames(); saveAs=false;' title="${message( code:'sspb.page.visualbuilder.reload.pages.label')}" ng-show="false" aria-label="Reload"/> </i> </button>
+        <button ng-click='newPageSource();resetPageNameData();' ng-disabled="${!isProductionReadOnlyMode}" class="primary" ><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
         <button ng-click='resetOwner(); saveAs=true;' ng-show="pageName && pageName!=newPageName" ng-disabled="${!isProductionReadOnlyMode}" class="secondary"> <g:message code="sspb.page.visualbuilder.save.as.label" /></button>
         <span ng-hide="pageCurName == pageName && !saveAs">
-            <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.name.label" /></label>
+            <label class="vpc-name-label" for="saveAsInput"><g:message code="sspb.page.visualbuilder.name.label" /></label>
             <input id="saveAsInput" class="vpc-name-input" type="text" name="constantNameEdit" ng-model="pageCurName" required maxlength="60"
                    placeholder='<g:message code="sspb.page.visualbuilder.new.page.label" />' ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/">
 
@@ -1121,7 +1121,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
     </div>
 
     <div class="btn-section-2">
-        <label class="vpc-name-label"><g:message code="sspb.page.visualbuilder.extends.label" /></label>
+        <label class="vpc-name-label" for="extendsPage"><g:message code="sspb.page.visualbuilder.extends.label" /></label>
         <select id="extendsPage" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'extendsPage'}" name="extendsPage"
                 ng-model="extendsPageName"
                 ng-change="getExtendsPage();saveAs=false;">
@@ -1130,26 +1130,29 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 
         <button ng-show="pageName && pageCurName && pageCurName != newPageName" ng-click='validateAndSubmitPageSource(); saveAs=false;updatePageName();'
                 ng-disabled='sourceEditEnabled || !pagemodelform.$valid || !allowModify' class="primary"><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
-        <button ng-show="pageName && pageName != newPageName" ng-click="getPageSource(); saveAs=false;" class="secondary" ><g:message code="sspb.page.visualbuilder.reload.label" /></button>
-        <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click="previewPageSource()" class="secondary" ><g:message code="sspb.page.visualbuilder.preview.label" /></button>
+        <button ng-show="pageName && pageName != newPageName" ng-click="getPageSource(); saveAs=false;" class="secondary"><g:message code="sspb.page.visualbuilder.reload.label" /></button>
+        <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click="previewPageSource()" class="secondary"><g:message code="sspb.page.visualbuilder.preview.label" /></button>
         <button ng-show="pageName && pageCurName && pageName != newPageName"  ng-disabled="!allowModify"  ng-click='deletePageSource(); saveAs=false;' class="secondary"><g:message code="sspb.page.visualbuilder.delete.label" /></button>
-        <button id="pageRoleId" value="" ng-show="pageName && pageName != newPageName"  ng-click="showRolesPage(); saveAs=false;" class="secondary" ><g:message code="sspb.page.visualbuilder.roles.label" /></button>
-        <button value="" ng-show="pageName && pageName != newPageName" ng-click="getDeveloperSecurityPage(); saveAs=false;" class="secondary" ><g:message code="sspb.css.cssManager.developer.label" /></button>
+        <button id="pageRoleId" value="" ng-show="pageName && pageName != newPageName"  ng-click="showRolesPage(); saveAs=false;" class="secondary"><g:message code="sspb.page.visualbuilder.roles.label" /></button>
+        <button value="" ng-show="pageName && pageName != newPageName" ng-click="getDeveloperSecurityPage(); saveAs=false;" class="secondary"><g:message code="sspb.css.cssManager.developer.label" /></button>
         <span ng-show="pageName && pageCurName && pageName != newPageName" class="alignRight">
-            <label class="vpc-name-label dispInline"><g:message code="sspb.page.visualbuilder.pageowner.label" /></label>
-            <input style="display: none" ng-model="allowUpdateOwner"/>
-            <select class="owner-select" ng-model="pageOwner"  ng-disabled="!allowUpdateOwner">
+            <label class="vpc-name-label dispInline" for="visualPageOwner"><g:message code="sspb.page.visualbuilder.pageowner.label" /></label>
+            <input style="display: none" ng-model="allowUpdateOwner" aria-label="Allow Update Owner"/>
+            <select id="visualPageOwner" class="owner-select" ng-model="pageOwner"  ng-disabled="!allowUpdateOwner">
                 <option ng-repeat="owner in pbUserList" value="{{owner}}" ng-selected="{{owner == pageOwner}}">{{owner}}</option>
             </select>
         </span>
     </div>
-    <table style="height:80%; min-width: 60em">
-        <tr>
-            <th style="width:50%"><g:message code="sspb.page.visualbuilder.page.view.label" /></th>
-            <th style="width:50%"><g:message code="sspb.page.visualbuilder.component.propertyview.label" /></th>
-        </tr>
-        <tr height="99%">
-            <td>
+    <table style="height:80%; min-width: 60em" role="grid">
+        <thead role="rowgroup">
+            <tr role="row">
+                <th style="width:50%" id="visualPageView"><g:message code="sspb.page.visualbuilder.page.view.label"/></th>
+                <th style="width:50%" id="visualPageComponentView"><g:message code="sspb.page.visualbuilder.component.propertyview.label"/></th>
+            </tr>
+        </thead>
+        <tbody role="rowgroup">
+        <tr height="99%" role="row">
+            <td aria-labelledby="visualPageView" role="gridcell">
                 <span ng-show="pageCurName != '' && pageCurName != 'null'">
                     <div>
                         <button class="btn btn-xs" ng-click='toggleSourceView()' ng-disabled='showTree || sourceEditEnabled'><g:message code="sspb.page.visualbuilder.page.treeview.label" /></button>
@@ -1162,7 +1165,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                     </div>
                     <div class="tabs-below" style="overflow-y: scroll; height: 100%">
                         <div class='tab-content' ng-show='!showTree'>
-                            <g:textArea name="modelView" ng-model="pageSourceView"
+                            <g:textArea name="modelView" ng-model="pageSourceView" aria-label="${message(code: 'sspb.page.visualbuilder.page.sourceview.label')}"
                                         cols="60" rows="30" style="width:90%; height:auto;" required="true" ng-readonly="!sourceEditEnabled" />
                         </div>
 
@@ -1176,7 +1179,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                     </div>
                 </span>
             </td>
-            <td>
+            <td aria-labelledby="visualPageComponentView" role="gridcell">
                 <div ng-show="dataHolder.selectedComponent!=undefined" ng-mouseover="mouseOver($event)">
                     <!--
                     <div>Selected Component = {{dataHolder.selectedComponent.type}}</div>
@@ -1199,22 +1202,22 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                                       value='dataHolder.selectedComponent[attr.name]' pb-Parent="dataHolder.selectedComponent" pb-Attrname="attr.name"
                                       pb-loadsourcelist="loadVdList()" load-source-label="{{i18nGet('pb.template.combo.loadsource.label')}}" edit-value-label="{{i18nGet('pb.template.combo.edit.label')}}"
                                       select-label="{{i18nGet('pb.template.combo.select.label')}}" source-list="vdlist"></pb-Combo>
-                            <select ng-switch-when="select" ng-options="type as i18nGet('type.'+type) for type in dataHolder.selectedCompatibleTypes"
+                            <select ng-switch-when="select" aria-label="{{i18nGet('attribute.'+attr.name)}}" ng-options="type as i18nGet('type.'+type) for type in dataHolder.selectedCompatibleTypes"
                                     ng-model="dataHolder.selectedComponent[attr.name]" ng-change="handleAttrChange()"></select>
                             <%--HvT re-introduced ng-change in previous line because changing type may cause issues. Seems to help. Not sure why it was removed?--%>
-                            <input ng-switch-when="text" name="{{'prop_'+attr.name}}" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name]);'
+                            <input ng-switch-when="text" aria-label="{{i18nGet('attribute.'+attr.name)}}" name="{{'prop_'+attr.name}}" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name]);'
                                    ng-model="dataHolder.selectedComponent[attr.name]"  onkeyup="upperCaseF(this)" ng-required="attr.required"/>
                             <%-- validation name text --%>
-                            <input ng-switch-when="nameText" name="{{'prop_'+attr.name}}" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                            <input ng-switch-when="nameText" aria-label="{{i18nGet('attribute.'+attr.name)}}" name="{{'prop_'+attr.name}}" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-model="dataHolder.selectedComponent[attr.name]" ng-pattern="/^[a-zA-Z]\w*$/" ng-required="attr.required"/>
-                            <input ng-switch-when="number" name="{{'prop_'+attr.name}}"style="text-align:start;" type="number" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                            <input ng-switch-when="number" aria-label="{{i18nGet('attribute.'+attr.name)}}" name="{{'prop_'+attr.name}}"style="text-align:start;" type="number" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]" ng-required="attr.required"/>
-                            <input ng-switch-when="url" name="{{'prop_'+attr.name}}" style="text-align:start;" type="url" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                            <input ng-switch-when="url" aria-label="{{i18nGet('attribute.'+attr.name)}}" name="{{'prop_'+attr.name}}" style="text-align:start;" type="url" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
                             <pb-Arrayofmap ng-switch-when="arrayOfMap" label="{{i18nGet('sspb.page.visualbuilder.edit.map.title' , [i18nGet('attribute.'+attr.name),dataHolder.selectedComponent.name])}}"
                                            array='dataHolder.selectedComponent[attr.name]'
                                            pb-parent="dataHolder.selectedComponent" pb-attrname="attr.name"></pb-Arrayofmap>
-                            <input ng-switch-when="boolean" name="{{'prop_'+attr.name}}" style="text-align:start;" type="checkbox" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                            <input ng-switch-when="boolean" aria-label="{{i18nGet('attribute.'+attr.name)}}" name="{{'prop_'+attr.name}}" style="text-align:start;" type="checkbox" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
 
                             <!-- Added for xe-text-box so we can handle subtypes -->
@@ -1224,7 +1227,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                             <!-- create a dummy hidden field for hidden attributes -->
                             <input ng-switch-when="hidden" name="{{attr.name}}" type="hidden" ng-model="dataHolder.selectedComponent[attr.name]"/>
                             <!-- TODO default type is set in the model defintion - not mapped here  -->
-                            <input ng-switch-default style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
+                            <input ng-switch-default style="text-align:start;" type="text" aria-label="{{i18nGet('attribute.'+attr.name)}}" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name])'
                                    ng-readonly="attr.name=='type'" ng-model="dataHolder.selectedComponent[attr.name]"/>
                         </span>
                         <!-- Attribute Validation Errors -->
@@ -1241,7 +1244,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 </div>
             </td>
         </tr>
-
+        </tbody>
     </table>
     <script type="text/ng-template"  id="tree_item_renderer.html">
     <span  ng-show="data.components!=undefined && data.components.length>0">
@@ -1256,13 +1259,13 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
     <span ng-init="index=nextIndex()" ng-click="selectData(data, index, $parent.$parent.data)"
           style="{{componentLabelStyle(index == statusHolder.selectedIndex)}}">{{data.name}} &lrm;[{{i18nGet('type.'+data.type)}}]&lrm;</span>
 
-    <button  title="${message(code:'sspb.page.visualbuilder.insert.sibling.title')}" class="button_insert button_edit" ng-click="insertSibling($parent.$parent.data, $index)" ng-show="data.type!='page'"></button>
-    <button  title="${message(code:'sspb.page.visualbuilder.append.child.title')}" class="button_edit button_add" ng-click="addChild(data)" ng-show="findAllChildrenTypes(data.type).length>0"></button>
-    <button  title="${message(code:'sspb.page.visualbuilder.moveup.component.title')}" class="button_sort_asc button_edit" ng-click="moveUpComponent($parent.$parent.data, $index, index)"  ng-show="!$first"></button>
-    <button  title="${message(code:'sspb.page.visualbuilder.movedown.component.title')}" class="button_sort_desc button_edit" ng-click="moveDownComponent($parent.$parent.data, $index, index)"  ng-show="!$last"></button>
-    <button  title="${message(code:'sspb.page.visualbuilder.delete.component.title')}" class="button_delete button_edit" ng-click="deleteComponent($parent.$parent.data, $index, index)"  ng-show="data.type!='page'"></button>
-    <button  title="${message(code:'sspb.page.visualbuilder.copy.component.title')}"  class="button_copy button_edit" ng-click="copyComponent(data)" ng-show="data.type!='page'"></button>
-    <button  title="${message(code:'sspb.page.visualbuilder.paste.component.title')}"  class="button_paste button_edit" ng-click="pasteComponent(data)"  ng-show="dataHolder.copy!=undefined" ></button>
+    <button  aria-label="${message(code:'sspb.page.visualbuilder.insert.sibling.title')}" title="${message(code:'sspb.page.visualbuilder.insert.sibling.title')}" class="button_insert button_edit" ng-click="insertSibling($parent.$parent.data, $index)" ng-show="data.type!='page'"></button>
+    <button  aria-label="${message(code:'sspb.page.visualbuilder.append.child.title')}" title="${message(code:'sspb.page.visualbuilder.append.child.title')}" class="button_edit button_add" ng-click="addChild(data)" ng-show="findAllChildrenTypes(data.type).length>0"></button>
+    <button  aria-label="${message(code:'sspb.page.visualbuilder.moveup.component.title')}" title="${message(code:'sspb.page.visualbuilder.moveup.component.title')}" class="button_sort_asc button_edit" ng-click="moveUpComponent($parent.$parent.data, $index, index)"  ng-show="!$first"></button>
+    <button  aria-label="${message(code:'sspb.page.visualbuilder.movedown.component.title')}" title="${message(code:'sspb.page.visualbuilder.movedown.component.title')}" class="button_sort_desc button_edit" ng-click="moveDownComponent($parent.$parent.data, $index, index)"  ng-show="!$last"></button>
+    <button  aria-label="${message(code:'sspb.page.visualbuilder.delete.component.title')}" title="${message(code:'sspb.page.visualbuilder.delete.component.title')}" class="button_delete button_edit" ng-click="deleteComponent($parent.$parent.data, $index, index)"  ng-show="data.type!='page'"></button>
+    <button  aria-label="${message(code:'sspb.page.visualbuilder.copy.component.title')}" title="${message(code:'sspb.page.visualbuilder.copy.component.title')}"  class="button_copy button_edit" ng-click="copyComponent(data)" ng-show="data.type!='page'"></button>
+    <button  aria-label="${message(code:'sspb.page.visualbuilder.paste.component.title')}" title="${message(code:'sspb.page.visualbuilder.paste.component.title')}"  class="button_paste button_edit" ng-click="pasteComponent(data)"  ng-show="dataHolder.copy!=undefined" ></button>
 
 
     <!--button  class="btn btn-xs" ng-click="deleteChildren(data)" ng-show="data.components.length > 0">--</button-->
@@ -1291,7 +1294,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 
 
     <textarea name="statusMessage" ng-model="pageStatus.message"
-              style="width:99.99%; height: 8%; resize: vertical;"></textarea>
+              style="width:99.99%; height: 8%; resize: vertical;" aria-label="Status Message"></textarea>
 
 </div>
 

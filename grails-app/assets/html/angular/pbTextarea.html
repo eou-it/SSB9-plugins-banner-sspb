@@ -1,8 +1,8 @@
 <span>
-    <!--Copyright 2013-2018 Ellucian Company L.P. and its affiliates.-->
+    <!--Copyright 2013-2020 Ellucian Company L.P. and its affiliates.-->
     <!--TODO referencing $parent.i18nGet, should not have this dependency-->
     <!--label>{{label}}</label-->
-    <input style="text-align:start;"  type="text" ng-model='value' ng-change='processInput()'/> <button class="btn btn-xs" ng-click='openTextareaModal()'>...</button>
+    <input style="text-align:start;"  type="text" aria-label="{{i18nGet('attribute.'+attr.name)}}" ng-model='value' ng-change='processInput()'/> <button class="btn btn-xs" ng-click='openTextareaModal()'>...</button>
 
     <!-- textarea editing modal body-->
     <div modal="textareaShouldBeOpen"  options="textareaModalOpts">
@@ -12,7 +12,7 @@
         <div class="modal-body">
             <form>
                 <div>
-                    <textarea class="pbtextarea" rows="10" cols="100" ng-model='value'></textarea>
+                    <textarea class="pbtextarea" rows="10" cols="100" ng-model='value' aria-label="{{label}}"></textarea>
                 </div>
             </form>
 

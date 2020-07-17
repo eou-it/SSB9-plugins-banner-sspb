@@ -1,20 +1,21 @@
 {
    "constantName": "pbadm.LandingPage",
+   "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2019-07-08T11:51:35Z",
+   "fileTimestamp": "2020-07-16T04:52:54Z",
    "modelView": {
       "components": [
          {
-            "name": "ListPages",
             "resource": "virtualDomains.pbadmListPages",
-            "staticData": [],
-            "type": "resource"
+            "name": "ListPages",
+            "type": "resource",
+            "staticData": []
          },
          {
-            "name": "ListPages2",
             "resource": "virtualDomains.pbadmNonAdmPages",
-            "staticData": [],
-            "type": "resource"
+            "name": "ListPages2",
+            "type": "resource",
+            "staticData": []
          },
          {
             "components": [
@@ -23,21 +24,21 @@
                      {
                         "components": [
                            {
-                              "description": "Virtual Domain Composer",
-                              "label": "",
+                              "valueStyle": "",
                               "labelStyle": "",
                               "name": "GotoVDC",
-                              "replaceView": true,
+                              "description": "Virtual Domain Composer",
                               "style": "",
+                              "label": "",
                               "type": "link",
-                              "url": "{{$$contextRoot}}virtualDomainComposer/loadVirtualDomain",
-                              "valueStyle": ""
+                              "replaceView": true,
+                              "url": "{{$$contextRoot}}virtualDomainComposer/loadVirtualDomain"
                            }
                         ],
-                        "label": "",
                         "name": "VDCBlock",
                         "showInitially": true,
                         "style": "admin-menu-section-main col-lg-12 col-md-12 icon-cta",
+                        "label": "",
                         "type": "block"
                      },
                      {
@@ -45,47 +46,47 @@
                            {
                               "components": [
                                  {
-                                    "description": "Export Domains",
                                     "name": "GotoVDCExport",
-                                    "replaceView": true,
+                                    "description": "Export Domains",
                                     "type": "link",
+                                    "replaceView": true,
                                     "url": "{{$$contextRoot}}customPage/page/pbadm.ExportVirtualDomains"
                                  }
                               ],
-                              "label": "",
                               "name": "VDCExportBlock",
                               "showInitially": true,
                               "style": "col-lg-6 col-md-6 icon-cta icon-cta",
+                              "label": "",
                               "type": "block"
                            },
                            {
                               "components": [
                                  {
-                                    "description": "Domain Roles",
                                     "name": "GotoVDCRoles",
-                                    "replaceView": true,
+                                    "description": "Domain Roles",
                                     "type": "link",
+                                    "replaceView": true,
                                     "url": "{{$$contextRoot}}customPage/page/pbadm.VirtualDomainRoles"
                                  }
                               ],
-                              "label": "",
                               "name": "VDCRolesBlock",
                               "showInitially": true,
                               "style": "col-lg-6 col-md-6 icon-cta",
+                              "label": "",
                               "type": "block"
                            }
                         ],
-                        "label": "",
                         "name": "VDCExport_Roles",
                         "showInitially": true,
                         "style": "admin-menu-section-sub col-lg-12 col-md-12 icon-cta",
+                        "label": "",
                         "type": "block"
                      }
                   ],
-                  "label": "",
                   "name": "VirtualDomainBlock",
                   "showInitially": true,
                   "style": "admin-menu-section col-lg-3",
+                  "label": "",
                   "type": "block"
                },
                {
@@ -93,17 +94,17 @@
                      {
                         "components": [
                            {
-                              "description": "Visual Page Composer",
                               "name": "GotoVPC",
-                              "replaceView": true,
+                              "description": "Visual Page Composer",
                               "type": "link",
+                              "replaceView": true,
                               "url": "{{$$contextRoot}}visualPageModelComposer/loadComposerPage"
                            }
                         ],
-                        "label": "",
                         "name": "VPCBlock",
                         "showInitially": true,
                         "style": "admin-menu-section-main col-lg-12 col-md-12 icon-cta",
+                        "label": "",
                         "type": "block"
                      },
                      {
@@ -111,47 +112,47 @@
                            {
                               "components": [
                                  {
-                                    "description": "Export Pages",
                                     "name": "GotoVPCExport",
-                                    "replaceView": true,
+                                    "description": "Export Pages",
                                     "type": "link",
+                                    "replaceView": true,
                                     "url": "{{$$contextRoot}}customPage/page/pbadm.ExportPages"
                                  }
                               ],
-                              "label": "",
                               "name": "VPCExportBlock",
                               "showInitially": true,
                               "style": "col-lg-6 col-md-6 icon-cta",
+                              "label": "",
                               "type": "block"
                            },
                            {
                               "components": [
                                  {
-                                    "description": "Page Roles",
                                     "name": "GotoVPCRoles",
-                                    "replaceView": true,
+                                    "description": "Page Roles",
                                     "type": "link",
+                                    "replaceView": true,
                                     "url": "{{$$contextRoot}}customPage/page/pbadm.PageRoles"
                                  }
                               ],
-                              "label": "",
                               "name": "VPCRolesBlock",
                               "showInitially": true,
                               "style": "col-lg-6 col-md-6 icon-cta",
+                              "label": "",
                               "type": "block"
                            }
                         ],
-                        "label": "",
                         "name": "VPCExport_Roles",
                         "showInitially": true,
                         "style": "admin-menu-section-sub col-lg-12 col-md-12 icon-cta",
+                        "label": "",
                         "type": "block"
                      }
                   ],
-                  "label": "",
                   "name": "VisualPageBlock",
                   "showInitially": true,
                   "style": "admin-menu-section col-lg-3",
+                  "label": "",
                   "type": "block"
                },
                {
@@ -159,40 +160,40 @@
                      {
                         "components": [
                            {
-                              "description": "CSS Manager",
                               "name": "GotoCSSManager",
-                              "replaceView": true,
+                              "description": "CSS Manager",
                               "type": "link",
+                              "replaceView": true,
                               "url": "{{$$contextRoot}}cssManager/loadCssManagerPage"
                            }
                         ],
-                        "label": "",
                         "name": "ManagerBlock",
                         "showInitially": true,
                         "style": "admin-menu-section-main col-lg-12 col-md-12 icon-cta",
+                        "label": "",
                         "type": "block"
                      },
                      {
                         "components": [
                            {
-                              "description": "Export CSS Stylesheets",
                               "name": "GotoCSSExport",
-                              "replaceView": true,
+                              "description": "Export CSS Stylesheets",
                               "type": "link",
+                              "replaceView": true,
                               "url": "{{$$contextRoot}}customPage/page/pbadm.ExportCss"
                            }
                         ],
-                        "label": "",
                         "name": "CssExportBlock",
                         "showInitially": true,
                         "style": "admin-menu-section-sub col-lg-12 col-md-12 icon-cta",
+                        "label": "",
                         "type": "block"
                      }
                   ],
-                  "label": "",
                   "name": "CssManagerBlock",
                   "showInitially": true,
                   "style": "admin-menu-section col-lg-3",
+                  "label": "",
                   "type": "block"
                },
                {
@@ -200,15 +201,15 @@
                      {
                         "components": [
                            {
-                              "description": "Import",
-                              "label": "",
+                              "valueStyle": "",
                               "labelStyle": "",
                               "name": "GotoImport",
-                              "replaceView": true,
+                              "description": "Import",
                               "style": "",
+                              "label": "",
                               "type": "link",
-                              "url": "{{$$contextRoot}}customPage/page/pbadm.AdminTasks",
-                              "valueStyle": ""
+                              "replaceView": true,
+                              "url": "{{$$contextRoot}}customPage/page/pbadm.AdminTasks"
                            }
                         ],
                         "name": "adminMainBlock",
@@ -219,31 +220,31 @@
                      {
                         "components": [
                            {
-                              "description": "Developer Security",
                               "name": "devSecureBlock_child_1",
-                              "replaceView": true,
+                              "description": "Developer Security",
                               "type": "link",
+                              "replaceView": true,
                               "url": "{{$$contextRoot}}customPage/page/pbadm.DeveloperPageSecurity"
                            }
                         ],
-                        "label": "",
                         "name": "devSecureBlock",
                         "showInitially": true,
                         "style": "admin-menu-section-sub col-lg-12 col-md-12 icon-cta",
+                        "label": "",
                         "type": "block"
                      }
                   ],
-                  "label": "",
                   "name": "AdminExtraBlock",
                   "showInitially": true,
                   "style": "admin-menu-section col-lg-3",
+                  "label": "",
                   "type": "block"
                }
             ],
-            "label": "",
             "name": "AdminMenuBlock",
             "showInitially": true,
             "style": "admin-menu",
+            "label": "",
             "type": "block"
          },
          {
@@ -252,152 +253,138 @@
                   "components": [
                      {
                         "allowDelete": false,
-                        "allowModify": false,
-                        "allowNew": false,
-                        "allowReload": false,
                         "components": [
                            {
-                              "name": "optionMenu",
-                              "style": "more-option ui-widget-hidden",
-                              "type": "literal",
-                              "value": "<a href=\"#\"></a>"
-                           },
-                           {
+                              "valueStyle": "",
                               "name": "EditPage",
                               "style": "edit-page",
                               "type": "literal",
-                              "value": "<a href=\"{{$$contextRoot}}visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}\"></a>",
-                              "valueStyle": ""
+                              "value": "<a href=\"{{$$contextRoot}}visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}\" aria-label=\"Edit Page\"></a>"
                            },
                            {
-                              "label": "",
+                              "valueStyle": "",
                               "labelStyle": "",
                               "name": "RunPage",
                               "style": "run-page",
+                              "label": "",
                               "type": "literal",
-                              "value": "<a href=\"{{$$contextRoot}}customPage/page/{{$item.CONSTANT_NAME}}\"></a>",
-                              "valueStyle": ""
+                              "value": "<a href=\"{{$$contextRoot}}customPage/page/{{$item.CONSTANT_NAME}}\" aria-label=\"Run Page\"></a>"
                            },
                            {
                               "asHtml": false,
+                              "valueStyle": "",
                               "labelStyle": "",
-                              "loadInitially": true,
-                              "model": "CONSTANT_NAME",
                               "name": "CONSTANT_NAME",
+                              "model": "CONSTANT_NAME",
                               "style": "page-id",
-                              "type": "display",
-                              "valueStyle": ""
+                              "loadInitially": true,
+                              "type": "display"
                            },
                            {
+                              "readonly": true,
+                              "name": "LAST_UPDATED",
+                              "model": "LAST_UPDATED",
                               "label": "Last Updated:",
                               "loadInitially": true,
-                              "model": "LAST_UPDATED",
-                              "name": "LAST_UPDATED",
-                              "parameters": {},
-                              "readonly": true,
-                              "required": false,
                               "type": "datetime",
+                              "parameters": {},
+                              "required": false,
                               "validation": {}
                            }
                         ],
+                        "allowNew": false,
+                        "pageSize": 6,
                         "label": "Application Pages",
                         "loadInitially": true,
-                        "model": "ListPages",
+                        "type": "detail",
                         "name": "PageListDetail",
-                        "pageSize": 6,
-                        "parameters": {},
+                        "allowModify": false,
+                        "model": "ListPages",
                         "style": "app-list-container",
-                        "type": "detail"
+                        "allowReload": false,
+                        "parameters": {}
                      }
                   ],
-                  "label": "",
                   "name": "PageListBlock1",
                   "showInitially": true,
                   "style": "col-lg-6",
+                  "label": "",
                   "type": "block"
                },
                {
                   "components": [
                      {
+                        "readonly": false,
+                        "name": "pageFilter",
                         "label": "",
                         "loadInitially": true,
-                        "name": "pageFilter",
+                        "placeholder": "All application pages",
+                        "type": "text",
                         "onUpdate": "$PageListDetail2.$load()",
                         "parameters": {},
-                        "placeholder": "All application pages",
-                        "readonly": false,
                         "required": false,
-                        "type": "text",
                         "validation": {}
                      },
                      {
                         "allowDelete": false,
-                        "allowModify": false,
-                        "allowNew": false,
-                        "allowReload": false,
                         "components": [
                            {
-                              "label": "",
-                              "name": "optionMenu2",
-                              "style": "more-option ui-widget-hidden",
-                              "type": "literal",
-                              "value": "<a href=\"#\"></a>",
-                              "valueStyle": ""
-                           },
-                           {
+                              "valueStyle": "",
                               "name": "EditPage2",
                               "style": "edit-page",
                               "type": "literal",
-                              "value": "<a href=\"{{$$contextRoot}}visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}\"></a>",
-                              "valueStyle": ""
+                              "value": "<a href=\"{{$$contextRoot}}visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}\" aria-label=\"Edit Page\"></a>"
                            },
                            {
-                              "label": "",
+                              "valueStyle": "",
                               "labelStyle": "",
                               "name": "RunPage2",
                               "style": "run-page",
+                              "label": "",
                               "type": "literal",
-                              "value": "<a href=\"{{$$contextRoot}}customPage/page/{{$item.CONSTANT_NAME}}\"></a>",
-                              "valueStyle": ""
+                              "value": "<a href=\"{{$$contextRoot}}customPage/page/{{$item.CONSTANT_NAME}}\" aria-label=\"Run Page\"></a>"
                            },
                            {
                               "asHtml": false,
+                              "valueStyle": "",
                               "labelStyle": "",
-                              "loadInitially": true,
-                              "model": "CONSTANT_NAME",
                               "name": "CONSTANT_NAME2",
+                              "model": "CONSTANT_NAME",
                               "style": "page-id",
-                              "type": "display",
-                              "valueStyle": ""
+                              "loadInitially": true,
+                              "type": "display"
                            },
                            {
+                              "readonly": true,
+                              "name": "LAST_UPDATED2",
+                              "model": "LAST_UPDATED",
                               "label": "Last Updated:",
                               "loadInitially": true,
-                              "model": "LAST_UPDATED",
-                              "name": "LAST_UPDATED2",
-                              "parameters": {},
-                              "readonly": true,
-                              "required": false,
                               "type": "datetime",
+                              "parameters": {},
+                              "required": false,
                               "validation": {}
                            }
                         ],
+                        "allowNew": false,
+                        "pageSize": 6,
                         "label": "Search Pages",
                         "loadInitially": true,
-                        "model": "ListPages2",
+                        "type": "detail",
                         "name": "PageListDetail2",
-                        "pageSize": 6,
+                        "allowModify": false,
+                        "model": "ListPages2",
+                        "style": "app-list-container",
+                        "allowReload": false,
                         "parameters": {
                            "filter": "$pageFilter?\"%\"+$pageFilter+\"%\":\"\""
-                        },
-                        "style": "app-list-container",
-                        "type": "detail"
+                        }
                      }
                   ],
-                  "label": "",
                   "name": "PageListBlock2",
                   "showInitially": true,
                   "style": "col-lg-6",
+                  "label": "",
                   "type": "block"
                }
             ],
@@ -406,13 +393,14 @@
             "type": "block"
          }
       ],
-      "importCSS": "landingPage",
       "name": "pbadmLandingPage",
       "scriptingLanguage": "JavaScript",
       "style": "",
       "title": "Welcome",
-      "type": "page"
+      "type": "page",
+      "importCSS": "landingPage"
    },
+   "owner": null,
    "pageRoles": [
       {
          "roleName": "ALLROLES",

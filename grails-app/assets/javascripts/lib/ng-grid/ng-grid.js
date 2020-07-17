@@ -754,13 +754,16 @@ var ngColumn = function (config, $scope, grid, domUtilityService, $templateCache
         return !self.sortDirection;
     };
     self.sort = function(evt) {
-        if (!self.sortable) {
-            return true; 
+        var keycode = (evt.keyCode ? evt.keyCode : evt.which);
+        if(evt.type == 'click' || keycode == '13') {
+            if (!self.sortable) {
+                return true;
+            }
+            var dir = self.sortDirection === ASC ? DESC : ASC;
+            self.sortDirection = dir;
+            config.sortCallback(self, evt);
+            return false;
         }
-        var dir = self.sortDirection === ASC ? DESC : ASC;
-        self.sortDirection = dir;
-        config.sortCallback(self, evt);
-        return false;
     };
     self.gripClick = function() {
         clicks++; 
@@ -1784,8 +1787,11 @@ var ngGrid = function ($scope, options, sortService, domUtilityService, $filter,
         self.rowFactory.UpdateViewableRange(newRange);
         self.prevScrollIndex = rowIndex;
     };
-    $scope.toggleShowMenu = function() {
-        $scope.showMenu = !$scope.showMenu;
+    $scope.toggleShowMenu = function(evt) {
+        var keycode = (evt.keyCode ? evt.keyCode : evt.which);
+        if(evt.type == 'click' || keycode == '13') {
+            $scope.showMenu = !$scope.showMenu;
+        }
     };
     $scope.toggleSelectAll = function(state, selectOnlyVisible) {
         $scope.selectionProvider.toggleSelectAll(state, false, selectOnlyVisible);
@@ -3178,7 +3184,7 @@ angular.module("ngGrid").run(["$templateCache", function($templateCache) {
   );
 
   $templateCache.put("gridTemplate.html",
-    "<div class=\"ngTopPanel\" ng-class=\"{'ui-widget-header':jqueryUITheme, 'ui-corner-top': jqueryUITheme}\" ng-style=\"topPanelStyle()\">" +
+    "<div class=\"ngTopPanel\" ng-class=\"{'ui-widget-header':jqueryUITheme, 'ui-corner-top': jqueryUITheme}\" ng-style=\"topPanelStyle()\" role=\"rowgroup\">" +
     "    <div class=\"ngGroupPanel\" ng-show=\"showGroupPanel()\" ng-style=\"groupPanelStyle()\">" +
     "        <div class=\"ngGroupPanelDescription\" ng-show=\"configGroups.length == 0\">{{i18n.ngGroupPanelDescription}}</div>" +
     "        <ul ng-show=\"configGroups.length > 0\" class=\"ngGroupList\">" +
@@ -3193,13 +3199,13 @@ angular.module("ngGrid").run(["$templateCache", function($templateCache) {
     "        </ul>" +
     "    </div>" +
     "    <div class=\"ngHeaderContainer\" ng-style=\"headerStyle()\">" +
-    "        <div class=\"ngHeaderScroller\" ng-style=\"headerScrollerStyle()\" ng-include=\"gridId + 'headerRowTemplate.html'\"></div>" +
+    "        <div class=\"ngHeaderScroller\" ng-style=\"headerScrollerStyle()\" role=\"row\" ng-include=\"gridId + 'headerRowTemplate.html'\"></div>" +
     "    </div>" +
     "    <div ng-grid-menu></div>" +
     "</div>" +
-    "<div class=\"ngViewport\" unselectable=\"on\" ng-viewport ng-class=\"{'ui-widget-content': jqueryUITheme}\" ng-style=\"viewportStyle()\">" +
+    "<div class=\"ngViewport\" unselectable=\"on\" ng-viewport ng-class=\"{'ui-widget-content': jqueryUITheme}\" ng-style=\"viewportStyle()\" role=\"rowgroup\">" +
     "    <div class=\"ngCanvas\" ng-style=\"canvasStyle()\">" +
-    "        <div ng-style=\"rowStyle(row)\" ng-repeat=\"row in renderedRows\" ng-click=\"row.toggleSelected($event)\" ng-class=\"row.alternatingRowClass()\" ng-row></div>" +
+    "        <div ng-style=\"rowStyle(row)\" ng-repeat=\"row in renderedRows\" role=\"row\" aria-selected=\"true\" ng-click=\"row.toggleSelected($event)\" ng-class=\"row.alternatingRowClass()\" ng-row></div>" +
     "    </div>" +
     "</div>" +
     "<div ng-grid-footer></div>" +
@@ -3207,36 +3213,36 @@ angular.module("ngGrid").run(["$templateCache", function($templateCache) {
   );
 
   $templateCache.put("headerCellTemplate.html",
-    "<div class=\"ngHeaderSortColumn {{col.headerClass}}\" ng-style=\"{'cursor': col.cursor}\" ng-class=\"{ 'ngSorted': !noSortVisible }\">" +
-    "    <div ng-click=\"col.sort($event)\" ng-class=\"'colt' + col.index\" class=\"ngHeaderText\">{{col.displayName}}</div>" +
-    "    <div class=\"ngSortButtonDown\" ng-show=\"col.showSortButtonDown()\"></div>" +
-    "    <div class=\"ngSortButtonUp\" ng-show=\"col.showSortButtonUp()\"></div>" +
+    "<div class=\"ngHeaderSortColumn {{col.headerClass}}\" role=\"columnheader\" ng-style=\"{'cursor': col.cursor}\" ng-class=\"{ 'ngSorted': !noSortVisible }\">" +
+    "    <div ng-click=\"col.sort($event)\" ng-keypress=\"col.sort($event)\" ng-class=\"'colt' + col.index\" class=\"ngHeaderText\" role=\"button\" tabindex='0' col-index=\"renderIndex\">{{col.displayName}}</div>" +
+    "    <div class=\"ngSortButtonDown\" ng-show=\"col.showSortButtonDown()\" aria-label='Ascending'></div>" +
+    "    <div class=\"ngSortButtonUp\" ng-show=\"col.showSortButtonUp()\" aria-label='Descending'></div>" +
     "    <div class=\"ngSortPriority\">{{col.sortPriority}}</div>" +
-    "    <div ng-class=\"{ ngPinnedIcon: col.pinned, ngUnPinnedIcon: !col.pinned }\" ng-click=\"togglePin(col)\" ng-show=\"col.pinnable\"></div>" +
+    "    <div ng-class=\"{ ngPinnedIcon: col.pinned, ngUnPinnedIcon: !col.pinned }\" ng-click=\"togglePin(col)\" role=\"button\" ng-show=\"col.pinnable\"></div>" +
     "</div>" +
     "<div ng-show=\"col.resizable\" class=\"ngHeaderGrip\" ng-click=\"col.gripClick($event)\" ng-mousedown=\"col.gripOnMouseDown($event)\"></div>"
   );
 
   $templateCache.put("headerRowTemplate.html",
-    "<div ng-style=\"{ height: col.headerRowHeight }\" ng-repeat=\"col in renderedColumns\" ng-class=\"col.colIndex()\" class=\"ngHeaderCell\">" +
+    "<div ng-style=\"{ height: col.headerRowHeight }\" col=\"col\" render-index=\"$index\"  ng-repeat=\"col in renderedColumns\" ng-class=\"col.colIndex()\" class=\"ngHeaderCell\">" +
     "	<div class=\"ngVerticalBar\" ng-style=\"{height: col.headerRowHeight}\" ng-class=\"{ ngVerticalBarVisible: !$last }\">&nbsp;</div>" +
     "	<div ng-header-cell></div>" +
     "</div>"
   );
 
   $templateCache.put("menuTemplate.html",
-    "<div ng-show=\"showColumnMenu || showFilter\"  class=\"ngHeaderButton\" ng-click=\"toggleShowMenu()\">" +
+    "<div ng-show=\"showColumnMenu || showFilter\"  class=\"ngHeaderButton\" ng-click=\"toggleShowMenu($event)\" ng-keypress=\"toggleShowMenu($event)\" role='button' aria-label='Filter Columns' tabindex='0'>" +
     "    <div class=\"ngHeaderButtonArrow\"></div>" +
     "</div>" +
     "<div ng-show=\"showMenu\" class=\"ngColMenu\">" +
     "    <div ng-show=\"showFilter\">" +
-    "        <input placeholder=\"{{i18n.ngSearchPlaceHolder}}\" type=\"text\" ng-model=\"filterText\"/>" +
+    "        <input placeholder=\"{{i18n.ngSearchPlaceHolder}}\" type=\"text\" ng-model=\"filterText\" aria-label=\"search-columns\"/>" +
     "    </div>" +
     "    <div ng-show=\"showColumnMenu\">" +
     "        <span class=\"ngMenuText\">{{i18n.ngMenuText}}</span>" +
     "        <ul class=\"ngColList\">" +
     "            <li class=\"ngColListItem\" ng-repeat=\"col in columns | ngColumns\">" +
-    "                <label><input ng-disabled=\"col.pinned\" type=\"checkbox\" class=\"ngColListCheckbox\" ng-model=\"col.visible\"/>{{col.displayName}}</label>" +
+    "                <label><input ng-disabled=\"col.pinned\" type=\"checkbox\" class=\"ngColListCheckbox\" ng-model=\"col.visible\" tabindex='0'/>{{col.displayName}}</label>" +
     "				<a title=\"Group By\" ng-class=\"col.groupedByClass()\" ng-show=\"col.groupable && col.visible\" ng-click=\"groupBy(col)\"></a>" +
     "				<span class=\"ngGroupingNumber\" ng-show=\"col.groupIndex > 0\">{{col.groupIndex}}</span>          " +
     "            </li>" +
@@ -3246,7 +3252,7 @@ angular.module("ngGrid").run(["$templateCache", function($templateCache) {
   );
 
   $templateCache.put("rowTemplate.html",
-    "<div ng-style=\"{ 'cursor': row.cursor }\" ng-repeat=\"col in renderedColumns\" ng-class=\"col.colIndex()\" class=\"ngCell {{col.cellClass}}\">" +
+    "<div ng-style=\"{ 'cursor': row.cursor }\" role=\"gridcell\" ng-repeat=\"col in renderedColumns\" ng-class=\"col.colIndex()\" class=\"ngCell {{col.cellClass}}\">" +
     "	<div class=\"ngVerticalBar\" ng-style=\"{height: rowHeight}\" ng-class=\"{ ngVerticalBarVisible: !$last }\">&nbsp;</div>" +
     "	<div ng-cell></div>" +
     "</div>"
