@@ -754,13 +754,16 @@ var ngColumn = function (config, $scope, grid, domUtilityService, $templateCache
         return !self.sortDirection;
     };
     self.sort = function(evt) {
-        if (!self.sortable) {
-            return true; 
+        var keycode = (evt.keyCode ? evt.keyCode : evt.which);
+        if(evt.type == 'click' || keycode == '13') {
+            if (!self.sortable) {
+                return true;
+            }
+            var dir = self.sortDirection === ASC ? DESC : ASC;
+            self.sortDirection = dir;
+            config.sortCallback(self, evt);
+            return false;
         }
-        var dir = self.sortDirection === ASC ? DESC : ASC;
-        self.sortDirection = dir;
-        config.sortCallback(self, evt);
-        return false;
     };
     self.gripClick = function() {
         clicks++; 
@@ -1784,8 +1787,11 @@ var ngGrid = function ($scope, options, sortService, domUtilityService, $filter,
         self.rowFactory.UpdateViewableRange(newRange);
         self.prevScrollIndex = rowIndex;
     };
-    $scope.toggleShowMenu = function() {
-        $scope.showMenu = !$scope.showMenu;
+    $scope.toggleShowMenu = function(evt) {
+        var keycode = (evt.keyCode ? evt.keyCode : evt.which);
+        if(evt.type == 'click' || keycode == '13') {
+            $scope.showMenu = !$scope.showMenu;
+        }
     };
     $scope.toggleSelectAll = function(state, selectOnlyVisible) {
         $scope.selectionProvider.toggleSelectAll(state, false, selectOnlyVisible);
@@ -3208,7 +3214,7 @@ angular.module("ngGrid").run(["$templateCache", function($templateCache) {
 
   $templateCache.put("headerCellTemplate.html",
     "<div class=\"ngHeaderSortColumn {{col.headerClass}}\" role=\"columnheader\" ng-style=\"{'cursor': col.cursor}\" ng-class=\"{ 'ngSorted': !noSortVisible }\">" +
-    "    <div ng-click=\"col.sort($event)\" ng-class=\"'colt' + col.index\" class=\"ngHeaderText\" role=\"button\" tabindex='0' col-index=\"renderIndex\">{{col.displayName}}</div>" +
+    "    <div ng-click=\"col.sort($event)\" ng-keypress=\"col.sort($event)\" ng-class=\"'colt' + col.index\" class=\"ngHeaderText\" role=\"button\" tabindex='0' col-index=\"renderIndex\">{{col.displayName}}</div>" +
     "    <div class=\"ngSortButtonDown\" ng-show=\"col.showSortButtonDown()\" aria-label='Ascending'></div>" +
     "    <div class=\"ngSortButtonUp\" ng-show=\"col.showSortButtonUp()\" aria-label='Descending'></div>" +
     "    <div class=\"ngSortPriority\">{{col.sortPriority}}</div>" +
@@ -3225,7 +3231,7 @@ angular.module("ngGrid").run(["$templateCache", function($templateCache) {
   );
 
   $templateCache.put("menuTemplate.html",
-    "<div ng-show=\"showColumnMenu || showFilter\"  class=\"ngHeaderButton\" ng-click=\"toggleShowMenu()\" role='button' aria-label='Filter Columns' tabindex='0'>" +
+    "<div ng-show=\"showColumnMenu || showFilter\"  class=\"ngHeaderButton\" ng-click=\"toggleShowMenu($event)\" ng-keypress=\"toggleShowMenu($event)\" role='button' aria-label='Filter Columns' tabindex='0'>" +
     "    <div class=\"ngHeaderButtonArrow\"></div>" +
     "</div>" +
     "<div ng-show=\"showMenu\" class=\"ngColMenu\">" +
