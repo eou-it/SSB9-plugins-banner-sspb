@@ -722,7 +722,7 @@ class PageComponent {
         idTxtParam="-{{\$index}}"
 
         if (label)
-            result += "<label class=\"pb-$type pb-label\" ${idAttribute('label')}>${tran("label")}</label>\n"
+            result += "<label class=\"pb-$type pb-label\" ${idAttribute('label')} tabindex=\"0\">${tran("label")}</label>\n"
         result +="""<div ${idAttribute("container" + idTxtParam)} class="pb-$type-record" ng-repeat="$repeat">\n"""
 
 
@@ -1086,7 +1086,7 @@ class PageComponent {
                 }
                 break;
             case COMP_TYPE_BOOLEAN:
-                result ="""<input ${idAttribute(idTxtParam)} $autoStyleStr  type="checkbox" name="${name?name:model}"
+                result ="""<input ${idAttribute(idTxtParam)} $autoStyleStr  type="checkbox" tabindex="0" name="${name?name:model}"
                            ${booleanTrueValue?"ng-true-value=\"${htmlValue(booleanTrueValue,"'")}\"":""} ${booleanFalseValue?"ng-false-value=\"${htmlValue(booleanFalseValue,"'")}\"":""}
                            $ngChange $ngClick
                            """

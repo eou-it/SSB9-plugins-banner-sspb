@@ -2,7 +2,7 @@
    "constantName": "pbadm.LandingPage",
    "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2020-07-16T04:52:54Z",
+   "fileTimestamp": "2020-07-19T14:52:06Z",
    "modelView": {
       "components": [
          {
@@ -259,7 +259,7 @@
                               "name": "EditPage",
                               "style": "edit-page",
                               "type": "literal",
-                              "value": "<a href=\"{{$$contextRoot}}visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}\" aria-label=\"Edit Page\"></a>"
+                              "value": "<a href=\"{{$$contextRoot}}visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}\" aria-label=\"Edit {{$item.CONSTANT_NAME}} Page\"></a>"
                            },
                            {
                               "valueStyle": "",
@@ -268,7 +268,7 @@
                               "style": "run-page",
                               "label": "",
                               "type": "literal",
-                              "value": "<a href=\"{{$$contextRoot}}customPage/page/{{$item.CONSTANT_NAME}}\" aria-label=\"Run Page\"></a>"
+                              "value": "<a href=\"{{$$contextRoot}}customPage/page/{{$item.CONSTANT_NAME}}\" aria-label=\"Run {{$item.CONSTANT_NAME}} Page\"></a>"
                            },
                            {
                               "asHtml": false,
@@ -333,7 +333,7 @@
                               "name": "EditPage2",
                               "style": "edit-page",
                               "type": "literal",
-                              "value": "<a href=\"{{$$contextRoot}}visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}\" aria-label=\"Edit Page\"></a>"
+                              "value": "<a href=\"{{$$contextRoot}}visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}\" aria-label=\"Edit {{$item.CONSTANT_NAME}} Page\"></a>"
                            },
                            {
                               "valueStyle": "",
@@ -342,7 +342,7 @@
                               "style": "run-page",
                               "label": "",
                               "type": "literal",
-                              "value": "<a href=\"{{$$contextRoot}}customPage/page/{{$item.CONSTANT_NAME}}\" aria-label=\"Run Page\"></a>"
+                              "value": "<a href=\"{{$$contextRoot}}customPage/page/{{$item.CONSTANT_NAME}}\" aria-label=\"Run {{$item.CONSTANT_NAME}} Page\"></a>"
                            },
                            {
                               "asHtml": false,

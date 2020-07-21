@@ -490,23 +490,29 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             };
 
 
-            $scope.selectData = function(data, index, parent) {
-                //console.log(" selectData - scope = " + $scope.$id + ", data = " + data.type);
-                $scope.dataHolder.selectedComponent = data;
-                $scope.statusHolder.selectedIndex = index;
-                $scope.dataHolder.selectedContext = parent;
-                $scope.dataHolder.selectedType = data.type;
-                $scope.statusHolder.noDirtyCheck=true; //Next statements may make the tree dirty without a need to save
-                // set the components types that are valid for the selected component's parent
-                // used when component type is changed
-                if (parent != undefined) {
-                    $scope.dataHolder.selectedCompatibleTypes = $scope.findAllChildrenTypes(parent.type);
+            $scope.selectData = function(data, index, parent, event) {
+                var keycode = (event.keyCode ? event.keyCode : event.which);
+                if(event.type == 'click' || keycode == '13') {
+                    //console.log(" selectData - scope = " + $scope.$id + ", data = " + data.type);
+                    $scope.dataHolder.selectedComponent = data;
+                    $scope.statusHolder.selectedIndex = index;
+                    $scope.dataHolder.selectedContext = parent;
+                    $scope.dataHolder.selectedType = data.type;
+                    $scope.statusHolder.noDirtyCheck = true; //Next statements may make the tree dirty without a need to save
+                    // set the components types that are valid for the selected component's parent
+                    // used when component type is changed
+                    if (parent != undefined) {
+                        $scope.dataHolder.selectedCompatibleTypes = $scope.findAllChildrenTypes(parent.type);
+                    } else
+                        $scope.dataHolder.selectedCompatibleTypes = ["page"];
+                    // update the current selected component's property list
+                    $scope.findAllAttrs(data.type);
+                    setTimeout(function () {
+                        $scope.statusHolder.noDirtyCheck = false;
+                    }, 100); //Give some time to digest and enable the dirty checki
+                    $scope.lastFocusedElementId = "pbid-" + data.name;
+                    $("#pbid-cmpView").focus();
                 }
-                else
-                    $scope.dataHolder.selectedCompatibleTypes = ["page"];
-                // update the current selected component's property list
-                $scope.findAllAttrs(data.type);
-                setTimeout(function(){ $scope.statusHolder.noDirtyCheck=false; } , 100); //Give some time to digest and enable the dirty checking
             };
 
             // handle type switch for a component
@@ -1079,6 +1085,10 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             //run initialize when the controller is ready
             $scope.initialize();
 
+            $scope.focusOnLastElement = function (){
+               angular.element(document.getElementById($scope.lastFocusedElementId)).focus();
+            }
+
         }
 
         function upperCaseF(e) {
@@ -1202,7 +1212,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                                       value='dataHolder.selectedComponent[attr.name]' pb-Parent="dataHolder.selectedComponent" pb-Attrname="attr.name"
                                       pb-loadsourcelist="loadVdList()" load-source-label="{{i18nGet('pb.template.combo.loadsource.label')}}" edit-value-label="{{i18nGet('pb.template.combo.edit.label')}}"
                                       select-label="{{i18nGet('pb.template.combo.select.label')}}" source-list="vdlist"></pb-Combo>
-                            <select ng-switch-when="select" aria-label="{{i18nGet('attribute.'+attr.name)}}" ng-options="type as i18nGet('type.'+type) for type in dataHolder.selectedCompatibleTypes"
+                            <select id="pbid-cmpView" ng-switch-when="select" aria-label="{{i18nGet('attribute.'+attr.name)}}" ng-options="type as i18nGet('type.'+type) for type in dataHolder.selectedCompatibleTypes"
                                     ng-model="dataHolder.selectedComponent[attr.name]" ng-change="handleAttrChange()"></select>
                             <%--HvT re-introduced ng-change in previous line because changing type may cause issues. Seems to help. Not sure why it was removed?--%>
                             <input ng-switch-when="text" aria-label="{{i18nGet('attribute.'+attr.name)}}" name="{{'prop_'+attr.name}}" style="text-align:start;" type="text" ng-init='dataHolder.selectedComponent[attr.name]=setDefaultValue(attr.name, dataHolder.selectedComponent[attr.name]);'
@@ -1240,6 +1250,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                             <span ng-message="required" class="attributeValidationMessage"><g:message code="sspb.page.visualbuilder.property.required.message" /></span>
                         </span>
                         <%--/span--%>
+                        <span ng-if="$last" ng-blur="focusOnLastElement()" tabindex="0"></span>
                     </div>
                 </div>
             </td>
@@ -1256,8 +1267,8 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     </span>
     <!--input type="checkbox" ng-model="showChildren" ng-show="data.components!=undefined && data.type!=undefined"/-->
-    <span ng-init="index=nextIndex()" ng-click="selectData(data, index, $parent.$parent.data)"
-          style="{{componentLabelStyle(index == statusHolder.selectedIndex)}}">{{data.name}} &lrm;[{{i18nGet('type.'+data.type)}}]&lrm;</span>
+    <span id="pbid-{{data.name}}" ng-init="index=nextIndex()" ng-click="selectData(data, index, $parent.$parent.data, $event)" ng-keypress="selectData(data, index, $parent.$parent.data, $event)"
+          style="{{componentLabelStyle(index == statusHolder.selectedIndex)}}" tabindex="0">{{data.name}} &lrm;[{{i18nGet('type.'+data.type)}}]&lrm;</span>
 
     <button  aria-label="${message(code:'sspb.page.visualbuilder.insert.sibling.title')}" title="${message(code:'sspb.page.visualbuilder.insert.sibling.title')}" class="button_insert button_edit" ng-click="insertSibling($parent.$parent.data, $index)" ng-show="data.type!='page'"></button>
     <button  aria-label="${message(code:'sspb.page.visualbuilder.append.child.title')}" title="${message(code:'sspb.page.visualbuilder.append.child.title')}" class="button_edit button_add" ng-click="addChild(data)" ng-show="findAllChildrenTypes(data.type).length>0"></button>
