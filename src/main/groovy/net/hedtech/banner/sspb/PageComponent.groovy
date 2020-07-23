@@ -966,7 +966,7 @@ class PageComponent {
 
                 ngChange = "" //override default
                 def idxStr
-                if(parent.type == COMP_TYPE_DETAIL || parent.type == z) {
+                if(parent.type == COMP_TYPE_DETAIL || parent.type == COMP_TYPE_HTABLE) {
                     ngModel =  "\$parent.$GRID_ITEM.${model}"
                     ngChange +="\$parent.\$parent.${parent.name}DS.setModified(\$parent.$GRID_ITEM);"
                     nameTxt = "{{'${parent.name}_${name}' + \$parent.\$index}}"
