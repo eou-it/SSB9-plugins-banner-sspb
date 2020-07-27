@@ -10,8 +10,6 @@ import groovy.sql.Sql
 import net.hedtech.banner.sspb.PBUser
 import net.hedtech.banner.sspb.Page
 import net.hedtech.restfulapi.AccessDeniedException
-import oracle.sql.BLOB
-import sun.misc.BASE64Encoder
 
 import java.sql.Blob
 import java.sql.SQLException
