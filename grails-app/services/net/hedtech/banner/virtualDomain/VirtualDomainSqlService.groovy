@@ -444,14 +444,14 @@ class VirtualDomainSqlService {
     }
 
     private def handleClobBlobTimestampRows(rows) {
-        def foundClob=false
+        def foundType=false
         for ( row in rows )  {
             for (col in row ) {
                 if (col.value.getClass().getName().endsWith("CLOB")) {
                     if (col.value instanceof java.sql.Clob) {
                         String s = getStringValue(col.value)
                         col.value = s
-                        foundClob = true
+                        foundType = true
                     }
                 }else if(col.value.getClass().getName().endsWith("BLOB")){
                     if (col.value instanceof java.sql.Blob) {
@@ -466,14 +466,14 @@ class VirtualDomainSqlService {
                         }
                         returnBytes = byteArrayOutputStream.toByteArray()
                         col.value = Base64.getEncoder().encodeToString(returnBytes)
-                        foundBlob = true
+                        foundType = true
                     }
                 }else if (col.value instanceof oracle.sql.TIMESTAMP) {
                     col.value = col.value.dateValue()
-                    foundClob = true
+                    foundType = true
                 }
             }
-            if (!foundClob)
+            if (!foundType)
                 return rows // no need to traverse the whole array if first row doesn't have a CLOB
         }
         return rows
