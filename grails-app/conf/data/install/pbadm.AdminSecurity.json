@@ -198,7 +198,6 @@
                       }
                     ],
                     "loadInitially": true,
-                    "label": "Owner Details",
                     "model": "artifactsData",
                     "name": "dataGrid",
                     "onSaveSuccess": "alert(response.NAME  + \" ${message(code:'pbadmAdminSecurity.grid.save.success')} \" + response.TYPE_OWNER, {type:\"success\", flash:true});",
