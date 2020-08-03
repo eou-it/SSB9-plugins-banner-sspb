@@ -174,7 +174,10 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                     },
                     error : function(jqXHR) {
                            var errorResponse = \$.parseJSON(jqXHR.responseText);
-                           var errorMsg = errorResponse.errors.errorMessage;
+                           var errorMsg = errorResponse.errors[0].errorMessage;
+                           if(errorMsg == undefined || errorMsg == ""){
+                                errorMsg = "Unable to get resources.";
+                           }
                            var msg = \$.i18n.prop("js.net.hedtech.banner.ajax.error.message", [ errorMsg ]);
                            var n = new Notification( {
                                 message: msg,
