@@ -175,7 +175,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                     error : function(jqXHR) {
                            var errorResponse = \$.parseJSON(jqXHR.responseText);
                            var errorMsg;
-                           if(errorResponse.errors.length != 0 && errorResponse.errors[0].errorMessage != undefined)
+                           if(errorResponse.errors.length > 0 && errorResponse.errors[0].errorMessage != undefined)
                                 errorMsg = errorResponse.errors[0].errorMessage;
                            else
                                 errorMsg = "Unable to get resources.";
