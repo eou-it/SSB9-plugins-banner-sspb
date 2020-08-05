@@ -558,7 +558,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 $scope.newIndex = index;
             };
 
-            $scope.closeTypeSelectionModal = function () {
+            $scope.closeTypeSelectionModal = function (event) {
                 //$scope.closeMsg = 'I was closed at: ' + new Date();
                 $scope.shouldBeOpen = false;
                 // add the child component
@@ -574,7 +574,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 else
                     parent.components.splice($scope.newIndex, 0, newComp);
                 // open the new component for editing - the new component always get an incremented index number
-                $scope.selectData(newComp, $scope.index+1, parent);
+                $scope.selectData(newComp, $scope.index+1, parent, event);
                 // modal dialog is associated with parent scope
                 //$scope.handlePageTreeChange();
             };
@@ -1298,7 +1298,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             <select  ng-model="$parent.selectedType" ng-options="i18nGet('type.'+type) for type in validChildTypes"></select>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-success ok primary" ng-click="closeTypeSelectionModal()"><g:message code="sspb.page.visualbuilder.create.component.label" /></button>
+            <button class="btn btn-success ok primary" ng-click="closeTypeSelectionModal($event)"><g:message code="sspb.page.visualbuilder.create.component.label" /></button>
             <button class="btn btn-warning secondary" ng-click="cancelTypeSelectionModal()"><g:message code="sspb.page.visualbuilder.create.cancel.label" /></button>
         </div>
     </div>
