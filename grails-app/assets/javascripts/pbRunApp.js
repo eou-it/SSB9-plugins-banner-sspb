@@ -143,7 +143,7 @@ appModule.run(['$templateCache', function($templateCache )  {
         "        <xe-button xe-type=\"secondary\" xe-btn-class=\"first\" xe-aria-label=\"{{::'pagination.first.label' | xei18n}}\" xe-btn-click=\"pageToFirst()\" xe-disabled=\"firstPrev\" tabindex='0' ng-cloak></xe-button>\n" +
         "        <xe-button xe-type=\"secondary\" xe-btn-class=\"previous\" xe-aria-label=\"{{::'pagination.previous.label' | xei18n}}\" xe-btn-click=\"pageBackward()\" xe-disabled=\"firstPrev\" tabindex='0' ng-cloak></xe-button>\n"+
         "        <span class=\"paging-text page\" id=\"pbid-Grid-Page\"> {{i18n.pageLabel}}</span>"+
-        "        <input class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"1\" max=\"{{maxPages()}}\" type=\"number\" ng-model=\"pagingOptions.currentPage\" tabindex='0' style=\"width: 40px; display: inline;\" aria-labelledby=\"pbid-Grid-Page\"/>" +
+        "        <input class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"1\" max=\"{{maxPages()}}\" type=\"number\" ng-model=\"pagingOptions.currentPage\" tabindex='0' style=\"width: 50px; display: inline; height: 3.5em;\" aria-labelledby=\"pbid-Grid-Page\"/>" +
         "        <span class=\"paging-text page-of\"> {{i18n.maxPageLabel}} </span> <span class=\"paging-text total-pages\"> {{maxPages()}}  </span>"+
       /*  "        <div class=\"paging-control next {{!cantPageForward() && 'enabled'||''}}\" ng-click=\"pageForward()\"></div>" +
         "        <div class=\"paging-control last {{!cantPageToLast()  && 'enabled'||''}}\" ng-click=\"pageToLast()\" ></div>"+*/
