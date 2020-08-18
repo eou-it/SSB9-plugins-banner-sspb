@@ -10,8 +10,6 @@ import groovy.sql.Sql
 import net.hedtech.banner.sspb.PBUser
 import net.hedtech.banner.sspb.Page
 import net.hedtech.restfulapi.AccessDeniedException
-import oracle.sql.BLOB
-import sun.misc.BASE64Encoder
 
 import java.sql.Blob
 import java.sql.SQLException
@@ -124,9 +122,11 @@ class VirtualDomainSqlService {
         def result=statement
         if (orderBy && statement) {
             def orderByList=[]
-            if (orderBy instanceof String)
+            if (orderBy instanceof String && orderBy?.contains(',')) {
+                orderByList = orderBy.split(',')
+            } else if (orderBy instanceof String) {
                 orderByList << orderBy
-            else {
+            } else {
                 orderByList = orderBy
             }
             def ob="order by"
@@ -202,7 +202,8 @@ class VirtualDomainSqlService {
         }
         def sql = getSql()
         def errorMessage = ""
-        def statement = vd.codeGet?.replaceAll(";","")
+        def regEx = /[^a-z0-9A-Z_'",#@:<>.()%!&*]+;*$/
+        def statement = vd.codeGet?.replaceAll(regEx,"")
         //maybe remove metaData - what value?
         def metaData = { meta ->
             logmsg += message(code:"sspb.virtualdomain.sqlservice.numbercolumns", args:[meta.columnCount])
@@ -219,10 +220,9 @@ class VirtualDomainSqlService {
             //modify query for sql pagination (should be fast if an index exists on columns in order by clause)
             statement="""select /*+first_rows(${parameters.max})*/ *
                          from (select rownum row_number, a.*
-                               from ($statement) a
-                               where rownum <= :offset+:max
-                         )
-                         where row_number >= :offset+1 """
+                               from ($statement) a)
+                               where row_number  between :offset+1 and :offset+:max
+                       """
             if(vd.serviceName == 'pbadmWebTailorRoles') {
                 if(parameters.page_id) {
                     def pageInstance = Page.findById(parameters.page_id)
@@ -234,14 +234,16 @@ class VirtualDomainSqlService {
             }
             rows = sql.rows(statement,parameters,metaData)
             rows = idEncodeRows(rows)
-            rows = handleClobRows(rows)
-            rows = handleBlobRows(rows)
+            rows = handleClobBlobTimestampRows(rows)
             logmsg += " "+message(code:"sspb.virtualdomain.sqlservice.numberrows", args:[rows?.size(),parameters.offset])
-
+            log.debug("In VirtualDomainSqlService get - executed SQL GET statement")
         } catch(SQLException e) {
+            log.debug("In VirtualDomainSqlService get - SQLException ${e.getMessage()}")
             logmsg += message(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
-            errorMessage = privs.debug ? logmsg : cleanSqlExceptionMessage(e,privs.debug) ?: "Unable to get resources."
+            def oracleErrorMsg = message(code:"sspb.virtualdomain.sqlservice.error.message", args:[e.getMessage(),statement])
+            errorMessage = privs.debug ? oracleErrorMsg : cleanSqlExceptionMessage(e,privs.debug) ?: "Unable to get resources."
         } catch(NumberFormatException e) {
+            log.debug("In VirtualDomainSqlService get - NumberFormatException ${e.getMessage()}")
             logmsg += e.getLocalizedMessage()
             errorMessage=message(code:"sspb.virtualdomain.sqlservice.paging.message", args:[])
         }
@@ -267,7 +269,8 @@ class VirtualDomainSqlService {
         def errorMessage = ""
         // Add a dummy bind variable to Groovy SQL to workaround an issue related to passing a map
         // to a query without bind variables
-        def statement="select count(*) COUNT from (${vd.codeGet?.replaceAll(";","")}) where (1=1 or :x is null)"
+        def regEx = /[^a-z0-9A-Z_'",#@:<>.()%!&*]+;*$/
+        def statement="select count(*) COUNT from (${vd.codeGet?.replaceAll(regEx,"")}) where (1=1 or :x is null)"
         def rows
         def totalCount=-1
         try {
@@ -442,31 +445,18 @@ class VirtualDomainSqlService {
         return rows
     }
 
-    private def handleClobRows(rows) {
-        def foundClob=false
+    private def handleClobBlobTimestampRows(rows) {
+        def foundType=false
         for ( row in rows )  {
             for (col in row ) {
                 if (col.value.getClass().getName().endsWith("CLOB")) {
                     if (col.value instanceof java.sql.Clob) {
                         String s = getStringValue(col.value)
                         col.value = s
-                        foundClob = true
+                        foundType = true
                     }
-                }
-            }
-            if (!foundClob)
-                return rows // no need to traverse the whole array if first row doesn't have a CLOB
-        }
-        return rows
-    }
-
-    private def handleBlobRows(rows) {
-        def foundBlob=false
-        for ( row in rows )  {
-            for (col in row ) {
-                if (col.value.getClass().getName().endsWith("BLOB")) {
+                }else if(col.value.getClass().getName().endsWith("BLOB")){
                     if (col.value instanceof java.sql.Blob) {
-
                         byte[] returnBytes
                         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
                         Blob blob = col.value
@@ -478,11 +468,14 @@ class VirtualDomainSqlService {
                         }
                         returnBytes = byteArrayOutputStream.toByteArray()
                         col.value = Base64.getEncoder().encodeToString(returnBytes)
-                        foundBlob = true
+                        foundType = true
                     }
+                }else if (col.value instanceof oracle.sql.TIMESTAMP) {
+                    col.value = col.value.dateValue()
+                    foundType = true
                 }
             }
-            if (!foundBlob)
+            if (!foundType)
                 return rows // no need to traverse the whole array if first row doesn't have a CLOB
         }
         return rows

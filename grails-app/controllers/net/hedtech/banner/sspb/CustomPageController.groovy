@@ -5,6 +5,7 @@
 package net.hedtech.banner.sspb
 
 import grails.core.GrailsApplication
+import net.hedtech.banner.exceptions.MepCodeNotFoundException
 import org.springframework.context.i18n.LocaleContextHolder
 
 class CustomPageController {
@@ -14,6 +15,11 @@ class CustomPageController {
     def compileService
     GrailsApplication grailsApplication
     def pageService
+    def springSecurityService
+
+    def userSessionValidationCheck() {
+        render(status: 200, text: springSecurityService.isLoggedIn())
+    }
 
     def page() {
         if (params.id=="menu") {    //Work around aurora issue calling this 'page'. Todo: analyse and provide better fix
@@ -69,9 +75,11 @@ class CustomPageController {
             } else {
                 invalidPage(message(code: "sspb.renderer.page.does.not.exist"))
             }
-        } catch ( RuntimeException ex ) {
+        } catch (MepCodeNotFoundException mex) {
+            throw mex
+        } catch (RuntimeException ex) {
             ex.printStackTrace()
-            invalidPage( message( code: "sspb.renderer.page.does.not.exist"))
+            invalidPage(message(code: "sspb.renderer.page.does.not.exist"))
         }
     }
 

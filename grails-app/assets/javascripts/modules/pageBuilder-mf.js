@@ -12,3 +12,4 @@
 //= require preference/userpreference.js
 //= require menu/tools-menu.js
 //= require pb-tools-menu.js
+//= require userSessionValidationCheck.js

@@ -110,7 +110,11 @@ if (pageControllers) {
 appModule.controller('homePageUrlCtr', ['$scope', '$window', '$http', function($scope, $window, $http) {
     $window.onload = function() {
         var url = $('#homeURL').val();
-        $('#branding').attr('href', url)
+        if(url && url.indexOf('applicationNavigator')!=-1){
+            $('#branding').attr('target','_top')
+        }
+        $('#branding').attr('href', url);
+
     };
 }]);
 // below filter is used for pagination
@@ -131,19 +135,24 @@ appModule.filter('to_trusted', ['$sce', function($sce){
 appModule.run(['$templateCache', function($templateCache )  {
     console.log("App module.run started" );
     $templateCache.put('gridFooter.html',
-        "<div ng-show=\"showFooter\" class=\"ngFooterPanel\" ng-class=\"{'ui-widget-content': jqueryUITheme, 'ui-corner-bottom': jqueryUITheme}\" ng-style=\"footerStyle()\">" +
-        "    <div id=\"paging-container-#gridName#\" class=\"paging-container \" ng-show=\"enablePaging\" >" +
-        "        <div class=\"paging-control first {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageToFirst()\"></div>"+
-        "        <div class=\"paging-control previous {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageBackward()\"></div>"+
-        "        <span class=\"paging-text page\"> {{i18n.pageLabel}}</span>"+
-        "        <input class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"1\" max=\"{{maxPages()}}\" type=\"number\" ng-model=\"pagingOptions.currentPage\" style=\"width: 40px; display: inline;\"/>" +
+        "<div ng-show=\"showFooter\" class=\"ngFooterPanel  pagination-container\" ng-class=\"{'ui-widget-content': jqueryUITheme, 'ui-corner-bottom': jqueryUITheme}\" ng-style=\"footerStyle()\">" +
+        "    <div id=\"paging-container-#gridName#\" class=\"pagination-controls align-left\" ng-show=\"enablePaging\" >" +
+        "           {{enableDisablePagination()}}"+
+        /*"        <div class=\"paging-control first {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageToFirst()\"></div>"+
+        "        <div class=\"paging-control previous {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageBackward()\"></div>"+*/
+        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"first\" xe-aria-label=\"{{::'pagination.first.label' | xei18n}}\" xe-btn-click=\"pageToFirst()\" xe-disabled=\"firstPrev\" tabindex='0' ng-cloak></xe-button>\n" +
+        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"previous\" xe-aria-label=\"{{::'pagination.previous.label' | xei18n}}\" xe-btn-click=\"pageBackward()\" xe-disabled=\"firstPrev\" tabindex='0' ng-cloak></xe-button>\n"+
+        "        <span class=\"paging-text page\" id=\"pbid-Grid-Page\"> {{i18n.pageLabel}}</span>"+
+        "        <input class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"1\" max=\"{{maxPages()}}\" type=\"number\" ng-model=\"pagingOptions.currentPage\" tabindex='0' style=\"width: 50px; display: inline; height: 3.5em;\" aria-labelledby=\"pbid-Grid-Page\"/>" +
         "        <span class=\"paging-text page-of\"> {{i18n.maxPageLabel}} </span> <span class=\"paging-text total-pages\"> {{maxPages()}}  </span>"+
-        "        <div class=\"paging-control next {{!cantPageForward() && 'enabled'||''}}\" ng-click=\"pageForward()\"></div>" +
-        "        <div class=\"paging-control last {{!cantPageToLast()  && 'enabled'||''}}\" ng-click=\"pageToLast()\" ></div>"+
-        "        <div class=\"divider\"></div>" +
-        "        <span class=\"paging-text page-per\"> {{i18n.ngPageSizeLabel}} </span>" +
-        "        <div class=\"page-size-select-wrapper\" >" +
-        "            <select page-size-select  ng-model=\"pagingOptions.pageSize\" ng-options=\"s as s for s in pagingOptions.pageSizes\" style=\"width: 100%; \"> "+
+      /*  "        <div class=\"paging-control next {{!cantPageForward() && 'enabled'||''}}\" ng-click=\"pageForward()\"></div>" +
+        "        <div class=\"paging-control last {{!cantPageToLast()  && 'enabled'||''}}\" ng-click=\"pageToLast()\" ></div>"+*/
+        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"next\" xe-aria-label=\"{{::'pagination.next.label' | xei18n}}\" xe-btn-click=\"pageForward()\"  xe-disabled=\"nextLast\" tabindex='0' ng-cloak></xe-button>\n" +
+        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"last\" xe-aria-label=\"{{::'pagination.last.label' | xei18n}}\" xe-btn-click=\"pageToLast()\"  xe-disabled=\"nextLast\" tabindex='0' ng-cloak></xe-button>\n"+
+        "        <div class=\"divider dispInline\"></div>" +
+        "        <span class=\"paging-text page-per\" id=\"pbid-Grid-RecordsPerPage\"> {{i18n.ngPageSizeLabel}} </span>" +
+        "        <div class=\"page-size-select-wrapper dispInline\" >" +
+        "            <select page-size-select  class=\"per-page-select\" ng-model=\"pagingOptions.pageSize\" ng-options=\"s as s for s in pagingOptions.pageSizes\" tabindex='0' aria-labelledby=\"pbid-Grid-RecordsPerPage\"> "+
         "             </select>" +
         "        </div>"+
         "    </div>" +
@@ -151,7 +160,7 @@ appModule.run(['$templateCache', function($templateCache )  {
         "        <span class=\"ngLabel\">{{i18n.ngTotalItemsLabel}} {{maxRows()}}</span>" +
         "        <span ng-show=\"filterText.length > 0\" class=\"ngLabel\">({{i18n.ngShowingItemsLabel}} {{totalFilteredItemsLength()}})</span>" +
         "    </div>" +
-        "    <div style=\"position: absolute; bottom:2px;\" ng-style=\"{ {{i18n.styleRight}}:'2px'}\"> #gridControlPanel# </div>" +
+        "    <div style=\"position: absolute; bottom:3px;\" ng-style=\"{ {{i18n.styleRight}}:'2px'}\"> #gridControlPanel# </div>" +
         "</div>");
 
 }]);
@@ -385,7 +394,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
 
         this.load = function(p,confirmed) {
             var iload = confirmed || !$scope.changed;
-            if (!iload) {
+            if (!iload  && this.dirty()) {
                 var currentInstance = this;
                 this.confirmPageActionMain(function(){
                     currentInstance.load(p,true);
@@ -799,7 +808,21 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
                 if(scope.options.id == 'extendsPage') {
                     scope.options.excludePage = scope.pageName;
                 }
-                scope.loadPopup(scope.options)
+                if(event.type == 'mousedown' || event.type =='click' || event.type =='enter')
+                    scope.loadPopup(scope.options);
+                else {
+                    var keycode = (event.keyCode ? event.keyCode : event.which);
+                    if(keycode == '13')
+                        scope.loadPopup(scope.options);
+                    else {
+                        var valueOfSelectTag = document.getElementById(attrs.id).value;
+                        if((valueOfSelectTag == '' || valueOfSelectTag == 'null') && scope.options.id != 'extendsPage')
+                            scope.loadPopup(scope.options);
+                        else if(event.type =='keydown')
+                            document.getElementById(attrs.id).blur();
+
+                    }
+                }
                 event.preventDefault();
                 event.stopPropagation();
             }
@@ -863,4 +886,3 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
         }
     };
 }]);
-

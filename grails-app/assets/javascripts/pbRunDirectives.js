@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2020 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 'use strict';
 
@@ -80,3 +80,18 @@ pbRunModule.directive('pbNumber', ['$filter', '$locale', function($filter, $loca
         } // link
     }; // return
 }]); // module
+
+
+pbRunModule.directive('numberToString', function () {
+    return {
+        require: 'ngModel',
+        link: function (scope, element, attrs, ngModel) {
+            ngModel.$parsers.push(function (value) {
+                return value === undefined || value === null ? value : value + '';
+            });
+            ngModel.$formatters.push(function (value) {
+                return value === undefined || value === null ? value : value + '';
+            });
+        }
+    }
+});

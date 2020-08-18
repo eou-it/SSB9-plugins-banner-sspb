@@ -121,6 +121,7 @@
                         $scope.resultsFound = response.data.length;
                         $timeout(function () {
                             $scope.setFocusOnLoad();
+                            angular.element('#nameDataTableSearch').attr('aria-label','Search for any Name');
                             angular.element('#nameDataTableSearch').focus();
                         },0);
                     })

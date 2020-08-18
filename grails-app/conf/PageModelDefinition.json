@@ -154,7 +154,7 @@
             {
                 "componentType":["data"],
                 "requiredAttributes":["model"],
-                "optionalAttributes":["onLoad", "onSave", "onSaveSuccess", "onError", "parameters", "loadInitially"],
+                "optionalAttributes":["pageSize","onLoad", "onSave", "onSaveSuccess", "onError", "parameters", "loadInitially"],
                 "requiredChildren":[],
                 "optionalChildren":[]
             },

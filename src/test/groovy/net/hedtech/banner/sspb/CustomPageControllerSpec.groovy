@@ -1,11 +1,13 @@
 /*******************************************************************************
- Copyright 2018 Ellucian Company L.P. and its affiliates.
+ Copyright 2018-2020 Ellucian Company L.P. and its affiliates.
  ****************************************************************************** */
 
 package net.hedtech.banner.sspb
 
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.testing.web.controllers.ControllerUnitTest
 import grails.util.Holders
+import net.hedtech.banner.exceptions.MepCodeNotFoundException
 import spock.lang.Specification
 
 /**
@@ -71,4 +73,30 @@ class CustomPageControllerSpec extends Specification implements ControllerUnitTe
         controller.response.status == 404
 
     }
+
+    void "test get HTML with MEPNotFoundException"() {
+        given:
+        def param2 = [id:"menu"]
+        when:
+        controller.request.parameters = param2
+        Page.metaClass.static.findByConstantName = { constName ->
+            throw new MepCodeNotFoundException(mepCode: "MEPCODENOTFOUND")
+        }
+        controller.getHTML()
+
+        then:
+        MepCodeNotFoundException e = thrown()
+        'mepcode.invalid.message' == e.message
+    }
+
+    void "test userSessionValidationCheck"() {
+        given:
+        controller.springSecurityService = new SpringSecurityService()
+        controller.springSecurityService.metaClass.isLoggedIn = {return false}
+        when:
+        controller.userSessionValidationCheck()
+        then:
+        controller.response.status == 200
+    }
+
 }

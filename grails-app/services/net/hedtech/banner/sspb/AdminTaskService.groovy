@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2013-2019 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2020 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 package net.hedtech.banner.sspb
 
@@ -20,6 +20,7 @@ class AdminTaskService {
     def listsStartedMilis = 0    // beginning of time
     def listTimeout = 300 * 1000 // milis
     def pageBuilderLocation
+    private Object propLock= new Object()
 
     def create(Map content, ignore) {
         pageBuilderLocation = pageUtilService?.pbConfig?.locations
@@ -60,8 +61,9 @@ class AdminTaskService {
                             objectName=domain?.serviceName
                         }
                         if(!developerSecurityService.isAllowImport(objectName, artifactType)) {
-                        result << [accessError: message(code: "sspb.renderer.page.deny.access", args: [objectName])]
-                        return result
+                            pushArtifactForImport(at.type, at.name, content, copyOwner, copyDevSec)
+                            result << [accessError: message(code: "sspb.renderer.page.deny.access", args: [objectName])]
+                            return result
                         }
                         def fileName = "${pageUtilService.pbConfig.locations[at.type]}/${at.name}.json"
                         def file = new File(fileName)
@@ -98,37 +100,39 @@ class AdminTaskService {
 
     // This method checks if all artifacts have been submitted. If so, the import is started.
     private def pushArtifactForImport(type, name, content, copyOwner, copyDevSec) {
-        def importCount = 0
-        if ( listCount ==0 || ( (new Date()).getTime() - listsStartedMilis > listTimeout) ) {
-            nameLists = [:] // Reset the namesAssume data are from a failed previous upload
-            listCount = 0
-            listsStartedMilis = (new Date()).getTime()
-        }
-        if (nameLists[type]) {
-            nameLists[type]<<name
-        } else {
-            nameLists[type]= [name]
-        }
-        listCount++
-        log.info "* $listCount of ${content.artifact.count}"
-        if (listCount >= content.artifact.count ) {
-            log.info "* All artifacts are uploaded, start importing"
-            listCount = 0 //Clear to start a new set of artifacts
-            def mode = PBUtilServiceBase.loadOverwriteExisting
-            // copied all artifacts
-            if (nameLists.css?.size() > 0){
-                importCount += cssUtilService.importAllFromDir(pageBuilderLocation?.css, mode,
-                        nameLists.css, copyOwner, copyDevSec)
+        synchronized (propLock) {
+            def importCount = 0
+            if (listCount == 0 || ((new Date()).getTime() - listsStartedMilis > listTimeout)) {
+                nameLists = [:] // Reset the namesAssume data are from a failed previous upload
+                listCount = 0
+                listsStartedMilis = (new Date()).getTime()
             }
-            if (nameLists.page?.size() > 0) {
-                importCount += pageUtilService.importAllFromDir(pageBuilderLocation?.page, mode,
-                        nameLists.page, true, copyOwner, copyDevSec)
+            if (nameLists[type]) {
+                nameLists[type] << name
+            } else {
+                nameLists[type] = [name]
             }
-            if (nameLists.virtualDomain?.size() > 0) {
-                importCount += virtualDomainUtilService.importAllFromDir(pageBuilderLocation?.virtualDomain,
-                        mode, nameLists.virtualDomain, copyOwner, copyDevSec)
+            listCount++
+            log.info "* $listCount of ${content.artifact.count}"
+            if (listCount >= content.artifact.count) {
+                log.info "* All artifacts are uploaded, start importing"
+                listCount = 0 //Clear to start a new set of artifacts
+                def mode = PBUtilServiceBase.loadOverwriteExisting
+                // copied all artifacts
+                if (nameLists.css?.size() > 0) {
+                    importCount += cssUtilService.importAllFromDir(pageBuilderLocation?.css, mode,
+                            nameLists.css, copyOwner, copyDevSec)
+                }
+                if (nameLists.page?.size() > 0) {
+                    importCount += pageUtilService.importAllFromDir(pageBuilderLocation?.page, mode,
+                            nameLists.page, true, copyOwner, copyDevSec)
+                }
+                if (nameLists.virtualDomain?.size() > 0) {
+                    importCount += virtualDomainUtilService.importAllFromDir(pageBuilderLocation?.virtualDomain,
+                            mode, nameLists.virtualDomain, copyOwner, copyDevSec)
+                }
             }
+            importCount
         }
-        importCount
     }
 }
