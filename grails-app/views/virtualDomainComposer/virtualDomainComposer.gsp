@@ -109,10 +109,10 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             <tbody role="rowgroup">
                 <tr role="row">
                     <td role="gridcell">
-                        <g:textArea name="vdQueryView" aria-labelledby="vdQueryStatement" value="${pageInstance?.vdQueryView}" rows="20" cols="60" style="width:100%" required="true" tabindex="-1"/>
+                        <g:textArea name="vdQueryView" aria-labelledby="vdQueryStatement" value="${pageInstance?.vdQueryView}" rows="20" cols="60" style="width:100%" required="true" tabindex="0"/>
                     </td>
                     <td role="gridcell">
-                        <g:textArea name="vdDeleteView" aria-labelledby="vdDeleteStatement" value="${pageInstance?.vdDeleteView}" rows="20" cols="60" style="width:100%" tabindex="-1"/>
+                        <g:textArea name="vdDeleteView" aria-labelledby="vdDeleteStatement" value="${pageInstance?.vdDeleteView}" rows="20" cols="60" style="width:100%" tabindex="0"/>
                     </td>
                 </tr>
             </tbody>
@@ -126,10 +126,10 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             <tbody role="rowgroup">
                 <tr role="row">
                     <td role="gridcell">
-                        <g:textArea name="vdPostView" aria-labelledby="vdPostStatement" value="${pageInstance?.vdPostView}" rows="20" cols="60" style="width:100%"  tabindex="-1"/>
+                        <g:textArea name="vdPostView" aria-labelledby="vdPostStatement" value="${pageInstance?.vdPostView}" rows="20" cols="60" style="width:100%"  tabindex="0"/>
                     </td>
                     <td role="gridcell">
-                        <g:textArea name="vdPutView" aria-labelledby="vdPutStatement" value="${pageInstance?.vdPutView}" rows="20" cols="60" style="width:100%" tabindex="-1"/>
+                        <g:textArea name="vdPutView" aria-labelledby="vdPutStatement" value="${pageInstance?.vdPutView}" rows="20" cols="60" style="width:100%" tabindex="0"/>
                     </td>
                 </tr>
             </tbody>
@@ -143,7 +143,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             if (pageInstance?.vdServiceName)  {
                 out << """
     <h4 id="vdQueryResult">${message(code:"sspb.page.virtualdomain.query.result.label")} </h4>
-    <label for"vdTestParameters"> ${message(code:"sspb.page.virtualdomain.query.result.parameters.label")}</label>
+    <label for="vdTestParameters"> ${message(code:"sspb.page.virtualdomain.query.result.parameters.label")}</label>
     <input type="text" id="vdTestParameters" name="vdTestParameters" value="${pageInstance.vdTestParameters?pageInstance.vdTestParameters:""}" />
     <input type="hidden"  name="vdServiceName" value="${pageInstance?.vdServiceName}" />
     <input type="button" class="primary" role="button" aria-label="${message(code:"sspb.page.virtualdomain.query.result.test.label")}" value="${message(code:"sspb.page.virtualdomain.query.result.test.label")}" id="getDataButton"/>
@@ -174,7 +174,11 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                     },
                     error : function(jqXHR) {
                            var errorResponse = \$.parseJSON(jqXHR.responseText);
-                           var errorMsg = errorResponse.errors.errorMessage;
+                           var errorMsg;
+                           if(errorResponse.errors.length > 0 && errorResponse.errors[0].errorMessage != undefined)
+                                errorMsg = errorResponse.errors[0].errorMessage;
+                           else
+                                errorMsg = "Unable to get resources.";
                            var msg = \$.i18n.prop("js.net.hedtech.banner.ajax.error.message", [ errorMsg ]);
                            var n = new Notification( {
                                 message: msg,
