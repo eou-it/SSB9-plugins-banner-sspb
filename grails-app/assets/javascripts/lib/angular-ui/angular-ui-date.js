@@ -142,7 +142,7 @@
 
                             // Update the date picker when the model changes
                             controller.$render = function() {
-                                element.datepicker('setDate', controller.$modelValue);
+                                element.datepicker('setDate', uiDateConverter.stringToDate(attrs.uiDateFormat, controller.$modelValue));
                             };
                         }
                         // Check if the element already has a datepicker.
