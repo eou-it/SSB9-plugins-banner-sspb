@@ -78,6 +78,8 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
         <asset:stylesheet href="modules/pageBuilderLTR-mf.css"/>
     </g:else>
     <asset:javascript src="modules/jquery-mf.js"/>
+    <asset:javascript src="modules/pageBuilderJQuery-mf.js"/>
+
     <asset:script>
         var extensibilityInfo = ${extensibilityInfo.encodeAsRaw()}
         window.mepCode='${session.mep}';
@@ -109,6 +111,8 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
           document.getElementsByName('headerAttributes')[0].content = JSON.stringify({
             "pageTitle": "<g:layoutTitle/>"
         });
+
+        var dateTimeLocale = "${localeBrowserFull}" ;
     </g:javascript>
 
 
@@ -176,6 +180,8 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
         <g:customJavaScriptIncludes/>
         <asset:javascript src="lib/jquery/i18n/jquery.ui.datepicker-${localeBrowserFull.toLowerCase()}.js" />
         <asset:javascript src="lib/angular/i18n/angular-locale_${localeBrowserFull.toLowerCase()}.js" />
+        <asset:javascript src="modules/pageBuilderDate-mf.js"/>
+
     </body>
 </html>
 
