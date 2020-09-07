@@ -81,6 +81,12 @@ function getControllerScopeById(id) {
     return scope;
 }
 
+function clickEvent(element){
+    if(event.keyCode == 32){
+        element.click();
+        event.preventDefault();
+    }
+}
 
 /* App Module */
 
