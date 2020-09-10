@@ -934,13 +934,15 @@ class PageComponent {
         def typeInternal=t
         if (t == COMP_TYPE_DATETIME && readonly) // need to render as display item as date picker isn't disabled.
                 typeInternal=COMP_TYPE_DISPLAY
-    
+
         switch (typeInternal) {
             case COMP_TYPE_SELECT:
                 // SELECT must have a model
                 def arrayName = "${name}DS.data"
                 def ngModel = name
-                def placeholderStr = placeholder?"""<option value="">${tran("placeholder")}</option>""":""" <option style="display:none" value=""></option> """
+                def optionId = "pbid-"+name+"-label"
+                def placeholderStr = placeholder?"""<option id="$optionId" value="">${tran("placeholder")}</option>""":""" <option id="$optionId" style="display:none" value=""></option> """
+                def keyPress = "ng-keypress=${name}DS.openDropDown(\"$optionId\",\$event);"
                 ngChange = "" //override default
                 if(isDataSetEditControl(parent)) {
                     ngModel =  "$GRID_ITEM.${model}"
@@ -951,7 +953,7 @@ class PageComponent {
                 ngChange += onUpdate?"${name}DS.onUpdate(item);":""
                 ngChange = ngChange?"ng-change=\"$ngChange\"":""
                 result = """
-                           |<select ${required?"required":""}  ${idAttribute(idTxtParam)} $autoStyleStr ng-model="$ngModel" $ngChange  ${defaultValue()} 
+                           |<select ${required?"required":""}  ${idAttribute(idTxtParam)} $keyPress $autoStyleStr ng-model="$ngModel" $ngChange  ${defaultValue()} 
                            |  ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName"> 
                            |  $placeholderStr
                            |</select>""".stripMargin()
