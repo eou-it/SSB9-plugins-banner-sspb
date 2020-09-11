@@ -940,7 +940,7 @@ class PageComponent {
                 // SELECT must have a model
                 def arrayName = "${name}DS.data"
                 def ngModel = name
-                def optionId = "pbid-"+name+"-label"
+                def optionId = "pbid-"+name+"-Option"
                 def placeholderStr = placeholder?"""<option id="$optionId" value="">${tran("placeholder")}</option>""":""" <option id="$optionId" style="display:none" value=""></option> """
                 def keyPress = "ng-keypress=${name}DS.openDropDown(\"$optionId\",\$event);"
                 ngChange = "" //override default
