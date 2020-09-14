@@ -83,7 +83,7 @@ function getControllerScopeById(id) {
 
 function clickEvent(element){
     var keycode = (event.keyCode ? event.keyCode : event.which);
-    if(keycode == 32){
+    if(keycode == 32 || keycode==13){
         element.click();
         event.preventDefault();
     }
