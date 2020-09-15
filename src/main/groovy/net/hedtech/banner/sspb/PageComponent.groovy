@@ -1090,7 +1090,7 @@ class PageComponent {
                 }
                 break;
             case COMP_TYPE_BOOLEAN:
-                result ="""<input ${idAttribute(idTxtParam)} $autoStyleStr  type="checkbox" tabindex="0" name="${name?name:model}"
+                result ="""<input ${idAttribute(idTxtParam)} $autoStyleStr  type="checkbox" name="${name?name:model}"
                            ${booleanTrueValue?"ng-true-value=\"${htmlValue(booleanTrueValue,"'")}\"":""} ${booleanFalseValue?"ng-false-value=\"${htmlValue(booleanFalseValue,"'")}\"":""}
                            $ngChange $ngClick
                            """
