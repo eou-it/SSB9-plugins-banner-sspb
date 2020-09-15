@@ -614,7 +614,7 @@ class PageComponent {
                 placeholderAt=placeholder?"placeholder=\"${tran("placeholder")}\"":""
                 break
             case COMP_TYPE_BOOLEAN:
-                typeAt = "type=\"checkbox\""
+                typeAt = "type=\"checkbox\" tabindex=\"0\""
                 styleAt="style=\"background-color:transparent; border:0; width: 30%; height:{{rowHeight}}px\""
                 specialAt ="""${booleanTrueValue?"ng-true-value=\"${htmlValue(booleanTrueValue,"\\\'")}\"":""} ${booleanFalseValue?"ng-false-value=\"${htmlValue(booleanFalseValue,"\\\'")}\"":""}  """
                 role= "role=checkbox"
@@ -909,7 +909,11 @@ class PageComponent {
             autoStyleStr = """class="pb-${parent.type} pb-$type pb-item $valueStyle"  """
         }
         def tranLabel = ( !(label) || parent.type == COMP_TYPE_HTABLE)?"&#x2007;&#x2007;":tran("label")
-        def labelTxt = "<label class=\"pb-${parent.type} pb-$type pb-item pb-label $labelStyle \" ${idAttribute("-label"+idTxtParam)} ${idForAttribute(idTxtParam)}>$tranLabel</label>"
+        def tindex
+        if([COMP_TYPE_BOOLEAN].contains(t)){
+            tindex = "tabindex=\"0\" onkeypress=\"clickEvent(this)\" role=\"checkbox\"";
+        }
+        def labelTxt = "<label class=\"pb-${parent.type} pb-$type pb-item pb-label $labelStyle \" ${idAttribute("-label"+idTxtParam)} $tindex ${idForAttribute(idTxtParam)} /*aria-labelledby=\"pbid-$name\"*/>$tranLabel</label>"
 
         //Use empty labels for radio and boolean to support xeStyle
         labelTxt = ( !label && ![COMP_TYPE_RADIO,COMP_TYPE_BOOLEAN].contains(t))?"":labelTxt
@@ -985,7 +989,7 @@ class PageComponent {
                   |<div class="$valueStyle" ng-repeat="$SELECT_ITEM in $arrayName" $initTxt role="radiogroup">
                   |    <label ${idAttribute("-label-$idxStr")} ${idForAttribute("-radio-$idxStr")} $radioLabelStyleStr>
                   |    <input ${required?"required":""} ${idAttribute("-radio-$idxStr")} type="radio" number-to-string ng-model=$ngModel name="$nameTxt" $ngChange value="{{$SELECT_ITEM.$valueKey}}" aria-checked="false"/>
-                  |    <span>{{$SELECT_ITEM.$labelKey}}</span></label>
+                  |    <span tabindex="0" onkeypress="clickEvent(this)">{{$SELECT_ITEM.$labelKey}}</span></label>
                   |</div>""".stripMargin()
                 result = """<div ${idAttribute(idTxtParam)} $autoStyleStr> $result </div>"""
                 break;
@@ -1031,7 +1035,7 @@ class PageComponent {
                 // set url to empty string if it is null, otherwise the page is re-directed to a non-existing page
                 url = (url==null)?"":url
                 result =  """
-                          |<a ${idAttribute(idTxtParam)} ng-href="${compileDOMDisplay(url)}" $targetStr $clickStr>
+                          |<a ${idAttribute(idTxtParam)} ng-href="${compileDOMDisplay(url)}" $targetStr $clickStr tabindex="0">
                           |<span $autoStyleStr> $desc </span></a>
                           |""".stripMargin()
                 break;
