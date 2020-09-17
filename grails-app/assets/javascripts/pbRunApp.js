@@ -123,6 +123,7 @@ appModule.controller('homePageUrlCtr', ['$scope', '$window', '$http', function($
         $('#branding').attr('href', url);
 
     };
+
 }]);
 // below filter is used for pagination
 appModule.filter('startFrom', function() {

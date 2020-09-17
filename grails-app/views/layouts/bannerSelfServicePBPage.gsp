@@ -98,7 +98,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             console = {log: function() {}};
         }
         // inject services and controller modules to be registered with the global ng-app
-        var myCustomServices = ['ngResource','ngGrid','ui', 'pbrun.directives', 'ngSanitize', 'xe-ui-components'];
+        var myCustomServices = ['ngResource', 'ui.grid', 'ui.grid.i18n','ui.grid.edit', 'ui.grid.cellNav','ui', 'pbrun.directives', 'ngSanitize', 'xe-ui-components'];
         var pageControllers = {};
 
         var transactionTimeoutMeta    = $( "meta[name=transactionTimeout]" ),
@@ -135,7 +135,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
         <asset:javascript src="modules/pageBuilder-mf.js"/>
 
         <asset:script type="text/javascript">
-            window.ngGrid.i18n[gridLocale] = {
+            %{--window.ui.grid.i18n[gridLocale] = {
                 ngAggregateLabel:          '${message(code: 'nggrid.ngAggregateLabel'         , encodeAs: 'JavaScript')}',
                 ngGroupPanelDescription:   '${message(code: 'nggrid.ngGroupPanelDescription'  , encodeAs: 'JavaScript')}',
                 ngSearchPlaceHolder:       '${message(code: 'nggrid.ngSearchPlaceHolder'      , encodeAs: 'JavaScript')}',
@@ -153,7 +153,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 styleRight:                '${message(code:'default.language.direction')=='ltr'?'right':'left'}',
                 maxPageLabel:              '${message(code:'nggrid.maxPageLabel'             , encodeAs: 'JavaScript')}',
                 pageLabel:                 '${message(code:'nggrid.pageLabel'                , encodeAs: 'JavaScript')}'
-            };
+            };--}%
             yepnope({
                 test : window.JSON,
                 nope : '${assetPath(src: 'json2.js')}'

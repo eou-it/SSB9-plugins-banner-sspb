@@ -582,12 +582,12 @@ class PageComponent {
         def requiredAt = required?"required":""
         def validateAt = ""
         def placeholderAt=""
-        def ngModel="ng-model=\"COL_FIELD\""    // shorthand for  row.entity[col.field]
+        def ngModel="ng-model=\"MODEL_COL_FIELD\""    // shorthand for  row.entity[col.field]
         def ngChange=ro?"":"ng-change=\""+(onUpdate?"\$parent.${parent.ID}_${name}_onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity)\""
         def onClickCode=parent.onClick?"\$parent.${parent.name}_onClick(row.entity, col);":""
         //Do not remove setCurrentRecord without checking all is good (may be done 2x but need to make sure it is before onClickCode)
         def ngClick="""ng-click="\$parent.${parent.name}DS.setCurrentRecord(row.entity);$onClickCode" """
-        def ariaLabel = "aria-label=\"COL_FIELD\""
+        def ariaLabel = "aria-label=\"MODEL_COL_FIELD\""
         def role = ""
         def typeInternal = type
         if (type == COMP_TYPE_NUMBER ) {
@@ -608,7 +608,7 @@ class PageComponent {
                 readonlyAt = (parent.allowModify && !ro)?"":"disabled" //select doesn't have readonly
                 ngChange="ng-change=\""+(onUpdate?"${name}DS.onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity);${name}DS.setCurrentRecord(row.entity.$model);\""
                 placeholderAt = placeholder?"""<option value="" role="menuitem">${tran("placeholder")}</option>""":""
-                return """<select ${idForAttribute(idTxtParam+"-label")} role="menu" $ariaLabel ${styleAt} $ngModel $readonlyAt $ngChange $ngClick ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName"> $placeholderAt </select>"""
+                return """<select ${idForAttribute(idTxtParam+"-label")} role="menu" $ariaLabel ${styleAt} $ngModel $readonlyAt $ngChange $ngClick ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in grid.appScope.$arrayName"> $placeholderAt </select>"""
             case [COMP_TYPE_TEXT, COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER, COMP_TYPE_DATETIME, COMP_TYPE_EMAIL, COMP_TYPE_TEL] :
                 validateAt = validationAttributes()
                 placeholderAt=placeholder?"placeholder=\"${tran("placeholder")}\"":""
@@ -625,10 +625,10 @@ class PageComponent {
                 if (asHtml) {
                     tagStart="<span"
                     tagEnd="></span>"
-                    ngModel="ng-bind-html=\"COL_FIELD | to_trusted\""
+                    ngModel="ng-bind-html=\"MODEL_COL_FIELD | to_trusted\""
                 }
                 if (type==COMP_TYPE_DATETIME) {
-                    ngModel="value=\"{{COL_FIELD|date:\\'medium\\'}}\""
+                    ngModel="value=\"{{MODEL_COL_FIELD|date:\\'medium\\'}}\""
                 }
                 break
             case COMP_TYPE_LITERAL:
@@ -1150,7 +1150,7 @@ class PageComponent {
                 def borderpx=2
                 //headerRowHeight doesn't work in {{ expression }} - assume same as rowHeight hence pageSize+1
                 //style="...{{expression }}..."  does not evaluate properly in IE8 - fixed using ng-style
-                return """\n$heading\n<div ${idAttribute(idTxtParam)} class="gridStyle" role="grid" ng-grid="${name}Grid" $styleStr ng-style="{height: (${borderpx*2}+${pageSize+1}*rowHeight+footerRowHeight) + 'px'}" aria-labelledby="pbid-$name${idTxtParam?idTxtParam:""}-label"></div>\n"""
+                return """\n$heading\n<div ${idAttribute(idTxtParam)} class="gridStyle" role="grid" ui-grid="${name}Grid" $styleStr ng-style="{height: (${borderpx*2}+${pageSize+1}*rowHeight+footerRowHeight) + 'px'}" aria-labelledby="pbid-$name${idTxtParam?idTxtParam:""}-label" external-scopes="externalScope"></div>\n"""
             case COMP_TYPE_DATATABLE:
                 return dataTableCompile(depth+1)
             case COMP_TYPE_DETAIL:

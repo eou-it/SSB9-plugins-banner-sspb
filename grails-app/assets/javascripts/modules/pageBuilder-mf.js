@@ -1,6 +1,6 @@
 //= require modules/angularApp-mf.js
 //= require modules/min-bannerWeb-mf.js
-//= require lib/ng-grid/ng-grid.js
+//= require lib/angular-ui-grid/ui-grid.js
 //= require lib/angular-ui/angular-ui.js
 //= require pbRunDirectives.js
 //= require xe-components/xe-ui-components.js
