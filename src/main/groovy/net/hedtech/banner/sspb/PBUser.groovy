@@ -5,26 +5,25 @@ package net.hedtech.banner.sspb
 
 import grails.util.Holders
 import net.hedtech.banner.security.DeveloperSecurityService
+import net.hedtech.banner.tools.PBSessionTracker
+import org.apache.commons.logging.LogFactory
 import org.grails.plugins.web.taglib.ValidationTagLib
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
-import org.apache.commons.logging.LogFactory
 
 // Integration with Banner - class to get user object for page builder
 // Define a user object with relevant attributes from the Banner user
 class PBUser {
-
-    static def userNameCache
-    static def userCache
 
     private def static localizer = { mapToLocalize ->
         new ValidationTagLib().message( mapToLocalize )
     }
 
     static def get() {
+        def userCache
         def userIn = SecurityContextHolder?.context?.authentication?.principal
-        if (userIn && userIn?.username?.equals(userNameCache) ) {
-            return userCache
+        if (userIn && PBSessionTracker.cachedMap.containsKey(userIn?.username) ) {
+            return PBSessionTracker.cachedMap.get(userIn?.username)
         }
         LogFactory.getLog(this).info "Getting new PB User $userIn"
         Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>()
@@ -48,8 +47,9 @@ class PBUser {
         //give user guest role to be consistent with ability to view pages with IS_AUTHENTICATED_ANONYMOUSLY role
         userCache.authorities << [objectName: "SELFSERVICE-GUEST", roleName: "BAN_DEFAULT_M"]
 
-        userNameCache = userIn?.username
-        userCache
+        PBSessionTracker.cachedMap.put(userIn?.username, userCache)
+
+       return userCache
     }
 
     //Dont include data that should not be exposed
