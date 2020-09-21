@@ -274,10 +274,15 @@ pagebuilderModule.directive('pbUpload', function() {
                 // modal dialog functions
                 $scope.openUploadModal = function () {
                     $scope.uploadShouldBeOpen = true;
+                    $("#pbid-upload-stylesheet").blur(function () {
+                        $("#pbid-cssName-upload").focus();
+                    });
+
                 };
 
                 $scope.closeUploadModal = function () {
                     $scope.uploadShouldBeOpen = false;
+                    $("#pbid-upload-stylesheet").focus();
                 };
 
                 $scope.cancelUploadModal = function() {
