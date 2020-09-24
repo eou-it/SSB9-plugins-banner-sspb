@@ -22,17 +22,16 @@ class PBSessionTracker implements HttpSessionListener, ApplicationContextAware  
 
     @Override
     void sessionCreated(HttpSessionEvent se) {
-        log.trace("Page Builder User Session created: " + se.session.id)
+            log.trace("Page Builder User Session created: " + se?.session?.id)
     }
 
     @Override
     void sessionDestroyed(HttpSessionEvent se) {
-        log.trace("Page Builder User Session destroyed: " + se.session.id)
+        log.debug("Page Builder User Session destroyed: " + se?.session?.id)
         def userIn = SecurityContextHolder?.context?.authentication?.principal
         if(cachedMap.containsKey(userIn?.username)){
             cachedMap.remove(userIn?.username)
         }
-
     }
 
     @Override
