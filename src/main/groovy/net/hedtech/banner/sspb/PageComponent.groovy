@@ -459,7 +459,7 @@ class PageComponent {
         def btnLabel
         if (allowNew) {
             btnLabel=newRecordLabel?tran("newRecordLabel",ESC_JS):tranGlobal("newRecord.label","Add New",[], ESC_JS)
-            result += """ <button class="primary" $styleStr ng-click="grid.appScope.${dataSet}.add(${newRecordName()}())" type="button"> $btnLabel  </button>"""
+            result += """ <button class="primary" $styleStr ng-click="grid.appScope.${dataSet}.add(grid.appScope.${newRecordName()}())" type="button"> $btnLabel  </button>"""
         }
         if (allowDelete) {
             btnLabel=deleteRecordLabel?tran("deleteRecordLabel",ESC_JS):tranGlobal("deleteRecord.label","Delete selected",[], ESC_JS)
@@ -533,8 +533,9 @@ class PageComponent {
         
          \$scope.${name}Grid.onRegisterApi= function(gridApi) {
             \$scope.gridApi = gridApi;
+            \$scope.gridApi.core.on.sortChanged( \$scope, \$scope.sortChanged );
+            \$scope.sortChanged(\$scope.gridApi.grid, [ \$scope.${name}Grid.columnDefs[1] ] );
              gridApi.selection.on.rowSelectionChanged(\$scope,function(row){
-                debugger;
                 \$scope.${dataSet}.selectedRecords = \$scope.gridApi.selection.getSelectedRows();
               });
      
@@ -563,6 +564,17 @@ class PageComponent {
                 \$scope.${dataSet}.load({all:false,paging:true});
             }
         }, true);
+        \$scope.sortChanged= function(grid, sortColumns){
+            debugger;
+            if(sortColumns[0].name){
+                if( sortColumns.length === 0 || sortColumns[0].name !== \$scope.${name}Grid.columnDefs[0].name ){
+                }else{
+                    \$scope.${dataSet}.sortInfo.fields =[sortColumns[0].name];
+                    \$scope.${dataSet}.sortInfo.directions= [sortColumns[0].sort.direction]
+                }
+            }
+            
+        }
         """
 
         //currentRecord is also set with a click handler. Cannot remove below setting because click does not capture keyboard
@@ -1172,7 +1184,7 @@ class PageComponent {
                         \n$heading\n<div ${idAttribute(idTxtParam)} class="gridStyle" role="grid" ui-grid="${name}Grid"
                          $styleStr 
                         aria-labelledby="pbid-$name${idTxtParam?idTxtParam:""}-label" external-scopes="externalScope"
-                         ui-grid-selection ui-grid-resize-columns></div>\n"""
+                         ui-grid-selection ui-grid-resize-columns ui-grid-auto-resize></div>\n"""
             case COMP_TYPE_DATATABLE:
                 return dataTableCompile(depth+1)
             case COMP_TYPE_DETAIL:

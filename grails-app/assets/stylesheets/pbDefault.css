@@ -262,4 +262,8 @@ select.per-page-select, select.per-page-select:focus, select.per-page-select:hov
     padding: 1em;
 }
 
+.ui-grid {
+    height: 26vh;
+}
+
 
