@@ -98,7 +98,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             console = {log: function() {}};
         }
         // inject services and controller modules to be registered with the global ng-app
-        var myCustomServices = ['ngResource', 'ui.grid', 'ui.grid.i18n','ui.grid.edit', 'ui.grid.cellNav','ui', 'pbrun.directives', 'ngSanitize', 'xe-ui-components'];
+        var myCustomServices = ['ngResource', 'ui.grid', 'ui.grid.i18n','ui.grid.edit','ui.grid.selection','ui.grid.resizeColumns', 'ui.grid.cellNav','ui', 'pbrun.directives', 'ngSanitize', 'xe-ui-components'];
         var pageControllers = {};
 
         var transactionTimeoutMeta    = $( "meta[name=transactionTimeout]" ),

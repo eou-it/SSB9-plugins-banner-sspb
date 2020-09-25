@@ -257,4 +257,9 @@ select.per-page-select, select.per-page-select:focus, select.per-page-select:hov
     overflow-y: auto;
 }
 
+.customPaginationRightCenter {
+    float: right;
+    padding: 1em;
+}
+
 

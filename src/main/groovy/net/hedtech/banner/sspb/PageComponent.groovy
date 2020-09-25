@@ -459,19 +459,19 @@ class PageComponent {
         def btnLabel
         if (allowNew) {
             btnLabel=newRecordLabel?tran("newRecordLabel",ESC_JS):tranGlobal("newRecord.label","Add New",[], ESC_JS)
-            result += """ <button class="primary" $styleStr ng-click="${dataSet}.add(${newRecordName()}())" type="button"> $btnLabel  </button>"""
+            result += """ <button class="primary" $styleStr ng-click="grid.appScope.${dataSet}.add(${newRecordName()}())" type="button"> $btnLabel  </button>"""
         }
         if (allowDelete) {
             btnLabel=deleteRecordLabel?tran("deleteRecordLabel",ESC_JS):tranGlobal("deleteRecord.label","Delete selected",[], ESC_JS)
-            result += """ <button class="secondary" $styleStr ng-click="${dataSet}.deleteRecords(${dataSet}.selectedRecords)" ng-disabled="${dataSet}.selectedRecords.length==0" type="button"> $btnLabel  </button>"""
+            result += """ <button class="secondary" $styleStr ng-click="grid.appScope.${dataSet}.deleteRecords(grid.appScope.${dataSet}.selectedRecords)" ng-disabled="grid.appScope.${dataSet}.selectedRecords.length==0" type="button"> $btnLabel  </button>"""
         }
         if (allowModify || allowDelete) {
             btnLabel=saveDataLabel?tran("saveDataLabel",ESC_JS):tranGlobal("save.label","Save",[], ESC_JS)
-            result += """ <button class="primary" $styleStr ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()" type="button"> $btnLabel </button>"""
+            result += """ <button class="primary" $styleStr ng-click="grid.appScope.${dataSet}.save()" ng-disabled="!grid.appScope.${dataSet}.dirty()" type="button"> $btnLabel </button>"""
         }
         if (allowReload) {
             btnLabel=refreshDataLabel?tran("refreshDataLabel",ESC_JS):tranGlobal("refresh.label","Refresh",[], ESC_JS)
-            result += """ <button class="secondary" $styleStr ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})" type="button"> $btnLabel </button> """
+            result += """ <button class="secondary" $styleStr ng-click="grid.appScope.${dataSet}.load({all:false,paging:true,clearCache:true})" type="button"> $btnLabel </button> """
         }
         // alas, but cannot dynamically toggle multiSelect property of grid
         //result += "<input type=\"checkbox\" ng-model=\"${name}Grid.multiSelect\">Select multiple</input>"
@@ -509,8 +509,13 @@ class PageComponent {
             enableCellSelection: true,
             enableColumnResize: true,
             enablePaging: true,
-            footerTemplate: \$templateCache.get('gridFooter.html').replace('#gridControlPanel#',${name}GridControlPanel).replace('#gridName#','${name}'),
-            footerRowHeight: 55,
+            showGridFooter:true,
+            useCustomPagination: true,
+            enableRowSelection: true,
+            enableSelectAll:true,
+            useExternalPagination : true,
+            rowHeight: 30,
+            gridFooterTemplate: \$templateCache.get('gridFooter.html').replace('#gridControlPanel#',${name}GridControlPanel).replaceAll('#gridName#','${name}'),
             jqueryUIDraggable:true,
             multiSelect:false,
             showSelectionCheckbox:false,
@@ -521,10 +526,23 @@ class PageComponent {
             showFilter:true,
             showFooter: true,
             sortInfo: \$scope.${dataSet}.sortInfo,
-            totalServerItems: '${dataSet}.totalCount',
+            totalServerItems: \$scope.${dataSet}.totalCount,
             useExternalSorting: true,
             i18n: gridLocale
         };
+        
+         \$scope.${name}Grid.onRegisterApi= function(gridApi) {
+            \$scope.gridApi = gridApi;
+             gridApi.selection.on.rowSelectionChanged(\$scope,function(row){
+                debugger;
+                \$scope.${dataSet}.selectedRecords = \$scope.gridApi.selection.getSelectedRows();
+              });
+     
+             gridApi.selection.on.rowSelectionChangedBatch(\$scope,function(rows){
+                var msg = 'rows changed ' + rows.length;
+                console.log(msg);
+              });
+          }
         ${dataSetWatches()}
         """
         return code
@@ -583,10 +601,10 @@ class PageComponent {
         def validateAt = ""
         def placeholderAt=""
         def ngModel="ng-model=\"MODEL_COL_FIELD\""    // shorthand for  row.entity[col.field]
-        def ngChange=ro?"":"ng-change=\""+(onUpdate?"\$parent.${parent.ID}_${name}_onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity)\""
-        def onClickCode=parent.onClick?"\$parent.${parent.name}_onClick(row.entity, col);":""
+        def ngChange=ro?"":"ng-change=\""+(onUpdate?"grid.appScope.${parent.ID}_${name}_onUpdate(row.entity);":"")+"grid.appScope.${parent.name}DS.setModified(row.entity)\""
+        def onClickCode=parent.onClick?"grid.appScope.${parent.name}_onClick(row.entity, col);":""
         //Do not remove setCurrentRecord without checking all is good (may be done 2x but need to make sure it is before onClickCode)
-        def ngClick="""ng-click="\$parent.${parent.name}DS.setCurrentRecord(row.entity);$onClickCode" """
+        def ngClick="""ng-click="grid.appScope.${parent.name}DS.setCurrentRecord(row.entity);$onClickCode" """
         def ariaLabel = "aria-label=\"MODEL_COL_FIELD\""
         def role = ""
         def typeInternal = type
@@ -606,7 +624,7 @@ class PageComponent {
                 // SELECT must have a model
                 def arrayName = "${name}DS.data"
                 readonlyAt = (parent.allowModify && !ro)?"":"disabled" //select doesn't have readonly
-                ngChange="ng-change=\""+(onUpdate?"${name}DS.onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity);${name}DS.setCurrentRecord(row.entity.$model);\""
+                ngChange="ng-change=\""+(onUpdate?"grid.appScope.${name}DS.onUpdate(row.entity);":"")+"grid.appScope.${parent.name}DS.setModified(row.entity);grid.appScope.${name}DS.setCurrentRecord(row.entity.$model);\""
                 placeholderAt = placeholder?"""<option value="" role="menuitem">${tran("placeholder")}</option>""":""
                 return """<select ${idForAttribute(idTxtParam+"-label")} role="menu" $ariaLabel ${styleAt} $ngModel $readonlyAt $ngChange $ngClick ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in grid.appScope.$arrayName"> $placeholderAt </select>"""
             case [COMP_TYPE_TEXT, COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER, COMP_TYPE_DATETIME, COMP_TYPE_EMAIL, COMP_TYPE_TEL] :
@@ -1150,7 +1168,11 @@ class PageComponent {
                 def borderpx=2
                 //headerRowHeight doesn't work in {{ expression }} - assume same as rowHeight hence pageSize+1
                 //style="...{{expression }}..."  does not evaluate properly in IE8 - fixed using ng-style
-                return """\n$heading\n<div ${idAttribute(idTxtParam)} class="gridStyle" role="grid" ui-grid="${name}Grid" $styleStr ng-style="{height: (${borderpx*2}+${pageSize+1}*rowHeight+footerRowHeight) + 'px'}" aria-labelledby="pbid-$name${idTxtParam?idTxtParam:""}-label" external-scopes="externalScope"></div>\n"""
+                return """
+                        \n$heading\n<div ${idAttribute(idTxtParam)} class="gridStyle" role="grid" ui-grid="${name}Grid"
+                         $styleStr 
+                        aria-labelledby="pbid-$name${idTxtParam?idTxtParam:""}-label" external-scopes="externalScope"
+                         ui-grid-selection ui-grid-resize-columns></div>\n"""
             case COMP_TYPE_DATATABLE:
                 return dataTableCompile(depth+1)
             case COMP_TYPE_DETAIL:
