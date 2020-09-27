@@ -16,53 +16,53 @@ import org.springframework.security.core.context.SecurityContextHolder
 class PBUser {
 
     private def static localizer = { mapToLocalize ->
-        new ValidationTagLib().message( mapToLocalize )
+        new ValidationTagLib().message(mapToLocalize)
     }
 
     static def get() {
-        def userCache
         def userIn = SecurityContextHolder?.context?.authentication?.principal
-        if (userIn && PBSessionTracker.cachedMap.containsKey(userIn?.username) ) {
+        if (userIn && PBSessionTracker.cachedMap.containsKey(userIn?.username)) {
+            LogFactory.getLog(this).info "Getting cache PB User $userIn"
             return PBSessionTracker.cachedMap.get(userIn?.username)
         }
         LogFactory.getLog(this).info "Getting new PB User $userIn"
+        PBSessionTracker.cachedMap.put(userIn?.username, [:])
         Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>()
         //avoid direct dependency on BannerUser
         if (userIn?.class?.name?.endsWith('BannerUser')) {
             userIn.authorities.each {
                 if (it.objectName) {
                     authorities << [objectName: it.objectName, roleName: it.roleName]
-                } else if ( grails.util.Holders.config.pageBuilder.adminRoles?.contains(it.toString()) ) {
+                } else if (grails.util.Holders.config.pageBuilder.adminRoles?.contains(it.toString())) {
                     authorities << [objectName: it.objectName, roleName: it.roleName]
                 }
             }
-            userCache = [authenticated:  true, pidm: userIn.pidm,gidm: userIn.gidm, loginName: userIn.username, fullName: userIn.fullName,
-                         oracleUserName:userIn?.oracleUserName?.toUpperCase()?:'',  authorities: authorities]
+            PBSessionTracker.cachedMap.get(userIn?.username) << [authenticated : true, pidm: userIn.pidm, gidm: userIn.gidm, loginName: userIn.username,
+                                                                 fullName: userIn.fullName,
+                                                                 oracleUserName: userIn?.oracleUserName?.toUpperCase() ?: '', authorities: authorities]
 
         } else {
-            userCache = [authenticated: false, pidm: null, gidm: null,  loginName: userIn?userIn?.username:"_anonymousUser",
-                         oracleUserName:'',
-                         fullName: localizer(code:"sspb.renderer.page.anonymous.full.name"),authorities: authorities]
+            PBSessionTracker.cachedMap.get(userIn?.username) << [authenticated : false, pidm: null, gidm: null, loginName: userIn ? userIn?.username : "_anonymousUser",
+                                                                 oracleUserName: '',
+                                                                 fullName      : localizer(code: "sspb.renderer.page.anonymous.full.name"), authorities: authorities]
         }
         //give user guest role to be consistent with ability to view pages with IS_AUTHENTICATED_ANONYMOUSLY role
-        userCache.authorities << [objectName: "SELFSERVICE-GUEST", roleName: "BAN_DEFAULT_M"]
+        PBSessionTracker.cachedMap.get(userIn?.username).authorities << [objectName: "SELFSERVICE-GUEST", roleName: "BAN_DEFAULT_M"]
 
-        PBSessionTracker.cachedMap.put(userIn?.username, userCache)
-
-       return userCache
+        return PBSessionTracker.cachedMap.get(userIn?.username)
     }
 
     //Dont include data that should not be exposed
     static def getTrimmed() {
         def user = PBUser.get()
         def userInfo =
-                [authenticated:  user.authenticated,
-                 loginName: user.loginName, fullName: user.fullName,
-                 oracleUserName:user?.oracleUserName,
-                 isSuperUser: DeveloperSecurityService.isSuperUser()]
+                [authenticated : user.authenticated,
+                 loginName     : user.loginName, fullName: user.fullName,
+                 oracleUserName: user?.oracleUserName,
+                 isSuperUser   : DeveloperSecurityService.isSuperUser()]
         boolean isEnabled = Holders.config?.pageBuilder?.development?.authorities?.enabled
-        if(isEnabled){
-            userInfo<<[authorities: user.authorities]
+        if (isEnabled) {
+            userInfo << [authorities: user.authorities]
         }
         return userInfo
     }

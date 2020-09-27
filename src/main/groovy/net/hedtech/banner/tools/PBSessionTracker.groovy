@@ -5,38 +5,38 @@
 package net.hedtech.banner.tools
 
 import groovy.util.logging.Slf4j
-import org.springframework.beans.BeansException
-import org.springframework.context.ApplicationContext
-import org.springframework.context.ApplicationContextAware
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.web.context.WebApplicationContext
 
 import javax.servlet.http.HttpSessionEvent
 import javax.servlet.http.HttpSessionListener
 import java.util.concurrent.ConcurrentHashMap
 
 @Slf4j
-class PBSessionTracker implements HttpSessionListener, ApplicationContextAware  {
-    public static final ConcurrentHashMap<String,Map> cachedMap = new ConcurrentHashMap<String,Map>()
+class PBSessionTracker implements HttpSessionListener {
+    public static ConcurrentHashMap<String, Map> cachedMap = new ConcurrentHashMap<String, Map>()
 
 
     @Override
-    void sessionCreated(HttpSessionEvent se) {
-            log.trace("Page Builder User Session created: " + se?.session?.id)
-    }
-
-    @Override
-    void sessionDestroyed(HttpSessionEvent se) {
-        log.debug("Page Builder User Session destroyed: " + se?.session?.id)
-        def userIn = SecurityContextHolder?.context?.authentication?.principal
-        if(cachedMap.containsKey(userIn?.username)){
-            cachedMap.remove(userIn?.username)
+    void sessionCreated(HttpSessionEvent event) {
+        if (event && event.getSession() && event.getSession().id) {
+            log.trace("Page Builder User Session created: " + event.getSession().id)
         }
     }
 
     @Override
-    void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        def servletContext = ((WebApplicationContext) applicationContext).getServletContext()
-        servletContext.addListener(this);
+    void sessionDestroyed(HttpSessionEvent event) {
+        try {
+            if (event && event.getSession() && event.getSession().id) {
+                log.debug("Page Builder User Session destroyed: " + event.getSession().id)
+            }
+
+            def userIn = SecurityContextHolder?.context?.authentication?.principal
+            if (cachedMap?.containsKey(userIn?.username)) {
+                cachedMap?.remove(userIn?.username)
+            }
+        } catch (Exception ex) {
+            log.error("PBSessionTracker Exception : ", ex)
+        }
     }
+
 }
