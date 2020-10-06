@@ -3,22 +3,17 @@
  ******************************************************************************/
 package banner.sspb
 
-import grails.plugins.*
 
+import grails.plugins.Plugin
 import grails.util.Holders
-import net.hedtech.banner.sspb.PageUtilService
-import net.hedtech.banner.tools.PBUtilServiceBase
+import net.hedtech.banner.i18n.ExternalMessageSource
+import net.hedtech.banner.tools.PBPersistenceListener
+import net.hedtech.banner.tools.PBSessionTracker
 import org.grails.datastore.mapping.core.Datastore
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
-import net.hedtech.banner.i18n.ExternalMessageSource
-import grails.plugin.springsecurity.SpringSecurityUtils
-import grails.plugin.springsecurity.web.access.intercept.RequestmapFilterInvocationDefinition
-
-import net.hedtech.banner.tools.PBPersistenceListener
-
-import org.springframework.web.context.support.ServletContextResourcePatternResolver
 
 class BannerSspbGrailsPlugin extends Plugin {
 
@@ -64,7 +59,16 @@ Brief summary/description of the plugin.
 			if (appId && "EXTZ".equals(appId) && securityConfigType == 'Requestmap') {
 				objectDefinitionSource(RequestmapFilterInvocationDefinition)
 			}*/
+
+        /*** Register Http Session Listener ***/
+        pbSessionTracker(PBSessionTracker)
+        servletListenerRegistrationBean(ServletListenerRegistrationBean){
+            name = 'Page Builder Session Tracker Listener'
+            listener = ref('pbSessionTracker')
         }
+        }
+
+
     }
 
     void doWithDynamicMethods() {
