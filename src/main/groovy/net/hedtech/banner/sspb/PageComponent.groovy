@@ -911,7 +911,7 @@ class PageComponent {
         def tranLabel = ( !(label) || parent.type == COMP_TYPE_HTABLE)?"&#x2007;&#x2007;":tran("label")
         def tindex
         if([COMP_TYPE_BOOLEAN].contains(t)){
-            tindex = "tabindex=\"0\" onkeypress=\"clickEvent(this)\" role=\"checkbox\"";
+            tindex = "tabindex=\"0\" onkeypress=\"clickEvent(this)\" role=\"checkbox\" aria-checked=\"false\"";
         }
         def labelTxt = "<label class=\"pb-${parent.type} pb-$type pb-item pb-label $labelStyle \" ${idAttribute("-label"+idTxtParam)} $tindex ${idForAttribute(idTxtParam)} /*aria-labelledby=\"pbid-$name\"*/>$tranLabel</label>"
 
