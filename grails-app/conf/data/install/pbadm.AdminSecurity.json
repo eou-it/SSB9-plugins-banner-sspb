@@ -1,7 +1,7 @@
 {
   "constantName": "pbadm.AdminSecurity",
   "extendsPage": null,
-  "fileTimestamp": "2020-07-27T06:35:53Z",
+  "fileTimestamp": "2020-9-17T06:35:53Z",
   "modelView": {
     "components": [
       {
@@ -200,6 +200,7 @@
                     "loadInitially": true,
                     "model": "artifactsData",
                     "name": "dataGrid",
+                    "label": "Owner Details",
                     "onSaveSuccess": "alert(response.NAME  + \" ${message(code:'pbadmAdminSecurity.grid.save.success')} \" + response.TYPE_OWNER, {type:\"success\", flash:true});",
                     "pageSize": 5,
                     "parameters": {

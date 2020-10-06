@@ -123,7 +123,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 
 </head>
     <body>
-        <div id="dialogAppDiv"></div>
+        <div id="dialogAppDiv" role="main"></div>
         <div id="popupContainerDiv"></div>
         <div ng-app="BannerOnAngular">
             <div id="splash"></div>
@@ -163,6 +163,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 _.defer( function() {
                     $( "#splash" ).remove();
                 });
+                $('#content').find('button, a, input:not([class~="pb-boolean"]), select, textarea, label, [tabindex]:not([tabindex="-1"])').eq(0).focus();
             });
             <g:i18nJavaScript/>
             <g:pageAccessAudit/>
