@@ -135,7 +135,8 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
         <asset:javascript src="modules/pageBuilder-mf.js"/>
 
         <asset:script type="text/javascript">
-            %{--window.ui.grid.i18n[gridLocale] = {
+            window.uiGridI18n={}
+            window.uiGridI18n = {
                 ngAggregateLabel:          '${message(code: 'nggrid.ngAggregateLabel'         , encodeAs: 'JavaScript')}',
                 ngGroupPanelDescription:   '${message(code: 'nggrid.ngGroupPanelDescription'  , encodeAs: 'JavaScript')}',
                 ngSearchPlaceHolder:       '${message(code: 'nggrid.ngSearchPlaceHolder'      , encodeAs: 'JavaScript')}',
@@ -153,7 +154,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 styleRight:                '${message(code:'default.language.direction')=='ltr'?'right':'left'}',
                 maxPageLabel:              '${message(code:'nggrid.maxPageLabel'             , encodeAs: 'JavaScript')}',
                 pageLabel:                 '${message(code:'nggrid.pageLabel'                , encodeAs: 'JavaScript')}'
-            };--}%
+            };
             yepnope({
                 test : window.JSON,
                 nope : '${assetPath(src: 'json2.js')}'

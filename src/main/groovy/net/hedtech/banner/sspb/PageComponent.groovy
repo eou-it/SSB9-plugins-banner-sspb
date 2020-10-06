@@ -492,7 +492,7 @@ class PageComponent {
             def optional =  (child.type==COMP_TYPE_HIDDEN)? ",visible: false":""
             //Only allow sorting if model is originally set
             if (!child.modelOrigin)// needs to be a column in the api to be sortable on server
-                optional+=",sortable: false"
+                optional+=",enableSorting: false"
             items+="""
                    { field: '${child.model}', displayName: '${child.tran("label",ESC_JS)}',
                      cellTemplate: '${child.gridChildHTML()}'
@@ -506,20 +506,13 @@ class PageComponent {
             $items
             ],
             data: '${dataSet}.data',
-            enableCellSelection: true,
             enableColumnResize: true,
             enablePaging: true,
             showGridFooter:true,
             useCustomPagination: true,
-            enableRowSelection: true,
-            enableSelectAll:true,
             useExternalPagination : true,
-            rowHeight: 30,
             gridFooterTemplate: \$templateCache.get('gridFooter.html').replace('#gridControlPanel#',${name}GridControlPanel).replaceAll('#gridName#','${name}'),
             jqueryUIDraggable:true,
-            multiSelect:false,
-            showSelectionCheckbox:false,
-            selectWithCheckboxOnly:false,
             pagingOptions: \$scope.${dataSet}.pagingOptions,
             selectedItems: \$scope.${dataSet}.selectedRecords,
             showColumnMenu: true,
@@ -527,21 +520,21 @@ class PageComponent {
             showFooter: true,
             sortInfo: \$scope.${dataSet}.sortInfo,
             totalServerItems: \$scope.${dataSet}.totalCount,
+            enableRowSelection: true, 
+            enableRowHeaderSelection: false,
             useExternalSorting: true,
             i18n: gridLocale
         };
         
+        \$scope.geti18n = function(label){
+            return window.uiGridI18n[label];
+        }
          \$scope.${name}Grid.onRegisterApi= function(gridApi) {
             \$scope.gridApi = gridApi;
             \$scope.gridApi.core.on.sortChanged( \$scope, \$scope.sortChanged );
             \$scope.sortChanged(\$scope.gridApi.grid, [ \$scope.${name}Grid.columnDefs[1] ] );
              gridApi.selection.on.rowSelectionChanged(\$scope,function(row){
                 \$scope.${dataSet}.selectedRecords = \$scope.gridApi.selection.getSelectedRows();
-              });
-     
-             gridApi.selection.on.rowSelectionChangedBatch(\$scope,function(rows){
-                var msg = 'rows changed ' + rows.length;
-                console.log(msg);
               });
           }
         ${dataSetWatches()}
@@ -565,13 +558,16 @@ class PageComponent {
             }
         }, true);
         \$scope.sortChanged= function(grid, sortColumns){
-            debugger;
-            if(sortColumns[0].name){
-                if( sortColumns.length === 0 || sortColumns[0].name !== \$scope.${name}Grid.columnDefs[0].name ){
-                }else{
-                    \$scope.${dataSet}.sortInfo.fields =[sortColumns[0].name];
-                    \$scope.${dataSet}.sortInfo.directions= [sortColumns[0].sort.direction]
-                }
+            if(sortColumns.length>0 && sortColumns[0].name){
+                let fields=[];
+                let directions=[];
+                let count=0;
+                sortColumns.forEach(function(it){
+                    fields[count]=it.name;
+                    directions[count]=it.sort?it.sort.direction:'asc';
+                });
+                grid.options.sortInfo.fields =[fields];
+                grid.options.sortInfo.directions= [directions]
             }
             
         }
@@ -783,7 +779,7 @@ class PageComponent {
         components.eachWithIndex { child, idx ->
             //get the child components
             def lbl = child.tran("label", ESC_JS)
-            columns += """,{position: {desktop: $idx, mobile: $idx}, name: "$child.model", title: "$lbl", options: {visible: true, sortable:true}}\n"""
+            columns += """,{position: {desktop: $idx, mobile: $idx}, name: "$child.model", title: "$lbl", options: {visible: true, enableSorting:true}}\n"""
             draggableColumns += ",'$child.model'"
         }
         draggableColumns = "[${draggableColumns.substring(1)}]"
@@ -1184,7 +1180,7 @@ class PageComponent {
                         \n$heading\n<div ${idAttribute(idTxtParam)} class="gridStyle" role="grid" ui-grid="${name}Grid"
                          $styleStr 
                         aria-labelledby="pbid-$name${idTxtParam?idTxtParam:""}-label" external-scopes="externalScope"
-                         ui-grid-selection ui-grid-resize-columns ui-grid-auto-resize></div>\n"""
+                         ui-grid-selection ui-grid-resize-columns ui-grid-auto-resize class="grid"></div>\n"""
             case COMP_TYPE_DATATABLE:
                 return dataTableCompile(depth+1)
             case COMP_TYPE_DETAIL:

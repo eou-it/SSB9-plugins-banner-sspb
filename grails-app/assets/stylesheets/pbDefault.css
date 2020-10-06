@@ -262,8 +262,22 @@ select.per-page-select, select.per-page-select:focus, select.per-page-select:hov
     padding: 1em;
 }
 
-.ui-grid {
-    height: 26vh;
+.ui-grid, .ui-grid-viewport {
+    height: auto !important;
+}
+
+.grid[dir=rtl] .ui-grid-header-cell,
+.grid[dir=rtl] .ui-grid-cell{
+    float:right !important;
+}
+
+.grid[dir=rtl] .ui-grid-scrollbar-vertical {
+    width: 10px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    right:inherit;
+    left: 4px;
+    top: 0;
 }
 
 

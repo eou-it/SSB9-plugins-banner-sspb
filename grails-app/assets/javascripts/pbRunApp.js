@@ -143,30 +143,28 @@ appModule.filter('to_trusted', ['$sce', function($sce){
 appModule.run(['$templateCache', function($templateCache )  {
     console.log("App module.run started" );
     $templateCache.put('gridFooter.html',
-        "<div class=\"ngFooterPanel  pagination-container\" ng-class=\"{'ui-widget-content': jqueryUITheme, 'ui-corner-bottom': jqueryUITheme}\" ng-style=\"grid.appScope.footerStyle()\">" +
+        "<div class=\"ngFooterPanel  pagination-container\" ng-class=\"{'ui-widget-content': jqueryUITheme, 'ui-corner-bottom': jqueryUITheme}\" ng-style=\"getFooterStyles()\" style='font-size: 0.65em'>" +
         "    <div id=\"paging-container-#gridName#\" class=\"pagination-controls align-left\" >" +
         "           {{grid.appScope.#gridName#DS.enableDisablePagination()}}"+
         /*"        <div class=\"paging-control first {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageToFirst()\"></div>"+
         "        <div class=\"paging-control previous {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageBackward()\"></div>"+*/
         "        <xe-button xe-type=\"secondary\" xe-btn-class=\"first\" xe-aria-label=\"{{::'pagination.first.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageToFirst()\" xe-disabled=\"grid.appScope.#gridName#DS.firstPrev\" tabindex='0' ng-cloak></xe-button>\n" +
         "        <xe-button xe-type=\"secondary\" xe-btn-class=\"previous\" xe-aria-label=\"{{::'pagination.previous.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageBackward()\" xe-disabled=\"grid.appScope.#gridName#DS.firstPrev\" tabindex='0' ng-cloak></xe-button>\n"+
-        "        <span class=\"paging-text page\" id=\"pbid-Grid-Page\"> {{i18n.pageLabel}}</span>"+
+        "        <span class=\"paging-text page\" id=\"pbid-Grid-Page\"> {{grid.appScope.geti18n('pageLabel')}}</span>"+
         "        <input class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"1\" max=\"{{grid.appScope.#gridName#DS.maxPages()}}\" type=\"number\" ng-model=\"grid.appScope.#gridName#DS.pagingOptions.currentPage\" tabindex='0' style=\"width: 50px; display: inline; height: 3.5em;\" aria-labelledby=\"pbid-Grid-Page\"/>" +
-        "        <span class=\"paging-text page-of\"> {{i18n.maxPageLabel}} </span> <span class=\"paging-text total-pages\"> {{grid.appScope.#gridName#DS.maxPages()}}  </span>"+
+        "        <span class=\"paging-text page-of\"> {{grid.appScope.geti18n('maxPageLabel')}} </span> <span class=\"paging-text total-pages\"> {{grid.appScope.#gridName#DS.maxPages()}}  </span>"+
       /*  "        <div class=\"paging-control next {{!cantPageForward() && 'enabled'||''}}\" ng-click=\"pageForward()\"></div>" +
         "        <div class=\"paging-control last {{!cantPageToLast()  && 'enabled'||''}}\" ng-click=\"pageToLast()\" ></div>"+*/
         "        <xe-button xe-type=\"secondary\" xe-btn-class=\"next\" xe-aria-label=\"{{::'pagination.next.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageForward()\"  xe-disabled=\"grid.appScope.#gridName#DS.nextLast\" tabindex='0' ng-cloak></xe-button>\n" +
         "        <xe-button xe-type=\"secondary\" xe-btn-class=\"last\" xe-aria-label=\"{{::'pagination.last.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageToLast()\"  xe-disabled=\"grid.appScope.#gridName#DS.nextLast\" tabindex='0' ng-cloak></xe-button>\n"+
         "        <div class=\"divider dispInline\"></div>" +
-        "        <span class=\"paging-text page-per\" id=\"pbid-Grid-RecordsPerPage\"> {{i18n.ngPageSizeLabel}} </span>" +
+        "        <span class=\"paging-text page-per\" id=\"pbid-Grid-RecordsPerPage\"> {{grid.appScope.geti18n('ngPageSizeLabel')}} </span>" +
         "        <div class=\"page-size-select-wrapper dispInline\" >" +
         "            <select page-size-select  class=\"per-page-select\" ng-model=\"grid.appScope.#gridName#DS.pagingOptions.pageSize\" ng-options=\"s as s for s in grid.appScope.#gridName#DS.pagingOptions.pageSizes\" tabindex='0' aria-labelledby=\"pbid-Grid-RecordsPerPage\"> "+
         "             </select>" +
         "        </div>"+
-        "    </div>" +
-        "    <div class=\"ngFooterTotalItems\" ng-class=\"{'ngNoMultiSelect': !multiSelect}\" >" +
-        "        <span class=\"ngLabel\">{{i18n.ngTotalItemsLabel}} {{maxRows()}}</span>" +
-        "        <span ng-show=\"filterText.length > 0\" class=\"ngLabel\">({{i18n.ngShowingItemsLabel}} {{totalFilteredItemsLength()}})</span>" +
+        "       <span class=\"ngLabel\">{{grid.appScope.geti18n('ngTotalItemsLabel')}} {{grid.appScope.#gridName#DS.maxRows()}}</span>" +
+        "       <span ng-show=\"filterText.length > 0\" class=\"ngLabel\">({{grid.appScope.geti18n('ngShowingItemsLabel')}} {{grid.appScope.#gridName#DS.totalFilteredItemsLength()}})</span>" +
         "    </div>" +
         "    <div class='customPaginationRightCenter' > #gridControlPanel# </div>" +
         "</div>");
@@ -326,6 +324,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
         if(params.onSave) {
             onSave = params.onSave
         }
+
         this.selectValueKey=params.selectValueKey;
         this.selectInitialValue=params.selectInitialValue;
         this.currentRecord=null;
@@ -350,8 +349,6 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
         };
 
         $scope.iqueryParams =[];
-
-
 
         this.init = function() {
             this.currentRecord=null;
@@ -712,7 +709,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
         this.pageToLast = function() {
             var maxPages = this.maxPages();
             this.pagingOptions.currentPage = maxPages;
-            t/*his.enableDisablePagination();*/
+            /*this.enableDisablePagination();*/
         };
 
         this.cantPageForward = function() {
