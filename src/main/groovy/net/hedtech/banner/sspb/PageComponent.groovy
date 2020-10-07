@@ -523,6 +523,7 @@ class PageComponent {
             enableRowSelection: true, 
             enableRowHeaderSelection: false,
             useExternalSorting: true,
+            enableColumnMenus: false,
             i18n: gridLocale
         };
         
@@ -558,7 +559,7 @@ class PageComponent {
             }
         }, true);
         \$scope.sortChanged= function(grid, sortColumns){
-            if(sortColumns.length>0 && sortColumns[0].name){
+            if(sortColumns.length>0 && sortColumns[0] && sortColumns[0].name){
                 let fields=[];
                 let directions=[];
                 let count=0;
