@@ -593,8 +593,12 @@ class PageComponent {
 
     //this returns a html template string as a javascript string - escape strings
     String gridChildHTML( int depth=0) {
-        def templateResult = compileComponentTemplate(depth, ESC_JS)
-        if ( templateResult.compiled) {
+
+        def templateResult
+        if(!COMP_TYPE_LINK.equalsIgnoreCase(type)) {
+            templateResult=compileComponentTemplate(depth, ESC_JS)
+        }
+        if ( templateResult && templateResult.compiled) {
             return templateResult.code  //OK, supported by a template, return the result
         }
         // No supported by a template, go with the old method
@@ -661,6 +665,19 @@ class PageComponent {
             case COMP_TYPE_LITERAL:
                 return "<span $styleAt $ngClick>" + tran(propertiesBaseKey()+".value",compileDOMDisplay(value).replaceAll("item.","row.entity.") ) + "</span>"
                 break
+            case COMP_TYPE_LINK:
+                def desc = description?tran("description"):url
+                def clickStr = onClick?"""ng-click="grid.appScope.${name}_onClick(row.entity)" """:""
+                def autoStyleStr = """class="pb-${parent.type} pb-$type pb-item $valueStyle"  """
+                // handle open link in new window attr
+                def targetStr =""
+                if (!replaceView)
+                    targetStr = """target="_blank" """
+                // set url to empty string if it is null, otherwise the page is re-directed to a non-existing page
+                url = (url==null)?"":url
+                return """<a ng-href="${compileDOMDisplay(url)}" $targetStr $clickStr tabindex="0"> <span $autoStyleStr> $desc </span></a>"""
+
+                break;
             default :
                 log.info "***No ng-grid html edit template for $type ${name?name:model}"
         }
