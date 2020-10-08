@@ -746,7 +746,7 @@ function dialogPopUp(params) {
     var scope = angular.element(document.getElementById('popupContainerDiv')).scope();
     if(!scope){
         dialogDiv.innerHTML =
-            '<xe-popup-modal show="modalShown" focusbackelement="" ' +
+            '<xe-popup-modal show="modalShown" focusbackelement="'+params.id+'" ' +
             'pageheader="'+titleHeader+'" class="custom-popup-landpage dataGridModalPopup" > '+
             '<popup-content>' +
             '<div id="namePopupGrid" class="demo-container"> \n' +
