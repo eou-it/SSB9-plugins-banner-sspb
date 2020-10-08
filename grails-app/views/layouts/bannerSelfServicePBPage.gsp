@@ -16,7 +16,9 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
     %>
 
     <g:set var="mep" value="${org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes()?.request?.session?.getAttribute('ssbMepDesc')}"/>
-    <g:set var="hideSSBHeaderComps" value="${session.hideSSBHeaderComps ? session.hideSSBHeaderComps : (Boolean.parseBoolean(params?.hideSSBHeaderComps)) ? params.hideSSBHeaderComps : false}" scope="session"/>
+    <g:set var="hideSSBHeaderComps"
+           value="${session.hideSSBHeaderComps == 'true' ? session.hideSSBHeaderComps : params?.hideSSBHeaderComps == 'true' ? params.hideSSBHeaderComps : 'false'}"
+           scope="session"/>
 
     <meta charset="${message(code: 'default.character.encoding')}"/>
     <meta name="dir" content="${message(code:'default.language.direction')}"/>
