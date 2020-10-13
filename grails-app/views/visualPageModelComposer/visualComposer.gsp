@@ -53,6 +53,10 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 note.type = note.type||noteType.success;
                 note.flash = note.flash||true;
                 note.message = note.message.replace(/\n/g, "<br />");
+                if(note.type=='error'){
+                    note.id = 'constantName';
+                    note.component = 'select';
+                }
                 notifications.addNotification(new Notification(note));
             };
 
@@ -62,6 +66,8 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 if (!stay){
                     note.flash = true;
                 }
+                note.id = 'constantName';
+                note.component = 'select';
                 notifications.addNotification(new Notification(note));
             };
 

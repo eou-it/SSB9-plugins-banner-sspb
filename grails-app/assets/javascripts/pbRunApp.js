@@ -15,6 +15,10 @@ alert = function(message, params ){ //message,promptMessage,type,flash,prompts) 
         promptMessage: params&&params.promptMessage?params.promptMessage:"",
         flash: params&&params.flash?params.flash:false
     };
+    if(noteSpec.type=='error'){
+        noteSpec.id = params&&params.id?params.id:'content';
+        noteSpec.component = params&&params.component?params.component:'PbComponent';
+    }
     var prompts = params&&params.prompts?params.prompts:[{label: $.i18n.prop("sspb.custom.page.default.affirm"), action:function(){}}];
 
     var note = new Notification(noteSpec);
