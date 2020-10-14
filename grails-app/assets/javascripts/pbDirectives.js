@@ -299,7 +299,7 @@ pagebuilderModule.directive('pbUpload', function() {
 
                 $scope.uploadModalOpts = {
                     backdropFade: true,
-                    dialogFade:true,
+                    dialogFade:true
 
                 };
 
