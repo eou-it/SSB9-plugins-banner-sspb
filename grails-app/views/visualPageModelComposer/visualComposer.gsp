@@ -471,11 +471,12 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             };
 
 
-            $scope.addChild = function(parent) {
+            $scope.addChild = function(parent,event) {
                 //console.log("addChild");
                 $scope.validChildTypes = $scope.findAllChildrenTypes(parent.type);
                 // TODO make sure the children are expanded if appending a new component
                 //$scope.showChildren = true;
+                $scope.backdropElementId = event.target.id
                 $scope.openTypeSelectionModal(parent, -1);
                 // delay adding node until the type selection is made
             };
@@ -483,9 +484,10 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             /*
                 Insert a new child component to 'data' at location 'index'
              */
-            $scope.insertSibling = function(parent, index) {
+            $scope.insertSibling = function(parent, index, event) {
                 //console.log("addChild");
                 $scope.validChildTypes = $scope.findAllChildrenTypes(parent.type);
+                $scope.backdropElementId = event.target.id
                 $scope.openTypeSelectionModal(parent, index);
             };
 
@@ -556,6 +558,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 $scope.shouldBeOpen = true;
                 $scope.newParent = parent;
                 $scope.newIndex = index;
+                setTimeout(function(){$("#pbid-selectCmpt").focus(); },0);
             };
 
             $scope.closeTypeSelectionModal = function (event) {
@@ -581,6 +584,13 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 
             $scope.cancelTypeSelectionModal = function() {
                 $scope.shouldBeOpen = false;
+                $("#"+$scope.backdropElementId).focus();
+            };
+
+            $scope.handledEscapeKey = function (e){
+                if (e.which === 27) {
+                    $("#"+$scope.backdropElementId).focus();
+                }
             };
 
             $scope.typeSelectionModalOpts = {
@@ -1270,13 +1280,13 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
     <span id="pbid-{{data.name}}" ng-init="index=nextIndex()" ng-click="selectData(data, index, $parent.$parent.data, $event)" ng-keypress="selectData(data, index, $parent.$parent.data, $event)"
           style="{{componentLabelStyle(index == statusHolder.selectedIndex)}}" tabindex="0">{{data.name}} &lrm;[{{i18nGet('type.'+data.type)}}]&lrm;</span>
 
-    <button  aria-label="${message(code:'sspb.page.visualbuilder.insert.sibling.title')}" title="${message(code:'sspb.page.visualbuilder.insert.sibling.title')}" class="button_insert button_edit" ng-click="insertSibling($parent.$parent.data, $index)" ng-show="data.type!='page'"></button>
-    <button  aria-label="${message(code:'sspb.page.visualbuilder.append.child.title')}" title="${message(code:'sspb.page.visualbuilder.append.child.title')}" class="button_edit button_add" ng-click="addChild(data)" ng-show="findAllChildrenTypes(data.type).length>0"></button>
-    <button  aria-label="${message(code:'sspb.page.visualbuilder.moveup.component.title')}" title="${message(code:'sspb.page.visualbuilder.moveup.component.title')}" class="button_sort_asc button_edit" ng-click="moveUpComponent($parent.$parent.data, $index, index)"  ng-show="!$first"></button>
-    <button  aria-label="${message(code:'sspb.page.visualbuilder.movedown.component.title')}" title="${message(code:'sspb.page.visualbuilder.movedown.component.title')}" class="button_sort_desc button_edit" ng-click="moveDownComponent($parent.$parent.data, $index, index)"  ng-show="!$last"></button>
-    <button  aria-label="${message(code:'sspb.page.visualbuilder.delete.component.title')}" title="${message(code:'sspb.page.visualbuilder.delete.component.title')}" class="button_delete button_edit" ng-click="deleteComponent($parent.$parent.data, $index, index)"  ng-show="data.type!='page'"></button>
-    <button  aria-label="${message(code:'sspb.page.visualbuilder.copy.component.title')}" title="${message(code:'sspb.page.visualbuilder.copy.component.title')}"  class="button_copy button_edit" ng-click="copyComponent(data)" ng-show="data.type!='page'"></button>
-    <button  aria-label="${message(code:'sspb.page.visualbuilder.paste.component.title')}" title="${message(code:'sspb.page.visualbuilder.paste.component.title')}"  class="button_paste button_edit" ng-click="pasteComponent(data)"  ng-show="dataHolder.copy!=undefined" ></button>
+    <button tabindex="0" id="pbid-insertSibling-{{data.name}}"  aria-label="${message(code:'sspb.page.visualbuilder.insert.sibling.title')}" title="${message(code:'sspb.page.visualbuilder.insert.sibling.title')}" class="button_insert button_edit" ng-click="insertSibling($parent.$parent.data, $index, $event)" ng-show="data.type!='page'"></button>
+    <button tabindex="0" id="pbid-appendChild-{{data.name}}"  aria-label="${message(code:'sspb.page.visualbuilder.append.child.title')}" title="${message(code:'sspb.page.visualbuilder.append.child.title')}" class="button_edit button_add" ng-click="addChild(data,$event)" ng-show="findAllChildrenTypes(data.type).length>0"></button>
+    <button tabindex="0" aria-label="${message(code:'sspb.page.visualbuilder.moveup.component.title')}" title="${message(code:'sspb.page.visualbuilder.moveup.component.title')}" class="button_sort_asc button_edit" ng-click="moveUpComponent($parent.$parent.data, $index, index)"  ng-show="!$first"></button>
+    <button tabindex="0" aria-label="${message(code:'sspb.page.visualbuilder.movedown.component.title')}" title="${message(code:'sspb.page.visualbuilder.movedown.component.title')}" class="button_sort_desc button_edit" ng-click="moveDownComponent($parent.$parent.data, $index, index)"  ng-show="!$last"></button>
+    <button tabindex="0" aria-label="${message(code:'sspb.page.visualbuilder.delete.component.title')}" title="${message(code:'sspb.page.visualbuilder.delete.component.title')}" class="button_delete button_edit" ng-click="deleteComponent($parent.$parent.data, $index, index)"  ng-show="data.type!='page'"></button>
+    <button tabindex="0" aria-label="${message(code:'sspb.page.visualbuilder.copy.component.title')}" title="${message(code:'sspb.page.visualbuilder.copy.component.title')}"  class="button_copy button_edit" ng-click="copyComponent(data)" ng-show="data.type!='page'"></button>
+    <button tabindex="0" aria-label="${message(code:'sspb.page.visualbuilder.paste.component.title')}" title="${message(code:'sspb.page.visualbuilder.paste.component.title')}"  class="button_paste button_edit" ng-click="pasteComponent(data)"  ng-show="dataHolder.copy!=undefined" ></button>
 
 
     <!--button  class="btn btn-xs" ng-click="deleteChildren(data)" ng-show="data.components.length > 0">--</button-->
@@ -1293,9 +1303,9 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
         <div class="modal-header">
             <h4><g:message code="sspb.page.visualbuilder.select.type.prompt" /></h4>
         </div>
-        <div class="modal-body">
+        <div class="modal-body" ng-keydown="handledEscapeKey($event)">
 
-            <select  ng-model="$parent.selectedType" ng-options="i18nGet('type.'+type) for type in validChildTypes"></select>
+            <select id="pbid-selectCmpt" ng-model="$parent.selectedType" ng-options="i18nGet('type.'+type) for type in validChildTypes"></select>
         </div>
         <div class="modal-footer">
             <button class="btn btn-success ok primary" ng-click="closeTypeSelectionModal($event)"><g:message code="sspb.page.visualbuilder.create.component.label" /></button>
