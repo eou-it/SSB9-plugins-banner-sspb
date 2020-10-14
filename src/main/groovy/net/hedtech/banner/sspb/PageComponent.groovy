@@ -1048,6 +1048,7 @@ class PageComponent {
             case COMP_TYPE_HIDDEN:
                 def tag = "input"
                 def endTag = "/>"
+                def disabled = "${readonly?"disabled=\"disabled\"":""}"
                 def attributes = "${validationAttributes()} ${required?"required":""} ${placeholder?"placeholder=\"${tran("placeholder")}\"":""} ${labelTxt?"":"aria-label=\"${tran("placeholder")}\""}".trim()
                 def typeString= "type=\"$t\""
                 if (type == COMP_TYPE_NUMBER) {  // angular-ui doesn't use localized validators
@@ -1070,7 +1071,7 @@ class PageComponent {
                     //defaulValue() removed, now should be handled by initNewRecordJS() call in compileService.
                     result = """|<$tag $inputIdStr $typeString $autoStyleStr  name="${name?name:model}" ${parent.allowModify && !readonly?"":"readonly"}
                                 | ng-model="$GRID_ITEM.${model}"
-                                | $ngChange $attributes $ngClick $endTag
+                                | $ngChange $attributes $ngClick $disabled $endTag
                                 |""".stripMargin()
                 } else {
                     // TODO do we need a value field if ng-model is defined?  //added defaultValue
@@ -1088,7 +1089,7 @@ class PageComponent {
                             result+=".$modelComponent"
                         result+='" '
                     }
-                    result+="$endTag\n"
+                    result+="$disabled $endTag\n"
                 }
                 break;
             case COMP_TYPE_BOOLEAN:
