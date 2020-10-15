@@ -2,7 +2,7 @@
 *= require modules/min-bannerWebLTR-mf.css
 *= require BannerXE/css/jquery-ui.css
 *= require BannerXE/css/jquery-ui-1.9.1.css
-*= require BannerXE/css/ng-grid.css
+*= require angular-ui-grid/ui-grid.css
 *= require BannerXE/css/angular-ui.css
 *= require bootstrap/css/bootstrap.css
 *= require BannerXE/css/bootstrap.css

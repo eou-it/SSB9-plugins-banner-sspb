@@ -114,6 +114,7 @@ class CompileService {
                |    // page specific code
                |    $result
                |    $common
+               |    \$scope.externalScope=\$scope
                |}/* End Controller */
                |""".stripMargin()
         return result

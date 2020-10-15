@@ -459,19 +459,19 @@ class PageComponent {
         def btnLabel
         if (allowNew) {
             btnLabel=newRecordLabel?tran("newRecordLabel",ESC_JS):tranGlobal("newRecord.label","Add New",[], ESC_JS)
-            result += """ <button class="primary" $styleStr ng-click="${dataSet}.add(${newRecordName()}())" type="button"> $btnLabel  </button>"""
+            result += """ <button class="primary" $styleStr ng-click="grid.appScope.${dataSet}.add(grid.appScope.${newRecordName()}())" type="button"> $btnLabel  </button>"""
         }
         if (allowDelete) {
             btnLabel=deleteRecordLabel?tran("deleteRecordLabel",ESC_JS):tranGlobal("deleteRecord.label","Delete selected",[], ESC_JS)
-            result += """ <button class="secondary" $styleStr ng-click="${dataSet}.deleteRecords(${dataSet}.selectedRecords)" ng-disabled="${dataSet}.selectedRecords.length==0" type="button"> $btnLabel  </button>"""
+            result += """ <button class="secondary" $styleStr ng-click="grid.appScope.${dataSet}.deleteRecords(grid.appScope.${dataSet}.selectedRecords)" ng-disabled="grid.appScope.${dataSet}.selectedRecords.length==0" type="button"> $btnLabel  </button>"""
         }
         if (allowModify || allowDelete) {
             btnLabel=saveDataLabel?tran("saveDataLabel",ESC_JS):tranGlobal("save.label","Save",[], ESC_JS)
-            result += """ <button class="primary" $styleStr ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()" type="button"> $btnLabel </button>"""
+            result += """ <button class="primary" $styleStr ng-click="grid.appScope.${dataSet}.save()" ng-disabled="!grid.appScope.${dataSet}.dirty()" type="button"> $btnLabel </button>"""
         }
         if (allowReload) {
             btnLabel=refreshDataLabel?tran("refreshDataLabel",ESC_JS):tranGlobal("refresh.label","Refresh",[], ESC_JS)
-            result += """ <button class="secondary" $styleStr ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})" type="button"> $btnLabel </button> """
+            result += """ <button class="secondary" $styleStr ng-click="grid.appScope.${dataSet}.load({all:false,paging:true,clearCache:true})" type="button"> $btnLabel </button> """
         }
         // alas, but cannot dynamically toggle multiSelect property of grid
         //result += "<input type=\"checkbox\" ng-model=\"${name}Grid.multiSelect\">Select multiple</input>"
@@ -492,7 +492,7 @@ class PageComponent {
             def optional =  (child.type==COMP_TYPE_HIDDEN)? ",visible: false":""
             //Only allow sorting if model is originally set
             if (!child.modelOrigin)// needs to be a column in the api to be sortable on server
-                optional+=",sortable: false"
+                optional+=",enableSorting: false"
             items+="""
                    { field: '${child.model}', displayName: '${child.tran("label",ESC_JS)}',
                      cellTemplate: '${child.gridChildHTML()}'
@@ -506,25 +506,38 @@ class PageComponent {
             $items
             ],
             data: '${dataSet}.data',
-            enableCellSelection: true,
             enableColumnResize: true,
             enablePaging: true,
-            footerTemplate: \$templateCache.get('gridFooter.html').replace('#gridControlPanel#',${name}GridControlPanel).replace('#gridName#','${name}'),
-            footerRowHeight: 55,
+            showGridFooter:true,
+            useCustomPagination: true,
+            useExternalPagination : true,
+            gridFooterTemplate: \$templateCache.get('gridFooter.html').replace('#gridControlPanel#',${name}GridControlPanel).replaceAll('#gridName#','${name}'),
             jqueryUIDraggable:true,
-            multiSelect:false,
-            showSelectionCheckbox:false,
-            selectWithCheckboxOnly:false,
             pagingOptions: \$scope.${dataSet}.pagingOptions,
             selectedItems: \$scope.${dataSet}.selectedRecords,
             showColumnMenu: true,
             showFilter:true,
             showFooter: true,
             sortInfo: \$scope.${dataSet}.sortInfo,
-            totalServerItems: '${dataSet}.totalCount',
+            totalServerItems: \$scope.${dataSet}.totalCount,
+            enableRowSelection: true, 
+            enableRowHeaderSelection: false,
             useExternalSorting: true,
+            enableColumnMenus: false,
             i18n: gridLocale
         };
+        
+        \$scope.geti18n = function(label){
+            return window.uiGridI18n[label];
+        }
+         \$scope.${name}Grid.onRegisterApi= function(gridApi) {
+            \$scope.gridApi = gridApi;
+            \$scope.gridApi.core.on.sortChanged( \$scope, \$scope.sortChanged );
+            \$scope.sortChanged(\$scope.gridApi.grid, [ \$scope.${name}Grid.columnDefs[1] ] );
+             gridApi.selection.on.rowSelectionChanged(\$scope,function(row){
+                \$scope.${dataSet}.selectedRecords = \$scope.gridApi.selection.getSelectedRows();
+              });
+          }
         ${dataSetWatches()}
         """
         return code
@@ -545,6 +558,20 @@ class PageComponent {
                 \$scope.${dataSet}.load({all:false,paging:true});
             }
         }, true);
+        \$scope.sortChanged= function(grid, sortColumns){
+            if(sortColumns.length>0 && sortColumns[0] && sortColumns[0].name){
+                let fields=[];
+                let directions=[];
+                let count=0;
+                sortColumns.forEach(function(it){
+                    fields[count]=it.name;
+                    directions[count]=it.sort?it.sort.direction:'asc';
+                });
+                grid.options.sortInfo.fields =[fields];
+                grid.options.sortInfo.directions= [directions]
+            }
+            
+        }
         """
 
         //currentRecord is also set with a click handler. Cannot remove below setting because click does not capture keyboard
@@ -566,8 +593,12 @@ class PageComponent {
 
     //this returns a html template string as a javascript string - escape strings
     String gridChildHTML( int depth=0) {
-        def templateResult = compileComponentTemplate(depth, ESC_JS)
-        if ( templateResult.compiled) {
+
+        def templateResult
+        if(!COMP_TYPE_LINK.equalsIgnoreCase(type)) {
+            templateResult=compileComponentTemplate(depth, ESC_JS)
+        }
+        if ( templateResult && templateResult.compiled) {
             return templateResult.code  //OK, supported by a template, return the result
         }
         // No supported by a template, go with the old method
@@ -582,12 +613,12 @@ class PageComponent {
         def requiredAt = required?"required":""
         def validateAt = ""
         def placeholderAt=""
-        def ngModel="ng-model=\"COL_FIELD\""    // shorthand for  row.entity[col.field]
-        def ngChange=ro?"":"ng-change=\""+(onUpdate?"\$parent.${parent.ID}_${name}_onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity)\""
-        def onClickCode=parent.onClick?"\$parent.${parent.name}_onClick(row.entity, col);":""
+        def ngModel="ng-model=\"MODEL_COL_FIELD\""    // shorthand for  row.entity[col.field]
+        def ngChange=ro?"":"ng-change=\""+(onUpdate?"grid.appScope.${parent.ID}_${name}_onUpdate(row.entity);":"")+"grid.appScope.${parent.name}DS.setModified(row.entity)\""
+        def onClickCode=parent.onClick?"grid.appScope.${parent.name}_onClick(row.entity, col);":""
         //Do not remove setCurrentRecord without checking all is good (may be done 2x but need to make sure it is before onClickCode)
-        def ngClick="""ng-click="\$parent.${parent.name}DS.setCurrentRecord(row.entity);$onClickCode" """
-        def ariaLabel = "aria-label=\"COL_FIELD\""
+        def ngClick="""ng-click="grid.appScope.${parent.name}DS.setCurrentRecord(row.entity);$onClickCode" """
+        def ariaLabel = "aria-label=\"MODEL_COL_FIELD\""
         def role = ""
         def typeInternal = type
         if (type == COMP_TYPE_NUMBER ) {
@@ -606,9 +637,9 @@ class PageComponent {
                 // SELECT must have a model
                 def arrayName = "${name}DS.data"
                 readonlyAt = (parent.allowModify && !ro)?"":"disabled" //select doesn't have readonly
-                ngChange="ng-change=\""+(onUpdate?"${name}DS.onUpdate(row.entity);":"")+"\$parent.${parent.name}DS.setModified(row.entity);${name}DS.setCurrentRecord(row.entity.$model);\""
+                ngChange="ng-change=\""+(onUpdate?"grid.appScope.${name}DS.onUpdate(row.entity);":"")+"grid.appScope.${parent.name}DS.setModified(row.entity);grid.appScope.${name}DS.setCurrentRecord(row.entity.$model);\""
                 placeholderAt = placeholder?"""<option value="" role="menuitem">${tran("placeholder")}</option>""":""
-                return """<select ${idForAttribute(idTxtParam+"-label")} role="menu" $ariaLabel ${styleAt} $ngModel $readonlyAt $ngChange $ngClick ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName"> $placeholderAt </select>"""
+                return """<select ${idForAttribute(idTxtParam+"-label")} role="menu" $ariaLabel ${styleAt} $ngModel $readonlyAt $ngChange $ngClick ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in grid.appScope.$arrayName"> $placeholderAt </select>"""
             case [COMP_TYPE_TEXT, COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER, COMP_TYPE_DATETIME, COMP_TYPE_EMAIL, COMP_TYPE_TEL] :
                 validateAt = validationAttributes()
                 placeholderAt=placeholder?"placeholder=\"${tran("placeholder")}\"":""
@@ -625,15 +656,28 @@ class PageComponent {
                 if (asHtml) {
                     tagStart="<span"
                     tagEnd="></span>"
-                    ngModel="ng-bind-html=\"COL_FIELD | to_trusted\""
+                    ngModel="ng-bind-html=\"MODEL_COL_FIELD | to_trusted\""
                 }
                 if (type==COMP_TYPE_DATETIME) {
-                    ngModel="value=\"{{COL_FIELD|date:\\'medium\\'}}\""
+                    ngModel="value=\"{{MODEL_COL_FIELD|date:\\'medium\\'}}\""
                 }
                 break
             case COMP_TYPE_LITERAL:
                 return "<span $styleAt $ngClick>" + tran(propertiesBaseKey()+".value",compileDOMDisplay(value).replaceAll("item.","row.entity.") ) + "</span>"
                 break
+            case COMP_TYPE_LINK:
+                def desc = description?tran("description"):url
+                def clickStr = onClick?"""ng-click="grid.appScope.${name}_onClick(row.entity)" """:""
+                def autoStyleStr = """class="pb-${parent.type} pb-$type pb-item $valueStyle"  """
+                // handle open link in new window attr
+                def targetStr =""
+                if (!replaceView)
+                    targetStr = """target="_blank" """
+                // set url to empty string if it is null, otherwise the page is re-directed to a non-existing page
+                url = (url==null)?"":url
+                return """<a ng-href="${compileDOMDisplay(url)}" $targetStr $clickStr tabindex="0"> <span $autoStyleStr> $desc </span></a>"""
+
+                break;
             default :
                 log.info "***No ng-grid html edit template for $type ${name?name:model}"
         }
@@ -753,7 +797,7 @@ class PageComponent {
         components.eachWithIndex { child, idx ->
             //get the child components
             def lbl = child.tran("label", ESC_JS)
-            columns += """,{position: {desktop: $idx, mobile: $idx}, name: "$child.model", title: "$lbl", options: {visible: true, sortable:true}}\n"""
+            columns += """,{position: {desktop: $idx, mobile: $idx}, name: "$child.model", title: "$lbl", options: {visible: true, enableSorting:true}}\n"""
             draggableColumns += ",'$child.model'"
         }
         draggableColumns = "[${draggableColumns.substring(1)}]"
@@ -1152,7 +1196,11 @@ class PageComponent {
                 def borderpx=2
                 //headerRowHeight doesn't work in {{ expression }} - assume same as rowHeight hence pageSize+1
                 //style="...{{expression }}..."  does not evaluate properly in IE8 - fixed using ng-style
-                return """\n$heading\n<div ${idAttribute(idTxtParam)} class="gridStyle" role="grid" ng-grid="${name}Grid" $styleStr ng-style="{height: (${borderpx*2}+${pageSize+1}*rowHeight+footerRowHeight) + 'px'}" aria-labelledby="pbid-$name${idTxtParam?idTxtParam:""}-label"></div>\n"""
+                return """
+                        \n$heading\n<div ${idAttribute(idTxtParam)} class="gridStyle" role="grid" ui-grid="${name}Grid"
+                         $styleStr 
+                        aria-labelledby="pbid-$name${idTxtParam?idTxtParam:""}-label" external-scopes="externalScope"
+                         ui-grid-selection ui-grid-resize-columns ui-grid-auto-resize class="grid"></div>\n"""
             case COMP_TYPE_DATATABLE:
                 return dataTableCompile(depth+1)
             case COMP_TYPE_DETAIL:
