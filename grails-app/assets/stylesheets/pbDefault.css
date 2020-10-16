@@ -257,4 +257,27 @@ select.per-page-select, select.per-page-select:focus, select.per-page-select:hov
     overflow-y: auto;
 }
 
+.customPaginationRightCenter {
+    float: right;
+    padding: 1em;
+}
+
+.ui-grid, .ui-grid-viewport {
+    height: auto !important;
+}
+
+.grid[dir=rtl] .ui-grid-header-cell,
+.grid[dir=rtl] .ui-grid-cell{
+    float:right !important;
+}
+
+.grid[dir=rtl] .ui-grid-scrollbar-vertical {
+    width: 10px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    right:inherit;
+    left: 4px;
+    top: 0;
+}
+
 
