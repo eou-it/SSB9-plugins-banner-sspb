@@ -164,8 +164,6 @@ div[ng-grid] {
 
 .rTableCell, .rTableHead {
     float: left;
-    overflow: hidden;
-    width: 50%;
 }
 
 .divAlignToRight {
