@@ -183,7 +183,9 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                            var n = new Notification( {
                                 message: msg,
                                 type:"error",
-                                promptMessage: \$.i18n.prop("js.net.hedtech.banner.ajax.reload.prompt")
+                                promptMessage: \$.i18n.prop("js.net.hedtech.banner.ajax.reload.prompt"),
+                                id : 'vdPostView',
+                                component :'textarea'
                            });
 
                            n.addPromptAction( \$.i18n.prop("js.net.hedtech.banner.ajax.reload.button"),

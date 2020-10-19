@@ -15,6 +15,10 @@ alert = function(message, params ){ //message,promptMessage,type,flash,prompts) 
         promptMessage: params&&params.promptMessage?params.promptMessage:"",
         flash: params&&params.flash?params.flash:false
     };
+    if(noteSpec.type=='error'){
+        noteSpec.id = params&&params.id?params.id:'content';
+        noteSpec.component = params&&params.component?params.component:'PbComponent';
+    }
     var prompts = params&&params.prompts?params.prompts:[{label: $.i18n.prop("sspb.custom.page.default.affirm"), action:function(){}}];
 
     var note = new Notification(noteSpec);
@@ -83,8 +87,10 @@ function getControllerScopeById(id) {
 
 function clickEvent(element){
     var keycode = (event.keyCode ? event.keyCode : event.which);
-    var isChecked = element.getAttribute("aria-checked")== 'true';
-    element.setAttribute("aria-checked",!isChecked);
+    if(!element.getAttribute("ng-true-value")) {
+        var isChecked = element.getAttribute("aria-checked") == 'true';
+        element.setAttribute("aria-checked", !isChecked);
+    }
     if(keycode == 32 || keycode==13){
         element.click();
         event.preventDefault();

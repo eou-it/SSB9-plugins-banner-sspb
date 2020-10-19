@@ -305,8 +305,8 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             <div class="col-sm-9">
                 <input name="cssName" id='cssName' class="form-control" ng-model='cssName' required maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/" />
                 <span ng-messages="cssform.cssName.$error" role="alert" class="fieldValidationMessage">
-                    <span ng-message="pattern" ><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" /></span>
-                    <span ng-message="required" > <g:message code="sspb.page.visualbuilder.name.required.message" /></span>
+                    <span ng-show="cssform.cssName.$touched" tabindex="0" ng-message="pattern" ><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" /></span>
+                    <span ng-show="cssform.cssName.$touched" tabindex="0" ng-message="required" > <g:message code="sspb.page.visualbuilder.name.required.message" /></span>
                 </span>
             </div>
         </div>
