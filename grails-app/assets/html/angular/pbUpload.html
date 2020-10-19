@@ -1,7 +1,7 @@
 }<span>
     <!--Copyright 2013-2020 Ellucian Company L.P. and its affiliates.-->
     <!--TODO referencing $parent.i18nGet, should not have this dependency-->
-    <button class="secondary"  id="pbid-upload-stylesheet" ng-click="openUploadModal()">{{i18n["sspb.css.cssManager.upload.label"]}}
+    <button tabindex="0" class="secondary"  id="pbid-upload-stylesheet" ng-click="openUploadModal()">{{i18n["sspb.css.cssManager.upload.label"]}}
     <!--<custom-i18n code="sspb.css.cssManager.upload.label" val="prop"/>-->
     </button>
 
@@ -10,12 +10,12 @@
         <div class="modal-header">
             <h4>{{label}}</h4>
         </div>
-        <div class="modal-body">
+        <div class="modal-body" ng-keydown="handledEscapeKey($event)">
             <!-- css file upload form TODO put in a modal dialog -->
             <form id="upload" name="uploadform" ng-upload method="POST" action="{{rootWebApp + 'uploadCss?delay=yes'}}">
                 <div>
                     <label for="pbid-cssName-upload">{{i18n["sspb.css.cssManager.cssName.label"]}}</label>
-                    <input name="cssName" id="pbid-cssName-upload" ng-model='cssName'
+                    <input tabindex="0" name="cssName" id="pbid-cssName-upload" ng-model='cssName'
                            required maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/"/>
                     <div ng-messages="uploadform.cssName.$error" class="fieldValidationMessage" >
                         <span ng-message="pattern" role="alert">
@@ -30,17 +30,17 @@
                     <label for="pbid-cssDesc-upload">
                         {{i18n["sspb.css.cssManager.description.label"]}}
                     </label>
-                    <input name="description" id="pbid-cssDesc-upload" ng-model='description' maxlength="255"/>
+                    <input tabindex="0" name="description" id="pbid-cssDesc-upload" ng-model='description' maxlength="255"/>
                 </div>
 
                 <div>
                     <label for="pbid-cssFile-upload">
                         {{i18n["sspb.css.cssManager.upload.file.label"]}}
                     </label>
-                    <input type="file" id="pbid-cssFile-upload" name="file" accept=".css" />
+                    <input tabindex="0" type="file" id="pbid-cssFile-upload" name="file" accept=".css" />
                 </div>
                 <div>
-                    <input class="primary" upload-submit="complete(content, completed)" type="submit" class="btn btn-primary" value="Submit" role="button" aria-label="submit"/>
+                    <input tabindex="0" class="primary" upload-submit="complete(content, completed)" type="submit" class="btn btn-primary" value="Submit" role="button" aria-label="submit"/>
                 </div>
             </form>
             <div class="alert alert-info" role="alert">
@@ -48,7 +48,7 @@
 
         </div>
         <div class="modal-footer">
-            <button class="secondary" ng-click="closeUploadModal()">
+            <button tabindex="0" class="secondary" ng-click="closeUploadModal()">
                 {{i18n["pb.template.upload.ok.label"]}}
             </button>
         </div>
