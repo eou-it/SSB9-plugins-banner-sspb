@@ -272,29 +272,28 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
     <div id="content" ng-controller="CssManagerController" class="customPage container-fluid cssPage" role="main">
     <div class="btn-section">
         <label for="cssConstantName"><g:message code="sspb.css.cssManager.load.label" /></label>
-        <select id="cssConstantName" name="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'csses','id':'cssConstantName'}"
+        <select tabindex="0" id="cssConstantName" name="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'csses','id':'cssConstantName'}"
                 ng-model="cssName"
                 ng-change="getCssSource()">
         </select>
 
-        <button class="secondary" ng-click='loadCssNames()' ng-show="false" ><g:message code="sspb.css.cssManager.reload.pages.label" /></button>
     </div>
     <div class="btn-section-2">
-        <button class="primary" ng-click='newCssSource();resetCssNameData();' ng-disabled="${!isProductionReadOnlyMode}" ><g:message code="sspb.css.cssManager.newCss.label" /></button>
-        <button class="secondary" ng-click='submitCssSource()' ng-disabled="${!isProductionReadOnlyMode} || !(allowModify == null ? true :allowModify)"><g:message code="sspb.css.cssManager.save.label" /></button>
+        <button tabindex="0" class="primary" ng-click='newCssSource();resetCssNameData();' ng-disabled="${!isProductionReadOnlyMode}" ><g:message code="sspb.css.cssManager.newCss.label" /></button>
+        <button tabindex="0" class="secondary" ng-click='submitCssSource()' ng-disabled="${!isProductionReadOnlyMode} || !(allowModify == null ? true :allowModify)"><g:message code="sspb.css.cssManager.save.label" /></button>
         <span ng-show="${isProductionReadOnlyMode}">
-            <pb-Upload label='Upload Stylesheet' status='cssStatus' pb-change=''></pb-Upload>
+            <pb-Upload  label='Upload Stylesheet' status='cssStatus' pb-change=''></pb-Upload>
         </span>
-        <button class="secondary" ng-click="getCssSource()"><g:message code="sspb.css.cssManager.reload.label" /></button>
-        <button class="secondary" ng-click='deleteCssSource()' ng-disabled="${!isProductionReadOnlyMode} || !(allowModify == null ? true :allowModify) "><g:message code="sspb.css.cssManager.delete.label" /></button>
+        <button tabindex="0" class="secondary" ng-click="getCssSource()"><g:message code="sspb.css.cssManager.reload.label" /></button>
+        <button tabindex="0" class="secondary" ng-click='deleteCssSource()' ng-disabled="${!isProductionReadOnlyMode} || !(allowModify == null ? true :allowModify) "><g:message code="sspb.css.cssManager.delete.label" /></button>
         <span  ng-show="cssName.length>0">
-            <button class="secondary" ng-click='getDeveloperSecurityPage()'><g:message code="sspb.css.cssManager.developer.label" /></button>
+            <button tabindex="0" class="secondary" ng-click='getDeveloperSecurityPage()'><g:message code="sspb.css.cssManager.developer.label" /></button>
         </span>
 
         <span ng-show="cssName" class="alignRight">
             <label class="vpc-name-label dispInline" for="pbid-cssOwner"><g:message code="sspb.css.visualbuilder.cssowner.label" /></label>
-            <input style="display: none" ng-model="allowUpdateOwner" aria-label="Allow Update Owner"/>
-            <select id="pbid-cssOwner" class="owner-select alignRight" ng-model="cssOwner"  ng-disabled="!allowUpdateOwner">
+            <input tabindex="0" style="display: none" ng-model="allowUpdateOwner" aria-label="Allow Update Owner"/>
+            <select tabindex="0" id="pbid-cssOwner" class="owner-select alignRight" ng-model="cssOwner"  ng-disabled="!allowUpdateOwner">
                 <option ng-repeat="owner in pbUserList" value="{{owner}}" ng-selected="{{owner == pageOwner}}">{{owner}}</option>
             </select>
         </span>
@@ -303,28 +302,28 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
         <div class="control-group">
             <label class="col-sm-3 control-label"  for='cssName'><g:message code="sspb.css.cssManager.cssName.label" /></label>
             <div class="col-sm-9">
-                <input name="cssName" id='cssName' class="form-control" ng-model='cssName' required maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/" />
+                <input tabindex="0" name="cssName" id='cssName' class="form-control" ng-model='cssName' required maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/" />
                 <span ng-messages="cssform.cssName.$error" role="alert" class="fieldValidationMessage">
-                    <span ng-message="pattern" ><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" /></span>
-                    <span ng-message="required" > <g:message code="sspb.page.visualbuilder.name.required.message" /></span>
+                    <span ng-show="cssform.cssName.$touched" tabindex="0" ng-message="pattern" ><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" /></span>
+                    <span ng-show="cssform.cssName.$touched" tabindex="0" ng-message="required" > <g:message code="sspb.page.visualbuilder.name.required.message" /></span>
                 </span>
             </div>
         </div>
         <div class="control-group">
             <label class="col-sm-3 control-label"  for='desc'><g:message code="sspb.css.cssManager.description.label" /></label>
             <div class="col-sm-9">
-                <input name="description" id='desc' class="form-control" ng-model='description' maxlength="255"/>
+                <input tabindex="0" name="description" id='desc' class="form-control" ng-model='description' maxlength="255"/>
             </div>
         </div>
 
         <div class="control-group">
             <label class="col-sm-3 control-label" for='source'><g:message code="sspb.css.cssManager.cssSource.label" /></label>
             <div class="col-sm-9">
-                <textarea ng-model='cssSource' class="form-control" rows="9" id='source'></textarea>
+                <textarea tabindex="0" ng-model='cssSource' class="form-control" rows="9" id='source'></textarea>
             </div>
         </div>
     </div>
-    <textArea name="statusMessage" readonly="true" ng-model="cssStatus.message" aria-label="Status Message"
+    <textArea tabindex="0" name="statusMessage" readonly="true" ng-model="cssStatus.message" aria-label="Status Message"
               rows="3" cols="120" style="width:99%; height:10%"></textArea>
 </div>
 

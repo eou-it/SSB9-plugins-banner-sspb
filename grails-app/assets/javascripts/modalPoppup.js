@@ -11,11 +11,16 @@
                 restrict: 'C',
                 link: function (scope, ele) {
                     ele.on('keydown', function (event) {
+                        var currentPagescope = angular.element(document.getElementById('popupContainerDiv')).scope();
+                        if((event.keyCode === 27 ||  (document.activeElement.className === "xe-popup-close" && e.keyCode === 13) ) && currentPagescope) {
+                            angular.element("#" + currentPagescope.inputTypeFieldID).focus();
+                        }
                         if(event.keyCode === 13 && document.activeElement.className === 'width-animate ng-scope sortable focus-ring'){
                             angular.element('#goToPageButton').trigger('click');
                             event.preventDefault();
                             event.stopPropagation();
                         }
+
                     });
                 }
             }
@@ -212,6 +217,7 @@
                 $("#"+$scope.inputTypeFieldID).append("<option label='"+name+"' selected='selected' value="+value+">"+name+"</option>");
 
                 var selectInput = angular.element(document.getElementById($scope.inputTypeFieldID))
+                selectInput.focus();
                 selectInput.trigger('change');
 
             };
