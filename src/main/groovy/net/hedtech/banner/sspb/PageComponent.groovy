@@ -1137,17 +1137,22 @@ class PageComponent {
                 }
                 break;
             case COMP_TYPE_BOOLEAN:
+                def checked = ""
+                def disabled = "${readonly?"disabled=\"disabled\"":""}"
+                if(value){
+                    checked = "checked=\"checked\""
+                }
                 result ="""<input ${idAttribute(idTxtParam)} $autoStyleStr  type="checkbox" name="${name?name:model}"
                            ${booleanTrueValue?"ng-true-value=\"${htmlValue(booleanTrueValue,"'")}\"":""} ${booleanFalseValue?"ng-false-value=\"${htmlValue(booleanFalseValue,"'")}\"":""}
                            $ngChange $ngClick
                            """
                 // add change event handler for items in DataSet so the item can be marked dirty for save
                 if (isDataSetEditControl(parent)) {
-                    result+= """ ${(parent.allowModify && !readonly)?"":"readonly"} ng-model="$GRID_ITEM.${model}" /> $labelTxt """
+                    result+= """ ${(parent.allowModify && !readonly)?"":"readonly"} ng-model="$GRID_ITEM.${model}" $disabled $checked/> $labelTxt """
                 }
                 else  {
                     // is value needed ever? Doesn't do anything if ng-model is used.
-                    result += """  ng-model="$model" ${readonly?"readonly":""}  ${defaultValue()}/> $labelTxt """
+                    result += """  ng-model="$model" $disabled $checked ${defaultValue()}/> $labelTxt """
                 }
                 break;
             case COMP_TYPE_SUBMIT: //Is this ever used?
