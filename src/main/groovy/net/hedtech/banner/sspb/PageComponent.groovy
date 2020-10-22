@@ -1145,17 +1145,18 @@ class PageComponent {
                 if(value){
                     checked = "checked=\"checked\""
                 }
-                result ="""<input ${idAttribute(idTxtParam)} $autoStyleStr  type="checkbox" name="${name?name:model}"
+                def span = "<span class=\"xe-checkmark\" tabindex=\"-1\"></span>"
+                result ="""<div role="application" class="xe-container"><input ${idAttribute(idTxtParam)} $autoStyleStr  type="checkbox" tabindex="-1" name="${name?name:model}"
                            ${booleanTrueValue?"ng-true-value=\"${htmlValue(booleanTrueValue,"'")}\"":""} ${booleanFalseValue?"ng-false-value=\"${htmlValue(booleanFalseValue,"'")}\"":""}
                            $ngChange $ngClick
                            """
                 // add change event handler for items in DataSet so the item can be marked dirty for save
                 if (isDataSetEditControl(parent)) {
-                    result+= """ ${(parent.allowModify && !readonly)?"":"readonly"} ng-model="$GRID_ITEM.${model}" $disabled $checked/> $labelTxt """
+                    result+= """ ${(parent.allowModify && !readonly)?"":"readonly"} ng-model="$GRID_ITEM.${model}" $disabled $checked/>$span $labelTxt </div>"""
                 }
                 else  {
                     // is value needed ever? Doesn't do anything if ng-model is used.
-                    result += """  ng-model="$model" $disabled $checked ${defaultValue()}/> $labelTxt """
+                    result += """  ng-model="$model" ${readonly?"readonly":""}  ${defaultValue()} $disabled $checked/>$span $labelTxt </div>"""
                 }
                 break;
             case COMP_TYPE_SUBMIT: //Is this ever used?
