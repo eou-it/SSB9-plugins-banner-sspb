@@ -2,7 +2,7 @@
    "constantName": "pbadm.AdminTasks",
    "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2020-07-23T06:35:53Z",
+   "fileTimestamp": "2020-10-22T10:35:53Z",
    "modelView": {
       "components": [
          {
@@ -433,7 +433,7 @@
          {
             "name": "jsCode",
             "type": "literal",
-            "value": "<script>\nif(isImportPrevented && !user.isSuperUser) {\n$(\"input\", \"#pbid-securityBlock\").attr(\"disabled\", \"disabled\")\n$(\"input\", \"#pbid-uploadFileSelect-container\").attr(\"disabled\", \"disabled\")\n$(\"button\").attr(\"disabled\", \"disabled\")\n}\n</script>"
+            "value": "<script>\nif(isImportPrevented && !user.isSuperUser) {\n$(\"input\", \"#pbid-securityBlock\").attr(\"disabled\", \"disabled\")\n$(\"input\", \"#pbid-uploadFileSelect-container\").attr(\"disabled\", \"disabled\")\n$(\"button\").attr(\"disabled\", \"disabled\")\n$(\"input\",\".pb-boolean\").attr(\"disabled\",\"disabled\")\n}\n</script>"
          }
       ],
       "documentation": "Miscellaneous tasks",
