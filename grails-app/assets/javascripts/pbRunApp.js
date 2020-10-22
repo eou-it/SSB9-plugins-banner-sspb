@@ -21,6 +21,9 @@ alert = function(message, params ){ //message,promptMessage,type,flash,prompts) 
     }
     var prompts = params&&params.prompts?params.prompts:[{label: $.i18n.prop("sspb.custom.page.default.affirm"), action:function(){}}];
 
+    if (params.elementToFocus) {
+        noteSpec.elementToFocus = params.elementToFocus;
+    }
     var note = new Notification(noteSpec);
     if (prompts && !noteSpec.flash) {
         prompts.forEach( function(prompt) {
@@ -896,21 +899,24 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
             scope.onClickData = function (event) {
                 //scope.pageName = null;
                 scope.options = $parse(attrs.pbPopupDataGrid)() || {};
-                if(scope.options.id == 'extendsPage') {
+                if (scope.options.id == 'extendsPage') {
                     scope.options.excludePage = scope.pageName;
                 }
-                if(event.type =='click' || event.type =='enter')
+                var keycode = (event.keyCode ? event.keyCode : event.which);
+                if (event.type == 'click' || event.type == 'enter' || event.type == 'mousedown')
                     scope.loadPopup(scope.options);
                 else {
-                    var keycode = (event.keyCode ? event.keyCode : event.which);
-                    if(keycode == '13')
+                    if (keycode == '13' && event.type != 'keyup')
                         scope.loadPopup(scope.options);
-                    else if(event.type =='keydown') {
-                            document.getElementById(attrs.id).blur();
+                    else if (event.type == 'keydown') {
+                        document.getElementById(attrs.id).blur();
                     }
                 }
-                event.preventDefault();
-                event.stopPropagation();
+                if (keycode != '9') {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
             }
 
             scope.changeData = function(event){
@@ -964,7 +970,7 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
             }
 
             element.on('enter',scope.onClickData);
-            element.on('keyup', scope.onClickData);
+          //  element.on('keyup', scope.onClickData);
             element.on('keydown', scope.onClickData);
             element.on('change', scope.changeData);
             element.on('click', scope.onClickData);
