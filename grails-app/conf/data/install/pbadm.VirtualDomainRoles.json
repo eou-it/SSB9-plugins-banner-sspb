@@ -2,7 +2,7 @@
    "constantName": "pbadm.VirtualDomainRoles",
    "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2020-07-23T06:35:53Z",
+   "fileTimestamp": "2020-10-16T06:35:53Z",
    "modelView": {
       "components": [
          {
@@ -36,7 +36,7 @@
                   "onLoad": "$editVirtualDomainRoles.$load();$EditRolesForm.$visible=$selectVirtualDomain; $roleName.$populateSource();",
                   "model": "selectVirtualDomain",
                   "sourceModel": "virtualDomainLookup1",
-                  "style": "rTableCell",
+                  "style": "col-sm-6 rTableCell",
                   "placeholder": "Select...",
                   "labelKey": "SERVICE_NAME",
                   "valueKey": "VID",
@@ -46,7 +46,7 @@
                   "valueStyle": "primary",
                   "onClick": "var baseUrl = location.origin; \nvar path = \"/BannerExtensibility/virtualDomainComposer/loadVirtualDomain\";\nvar url = baseUrl + path;\nif($selectVirtualDomain && $CONSTANT_NAME){\nupdateLocalStorage($CONSTANT_NAME, $selectVirtualDomain);\n}\nlocation.assign(url);",
                   "name": "virtualDomainComposerButton",
-                  "style": "col-sm-6 rTableCell divAlignToRight",
+                  "style": "col-sm-6 divAlignToRight",
                   "label": "Virtual Domain Composer",
                   "type": "button"
                }

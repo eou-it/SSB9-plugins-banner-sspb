@@ -263,6 +263,11 @@ pagebuilderModule.directive('pbUpload', function() {
         templateUrl: '../assets/angular/pbUpload.html',
         controller: ['$scope', '$element', '$attrs', '$transclude',
             function($scope, $element, $attrs, $transclude) {
+                $scope.handledEscapeKey = function (e){
+                    if (e.which === 27) {
+                        $("#pbid-upload-stylesheet").focus();
+                    }
+                };
                 $scope.complete = function(content, completed) {
                     $scope.uploadResponse = content;
 
@@ -274,9 +279,11 @@ pagebuilderModule.directive('pbUpload', function() {
                 // modal dialog functions
                 $scope.openUploadModal = function () {
                     $scope.uploadShouldBeOpen = true;
-                    $("#pbid-upload-stylesheet").blur(function () {
+                    setTimeout(function(){$("#pbid-cssName-upload").focus(); },0);
+
+                  /*  $("#pbid-upload-stylesheet").blur(function () {
                         $("#pbid-cssName-upload").focus();
-                    });
+                    });*/
 
                 };
 
@@ -287,11 +294,13 @@ pagebuilderModule.directive('pbUpload', function() {
 
                 $scope.cancelUploadModal = function() {
                     $scope.uploadShouldBeOpen = false;
+                    $("#pbid-upload-stylesheet").focus();
                 };
 
                 $scope.uploadModalOpts = {
                     backdropFade: true,
                     dialogFade:true
+
                 };
 
                 $scope.i18n = {
