@@ -716,7 +716,7 @@ class PageComponent {
             def deleteLabel=deleteRecordLabel?tran("deleteRecordLabel"):tranGlobal("delete.label","Delete")
             thead = "<th ${idAttribute('delete-column-header')}>$deleteLabel</th>"
             items = """
-                  |<td ${idAttribute('delete-column-data'+idTxtParam)} role="gridcell">
+                  |<td ${idAttribute('delete-column-data'+idTxtParam)} role="gridcell" tabindex="0">
                   |<input ${idAttribute('delete-column-checkbox'+idTxtParam)} ng-click="${dataSet}.deleteRecords($GRID_ITEM)" type="checkbox" aria-label="Delete Record"/>
                   |</td>
                   |""".stripMargin()
@@ -736,7 +736,7 @@ class PageComponent {
                 thead+="<th ${idAttribute('data-header-'+child.name)} $labelStyleStr role=\"columnheader\">${child.tran("label")}</th>"
                 //get the child components
                 child.label=""
-                items+="<td ${idAttribute('-td-' + child.name + idTxtParam )} role=\"gridcell\">${child.compileComponent("", depth)}</td>\n"
+                items+="<td ${idAttribute('-td-' + child.name + idTxtParam )} role=\"gridcell\" tabindex=\"0\">${child.compileComponent("", depth)}</td>\n"
             }
         }
         def click_txt=""

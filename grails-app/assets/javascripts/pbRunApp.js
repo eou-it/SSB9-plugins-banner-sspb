@@ -573,7 +573,9 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
 
         //delete selected record(s)
         this.deleteRecords = function(items) {
-            items = $scope.gridApi.selection.getSelectedRows();
+            if($scope.gridApi) {
+                items = $scope.gridApi.selection.getSelectedRows();
+            }
             $scope.changed = true;
             if (this.data.remove(items) ) {
                 // we got a single record
@@ -1007,3 +1009,32 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
         }
     };
 }]);
+
+$(document).ready(function () {
+    $('table').keydown(function (e) {
+        e = e || window.event;
+        var keyCode = e.keyCode ? e.keyCode : e.which;
+        var start = e.target;
+        if (keyCode == '38') {
+            var idx = start.cellIndex;
+            var nextrow = start.parentElement.previousElementSibling;
+            if (nextrow && idx!=null) {
+                var sibling = nextrow.cells[idx];
+                sibling.focus();
+            }
+        } else if (keyCode == '40') {
+            var idx = start.cellIndex;
+            var nextrow = start.parentElement.nextElementSibling;
+            if (nextrow && idx!=null) {
+                var sibling = nextrow.cells[idx];
+                sibling.focus();
+            }
+        } else if (keyCode == '37') {
+            var sibling = start.previousElementSibling;
+            sibling?sibling.focus():'';
+        } else if (keyCode == '39') {
+            var sibling = start.nextElementSibling;
+            sibling?sibling.focus():'';
+        }
+    });
+})
