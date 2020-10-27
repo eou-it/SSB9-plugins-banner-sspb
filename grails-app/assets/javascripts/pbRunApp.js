@@ -484,6 +484,41 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
                 console.log("Set initial record ");
             }
         };
+        this.gridKeyPress= function(item)
+        {
+            var focus = "moveFocus";
+            var rowIndex = item.row.entity.ROW_NUMBER?item.row.entity.ROW_NUMBER-1:0;
+            var pageSize = this.pagingOptions.pageSize?this.pagingOptions.pageSize:5;
+            rowIndex=rowIndex%pageSize;
+            var t = event.target;
+            var keyCode = event.keyCode ? event.keyCode : event.which
+            if (keyCode == 39) {
+                if(item.colRenderIndex !== undefined && item.colRenderIndex>=0)
+                    focus+=item.colRenderIndex+1
+                $("."+focus).eq(rowIndex).focus();
+            }
+            if (keyCode == 37) {
+                if(item.colRenderIndex !== undefined && item.colRenderIndex>=0)
+                    focus+=item.colRenderIndex-1
+                $("."+focus).eq(rowIndex).focus();
+
+            }
+            if (keyCode == 38) {
+                if(item.colRenderIndex !== undefined && item.colRenderIndex>=0)
+                    focus+=item.colRenderIndex
+                rowIndex>0?rowIndex--:rowIndex;
+                $("."+focus).eq(rowIndex).focus();
+            }
+            if (keyCode== 40) {
+                rowIndex++;
+                if(item.colRenderIndex !== undefined && item.colRenderIndex>=0)
+                    focus+=item.colRenderIndex
+                $("."+focus).eq(rowIndex).focus();
+            }
+           /* if(keyCode==13 || keyCode==32){
+                t.dispatchEvent(event)
+            }*/
+        }
         this.setCurrentRecord = function ( item )   {
             var model = $parse(this.componentId);
             //a grid has model.name noop and cannot be assigned a value

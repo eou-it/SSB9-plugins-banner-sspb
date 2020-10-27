@@ -483,7 +483,7 @@ class PageComponent {
     String gridJS() {
         def dataSet    =  "${name}DS"
         def items =""
-
+        int moveCount=0
         // generate all table columns from the data model
         components.each { child ->
             child.parent = this
@@ -495,8 +495,10 @@ class PageComponent {
                 optional+=",enableSorting: false"
             items+="""
                    { field: '${child.model}', displayName: '${child.tran("label",ESC_JS)}',
-                     cellTemplate: '${child.gridChildHTML()}'
+                     cellTemplate: '${child.gridChildHTML(moveCount)}'
                      $optional}"""
+            if(child.type!=COMP_TYPE_HIDDEN)
+                moveCount++;
         }
 
         def code = """
@@ -592,7 +594,7 @@ class PageComponent {
     }
 
     //this returns a html template string as a javascript string - escape strings
-    String gridChildHTML( int depth=0) {
+    String gridChildHTML( int moveCount, int depth=0) {
 
         def templateResult
         if(!COMP_TYPE_LINK.equalsIgnoreCase(type)) {
@@ -605,9 +607,10 @@ class PageComponent {
         def ro= readonly || COMP_DISPLAY_TYPES.contains(type)
         def tagStart="<input"
         def tagEnd="/>"
+        def moveFocus="moveFocus"+moveCount
         def nameAt="name=\"$name\""
         def typeAt="type=\"$type\""
-        def styleAt="class=\"pb-${parent.type} pb-$type ${valueStyle?valueStyle:""}\" ng-class=\"${name}_$STYLE_ATTR\" style=\"background-color:transparent; border:0; width: 100%; height:{{rowHeight}}px\""
+        def styleAt="class=\"pb-${parent.type} ${moveFocus} pb-$type ${valueStyle?valueStyle:""}\" ng-class=\"${name}_$STYLE_ATTR\" style=\"background-color:transparent; border:0; width: 100%; height:{{rowHeight}}px\""
         def specialAt=""
         def readonlyAt = (parent.allowModify && !ro)?"":"readonly"
         def requiredAt = required?"required":""
@@ -621,6 +624,7 @@ class PageComponent {
         def ariaLabel = "aria-label=\"MODEL_COL_FIELD\""
         def role = ""
         def typeInternal = type
+        def onkeypress="ng-keydown=\"[37, 38, 39, 40].includes(\$event.keyCode)?grid.appScope.${parent.name}DS.gridKeyPress(this):return \""
         if (type == COMP_TYPE_NUMBER ) {
             //angular-ui doesn't use localized validators - use own (but rather limited still)
             typeAt="""type="text" pb-number ${fractionDigits?"fraction-digits=\"$fractionDigits\"":""} """
@@ -639,14 +643,14 @@ class PageComponent {
                 readonlyAt = (parent.allowModify && !ro)?"":"disabled" //select doesn't have readonly
                 ngChange="ng-change=\""+(onUpdate?"grid.appScope.${name}DS.onUpdate(row.entity);":"")+"grid.appScope.${parent.name}DS.setModified(row.entity);grid.appScope.${name}DS.setCurrentRecord(row.entity.$model);\""
                 placeholderAt = placeholder?"""<option value="" role="menuitem">${tran("placeholder")}</option>""":""
-                return """<select ${idForAttribute(idTxtParam+"-label")} role="menu" $ariaLabel ${styleAt} $ngModel $readonlyAt $ngChange $ngClick ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in grid.appScope.$arrayName"> $placeholderAt </select>"""
+                return """<select $onkeypress ${idForAttribute(idTxtParam+"-label")} role="menu" $ariaLabel ${styleAt} $ngModel $readonlyAt $ngChange $ngClick ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in grid.appScope.$arrayName"> $placeholderAt </select>"""
             case [COMP_TYPE_TEXT, COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER, COMP_TYPE_DATETIME, COMP_TYPE_EMAIL, COMP_TYPE_TEL] :
                 validateAt = validationAttributes()
                 placeholderAt=placeholder?"placeholder=\"${tran("placeholder")}\"":""
                 break
             case COMP_TYPE_BOOLEAN:
                 typeAt = "type=\"checkbox\" tabindex=\"0\""
-                styleAt="style=\"background-color:transparent; border:0; width: 30%; height:{{rowHeight}}px\""
+                styleAt="style=\"background-color:transparent; border:0; width: 30%; height:{{rowHeight}}px\" class=$moveFocus"
                 specialAt ="""${booleanTrueValue?"ng-true-value=\"${htmlValue(booleanTrueValue,"\\\'")}\"":""} ${booleanFalseValue?"ng-false-value=\"${htmlValue(booleanFalseValue,"\\\'")}\"":""}  """
                 role= "role=checkbox"
                 ariaLabel = "aria-label=\"${tran("label",ESC_JS)}\""
@@ -663,7 +667,7 @@ class PageComponent {
                 }
                 break
             case COMP_TYPE_LITERAL:
-                return "<span $styleAt $ngClick>" + tran(propertiesBaseKey()+".value",compileDOMDisplay(value).replaceAll("item.","row.entity.") ) + "</span>"
+                return "<span $styleAt $ngClick $onkeypress>" + tran(propertiesBaseKey()+".value",compileDOMDisplay(value).replaceAll("item.","row.entity.") ) + "</span>"
                 break
             case COMP_TYPE_LINK:
                 def desc = description?tran("description"):url
@@ -675,14 +679,14 @@ class PageComponent {
                     targetStr = """target="_blank" """
                 // set url to empty string if it is null, otherwise the page is re-directed to a non-existing page
                 url = (url==null)?"":url
-                return """<a ng-href="${compileDOMDisplay(url)}" $targetStr $clickStr tabindex="0"> <span $autoStyleStr> $desc </span></a>"""
+                return """<a ng-href="${compileDOMDisplay(url)}" $targetStr $clickStr tabindex="0" $onkeypress> <span $autoStyleStr> $desc </span></a>"""
 
                 break;
             default :
                 log.info "***No ng-grid html edit template for $type ${name?name:model}"
         }
         def result = "$tagStart $nameAt $typeAt $styleAt $specialAt $readonlyAt $requiredAt $validateAt $placeholderAt $role $ariaLabel" +
-                     " $ngModel $ngChange $ngClick $tagEnd"
+                     " $ngModel $ngChange $ngClick $onkeypress $tagEnd"
         return result
     }
 
