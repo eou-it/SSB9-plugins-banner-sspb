@@ -620,6 +620,7 @@ class PageComponent {
         def ngClick="""ng-click="grid.appScope.${parent.name}DS.setCurrentRecord(row.entity);$onClickCode" """
         def ariaLabel = "aria-label=\"MODEL_COL_FIELD\""
         def role = ""
+        def disabled = ""
         def typeInternal = type
         if (type == COMP_TYPE_NUMBER ) {
             //angular-ui doesn't use localized validators - use own (but rather limited still)
@@ -642,6 +643,7 @@ class PageComponent {
                 return """<select ${idForAttribute(idTxtParam+"-label")} role="menu" $ariaLabel ${styleAt} $ngModel $readonlyAt $ngChange $ngClick ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in grid.appScope.$arrayName"> $placeholderAt </select>"""
             case [COMP_TYPE_TEXT, COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER, COMP_TYPE_DATETIME, COMP_TYPE_EMAIL, COMP_TYPE_TEL] :
                 validateAt = validationAttributes()
+                disabled = "${readonly?"disabled=\"disabled\"":""}"
                 placeholderAt=placeholder?"placeholder=\"${tran("placeholder")}\"":""
                 break
             case COMP_TYPE_BOOLEAN:
@@ -681,7 +683,7 @@ class PageComponent {
             default :
                 log.info "***No ng-grid html edit template for $type ${name?name:model}"
         }
-        def result = "$tagStart $nameAt $typeAt $styleAt $specialAt $readonlyAt $requiredAt $validateAt $placeholderAt $role $ariaLabel" +
+        def result = "$tagStart $nameAt $typeAt $styleAt $specialAt $readonlyAt $requiredAt $validateAt $placeholderAt $role $ariaLabel $disabled" +
                      " $ngModel $ngChange $ngClick $tagEnd"
         return result
     }
@@ -1095,6 +1097,7 @@ class PageComponent {
             case COMP_TYPE_HIDDEN:
                 def tag = "input"
                 def endTag = "/>"
+                def disabled = "${readonly?"disabled=\"disabled\"":""}"
                 def attributes = "${validationAttributes()} ${required?"required":""} ${placeholder?"placeholder=\"${tran("placeholder")}\"":""} ${labelTxt?"":"aria-label=\"${tran("placeholder")}\""}".trim()
                 def typeString= "type=\"$t\""
                 if (type == COMP_TYPE_NUMBER) {  // angular-ui doesn't use localized validators
@@ -1117,7 +1120,7 @@ class PageComponent {
                     //defaulValue() removed, now should be handled by initNewRecordJS() call in compileService.
                     result = """|<$tag $inputIdStr $typeString $autoStyleStr  name="${name?name:model}" ${parent.allowModify && !readonly?"":"readonly"}
                                 | ng-model="$GRID_ITEM.${model}"
-                                | $ngChange $attributes $ngClick $endTag
+                                | $ngChange $attributes $ngClick $disabled $endTag
                                 |""".stripMargin()
                 } else {
                     // TODO do we need a value field if ng-model is defined?  //added defaultValue
@@ -1135,21 +1138,27 @@ class PageComponent {
                             result+=".$modelComponent"
                         result+='" '
                     }
-                    result+="$endTag\n"
+                    result+="$disabled $endTag\n"
                 }
                 break;
             case COMP_TYPE_BOOLEAN:
-                result ="""<div role="application"><input ${idAttribute(idTxtParam)} $autoStyleStr  type="checkbox" name="${name?name:model}"
+                def checked = ""
+                def disabled = "${readonly?"disabled=\"disabled\"":""}"
+                if(value){
+                    checked = "checked=\"checked\""
+                }
+                def span = "<span class=\"xe-checkmark\" tabindex=\"-1\"></span>"
+                result ="""<div role="application" class="xe-container"><input ${idAttribute(idTxtParam)} $autoStyleStr  type="checkbox" tabindex="-1" name="${name?name:model}"
                            ${booleanTrueValue?"ng-true-value=\"${htmlValue(booleanTrueValue,"'")}\"":""} ${booleanFalseValue?"ng-false-value=\"${htmlValue(booleanFalseValue,"'")}\"":""}
                            $ngChange $ngClick
                            """
                 // add change event handler for items in DataSet so the item can be marked dirty for save
                 if (isDataSetEditControl(parent)) {
-                    result+= """ ${(parent.allowModify && !readonly)?"":"readonly"} ng-model="$GRID_ITEM.${model}" /> $labelTxt </div>"""
+                    result+= """ ${(parent.allowModify && !readonly)?"":"readonly"} ng-model="$GRID_ITEM.${model}" $disabled $checked/>$span $labelTxt </div>"""
                 }
                 else  {
                     // is value needed ever? Doesn't do anything if ng-model is used.
-                    result += """  ng-model="$model" ${readonly?"readonly":""}  ${defaultValue()}/> $labelTxt </div>"""
+                    result += """  ng-model="$model" ${readonly?"readonly":""}  ${defaultValue()} $disabled $checked/>$span $labelTxt </div>"""
                 }
                 break;
             case COMP_TYPE_SUBMIT: //Is this ever used?
