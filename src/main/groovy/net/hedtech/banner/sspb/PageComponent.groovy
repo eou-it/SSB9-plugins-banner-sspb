@@ -620,6 +620,7 @@ class PageComponent {
         def ngClick="""ng-click="grid.appScope.${parent.name}DS.setCurrentRecord(row.entity);$onClickCode" """
         def ariaLabel = "aria-label=\"MODEL_COL_FIELD\""
         def role = ""
+        def disabled = ""
         def typeInternal = type
         if (type == COMP_TYPE_NUMBER ) {
             //angular-ui doesn't use localized validators - use own (but rather limited still)
@@ -642,6 +643,7 @@ class PageComponent {
                 return """<select ${idForAttribute(idTxtParam+"-label")} role="menu" $ariaLabel ${styleAt} $ngModel $readonlyAt $ngChange $ngClick ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in grid.appScope.$arrayName"> $placeholderAt </select>"""
             case [COMP_TYPE_TEXT, COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER, COMP_TYPE_DATETIME, COMP_TYPE_EMAIL, COMP_TYPE_TEL] :
                 validateAt = validationAttributes()
+                disabled = "${readonly?"disabled=\"disabled\"":""}"
                 placeholderAt=placeholder?"placeholder=\"${tran("placeholder")}\"":""
                 break
             case COMP_TYPE_BOOLEAN:
@@ -681,7 +683,7 @@ class PageComponent {
             default :
                 log.info "***No ng-grid html edit template for $type ${name?name:model}"
         }
-        def result = "$tagStart $nameAt $typeAt $styleAt $specialAt $readonlyAt $requiredAt $validateAt $placeholderAt $role $ariaLabel" +
+        def result = "$tagStart $nameAt $typeAt $styleAt $specialAt $readonlyAt $requiredAt $validateAt $placeholderAt $role $ariaLabel $disabled" +
                      " $ngModel $ngChange $ngClick $tagEnd"
         return result
     }
