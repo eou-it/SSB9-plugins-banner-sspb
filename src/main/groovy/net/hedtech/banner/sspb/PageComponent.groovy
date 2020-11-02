@@ -597,7 +597,7 @@ class PageComponent {
     String gridChildHTML( int moveCount, int depth=0) {
 
         def templateResult
-        if(!COMP_TYPE_LINK.equalsIgnoreCase(type)) {
+        if(![COMP_TYPE_LINK, COMP_TYPE_DISPLAY].contains(type)) {
             templateResult=compileComponentTemplate(depth, ESC_JS)
         }
         if ( templateResult && templateResult.compiled) {
@@ -610,7 +610,7 @@ class PageComponent {
         def moveFocus="moveFocus"+moveCount
         def nameAt="name=\"$name\""
         def typeAt="type=\"$type\""
-        def styleAt="class=\"pb-${parent.type} ${moveFocus} pb-$type ${valueStyle?valueStyle:""}\" ng-class=\"${name}_$STYLE_ATTR\" style=\"background-color:transparent; border:0; width: 100%; height:{{rowHeight}}px\""
+        def styleAt="class=\"pb-${parent.type}  pb-$type ${valueStyle?valueStyle:""}\" ng-class=\"${name}_$STYLE_ATTR\" style=\"background-color:transparent; border:0; width: 100%; height:{{rowHeight}}px\""
         def specialAt=""
         def readonlyAt = (parent.allowModify && !ro)?"":"readonly"
         def requiredAt = required?"required":""
@@ -624,7 +624,14 @@ class PageComponent {
         def ariaLabel = "aria-label=\"MODEL_COL_FIELD\""
         def role = ""
         def typeInternal = type
-        def onkeypress="ng-keydown=\"[37, 38, 39, 40].includes(\$event.keyCode)?grid.appScope.${parent.name}DS.gridKeyPress(this):return \""
+        def noFoucs = "tabindex=\"-1\""
+        def initTabIndex =""
+        if(moveCount==0){
+            initTabIndex = "tabindex=\"0\""
+        }
+        def onkeypress="ng-keydown=\"[37,38,39,40,9,27,13].includes(\$event.keyCode)?grid.appScope.${parent.name}DS.gridKeyPress(\$event, this):return \"  class=\"$moveFocus\" $initTabIndex"
+        tagStart = "<span "+onkeypress+"> "+tagStart
+        tagEnd = tagEnd+"</span>"
         if (type == COMP_TYPE_NUMBER ) {
             //angular-ui doesn't use localized validators - use own (but rather limited still)
             typeAt="""type="text" pb-number ${fractionDigits?"fraction-digits=\"$fractionDigits\"":""} """
@@ -643,14 +650,14 @@ class PageComponent {
                 readonlyAt = (parent.allowModify && !ro)?"":"disabled" //select doesn't have readonly
                 ngChange="ng-change=\""+(onUpdate?"grid.appScope.${name}DS.onUpdate(row.entity);":"")+"grid.appScope.${parent.name}DS.setModified(row.entity);grid.appScope.${name}DS.setCurrentRecord(row.entity.$model);\""
                 placeholderAt = placeholder?"""<option value="" role="menuitem">${tran("placeholder")}</option>""":""
-                return """<select $onkeypress ${idForAttribute(idTxtParam+"-label")} role="menu" $ariaLabel ${styleAt} $ngModel $readonlyAt $ngChange $ngClick ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in grid.appScope.$arrayName"> $placeholderAt </select>"""
+                return """<span $onkeypress ><select ${idForAttribute(idTxtParam+"-label")} role="menu" $ariaLabel ${styleAt} $ngModel $readonlyAt $ngChange $ngClick ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in grid.appScope.$arrayName" tabindex="-1"> $placeholderAt </select> </span>"""
             case [COMP_TYPE_TEXT, COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER, COMP_TYPE_DATETIME, COMP_TYPE_EMAIL, COMP_TYPE_TEL] :
                 validateAt = validationAttributes()
                 placeholderAt=placeholder?"placeholder=\"${tran("placeholder")}\"":""
                 break
             case COMP_TYPE_BOOLEAN:
-                typeAt = "type=\"checkbox\" tabindex=\"0\""
-                styleAt="style=\"background-color:transparent; border:0; width: 30%; height:{{rowHeight}}px\" class=$moveFocus"
+                typeAt = "type=\"checkbox\""
+                styleAt="style=\"background-color:transparent; border:0; width: 30%; height:{{rowHeight}}px\" "
                 specialAt ="""${booleanTrueValue?"ng-true-value=\"${htmlValue(booleanTrueValue,"\\\'")}\"":""} ${booleanFalseValue?"ng-false-value=\"${htmlValue(booleanFalseValue,"\\\'")}\"":""}  """
                 role= "role=checkbox"
                 ariaLabel = "aria-label=\"${tran("label",ESC_JS)}\""
@@ -658,7 +665,7 @@ class PageComponent {
             case COMP_TYPE_DISPLAY:
                 typeAt=""
                 if (asHtml) {
-                    tagStart="<span"
+                    tagStart="<span $onkeypress"
                     tagEnd="></span>"
                     ngModel="ng-bind-html=\"MODEL_COL_FIELD | to_trusted\""
                 }
@@ -679,14 +686,14 @@ class PageComponent {
                     targetStr = """target="_blank" """
                 // set url to empty string if it is null, otherwise the page is re-directed to a non-existing page
                 url = (url==null)?"":url
-                return """<a ng-href="${compileDOMDisplay(url)}" $targetStr $clickStr tabindex="0" $onkeypress> <span $autoStyleStr> $desc </span></a>"""
+                return """<a ng-href="${compileDOMDisplay(url)}" $targetStr $clickStr $onkeypress> <span $autoStyleStr > $desc </span></a>"""
 
                 break;
             default :
                 log.info "***No ng-grid html edit template for $type ${name?name:model}"
         }
         def result = "$tagStart $nameAt $typeAt $styleAt $specialAt $readonlyAt $requiredAt $validateAt $placeholderAt $role $ariaLabel" +
-                     " $ngModel $ngChange $ngClick $onkeypress $tagEnd"
+                     " $ngModel $ngChange $ngClick $noFoucs $tagEnd"
         return result
     }
 
@@ -714,10 +721,10 @@ class PageComponent {
         // add a delete checkbox column if allowDelete is true
         if (allowDelete) {
             def deleteLabel=deleteRecordLabel?tran("deleteRecordLabel"):tranGlobal("delete.label","Delete")
-            thead = "<th ${idAttribute('delete-column-header')}>$deleteLabel</th>"
+            thead = "<th ${idAttribute('delete-column-header')} tabindex=\"0\">$deleteLabel</th>"
             items = """
-                  |<td ${idAttribute('delete-column-data'+idTxtParam)} role="gridcell" tabindex="0">
-                  |<input ${idAttribute('delete-column-checkbox'+idTxtParam)} ng-click="${dataSet}.deleteRecords($GRID_ITEM)" type="checkbox" aria-label="Delete Record"/>
+                  |<td ${idAttribute('delete-column-data'+idTxtParam)} role="gridcell">
+                  |<input ${idAttribute('delete-column-checkbox'+idTxtParam)} ng-click="${dataSet}.deleteRecords($GRID_ITEM)" type="checkbox" aria-label="Delete Record" tabindex="-1" />
                   |</td>
                   |""".stripMargin()
         }
@@ -733,10 +740,10 @@ class PageComponent {
             }   else {
                 def labelStyleStr=child.labelStyle?"class=\"$child.labelStyle\"":""
                 //get the labels from child components
-                thead+="<th ${idAttribute('data-header-'+child.name)} $labelStyleStr role=\"columnheader\">${child.tran("label")}</th>"
+                thead+="<th ${idAttribute('data-header-'+child.name)} $labelStyleStr role=\"columnheader\"  tabindex=\"0\">${child.tran("label")}</th>"
                 //get the child components
                 child.label=""
-                items+="<td ${idAttribute('-td-' + child.name + idTxtParam )} role=\"gridcell\" tabindex=\"0\">${child.compileComponent("", depth)}</td>\n"
+                items+="<td ${idAttribute('-td-' + child.name + idTxtParam )} role=\"gridcell\" >${child.compileComponent("", depth)}</td>\n"
             }
         }
         def click_txt=""
@@ -958,8 +965,12 @@ class PageComponent {
         }
         def tranLabel = ( !(label) || parent.type == COMP_TYPE_HTABLE)?"&#x2007;&#x2007;":tran("label")
         def tindex
+        def tabIndexFocus="tabindex=\"0\""
+        if(parent.type == COMP_TYPE_HTABLE){
+            tabIndexFocus="tabindex=\"-1\""
+        }
         if([COMP_TYPE_BOOLEAN].contains(t)){
-            tindex = """tabindex="0" onkeypress="clickEvent(this)" role="checkbox" 
+            tindex = """$tabIndexFocus onkeypress="clickEvent(this)" role="checkbox" 
             ${booleanTrueValue ?"ng-true-value=\" ${htmlValue(booleanTrueValue, "'") } \" aria-checked=\"{{${htmlValue(booleanTrueValue, "'")}==${model}}}\" " : " aria-checked=\"false\""}  
                 """;
             //aria-checked="{{${htmlValue(booleanTrueValue, "'")}==${model}}}"
@@ -1009,7 +1020,7 @@ class PageComponent {
                 ngChange = ngChange?"ng-change=\"$ngChange\"":""
                 result = """
                            |<select ${required?"required":""}  ${idAttribute(idTxtParam)} $keyPress $autoStyleStr ng-model="$ngModel" $ngChange  ${defaultValue()} 
-                           |  ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName"> 
+                           |  ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName" $tabIndexFocus> 
                            |  $placeholderStr
                            |</select>""".stripMargin()
 
@@ -1040,13 +1051,13 @@ class PageComponent {
                   |<div class="$valueStyle" ng-repeat="$SELECT_ITEM in $arrayName" $initTxt role="radiogroup">
                   |    <label ${idAttribute("-label-$idxStr")} ${idForAttribute("-radio-$idxStr")} $radioLabelStyleStr>
                   |    <input ${required?"required":""} ${idAttribute("-radio-$idxStr")} type="radio" number-to-string ng-model=$ngModel name="$nameTxt" $ngChange value="{{$SELECT_ITEM.$valueKey}}" aria-checked="false"/>
-                  |    <span tabindex="0" onkeypress="clickEvent(this)">{{$SELECT_ITEM.$labelKey}}</span></label>
+                  |    <span $tabIndexFocus onkeypress="clickEvent(this)">{{$SELECT_ITEM.$labelKey}}</span></label>
                   |</div>""".stripMargin()
                 result = """<div ${idAttribute(idTxtParam)} $autoStyleStr> $result </div>"""
                 break;
             case COMP_TYPE_LITERAL:
                 //Todo: should we do something for safe/unsafe binding as in next item type?
-                result = "<span ${idAttribute(idTxtParam)}  $ngClick $autoStyleStr>" + tran(propertiesBaseKey()+".value",compileDOMDisplay(value) ) + "</span>\n"
+                result = "<span ${idAttribute(idTxtParam)}  $ngClick $autoStyleStr $tabIndexFocus>" + tran(propertiesBaseKey()+".value",compileDOMDisplay(value) ) + "</span>\n"
                 break;
             case COMP_TYPE_DISPLAY: //migrated to use template engine
                 if (type != COMP_TYPE_DATETIME) {
@@ -1086,7 +1097,7 @@ class PageComponent {
                 // set url to empty string if it is null, otherwise the page is re-directed to a non-existing page
                 url = (url==null)?"":url
                 result =  """
-                          |<a ${idAttribute(idTxtParam)} ng-href="${compileDOMDisplay(url)}" $targetStr $clickStr tabindex="0">
+                          |<a ${idAttribute(idTxtParam)} ng-href="${compileDOMDisplay(url)}" $targetStr $clickStr $tabIndexFocus>
                           |<span $autoStyleStr> $desc </span></a>
                           |""".stripMargin()
                 break;
@@ -1121,7 +1132,7 @@ class PageComponent {
                     //defaulValue() removed, now should be handled by initNewRecordJS() call in compileService.
                     result = """|<$tag $inputIdStr $typeString $autoStyleStr  name="${name?name:model}" ${parent.allowModify && !readonly?"":"readonly"}
                                 | ng-model="$GRID_ITEM.${model}"
-                                | $ngChange $attributes $ngClick $endTag
+                                | $ngChange $attributes $ngClick $tabIndexFocus $endTag
                                 |""".stripMargin()
                 } else {
                     // TODO do we need a value field if ng-model is defined?  //added defaultValue
@@ -1145,7 +1156,7 @@ class PageComponent {
             case COMP_TYPE_BOOLEAN:
                 result ="""<div role="application"><input ${idAttribute(idTxtParam)} $autoStyleStr  type="checkbox" name="${name?name:model}"
                            ${booleanTrueValue?"ng-true-value=\"${htmlValue(booleanTrueValue,"'")}\"":""} ${booleanFalseValue?"ng-false-value=\"${htmlValue(booleanFalseValue,"'")}\"":""}
-                           $ngChange $ngClick
+                           $ngChange $ngClick $tabIndexFocus
                            """
                 // add change event handler for items in DataSet so the item can be marked dirty for save
                 if (isDataSetEditControl(parent)) {

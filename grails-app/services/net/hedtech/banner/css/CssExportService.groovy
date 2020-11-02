@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2018-2019 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2018-2020 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 
 package net.hedtech.banner.css
@@ -112,10 +112,11 @@ class CssExportService {
                 property("owner","owner")
             }
         }
-        result?.each{
+        result?.eachWithIndex{it,index->
             it.lastUpdated = it.lastUpdated? dateConverterService.parseGregorianToDefaultCalendar(it.lastUpdated) : ''
             it.fileTimestamp = it.fileTimestamp? dateConverterService.parseGregorianToDefaultCalendar(it.fileTimestamp) : ''
             it.isAllowExportDSPermission = 'N'
+            it.ROW_NUMBER=index+1
         }
         result
     }
