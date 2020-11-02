@@ -21,7 +21,7 @@ alert = function(message, params ){ //message,promptMessage,type,flash,prompts) 
     }
     var prompts = params&&params.prompts?params.prompts:[{label: $.i18n.prop("sspb.custom.page.default.affirm"), action:function(){}}];
 
-    if (params.elementToFocus) {
+    if (params && params.elementToFocus) {
         noteSpec.elementToFocus = params.elementToFocus;
     }
     var note = new Notification(noteSpec);
