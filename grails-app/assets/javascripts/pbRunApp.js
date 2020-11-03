@@ -487,6 +487,88 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
                 console.log("Set initial record ");
             }
         };
+        this.gridKeyPress= function(event, item)
+        {
+            var focus = "moveFocus";
+            var rowIndex = item.row.entity.ROW_NUMBER?item.row.entity.ROW_NUMBER-1:0;
+            var pageSize = this.pagingOptions.pageSize?this.pagingOptions.pageSize:5;
+            rowIndex=rowIndex%pageSize;
+            var t = event.target;
+            var clickedClass = $(t).attr("class");
+            var keyCode = event.keyCode ? event.keyCode : event.which;
+            if([37,38,39,40,9,27,13].includes(keyCode)) {
+                var prevElement = $(t);
+                var gridID = item.grid.element[0].id;
+                var attr = $("#"+gridID+" "+ ".moveFocus0").first().attr('firstCell');
+                if(!attr) {
+                    $("#" + gridID + " " + ".moveFocus0").not(":eq(0)").removeAttr('tabindex');
+                    $("#" + gridID + " " + ".moveFocus0").first().attr('firstCell', true);
+                }
+                if (clickedClass.includes(focus)) {
+                    switch (keyCode) {
+                        case 39:
+                            if (item.colRenderIndex !== undefined && item.colRenderIndex >= 0)
+                                focus += item.colRenderIndex + 1;
+                            this.setFocus($("#"+gridID+" "+ "."+focus).eq(rowIndex), prevElement);
+                            break;
+                        case 37:
+                            if (item.colRenderIndex !== undefined && item.colRenderIndex >= 0)
+                                focus += item.colRenderIndex - 1
+                            this.setFocus($("#"+gridID+" "+ "."+focus).eq(rowIndex), prevElement);
+                            break;
+                        case 38:
+                            if (item.colRenderIndex !== undefined && item.colRenderIndex >= 0)
+                                focus += item.colRenderIndex
+                            rowIndex > 0 ? rowIndex-- : rowIndex;
+                            this.setFocus($("#"+gridID+" "+ "."+focus).eq(rowIndex),prevElement);
+                            break;
+                        case 40:
+                            rowIndex++;
+                            if (item.colRenderIndex !== undefined && item.colRenderIndex >= 0)
+                                focus += item.colRenderIndex
+                            this.setFocus($("#"+gridID+" "+ "."+focus).eq(rowIndex), prevElement);
+                            break;
+                        case 13:
+                            this.setFocus($(t).children().first(), prevElement);
+                            if(!$(t).children().first().is('select')){
+                                $scope.$$postDigest(function () {
+                                    $(t).children().first().click();
+                                })
+                            }
+                            break;
+                        case 9:
+                            $('.ngFooterPanel').focus();
+                            break;
+                        default:
+                            return;
+                    }
+                } else {
+                    switch (keyCode) {
+                        case 27:
+                            this.setFocus($(t).parent(), prevElement);
+                            break;
+                        case 13:
+                            this.setFocus($(t), prevElement);
+                            break;
+                        default:
+                            return;
+                    }
+                }
+            }
+            return;
+        }
+        this.setFocus=function(ele, prevElement){
+            if($(ele).length>0){
+                var attr = $(prevElement).attr('firstCell');
+                if (!attr) {
+                    $(prevElement).attr('tabindex',-1);
+                }
+                $scope.$$postDigest(function () {
+                    $(ele).attr('tabindex', 0);
+                    $(ele).focus();
+                })
+            }
+        }
         this.setCurrentRecord = function ( item )   {
             var model = $parse(this.componentId);
             //a grid has model.name noop and cannot be assigned a value
@@ -541,7 +623,9 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
 
         //delete selected record(s)
         this.deleteRecords = function(items) {
-            items = $scope.gridApi.selection.getSelectedRows();
+            if($scope.gridApi) {
+                items = $scope.gridApi.selection.getSelectedRows();
+            }
             $scope.changed = true;
             if (this.data.remove(items) ) {
                 // we got a single record
@@ -978,3 +1062,69 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
         }
     };
 }]);
+
+$(document).ready(function () {
+    $('table').on('keydown',function (e) {
+        e = e || window.event;
+        var firstCell = $(this).children('tbody').find('tr:first').find('td:first');
+        if($(e.target).attr("role")!=="columnheader" && !$(e.target).attr('firstCell')){
+            $(e.target).attr('tabindex','-1');
+        }
+        if(!$(firstCell).attr('firstCell')){
+            $(firstCell).attr('firstCell', true);
+            $(firstCell).attr('tabindex','0')
+        }
+        var keyCode = e.keyCode ? e.keyCode : e.which;
+        var start = e.target;
+        switch(keyCode) {
+            case 38:
+                var idx = start.cellIndex;
+                var nextrow = start.parentElement.previousElementSibling;
+                if (nextrow && idx != null) {
+                    var sibling = nextrow.cells[idx];
+                    $(sibling).attr('tabindex', '0');
+                    sibling.focus();
+                }
+                break;
+            case 40:
+                var idx = start.cellIndex;
+                var nextrow = start.parentElement.nextElementSibling;
+                if (nextrow && idx != null) {
+                    var sibling = nextrow.cells[idx];
+                    $(sibling).attr('tabindex', '0');
+                    sibling.focus();
+                }
+                break;
+            case 37:
+                var sibling = start.previousElementSibling;
+                $(sibling).attr('tabindex', '0');
+                sibling ? sibling.focus() : '';
+                break;
+            case 39:
+                var sibling = start.nextElementSibling;
+                $(sibling).attr('tabindex', '0');
+                sibling ? sibling.focus() : '';
+                break;
+            case 13:
+                var editablElement = $(start).find('input, select, span, a').first();
+                editablElement.attr('tabindex','0').click();
+                editablElement.focus();
+                editablElement.bind("keydown",function (e) {
+                    var keyinternalCode =  e.keyCode ? e.keyCode : e.which;
+                    if(keyinternalCode==27){
+                        $(this).attr('tabindex','-1');
+                        $(this).closest('td').focus();
+                    }
+                })
+                break;
+            case 27:
+                var current = e.target
+                $(current).attr('tabindex','-1');
+                $(current).closest('td').attr('tabindex',0);
+                $(current).closest('td').focus();
+                break;
+            default:
+                return;
+        }
+    });
+})
