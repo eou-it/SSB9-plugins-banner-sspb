@@ -829,6 +829,9 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                     //$scope.handlePageTreeChange();
                     $scope.statusHolder.isPageModified = false;
                 }
+                setTimeout(function () {
+                    $("#saveAsInput").focus();
+                }, 0);
             };
 
             //check if page name is changed, display confirmation msg.
@@ -910,7 +913,8 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                             note.type  = noteType.error;
                             $scope.pageStatus.message = $scope.i18nGet(msg, [response.statusMessage, err]);
                         }
-                        note.message = $scope.pageStatus.message
+                        note.message = $scope.pageStatus.message;
+                        note.elementToFocus = $('#constantName');
                         $scope.alertNote(note);
                         $scope.pageStatus.message = $filter('date')(new Date(), 'medium') + ': ' + $scope.pageStatus.message;
                         // refresh the page list in case new page is added
@@ -982,7 +986,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             $scope.deletePage = function () {
                 Page.remove({constantName:$scope.pageCurName }, function() {
                     // on success
-                    $scope.alertNote({message: "${message(code:'sspb.page.visualbuilder.deletion.success.message', encodeAs: 'JavaScript')}"});
+                    $scope.alertNote({message: "${message(code:'sspb.page.visualbuilder.deletion.success.message', encodeAs: 'JavaScript')}", elementToFocus: $('#constantName')});
 
                     // clear the page name field and page source
                     $scope.pageCurName = "";
@@ -1091,12 +1095,16 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                     $(this).attr('selected', 'selected');
 
                 });
+
             }
 
             $scope.resetOwner = function (){
                 $scope.pageOwner = user.oracleUserName;
                 $scope.allowUpdateOwner = true;
                 $scope.allowModify = true;
+                setTimeout(function () {
+                    $("#saveAsInput").focus();
+                }, 0);
             }
             //run initialize when the controller is ready
             $scope.initialize();
@@ -1124,19 +1132,18 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 
     <div class="btn-section">
         <label class="vpc-name-label" for="constantName"><g:message code="sspb.page.visualbuilder.load.label" /> </label>
-        <select id="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'constantName'}" name="constantName"
+        <select tabindex="0" id="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'constantName'}" name="constantName"
                 ng-model="pageName"
                 ng-change="getPageSource();saveAs=false;">
             <option label="{{pageName}}" value="{{pageName}}">{{pageName}}</option>
 
         </select>
 
-        <button id="reload-btn" ng-click='loadPageNames(); saveAs=false;' title="${message( code:'sspb.page.visualbuilder.reload.pages.label')}" ng-show="false" aria-label="Reload"/> </i> </button>
-        <button ng-click='newPageSource();resetPageNameData();' ng-disabled="${!isProductionReadOnlyMode}" class="primary" ><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
-        <button ng-click='resetOwner(); saveAs=true;' ng-show="pageName && pageName!=newPageName" ng-disabled="${!isProductionReadOnlyMode}" class="secondary"> <g:message code="sspb.page.visualbuilder.save.as.label" /></button>
+        <button tabindex="0" id="newPageBtn" ng-click='newPageSource();resetPageNameData();' ng-disabled="${!isProductionReadOnlyMode}" class="primary" ><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
+        <button tabindex="0" id="saveAsPageBtn" ng-click='resetOwner(); saveAs=true;' ng-show="pageName && pageName!=newPageName" ng-disabled="${!isProductionReadOnlyMode}" class="secondary"> <g:message code="sspb.page.visualbuilder.save.as.label" /></button>
         <span ng-hide="pageCurName == pageName && !saveAs">
             <label class="vpc-name-label" for="saveAsInput"><g:message code="sspb.page.visualbuilder.name.label" /></label>
-            <input id="saveAsInput" class="vpc-name-input" type="text" name="constantNameEdit" ng-model="pageCurName" required maxlength="60"
+            <input tabindex="0"  id="saveAsInput" class="vpc-name-input" type="text" name="constantNameEdit" ng-model="pageCurName" required maxlength="60"
                    placeholder='<g:message code="sspb.page.visualbuilder.new.page.label" />' ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/">
 
             <span ng-messages="pagemodelform.constantNameEdit.$error" role="alert" class="fieldValidationMessage">
@@ -1148,23 +1155,23 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 
     <div class="btn-section-2">
         <label class="vpc-name-label" for="extendsPage"><g:message code="sspb.page.visualbuilder.extends.label" /></label>
-        <select id="extendsPage" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'extendsPage'}" name="extendsPage"
+        <select tabindex="0" id="extendsPage" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'extendsPage'}" name="extendsPage"
                 ng-model="extendsPageName"
                 ng-change="getExtendsPage();saveAs=false;">
             <option label="{{extendsPageName}}" value="{{extendsPageName}}">{{extendsPageName}}</option>
         </select>
 
-        <button ng-show="pageName && pageCurName && pageCurName != newPageName" ng-click='validateAndSubmitPageSource(); saveAs=false;updatePageName();'
+        <button tabindex="0" id="saveBtn" ng-show="pageName && pageCurName && pageCurName != newPageName" ng-click='validateAndSubmitPageSource(); saveAs=false;updatePageName();'
                 ng-disabled='sourceEditEnabled || !pagemodelform.$valid || !allowModify' class="primary"><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
-        <button ng-show="pageName && pageName != newPageName" ng-click="getPageSource(); saveAs=false;" class="secondary"><g:message code="sspb.page.visualbuilder.reload.label" /></button>
-        <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click="previewPageSource()" class="secondary"><g:message code="sspb.page.visualbuilder.preview.label" /></button>
-        <button ng-show="pageName && pageCurName && pageName != newPageName"  ng-disabled="!allowModify"  ng-click='deletePageSource(); saveAs=false;' class="secondary"><g:message code="sspb.page.visualbuilder.delete.label" /></button>
-        <button id="pageRoleId" value="" ng-show="pageName && pageName != newPageName"  ng-click="showRolesPage(); saveAs=false;" class="secondary"><g:message code="sspb.page.visualbuilder.roles.label" /></button>
-        <button value="" ng-show="pageName && pageName != newPageName" ng-click="getDeveloperSecurityPage(); saveAs=false;" class="secondary"><g:message code="sspb.css.cssManager.developer.label" /></button>
+        <button tabindex="0" id="reloadBtn" ng-show="pageName && pageName != newPageName" ng-click="getPageSource(); saveAs=false;" class="secondary"><g:message code="sspb.page.visualbuilder.reload.label" /></button>
+        <button tabindex="0" id="previewBtn" ng-show="pageName && pageCurName && pageName != newPageName"    ng-click="previewPageSource()" class="secondary"><g:message code="sspb.page.visualbuilder.preview.label" /></button>
+        <button tabindex="0" id="deleteBtn" ng-show="pageName && pageCurName && pageName != newPageName"  ng-disabled="!allowModify"  ng-click='deletePageSource(); saveAs=false;' class="secondary"><g:message code="sspb.page.visualbuilder.delete.label" /></button>
+        <button tabindex="0" id="pageRoleId" value="" ng-show="pageName && pageName != newPageName"  ng-click="showRolesPage(); saveAs=false;" class="secondary"><g:message code="sspb.page.visualbuilder.roles.label" /></button>
+        <button tabindex="0" id="developerPageBtn" value="" ng-show="pageName && pageName != newPageName" ng-click="getDeveloperSecurityPage(); saveAs=false;" class="secondary"><g:message code="sspb.css.cssManager.developer.label" /></button>
         <span ng-show="pageName && pageCurName && pageName != newPageName" class="alignRight">
             <label class="vpc-name-label dispInline" for="visualPageOwner"><g:message code="sspb.page.visualbuilder.pageowner.label" /></label>
             <input style="display: none" ng-model="allowUpdateOwner" aria-label="Allow Update Owner"/>
-            <select id="visualPageOwner" class="owner-select" ng-model="pageOwner"  ng-disabled="!allowUpdateOwner">
+            <select tabindex="0" id="visualPageOwner" class="owner-select" ng-model="pageOwner"  ng-disabled="!allowUpdateOwner">
                 <option ng-repeat="owner in pbUserList" value="{{owner}}" ng-selected="{{owner == pageOwner}}">{{owner}}</option>
             </select>
         </span>

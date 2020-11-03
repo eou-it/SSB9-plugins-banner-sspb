@@ -31,8 +31,8 @@ class PBSessionTracker implements HttpSessionListener {
             }
 
             def userIn = SecurityContextHolder?.context?.authentication?.principal
-            if (cachedMap?.containsKey(userIn?.username)) {
-                cachedMap?.remove(userIn?.username)
+            if (userIn && cachedMap && cachedMap.containsKey(userIn.username)) {
+                cachedMap?.remove(userIn.username)
             }
         } catch (Exception ex) {
             log.error("PBSessionTracker Exception : ", ex)

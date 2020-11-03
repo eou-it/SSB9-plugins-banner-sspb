@@ -158,6 +158,10 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 $scope.cssOwner = user.oracleUserName;
                 $scope.allowUpdateOwner = true;
                 $scope.allowModify = true;
+                setTimeout(function () {
+                    $("#cssName").focus();
+                }, 0);
+
             };
 
 
@@ -186,6 +190,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                         else
                             $scope.cssStatus.message = $scope.i18nGet(msg, [$scope.i18nGet(response.statusMessage), ""]);
                     }
+                    note.elementToFocus = $('#cssConstantName');
                     alert($scope.cssStatus.message, note );
 
                     // refresh the page list in case new page is added
@@ -217,7 +222,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 
                 Css.delete({constantName:$scope.cssName }, function() {
                     // on success
-                    alert("${message(code:'sspb.css.cssManager.deletion.success.message')}",{flash:true});
+                    alert("${message(code:'sspb.css.cssManager.deletion.success.message')}",{flash:true,elementToFocus : $('#cssConstantName')});
                     // clear the page name field and page source
                     $scope.cssName = "";
                     $scope.description = "";
