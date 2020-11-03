@@ -18,21 +18,38 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 
     <%
         if (pageInstance?.submitted) {
-            out << "<script>"
+            out << "<script> \$(window).load(function() { setTimeout(function(){ "
             if (pageInstance?.saveSuccess) {
-                out << """alert('${message(code:"sspb.page.virtualdomain.save.ok.message", args:[pageInstance.id,pageInstance.version])}');"""
+                out << """
+                    notifications.addNotification(new Notification({
+                        message: '${message(code:"sspb.page.virtualdomain.save.ok.message", args:[pageInstance.id,pageInstance.version])}',
+                        type: "success",
+                        flash: true
+                    }));"""
             } else {
-                out << """alert('${message(code:"sspb.page.virtualdomain.save.fail.message", args:[pageInstance?.error?.replaceAll('[\r\n]','')])}');"""
+                out << """
+                    notifications.addNotification(new Notification({
+                        message: '${message(code: "sspb.page.virtualdomain.save.fail.message", args: [pageInstance?.error?.replaceAll('[\\r\\n]', '')])}',
+                        type: "error",
+                        flash: true,
+                        component:\$('#selectIndex')
+                    }));"""
             }
-            out << "</script>"
+            out << "}, 100)})</script>"
         }
     %>
     <%
         if (pageInstance?.loadSubmitted) {
-            out << "<script>"
+            out << "<script> window.onload= function(e){"
             if (!pageInstance?.loadSuccess)
-                out << """alert('${message(code:"sspb.page.virtualdomain.load.fail.message", args:[pageInstance?.error?.replaceAll('[\r\n]','')])}');"""
-            out << "</script>"
+                out << """
+                notifications.addNotification(new Notification({
+                        message: '${message(code: "sspb.page.virtualdomain.load.fail.message", args: [pageInstance?.error?.replaceAll('[\\r\\n]', '')])}',
+                        type: "error",
+                        flash: true,
+                        component:\$('#selectIndex')
+                    }));"""
+            out << "}</script>"
         }
     %>
 
@@ -109,7 +126,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             <tbody role="rowgroup">
                 <tr role="row">
                     <td role="gridcell">
-                        <g:textArea name="vdQueryView" aria-labelledby="vdQueryStatement" value="${pageInstance?.vdQueryView}" rows="20" cols="60" style="width:100%" required="true" tabindex="0"/>
+                        <g:textArea  id="selectIndex" name="vdQueryView" aria-labelledby="vdQueryStatement" value="${pageInstance?.vdQueryView}" rows="20" cols="60" style="width:100%" required="true" tabindex="0"/>
                     </td>
                     <td role="gridcell">
                         <g:textArea name="vdDeleteView" aria-labelledby="vdDeleteStatement" value="${pageInstance?.vdDeleteView}" rows="20" cols="60" style="width:100%" tabindex="0"/>
