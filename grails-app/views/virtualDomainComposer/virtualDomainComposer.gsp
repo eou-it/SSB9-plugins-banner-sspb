@@ -40,7 +40,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
     %>
     <%
         if (pageInstance?.loadSubmitted) {
-            out << "<script> window.onload= function(e){"
+            out << "<script>  \$(window).load(function() { setTimeout(function(){"
             if (!pageInstance?.loadSuccess)
                 out << """
                 notifications.addNotification(new Notification({
@@ -49,7 +49,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                         flash: true,
                         component:\$('#selectIndex')
                     }));"""
-            out << "}</script>"
+            out << " }, 100)})</script>"
         }
     %>
 
