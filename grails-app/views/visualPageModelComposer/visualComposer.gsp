@@ -54,8 +54,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 note.flash = note.flash||true;
                 note.message = note.message.replace(/\n/g, "<br />");
                 if(note.type=='error'){
-                    note.id = 'constantName';
-                    note.component = 'select';
+                    note.component = $('#constantName');
                 }
                 notifications.addNotification(new Notification(note));
             };
@@ -66,8 +65,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 if (!stay){
                     note.flash = true;
                 }
-                note.id = 'constantName';
-                note.component = 'select';
+                note.component = $('#constantName');
                 notifications.addNotification(new Notification(note));
             };
 
@@ -1147,8 +1145,8 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                    placeholder='<g:message code="sspb.page.visualbuilder.new.page.label" />' ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/">
 
             <span ng-messages="pagemodelform.constantNameEdit.$error" role="alert" class="fieldValidationMessage">
-                <span ng-message="pattern" ><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" /></span>
-                <span ng-message="required" > <g:message code="sspb.page.visualbuilder.name.required.message" /></span>
+                <span ng-message="pattern" style="color: red"><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" role="alert"/></span>
+                <span ng-message="required" style="color: red"> <g:message code="sspb.page.visualbuilder.name.required.message" role="alert"/></span>
             </span>
         </span>
     </div>
