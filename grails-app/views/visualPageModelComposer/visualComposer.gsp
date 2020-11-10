@@ -1146,7 +1146,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             <input tabindex="0"  id="saveAsInput" class="vpc-name-input" type="text" name="constantNameEdit" ng-model="pageCurName" required maxlength="60"
                    placeholder='<g:message code="sspb.page.visualbuilder.new.page.label" />' ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/">
 
-            <span ng-messages="pagemodelform.constantNameEdit.$error" role="alert" class="fieldValidationMessage">
+            <span ng-messages="pagemodelform.constantNameEdit.$error" class="fieldValidationMessage">
                 <span ng-message="pattern" ><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" /></span>
                 <span ng-message="required" > <g:message code="sspb.page.visualbuilder.name.required.message" /></span>
             </span>

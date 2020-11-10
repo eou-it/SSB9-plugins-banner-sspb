@@ -1,4 +1,5 @@
 //= require modules/angularApp-mf.js
+//= require angular/angular-aria.min.js
 //= require modules/min-bannerWeb-mf.js
 //= require lib/angular-ui-grid/ui-grid.js
 //= require lib/angular-ui/angular-ui.js
