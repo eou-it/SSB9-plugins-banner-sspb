@@ -688,7 +688,7 @@ class PageComponent {
                     targetStr = """target="_blank" """
                 // set url to empty string if it is null, otherwise the page is re-directed to a non-existing page
                 url = (url==null)?"":url
-                return """<a ng-href="${compileDOMDisplay(url)}" $targetStr $clickStr $onkeypress> <span $autoStyleStr > $desc </span></a>"""
+                return """<a ng-href="${compileDOMDisplay(url)}" $targetStr $clickStr $onkeypress aria-label="$desc"> <span $autoStyleStr > $desc </span></a>"""
 
                 break;
             default :
@@ -1099,7 +1099,7 @@ class PageComponent {
                 // set url to empty string if it is null, otherwise the page is re-directed to a non-existing page
                 url = (url==null)?"":url
                 result =  """
-                          |<a ${idAttribute(idTxtParam)} ng-href="${compileDOMDisplay(url)}" $targetStr $clickStr $tabIndexFocus>
+                          |<a ${idAttribute(idTxtParam)} ng-href="${compileDOMDisplay(url)}" $targetStr $clickStr $tabIndexFocus aria-label="$desc">
                           |<span $autoStyleStr> $desc </span></a>
                           |""".stripMargin()
                 break;
