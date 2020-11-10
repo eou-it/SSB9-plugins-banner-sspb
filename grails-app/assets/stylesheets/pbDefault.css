@@ -145,14 +145,6 @@ div[ng-grid] {
     padding: 0.5em 1.5em;
 }
 
-#popupContainerDiv .thead{
-    height: 38px;
-}
-
-#popupContainerDiv .table-container .thead thead tr th, .table-container .tbody thead tr th {
-    height: 1em;
-}
-
 .popupSelectBox  {
     width: 17.5em;
 }
