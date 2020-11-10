@@ -315,6 +315,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 tr['attribute.labelStyle'       ]="${message(code:'sspb.model.attribute.labelStyle')}";
                 tr['attribute.valueStyle'       ]="${message(code:'sspb.model.attribute.valueStyle')}";
                 tr['attribute.pageURL'          ]="${message(code:'sspb.model.attribute.pageUrl')}";
+                tr['attribute.role'             ]="${message(code:'sspb.model.attribute.role')}";
 
                 tr['attribute.newRecordLabel'   ]="${message(code:'sspb.model.attribute.newRecordLabel')}";
                 tr['attribute.deleteRecordLabel']="${message(code:'sspb.model.attribute.deleteRecordLabel')}";

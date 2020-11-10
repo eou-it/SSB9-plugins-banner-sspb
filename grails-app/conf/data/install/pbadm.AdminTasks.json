@@ -2,7 +2,7 @@
    "constantName": "pbadm.AdminTasks",
    "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2020-10-22T10:35:53Z",
+   "fileTimestamp": "2020-11-10T03:47:11Z",
    "modelView": {
       "components": [
          {
@@ -209,18 +209,19 @@
                {
                   "components": [
                      {
+                        "role": "search",
+                        "label": "",
+                        "loadInitially": false,
+                        "type": "text",
+                        "required": false,
                         "readonly": false,
                         "name": "pageFilter",
                         "model": "",
                         "placeholder": "Filter pages by name",
-                        "label": "",
-                        "loadInitially": false,
-                        "type": "text",
                         "value": "",
                         "parameters": {},
                         "onUpdate": "$pageGrid.$load();",
-                        "validation": {},
-                        "required": false
+                        "validation": {}
                      },
                      {
                         "allowDelete": false,
@@ -284,6 +285,7 @@
                {
                   "components": [
                      {
+                        "role": "search",
                         "readonly": false,
                         "name": "vdFilter",
                         "placeholder": "Filter virtual domains by name",
@@ -356,6 +358,7 @@
                {
                   "components": [
                      {
+                        "role": "search",
                         "readonly": false,
                         "name": "cssFilter",
                         "placeholder": "Filter CSS by name",
@@ -433,7 +436,7 @@
          {
             "name": "jsCode",
             "type": "literal",
-            "value": "<script>\nif(isImportPrevented && !user.isSuperUser) {\n$(\"input\", \"#pbid-securityBlock\").attr(\"disabled\", \"disabled\")\n$(\"input\", \"#pbid-uploadFileSelect-container\").attr(\"disabled\", \"disabled\")\n$(\"button\").attr(\"disabled\", \"disabled\")\n$(\"input\",\".pb-boolean\").attr(\"disabled\",\"disabled\")\n}\n</script>"
+            "value": "<script>\nif(isImportPrevented && !user.isSuperUser) {\n$(\"input\", \"#pbid-securityBlock\").attr(\"disabled\", \"disabled\")\n$(\"input\", \"#pbid-uploadFileSelect-container\").attr(\"disabled\", \"disabled\")\n$(\"button\").attr(\"disabled\", \"disabled\")\n}\n</script>"
          }
       ],
       "documentation": "Miscellaneous tasks",

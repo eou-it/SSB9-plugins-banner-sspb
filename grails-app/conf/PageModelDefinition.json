@@ -72,9 +72,17 @@
                 "optionalChildren":[]
             },
             {
-                "componentType":[ "text", "textArea", "datetime", "email", "tel"],
+                "componentType":[ "textArea", "datetime", "email", "tel"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "style", "labelStyle", "valueStyle", "value", "model", "parameters", "validation", "placeholder", "readonly", "required", "onUpdate", "onLoad", "onError", "loadInitially"],
+                "ignoredAttributes":["subType"],
+                "requiredChildren":[],
+                "optionalChildren":[]
+            },
+            {
+                "componentType":[ "text"],
+                "requiredAttributes":[],
+                "optionalAttributes":["label", "style", "labelStyle", "valueStyle", "value", "model", "parameters", "validation", "placeholder", "readonly", "required", "onUpdate", "onLoad", "onError", "loadInitially", "role"],
                 "ignoredAttributes":["subType"],
                 "requiredChildren":[],
                 "optionalChildren":[]
@@ -169,7 +177,7 @@
         "sourceRenderDefinitions" : [
             {"AttributeType":[  "title", "label", "style", "objectName", "importCSS", "submitLabel", "model", "placeholder", "labelKey", "valueKey", "sourceModel",
                 "booleanTrueValue", "booleanFalseValue", "imageUrl", "url", "labelStyle", "valueStyle","newRecordLabel","deleteRecordLabel","saveDataLabel",
-                "refreshDataLabel" ,"pageURL"], "renderProperty":{"inputType":"text"}},
+                "refreshDataLabel" ,"pageURL", "role"], "renderProperty":{"inputType":"text"}},
             {"AttributeType":["type"], "renderProperty":{"inputType":"select"}},
             {"AttributeType":["submit", "value", "onUpdate", "onBlur", "onFocus", "onClick", "onLoad", "onSave", "onSaveSuccess", "onError", "sequence", "description", "documentation"], "renderProperty":{"inputType":"textarea"}},
             {"AttributeType":["validation"],"renderProperty":{"inputType":"map"}},

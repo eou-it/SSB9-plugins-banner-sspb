@@ -199,6 +199,7 @@ class PageComponent {
 
     String ID           // normalized ID from name (space to _), do we need this? Better to forbid space in name.
     String documentation    // for page development documentation purpose, not used by code generator
+    String role         // for adding role to text field
 
     List<PageComponent> components    // child components
 
@@ -985,6 +986,7 @@ class PageComponent {
         def result=""
         def ngClick=""
         def ngChange=""
+        def textRole
         // if item can be updated (TODO: check readonly)
         if ( !COMP_DISPLAY_TYPES.contains(type) && t!=COMP_TYPE_SELECT ) {
             if (isDataSetEditControl(parent)) {
@@ -1115,10 +1117,13 @@ class PageComponent {
                 def disabled = "${readonly?"disabled=\"disabled\"":""}"
                 def attributes = "${validationAttributes()} ${required?"required":""} ${placeholder?"placeholder=\"${tran("placeholder")}\"":""} ${labelTxt?"":"aria-label=\"${tran("placeholder")}\""}".trim()
                 def typeString= "type=\"$t\""
+
                 if (type == COMP_TYPE_NUMBER) {  // angular-ui doesn't use localized validators
                     typeString="""type="text" pb-number ${fractionDigits?"fraction-digits=\"$fractionDigits\"":""} """
                 }
-
+                if(type == COMP_TYPE_TEXT && role){
+                    textRole = "role=\"$role\""
+                }
                 if (type == COMP_TYPE_DATETIME)  { //Assume format comes from jquery.ui.datepicker-<locale>.js
                     typeString=" ui-date=\"{ changeMonth: true, changeYear: true}\" "
                 }
@@ -1135,13 +1140,13 @@ class PageComponent {
                     //defaulValue() removed, now should be handled by initNewRecordJS() call in compileService.
                     result = """|<$tag $inputIdStr $typeString $autoStyleStr  name="${name?name:model}" ${parent.allowModify && !readonly?"":"readonly"}
                                 | ng-model="$GRID_ITEM.${model}"
-                                | $ngChange $attributes $ngClick $tabIndexFocus $disabled $endTag
+                                | $ngChange $attributes $ngClick $tabIndexFocus $disabled $textRole $endTag
                                 |""".stripMargin()
                 } else {
                     // TODO do we need a value field if ng-model is defined?  //added defaultValue
                     attributes += " ${readonly?"readonly":""}"
                     result = """|<$tag $inputIdStr $typeString $autoStyleStr  name="${name?name:model}"
-                                |${defaultValue()} $ngChange $attributes
+                                |${defaultValue()} $ngChange $attributes $textRole
                                 |""".stripMargin()
                     if (model && !readonly) {
                         if (binding != BINDING_PAGE) // use DataSet current record
@@ -1244,7 +1249,7 @@ class PageComponent {
                 if (root.flowDefs)
                     submitStr+= "; _activateNextForm('$name');"
                 //don not use ng-form, this breaks page flows!
-                result += """<form ${idAttribute()} $styleStr class="pb-$t" name="${name}" ng-show="${name}_visible"  ${submitStr?"""ng-submit="$submitStr" """:""}>$heading \n"""
+                result += """<form ${idAttribute()} $styleStr class="pb-$t" name="${name}" ng-show="${name}_visible" role="form" ${submitStr?"""ng-submit="$submitStr" """:""}>$heading \n"""
                 return result
             case COMP_TYPE_RESOURCE: //fall through
             case COMP_TYPE_DATA:
@@ -1359,7 +1364,7 @@ class PageComponent {
         |</head>
         |<body>
         |   <div id="content" role="main" ng-controller="$controllerName"  class="customPage container-fluid">
-        |   ${label?"<h1 ${idAttribute('label')}>${tran("label")}</h1>":""}
+        |   ${label?"<h1 ${idAttribute('label')} role=\"banner\">${tran("label")}</h1>":""}
          """.stripMargin()
     }
 

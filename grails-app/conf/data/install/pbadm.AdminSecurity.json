@@ -1,249 +1,253 @@
 {
-  "constantName": "pbadm.AdminSecurity",
-  "extendsPage": null,
-  "fileTimestamp": "2020-10-22T06:35:53Z",
-  "modelView": {
-    "components": [
-      {
-        "name": "artifactsData",
-        "resource": "virtualDomains.pbadmArtifactDetails",
-        "staticData": [],
-        "type": "resource"
-      },
-      {
-        "name": "sourceTypeData",
-        "staticData": [
-          {
-            "label": "Page",
-            "value": "P"
-          },
-          {
-            "label": "Virtual Domain",
-            "value": "V"
-          },
-          {
-            "label": "CSS",
-            "value": "C"
-          }
-        ],
-        "type": "resource"
-      },
-      {
-        "name": "userDetails",
-        "resource": "virtualDomains.pbadmUserDetails",
-        "staticData": [],
-        "type": "resource"
-      },
-      {
-        "name": "securityConfigDetails",
-        "resource": "virtualDomains.pbadmSecurityConfigDetails",
-        "staticData": [],
-        "type": "resource"
-      },
-      {
-        "components": [
-          {
+   "constantName": "pbadm.AdminSecurity",
+   "developerSecurity": [],
+   "extendsPage": null,
+   "fileTimestamp": "2020-11-10T03:47:10Z",
+   "modelView": {
+      "components": [
+         {
+            "resource": "virtualDomains.pbadmArtifactDetails",
+            "name": "artifactsData",
+            "type": "resource",
+            "staticData": []
+         },
+         {
+            "name": "sourceTypeData",
+            "type": "resource",
+            "staticData": [
+               {
+                  "label": "Page",
+                  "value": "P"
+               },
+               {
+                  "label": "Virtual Domain",
+                  "value": "V"
+               },
+               {
+                  "label": "CSS",
+                  "value": "C"
+               }
+            ]
+         },
+         {
+            "resource": "virtualDomains.pbadmUserDetails",
+            "name": "userDetails",
+            "type": "resource",
+            "staticData": []
+         },
+         {
+            "resource": "virtualDomains.pbadmSecurityConfigDetails",
+            "name": "securityConfigDetails",
+            "type": "resource",
+            "staticData": []
+         },
+         {
             "components": [
-              {
-                "components": [
-                  {
-                    "loadInitially": true,
-                    "model": "securityConfigDetails",
-                    "name": "securityConfigData",
-                    "onError": "",
-                    "onLoad": "data.forEach(function(configData){\n\nif(configData.GUROCFG_NAME === 'pagebuilder.security.enableDeveloperSecurity'){\n\t\n\tif(configData.GUROCFG_VALUE \n\t && configData.GUROCFG_VALUE.trim() ===  'true') {\n\t     $enableDeveloperSecurity='Y';\n\t} else {\n\t    $enableDeveloperSecurity = 'N';\n\t}\n}\n\n\nif(configData.GUROCFG_NAME === 'pagebuilder.security.preventImportByDeveloper'){\n\t\n\tif(configData.GUROCFG_VALUE \n\t && configData.GUROCFG_VALUE.trim() ===  'true') {\n\t     $preventImportByDeveloper='Y';\n\t} else {\n\t    $preventImportByDeveloper = 'N';\n\t}\n}\n\nif(configData.GUROCFG_NAME === 'pagebuilder.security.developerReadOnly'){\n\t\n\tif(configData.GUROCFG_VALUE \n\t && configData.GUROCFG_VALUE.trim() ===  'true') {\n\t     $developerReadOnly='Y';\n\t} else {\n\t    $developerReadOnly = 'N';\n\t}\n}\n\n});",
-                    "onSave": "",
-                    "onSaveSuccess": "",
-                    "parameters": {},
-                    "type": "data"
-                  },
-                  {
-                    "booleanFalseValue": "N",
-                    "booleanTrueValue": "Y",
-                    "documentation": "",
-                    "label": "Production mode (Page Builder developers read-only)",
-                    "loadInitially": true,
-                    "model": "developerReadOnly",
-                    "name": "developerReadOnly",
-                    "onUpdate": "$securityConfigDetails.$post({'developerReadOnly':$developerReadOnly}, null, \nfunction(){\n\nif($developerReadOnly=== 'Y'){\nalert(\"${message(code:'pbadmAdminSecurity.enableDeveloperReadOnly')}\", {type:\"success\", flash:true});\n}\n\nif($developerReadOnly=== 'N'){\nalert(\"${message(code:'pbadmAdminSecurity.disableDeveloperReadOnly')}\", {type:\"success\", flash:true});\n}\n});\n\n return true;",
-                    "readonly": false,
-                    "type": "boolean",
-                    "value": "N"
-                  },
-                  {
-                    "booleanFalseValue": "N",
-                    "booleanTrueValue": "Y",
-                    "label": "Prevent import by Page Builder Developers",
-                    "loadInitially": true,
-                    "model": "preventImportByDeveloper",
-                    "name": "preventImportByDeveloper",
-                    "onUpdate": "$securityConfigDetails.$post({'preventImportByDeveloper':$preventImportByDeveloper}, null, \nfunction(){\n\nif($preventImportByDeveloper=== 'Y'){\nalert(\"${message(code:'pbadmAdminSecurity.enablePreventImportByDeveloper')}\", {type:\"success\", flash:true});\n}\n\nif($preventImportByDeveloper=== 'N'){\nalert(\"${message(code:'pbadmAdminSecurity.disablePreventImportByDeveloper')}\", {type:\"success\", flash:true});\n}\n});\n\n return true;",
-                    "readonly": false,
-                    "type": "boolean",
-                    "value": "N"
-                  },
-                  {
-                    "booleanFalseValue": "N",
-                    "booleanTrueValue": "Y",
-                    "label": "Enable Page Builder security",
-                    "loadInitially": true,
-                    "model": "enableDeveloperSecurity",
-                    "name": "enableDeveloperSecurity",
-                    "onLoad": "",
-                    "onUpdate": "$securityConfigDetails.$post({'enableDeveloperSecurity':$enableDeveloperSecurity}, null, \nfunction(){\n\nif($enableDeveloperSecurity === 'Y'){\nalert(\"${message(code:'pbadmAdminSecurity.enableDeveloperSecurity')}\", {type:\"success\", flash:true});\n}\n\nif($enableDeveloperSecurity === 'N'){\nalert(\"${message(code:'pbadmAdminSecurity.disableDeveloperSecurity')}\", {type:\"success\", flash:true});\n}\n});\n\n return true;",
-                    "readonly": false,
-                    "type": "boolean",
-                    "value": "N"
-                  }
-                ],
-                "name": "pbadmAdminSecurityConfiguration",
-                "showInitially": true,
-                "style": "div-float",
-                "type": "block"
-              },
-              {
-                "components": [
-                  {
-                    "label": "Type",
-                    "labelKey": "label",
-                    "loadInitially": true,
-                    "name": "sourceType",
-                    "onLoad": "",
-                    "onUpdate": "if ($sourceType){\n$filters_visible= true;\n$data_visible=true;\n}else {\n$filters_visible= false;\n$data_visible=false;\n}\n$nameFilter='';\n$ownerFilter='';\n$dataGrid.$load();",
-                    "placeholder": "Select",
-                    "required": false,
-                    "sourceModel": "sourceTypeData",
-                    "sourceParameters": {},
-                    "style": "",
-                    "type": "select",
-                    "valueKey": "value",
-                    "valueStyle": ""
-                  }
-                ],
-                "name": "TypeBlock",
-                "showInitially": true,
-                "type": "block"
-              },
-              {
-                "components": [
-                  {
-                    "label": "Name",
-                    "loadInitially": true,
-                    "name": "nameFilter",
-                    "onUpdate": "$dataGrid.$load();",
-                    "parameters": {},
-                    "readonly": false,
-                    "required": false,
-                    "type": "text",
-                    "validation": {},
-                    "valueStyle": ""
-                  },
-                  {
-                    "label": "Owner",
-                    "loadInitially": true,
-                    "name": "ownerFilter",
-                    "onUpdate": "$dataGrid.$load();",
-                    "parameters": {},
-                    "readonly": false,
-                    "required": false,
-                    "type": "text",
-                    "validation": {},
-                    "valueStyle": ""
-                  }
-                ],
-                "label": "Search By",
-                "name": "filters",
-                "showInitially": false,
-                "type": "block"
-              },
-              {
-                "components": [
-                  {
-                    "allowDelete": false,
-                    "allowModify": true,
-                    "allowNew": false,
-                    "allowReload": true,
-                    "components": [
-                      {
-                        "asHtml": false,
-                        "label": "Name",
-                        "loadInitially": true,
-                        "model": "NAME",
-                        "name": "name",
-                        "type": "display"
-                      },
-                      {
-                        "label": "Owner",
-                        "labelKey": "USER_ID",
-                        "loadInitially": true,
-                        "model": "TYPE_OWNER",
-                        "name": "owner",
-                        "required": false,
-                        "sourceModel": "userDetails",
-                        "sourceParameters": {},
-                        "type": "select",
-                        "valueKey": "USER_ID"
-                      },
-                      {
-                        "loadInitially": true,
-                        "model": "SOURCE_TYPE",
-                        "name": "type",
-                        "type": "hidden"
-                      },
-                      {
-                        "loadInitially": true,
-                        "model": "id",
-                        "name": "id",
-                        "type": "hidden"
-                      }
-                    ],
-                    "loadInitially": true,
-                    "model": "artifactsData",
-                    "name": "dataGrid",
-                    "label": "Owner Details",
-                    "onSaveSuccess": "alert(response.NAME  + \" ${message(code:'pbadmAdminSecurity.grid.save.success')} \" + response.TYPE_OWNER, {type:\"success\", flash:true});",
-                    "pageSize": 5,
-                    "parameters": {
-                      "name": "$nameFilter?\"%\"+$nameFilter+\"%\":\"\"",
-                      "owner": "$ownerFilter?\"%\"+$ownerFilter+\"%\":\"\"",
-                      "type": "$sourceType?$sourceType:\"\""
-                    },
-                    "style": "div-data-grid",
-                    "type": "grid"
-                  }
-                ],
-                "name": "data",
-                "showInitially": false,
-                "style": "",
-                "type": "block"
-              }
+               {
+                  "components": [
+                     {
+                        "components": [
+                           {
+                              "onError": "",
+                              "onSave": "",
+                              "name": "securityConfigData",
+                              "onLoad": "data.forEach(function(configData){\n\nif(configData.GUROCFG_NAME === 'pagebuilder.security.enableDeveloperSecurity'){\n\t\n\tif(configData.GUROCFG_VALUE \n\t && configData.GUROCFG_VALUE.trim() ===  'true') {\n\t     $enableDeveloperSecurity='Y';\n\t} else {\n\t    $enableDeveloperSecurity = 'N';\n\t}\n}\n\n\nif(configData.GUROCFG_NAME === 'pagebuilder.security.preventImportByDeveloper'){\n\t\n\tif(configData.GUROCFG_VALUE \n\t && configData.GUROCFG_VALUE.trim() ===  'true') {\n\t     $preventImportByDeveloper='Y';\n\t} else {\n\t    $preventImportByDeveloper = 'N';\n\t}\n}\n\nif(configData.GUROCFG_NAME === 'pagebuilder.security.developerReadOnly'){\n\t\n\tif(configData.GUROCFG_VALUE \n\t && configData.GUROCFG_VALUE.trim() ===  'true') {\n\t     $developerReadOnly='Y';\n\t} else {\n\t    $developerReadOnly = 'N';\n\t}\n}\n\n});",
+                              "onSaveSuccess": "",
+                              "model": "securityConfigDetails",
+                              "loadInitially": true,
+                              "type": "data",
+                              "parameters": {}
+                           },
+                           {
+                              "readonly": false,
+                              "booleanTrueValue": "Y",
+                              "booleanFalseValue": "N",
+                              "documentation": "",
+                              "name": "developerReadOnly",
+                              "model": "developerReadOnly",
+                              "label": "Production mode (Page Builder developers read-only)",
+                              "loadInitially": true,
+                              "type": "boolean",
+                              "onUpdate": "$securityConfigDetails.$post({'developerReadOnly':$developerReadOnly}, null, \nfunction(){\n\nif($developerReadOnly=== 'Y'){\nalert(\"${message(code:'pbadmAdminSecurity.enableDeveloperReadOnly')}\", {type:\"success\", flash:true});\n}\n\nif($developerReadOnly=== 'N'){\nalert(\"${message(code:'pbadmAdminSecurity.disableDeveloperReadOnly')}\", {type:\"success\", flash:true});\n}\n});\n\n return true;",
+                              "value": "N"
+                           },
+                           {
+                              "readonly": false,
+                              "booleanTrueValue": "Y",
+                              "booleanFalseValue": "N",
+                              "name": "preventImportByDeveloper",
+                              "model": "preventImportByDeveloper",
+                              "label": "Prevent import by Page Builder Developers",
+                              "loadInitially": true,
+                              "type": "boolean",
+                              "onUpdate": "$securityConfigDetails.$post({'preventImportByDeveloper':$preventImportByDeveloper}, null, \nfunction(){\n\nif($preventImportByDeveloper=== 'Y'){\nalert(\"${message(code:'pbadmAdminSecurity.enablePreventImportByDeveloper')}\", {type:\"success\", flash:true});\n}\n\nif($preventImportByDeveloper=== 'N'){\nalert(\"${message(code:'pbadmAdminSecurity.disablePreventImportByDeveloper')}\", {type:\"success\", flash:true});\n}\n});\n\n return true;",
+                              "value": "N"
+                           },
+                           {
+                              "readonly": false,
+                              "booleanTrueValue": "Y",
+                              "booleanFalseValue": "N",
+                              "name": "enableDeveloperSecurity",
+                              "onLoad": "",
+                              "model": "enableDeveloperSecurity",
+                              "label": "Enable Page Builder security",
+                              "loadInitially": true,
+                              "type": "boolean",
+                              "onUpdate": "$securityConfigDetails.$post({'enableDeveloperSecurity':$enableDeveloperSecurity}, null, \nfunction(){\n\nif($enableDeveloperSecurity === 'Y'){\nalert(\"${message(code:'pbadmAdminSecurity.enableDeveloperSecurity')}\", {type:\"success\", flash:true});\n}\n\nif($enableDeveloperSecurity === 'N'){\nalert(\"${message(code:'pbadmAdminSecurity.disableDeveloperSecurity')}\", {type:\"success\", flash:true});\n}\n});\n\n return true;",
+                              "value": "N"
+                           }
+                        ],
+                        "name": "pbadmAdminSecurityConfiguration",
+                        "showInitially": true,
+                        "style": "div-float",
+                        "type": "block"
+                     },
+                     {
+                        "components": [
+                           {
+                              "valueStyle": "",
+                              "label": "Type",
+                              "loadInitially": true,
+                              "type": "select",
+                              "required": false,
+                              "sourceParameters": {},
+                              "name": "sourceType",
+                              "onLoad": "",
+                              "sourceModel": "sourceTypeData",
+                              "style": "",
+                              "placeholder": "Select",
+                              "labelKey": "label",
+                              "valueKey": "value",
+                              "onUpdate": "if ($sourceType){\n$filters_visible= true;\n$data_visible=true;\n}else {\n$filters_visible= false;\n$data_visible=false;\n}\n$nameFilter='';\n$ownerFilter='';\n$dataGrid.$load();"
+                           }
+                        ],
+                        "name": "TypeBlock",
+                        "showInitially": true,
+                        "type": "block"
+                     },
+                     {
+                        "components": [
+                           {
+                              "valueStyle": "",
+                              "role": "search",
+                              "readonly": false,
+                              "name": "nameFilter",
+                              "label": "Name",
+                              "loadInitially": true,
+                              "type": "text",
+                              "onUpdate": "$dataGrid.$load();",
+                              "parameters": {},
+                              "required": false,
+                              "validation": {}
+                           },
+                           {
+                              "valueStyle": "",
+                              "role": "search",
+                              "readonly": false,
+                              "name": "ownerFilter",
+                              "label": "Owner",
+                              "loadInitially": true,
+                              "type": "text",
+                              "onUpdate": "$dataGrid.$load();",
+                              "parameters": {},
+                              "required": false,
+                              "validation": {}
+                           }
+                        ],
+                        "name": "filters",
+                        "showInitially": false,
+                        "label": "Search By",
+                        "type": "block"
+                     },
+                     {
+                        "components": [
+                           {
+                              "allowDelete": false,
+                              "components": [
+                                 {
+                                    "asHtml": false,
+                                    "name": "name",
+                                    "model": "NAME",
+                                    "label": "Name",
+                                    "loadInitially": true,
+                                    "type": "display"
+                                 },
+                                 {
+                                    "sourceParameters": {},
+                                    "name": "owner",
+                                    "model": "TYPE_OWNER",
+                                    "sourceModel": "userDetails",
+                                    "label": "Owner",
+                                    "loadInitially": true,
+                                    "labelKey": "USER_ID",
+                                    "type": "select",
+                                    "valueKey": "USER_ID",
+                                    "required": false
+                                 },
+                                 {
+                                    "name": "type",
+                                    "model": "SOURCE_TYPE",
+                                    "loadInitially": true,
+                                    "type": "hidden"
+                                 },
+                                 {
+                                    "name": "id",
+                                    "model": "id",
+                                    "loadInitially": true,
+                                    "type": "hidden"
+                                 }
+                              ],
+                              "allowNew": false,
+                              "onSaveSuccess": "alert(response.NAME  + \" ${message(code:'pbadmAdminSecurity.grid.save.success')} \" + response.TYPE_OWNER, {type:\"success\", flash:true});",
+                              "pageSize": 5,
+                              "loadInitially": true,
+                              "label": "Owner Details",
+                              "type": "grid",
+                              "name": "dataGrid",
+                              "allowModify": true,
+                              "model": "artifactsData",
+                              "style": "div-data-grid",
+                              "allowReload": true,
+                              "parameters": {
+                                 "owner": "$ownerFilter?\"%\"+$ownerFilter+\"%\":\"\"",
+                                 "name": "$nameFilter?\"%\"+$nameFilter+\"%\":\"\"",
+                                 "type": "$sourceType?$sourceType:\"\""
+                              }
+                           }
+                        ],
+                        "name": "data",
+                        "showInitially": false,
+                        "style": "",
+                        "type": "block"
+                     }
+                  ],
+                  "name": "pbadmAdminSecurityForm",
+                  "showInitially": true,
+                  "type": "block"
+               }
             ],
-            "name": "pbadmAdminSecurityForm",
+            "name": "pbadmAdminSecurityBlock",
             "showInitially": true,
+            "label": "",
             "type": "block"
-          }
-        ],
-        "label": "",
-        "name": "pbadmAdminSecurityBlock",
-        "showInitially": true,
-        "type": "block"
+         }
+      ],
+      "name": "pbadmAdminSecurity",
+      "style": "",
+      "label": "Page Builder Configurations",
+      "title": "Page Builder Configurations",
+      "type": "page",
+      "importCSS": "xeStyle,pbadmAdminSecurityCss"
+   },
+   "owner": null,
+   "pageRoles": [
+      {
+         "roleName": "ADMIN-GPBADMA",
+         "allow": true
+      },
+      {
+         "roleName": "ADMIN-GPBADMN",
+         "allow": true
       }
-    ],
-    "importCSS": "xeStyle,pbadmAdminSecurityCss",
-    "label": "Page Builder Configurations",
-    "name": "pbadmAdminSecurity",
-    "style": "",
-    "title": "Page Builder Configurations",
-    "type": "page"
-  },
-  "pageRoles": [
-    {
-      "roleName": "ADMIN-GPBADMA",
-      "allow": true
-    },
-    {
-      "roleName": "ADMIN-GPBADMN",
-      "allow": true
-    }
-  ]
+   ]
 }
