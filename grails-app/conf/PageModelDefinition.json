@@ -21,14 +21,14 @@
             {
                 "componentType":["block"],
                 "requiredAttributes":[],
-                "optionalAttributes":["label", "style", "showInitially"],
+                "optionalAttributes":["label", "style", "showInitially", "role"],
                 "requiredChildren":[],
                 "optionalChildren":["form", "block", "grid", "htable", "detail",  "select", "radio", "list", "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
             },
             {
                 "componentType":["form"],
                 "requiredAttributes":[],
-                "optionalAttributes":["label", "style", "submit","submitLabel", "nextButtonLabel", "showInitially"],
+                "optionalAttributes":["label", "style", "submit","submitLabel", "nextButtonLabel", "showInitially", "role"],
                 "requiredChildren":[],
                 "optionalChildren":["block", "grid", "htable", "detail",  "select", "radio", "list",  "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
             },
@@ -72,17 +72,9 @@
                 "optionalChildren":[]
             },
             {
-                "componentType":[ "textArea", "datetime", "email", "tel"],
+                "componentType":[ "text", "textArea", "datetime", "email", "tel"],
                 "requiredAttributes":[],
                 "optionalAttributes":["label", "style", "labelStyle", "valueStyle", "value", "model", "parameters", "validation", "placeholder", "readonly", "required", "onUpdate", "onLoad", "onError", "loadInitially"],
-                "ignoredAttributes":["subType"],
-                "requiredChildren":[],
-                "optionalChildren":[]
-            },
-            {
-                "componentType":[ "text"],
-                "requiredAttributes":[],
-                "optionalAttributes":["label", "style", "labelStyle", "valueStyle", "value", "model", "parameters", "validation", "placeholder", "readonly", "required", "onUpdate", "onLoad", "onError", "loadInitially", "role"],
                 "ignoredAttributes":["subType"],
                 "requiredChildren":[],
                 "optionalChildren":[]

@@ -2,7 +2,7 @@
    "constantName": "pbadm.AdminTasks",
    "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2020-11-10T03:47:11Z",
+   "fileTimestamp": "2020-11-11T03:41:23Z",
    "modelView": {
       "components": [
          {
@@ -209,18 +209,17 @@
                {
                   "components": [
                      {
-                        "role": "search",
-                        "label": "",
-                        "loadInitially": false,
-                        "type": "text",
-                        "required": false,
                         "readonly": false,
                         "name": "pageFilter",
                         "model": "",
+                        "label": "",
+                        "loadInitially": false,
                         "placeholder": "Filter pages by name",
+                        "type": "text",
                         "value": "",
                         "parameters": {},
                         "onUpdate": "$pageGrid.$load();",
+                        "required": false,
                         "validation": {}
                      },
                      {
@@ -276,6 +275,7 @@
                         }
                      }
                   ],
+                  "role": "search",
                   "nextButtonLabel": "",
                   "name": "ShowPages",
                   "showInitially": false,
@@ -285,7 +285,6 @@
                {
                   "components": [
                      {
-                        "role": "search",
                         "readonly": false,
                         "name": "vdFilter",
                         "placeholder": "Filter virtual domains by name",
@@ -349,6 +348,7 @@
                         }
                      }
                   ],
+                  "role": "search",
                   "nextButtonLabel": "Next",
                   "name": "ShowVirtualDomains",
                   "showInitially": false,
@@ -358,7 +358,6 @@
                {
                   "components": [
                      {
-                        "role": "search",
                         "readonly": false,
                         "name": "cssFilter",
                         "placeholder": "Filter CSS by name",
@@ -422,6 +421,7 @@
                         }
                      }
                   ],
+                  "role": "search",
                   "nextButtonLabel": "Next",
                   "name": "ShowCss",
                   "showInitially": false,

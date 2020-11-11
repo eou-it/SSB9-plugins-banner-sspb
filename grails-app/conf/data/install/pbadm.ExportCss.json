@@ -4,7 +4,7 @@
    "extendsPage": {
       "constantName": "pbadm.ExportBase"
    },
-   "fileTimestamp": "2020-11-10T03:46:58Z",
+   "fileTimestamp": "2020-11-11T03:40:56Z",
    "modelView": {
       "baseRoot": "pbadmExportBase",
       "deltaVersion": "1.0",
@@ -31,6 +31,11 @@
             "value": {
                "ext": "The table below shows the Page Builder CSS files matching the CSS Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button.",
                "base": "The table below shows the Page Builder virtual domains matching the Virtual domain Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button."
+            }
+         },
+         "SelectBlock": {
+            "role": {
+               "ext": "search"
             }
          },
          "downloadLink": {
@@ -92,16 +97,6 @@
             "model": {
                "ext": "constantName",
                "base": "serviceName"
-            }
-         },
-         "nameFilter": {
-            "role": {
-               "ext": "search"
-            }
-         },
-         "pageFilter": {
-            "role": {
-               "ext": "search"
             }
          },
          "pbadmExportBase": {

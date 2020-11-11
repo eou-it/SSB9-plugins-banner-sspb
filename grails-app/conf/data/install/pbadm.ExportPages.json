@@ -4,7 +4,7 @@
    "extendsPage": {
       "constantName": "pbadm.ExportBase"
    },
-   "fileTimestamp": "2020-11-10T03:46:59Z",
+   "fileTimestamp": "2020-11-11T03:40:58Z",
    "modelView": {
       "baseRoot": "pbadmExportBase",
       "deltaVersion": "1.0",
@@ -19,32 +19,6 @@
             "label": {
                "ext": "Filtered pages",
                "base": "Filtered Objects"
-            }
-         },
-         "isAllowExportDSPermission": {
-            "label": {
-               "ext": "Export Current Permissions",
-               "base": "isAllowExportDSPermission"
-            }
-         },
-         "Intro": {
-            "value": {
-               "ext": "The table below shows the Page Builder pages matching the Page Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button.",
-               "base": "The table below shows the Page Builder virtual domains matching the Virtual domain Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button."
-            }
-         },
-         "downloadLink": {
-            "onClick": {
-               "ext": "debugger; $exportId=item.constantName;$isAllowExportSecurity = item.isAllowExportDSPermission;$getExport.$get();",
-               "patch": "--- original\n+++ revised\n@@ -1,3 +1,1 @@\n-$exportId=item.serviceName;\n-$isAllowExportSecurity=item.isAllowExportDSPermission;\n-$getExport.$get();\n+debugger; $exportId=item.constantName;$isAllowExportSecurity = item.isAllowExportDSPermission;$getExport.$get();",
-               "base": "$exportId=item.serviceName;\n$isAllowExportSecurity=item.isAllowExportDSPermission;\n$getExport.$get();"
-            },
-            "description": {
-               "ext": "Click to download this page",
-               "base": "Click to download this virtual domain"
-            },
-            "url": {
-               "ext": ""
             }
          },
          "exportResource": {
@@ -90,29 +64,6 @@
             "model": {
                "ext": "exportResource.modelView",
                "base": "exportResource.serviceName"
-            }
-         },
-         "id": {
-            "model": {
-               "ext": "constantName",
-               "base": "serviceName"
-            }
-         },
-         "nameFilter": {
-            "role": {
-               "ext": "search"
-            },
-            "meta": {
-               "ext": {
-                  "parent": "SelectBlock"
-               },
-               "base": {
-                  "parent": "SelectBlock",
-                  "nextSibling": "pageFilter"
-               }
-            },
-            "value": {
-               "ext": ""
             }
          },
          "pageFilter": {
@@ -174,6 +125,57 @@
             "title": {
                "ext": "Export Pages",
                "base": "Export artifacts basepage"
+            }
+         },
+         "isAllowExportDSPermission": {
+            "label": {
+               "ext": "Export Current Permissions",
+               "base": "isAllowExportDSPermission"
+            }
+         },
+         "Intro": {
+            "value": {
+               "ext": "The table below shows the Page Builder pages matching the Page Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button.",
+               "base": "The table below shows the Page Builder virtual domains matching the Virtual domain Filter above (use % (any character sequence) and _ (any character) as wild card). You can select the items you like to export and then press the Export Button."
+            }
+         },
+         "SelectBlock": {
+            "role": {
+               "ext": "search"
+            }
+         },
+         "downloadLink": {
+            "onClick": {
+               "ext": "debugger; $exportId=item.constantName;$isAllowExportSecurity = item.isAllowExportDSPermission;$getExport.$get();",
+               "patch": "--- original\n+++ revised\n@@ -1,3 +1,1 @@\n-$exportId=item.serviceName;\n-$isAllowExportSecurity=item.isAllowExportDSPermission;\n-$getExport.$get();\n+debugger; $exportId=item.constantName;$isAllowExportSecurity = item.isAllowExportDSPermission;$getExport.$get();",
+               "base": "$exportId=item.serviceName;\n$isAllowExportSecurity=item.isAllowExportDSPermission;\n$getExport.$get();"
+            },
+            "description": {
+               "ext": "Click to download this page",
+               "base": "Click to download this virtual domain"
+            },
+            "url": {
+               "ext": ""
+            }
+         },
+         "id": {
+            "model": {
+               "ext": "constantName",
+               "base": "serviceName"
+            }
+         },
+         "nameFilter": {
+            "meta": {
+               "ext": {
+                  "parent": "SelectBlock"
+               },
+               "base": {
+                  "parent": "SelectBlock",
+                  "nextSibling": "pageFilter"
+               }
+            },
+            "value": {
+               "ext": ""
             }
          }
       }

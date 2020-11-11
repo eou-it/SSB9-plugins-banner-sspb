@@ -2,7 +2,7 @@
    "constantName": "pbadm.AdminSecurity",
    "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2020-11-10T03:47:10Z",
+   "fileTimestamp": "2020-11-11T03:41:22Z",
    "modelView": {
       "components": [
          {
@@ -129,7 +129,6 @@
                         "components": [
                            {
                               "valueStyle": "",
-                              "role": "search",
                               "readonly": false,
                               "name": "nameFilter",
                               "label": "Name",
@@ -142,7 +141,6 @@
                            },
                            {
                               "valueStyle": "",
-                              "role": "search",
                               "readonly": false,
                               "name": "ownerFilter",
                               "label": "Owner",
@@ -154,6 +152,7 @@
                               "validation": {}
                            }
                         ],
+                        "role": "search",
                         "name": "filters",
                         "showInitially": false,
                         "label": "Search By",
