@@ -106,7 +106,9 @@ if (undefined == myCustomServices) {
     var myCustomServices = [];
 }
 
-myCustomServices.push('modalPopup')
+myCustomServices.push('modalPopup');
+myCustomServices.push('ngAria');
+
 //noinspection JSUnusedAssignment
 var appModule = appModule||angular.module('BannerOnAngular', myCustomServices);
 
