@@ -220,9 +220,10 @@ class VirtualDomainSqlService {
             //modify query for sql pagination (should be fast if an index exists on columns in order by clause)
             statement="""select /*+first_rows(${parameters.max})*/ *
                          from (select rownum row_number, a.*
-                               from ($statement) a)
-                               where row_number  between :offset+1 and :offset+:max
-                       """
+                               from ($statement) a
+                               where rownum <= :offset+:max
+                         )
+                         where row_number >= :offset+1 """
             if(vd.serviceName == 'pbadmWebTailorRoles') {
                 if(parameters.page_id) {
                     def pageInstance = Page.findById(parameters.page_id)
