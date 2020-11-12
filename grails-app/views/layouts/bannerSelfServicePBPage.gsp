@@ -125,7 +125,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 
 </head>
     <body>
-        <div id="dialogAppDiv" role="main"></div>
+        <div id="dialogAppDiv"></div>
         <div id="popupContainerDiv"></div>
         <div ng-app="BannerOnAngular">
             <div id="splash"></div>

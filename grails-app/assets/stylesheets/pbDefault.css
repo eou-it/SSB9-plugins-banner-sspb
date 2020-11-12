@@ -256,6 +256,11 @@ select.per-page-select, select.per-page-select:focus, select.per-page-select:hov
     height: auto !important;
 }
 
+.ui-grid .pb-link{
+    font-size: 10px;
+    color: #C81B02;
+}
+
 .grid[dir=rtl] .ui-grid-header-cell,
 .grid[dir=rtl] .ui-grid-cell{
     float:right !important;

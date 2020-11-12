@@ -2,7 +2,7 @@
    "constantName": "pbadm.LandingPage",
    "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2020-10-01T06:35:53Z",
+   "fileTimestamp": "2020-11-11T03:41:30Z",
    "modelView": {
       "components": [
          {
@@ -315,6 +315,7 @@
                   "components": [
                      {
                         "readonly": false,
+                        "documentation": "",
                         "name": "pageFilter",
                         "label": "",
                         "loadInitially": true,
@@ -381,6 +382,7 @@
                         }
                      }
                   ],
+                  "role": "search",
                   "name": "PageListBlock2",
                   "showInitially": true,
                   "style": "col-lg-6",

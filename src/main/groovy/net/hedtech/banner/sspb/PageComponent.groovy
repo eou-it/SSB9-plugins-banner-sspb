@@ -199,6 +199,7 @@ class PageComponent {
 
     String ID           // normalized ID from name (space to _), do we need this? Better to forbid space in name.
     String documentation    // for page development documentation purpose, not used by code generator
+    String role         // for adding role to text field
 
     List<PageComponent> components    // child components
 
@@ -1115,10 +1116,10 @@ class PageComponent {
                 def disabled = "${readonly?"disabled=\"disabled\"":""}"
                 def attributes = "${validationAttributes()} ${required?"required":""} ${placeholder?"placeholder=\"${tran("placeholder")}\"":""} ${labelTxt?"":"aria-label=\"${tran("placeholder")}\""}".trim()
                 def typeString= "type=\"$t\""
+
                 if (type == COMP_TYPE_NUMBER) {  // angular-ui doesn't use localized validators
                     typeString="""type="text" pb-number ${fractionDigits?"fraction-digits=\"$fractionDigits\"":""} """
                 }
-
                 if (type == COMP_TYPE_DATETIME)  { //Assume format comes from jquery.ui.datepicker-<locale>.js
                     typeString=" ui-date=\"{ changeMonth: true, changeYear: true}\" "
                 }
@@ -1141,7 +1142,7 @@ class PageComponent {
                     // TODO do we need a value field if ng-model is defined?  //added defaultValue
                     attributes += " ${readonly?"readonly":""}"
                     result = """|<$tag $inputIdStr $typeString $autoStyleStr  name="${name?name:model}"
-                                |${defaultValue()} $ngChange $attributes
+                                |${defaultValue()} $ngChange $attributes 
                                 |""".stripMargin()
                     if (model && !readonly) {
                         if (binding != BINDING_PAGE) // use DataSet current record
@@ -1235,7 +1236,10 @@ class PageComponent {
             case COMP_TYPE_LIST:
                 return listCompile((depth+1))
             case COMP_TYPE_BLOCK:
-                return """\n<div ${idAttribute(idTxtParam)} $styleStr class="pb-$t" ng-show="${name}_visible"> $heading \n"""
+                def textRole
+                if(role)
+                    textRole = "role=\"$role\""
+                return """\n<div ${idAttribute(idTxtParam)} $styleStr class="pb-$t" ng-show="${name}_visible" $textRole> $heading \n"""
             case COMP_TYPE_FORM:
                 // handle flow controlled
                 def submitStr=""
@@ -1244,7 +1248,10 @@ class PageComponent {
                 if (root.flowDefs)
                     submitStr+= "; _activateNextForm('$name');"
                 //don not use ng-form, this breaks page flows!
-                result += """<form ${idAttribute()} $styleStr class="pb-$t" name="${name}" ng-show="${name}_visible"  ${submitStr?"""ng-submit="$submitStr" """:""}>$heading \n"""
+                def textRole
+                if(role)
+                    textRole = "role=\"$role\""
+                result += """<form ${idAttribute()} $styleStr class="pb-$t" name="${name}" ng-show="${name}_visible" ${textRole?textRole:""} ${submitStr?"""ng-submit="$submitStr" """:""}>$heading \n"""
                 return result
             case COMP_TYPE_RESOURCE: //fall through
             case COMP_TYPE_DATA:
