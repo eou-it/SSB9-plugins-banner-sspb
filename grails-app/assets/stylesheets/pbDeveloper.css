@@ -78,7 +78,33 @@ button.button_edit:active {
 }
 
 .modal.fade.in {
-  top: 50%;
+    position: relative;
+}
+@media screen and (min-width: 330px) and (max-width: 600px) {
+    .modal.fade.in {
+        width: auto !important;
+        left: auto !important;
+        position: absolute;
+    }
+    #pbid-uploadStylesheet-popup {
+        width: 24em !important;
+    }
+}
+
+@media screen and (max-width: 330px) {
+    .modal.fade.in {
+        width: 18em !important;
+        left: auto !important;
+        position: absolute;
+    }
+    #pbid-uploadStylesheet-popup {
+        width: 18em !important;
+    }
+}
+@media screen and (max-height: 450px) {
+    #pbid-uploadStylesheet-popup  {
+        top:78% !important;
+    }
 }
 
 /* End ui-bootstrap modal fix - needed since upgrade to bootstrap.css version 3.0.2 */
