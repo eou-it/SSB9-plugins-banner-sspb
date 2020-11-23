@@ -1051,11 +1051,12 @@ class PageComponent {
                 def radioLabelStyleStr= """class="pb-${parent.type} pb-item pb-radiolabel $labelStyle" """
 
                 result = """
+                  | <fieldset> <legend>$label</legend>
                   |<div class="$valueStyle" ng-repeat="$SELECT_ITEM in $arrayName" $initTxt role="radiogroup">
                   |    <label ${idAttribute("-label-$idxStr")} ${idForAttribute("-radio-$idxStr")} $radioLabelStyleStr>
                   |    <input ${required?"required":""} ${idAttribute("-radio-$idxStr")} type="radio" number-to-string ng-model=$ngModel name="$nameTxt" $ngChange value="{{$SELECT_ITEM.$valueKey}}" aria-checked="false"/>
                   |    <span $tabIndexFocus onkeypress="clickEvent(this)">{{$SELECT_ITEM.$labelKey}}</span></label>
-                  |</div>""".stripMargin()
+                  |</div></fieldset>""".stripMargin()
                 result = """<div ${idAttribute(idTxtParam)} $autoStyleStr> $result </div>"""
                 break;
             case COMP_TYPE_LITERAL:
@@ -1190,7 +1191,7 @@ class PageComponent {
                 log.warn "*** WARNING: Compile Item. No HTML generated for component: $type ${name?name:model} ***"
                 result = ""
         }
-        if ([COMP_TYPE_BOOLEAN,COMP_TYPE_BUTTON, COMP_TYPE_SUBMIT].contains(type)) {
+        if ([COMP_TYPE_BOOLEAN,COMP_TYPE_BUTTON, COMP_TYPE_SUBMIT, COMP_TYPE_RADIO].contains(type)) {
             labelTxt = "" //No labels in front
         }
         if (parent.type==COMP_TYPE_DETAIL) {
@@ -1227,7 +1228,7 @@ class PageComponent {
                 return """
                         \n$heading\n<div ${idAttribute(idTxtParam)} class="gridStyle" role="grid" ui-grid="${name}Grid"
                          $styleStr 
-                        aria-labelledby="pbid-$name${idTxtParam?idTxtParam:""}-label" external-scopes="externalScope"
+                         external-scopes="externalScope"
                          ui-grid-selection ui-grid-resize-columns ui-grid-auto-resize class="grid"></div>\n"""
             case COMP_TYPE_DATATABLE:
                 return dataTableCompile(depth+1)
