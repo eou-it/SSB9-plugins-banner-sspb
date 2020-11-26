@@ -1164,7 +1164,8 @@ class PageComponent {
                 if(value){
                     checked = "checked=\"checked\""
                 }
-                def span = "<span class=\"xe-checkmark\" tabindex=\"-1\"></span>"
+                def spid = "pbid-"+name+"-label"
+                def span = "<span class=\"xe-checkmark\" tabindex=\"-1\" onclick=\"clickEvent(function(){\$('#$spid').click()})\"></span>"
                 result ="""<div role="application" class="xe-container"><input ${idAttribute(idTxtParam)} $autoStyleStr  type="checkbox" tabindex="-1" name="${name?name:model}"
                            ${booleanTrueValue?"ng-true-value=\"${htmlValue(booleanTrueValue,"'")}\"":""} ${booleanFalseValue?"ng-false-value=\"${htmlValue(booleanFalseValue,"'")}\"":""}
                            $ngChange $ngClick $tabIndexFocus

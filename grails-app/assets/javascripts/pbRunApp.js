@@ -90,15 +90,19 @@ function getControllerScopeById(id) {
 
 function clickEvent(element){
     var keycode = (event.keyCode ? event.keyCode : event.which);
-    if(!element.getAttribute("ng-true-value")) {
-        var isChecked = element.getAttribute("aria-checked") == 'true';
-        element.setAttribute("aria-checked", !isChecked);
+    if($(element).attr("ng-true-value")) {
+        var isChecked = $(element).attr("aria-checked") == 'true';
+        $(element).attr("aria-checked", !isChecked);
     }
     if(keycode == 32 || keycode==13){
         element.click();
         event.preventDefault();
+    }else if(event.originalEvent != undefined){
+        element.click();
+        event.preventDefault();
     }
 }
+
 
 /* App Module */
 
@@ -534,7 +538,15 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
                             this.setFocus($(t).children().first(), prevElement);
                             if(!$(t).children().first().is('select')){
                                 $scope.$$postDigest(function () {
-                                    $(t).children().first().click();
+                                    var firstChild = $(t).children().first();
+                                    firstChild.click();
+                                    firstChild.unbind('keydown');
+                                    firstChild.bind("keydown",function (e) {
+                                        var keyinternalCode =  e.keyCode ? e.keyCode : e.which;
+                                        if(keyinternalCode==13){
+                                            $(this).click()
+                                        }
+                                    })
                                 })
                             }
                             break;
