@@ -1227,10 +1227,10 @@ class PageComponent {
                 //headerRowHeight doesn't work in {{ expression }} - assume same as rowHeight hence pageSize+1
                 //style="...{{expression }}..."  does not evaluate properly in IE8 - fixed using ng-style
                 return """
-                        \n$heading\n<div ${idAttribute(idTxtParam)} class="gridStyle" role="grid" ui-grid="${name}Grid"
+                        \n$heading\n<div role="application"><div ${idAttribute(idTxtParam)} class="gridStyle" role="grid" ui-grid="${name}Grid"
                          $styleStr 
                          external-scopes="externalScope"
-                         ui-grid-selection ui-grid-resize-columns ui-grid-auto-resize class="grid"></div>\n"""
+                         ui-grid-selection ui-grid-resize-columns ui-grid-auto-resize class="grid"></div></div>\n"""
             case COMP_TYPE_DATATABLE:
                 return dataTableCompile(depth+1)
             case COMP_TYPE_DETAIL:
