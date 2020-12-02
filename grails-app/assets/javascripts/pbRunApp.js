@@ -90,15 +90,19 @@ function getControllerScopeById(id) {
 
 function clickEvent(element){
     var keycode = (event.keyCode ? event.keyCode : event.which);
-    if(!element.getAttribute("ng-true-value")) {
-        var isChecked = element.getAttribute("aria-checked") == 'true';
-        element.setAttribute("aria-checked", !isChecked);
+    if($(element).attr("ng-true-value")) {
+        var isChecked = $(element).attr("aria-checked") == 'true';
+        $(element).attr("aria-checked", !isChecked);
     }
     if(keycode == 32 || keycode==13){
         element.click();
         event.preventDefault();
+    }else if(event.originalEvent != undefined){
+        element.click();
+        event.preventDefault();
     }
 }
+
 
 /* App Module */
 
@@ -489,16 +493,20 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
                 console.log("Set initial record ");
             }
         };
-        this.gridKeyPress= function(event, item)
+        this.gridKeyPress= function($event, item)
         {
             var focus = "moveFocus";
             var rowIndex = item.row.entity.ROW_NUMBER?item.row.entity.ROW_NUMBER-1:0;
             var pageSize = this.pagingOptions.pageSize?this.pagingOptions.pageSize:5;
             rowIndex=rowIndex%pageSize;
-            var t = event.target;
+            var t = $event.target;
             var clickedClass = $(t).attr("class");
-            var keyCode = event.keyCode ? event.keyCode : event.which;
-            if([37,38,39,40,9,27,13].includes(keyCode)) {
+            var keyCode = $event.keyCode ? $event.keyCode : $event.which;
+            if($event.key === "Escape"){
+                keyCode=27;
+            }
+            $event.stopPropagation();
+            if([37,38,39,40,9,27,13].includes(keyCode) ) {
                 var prevElement = $(t);
                 var gridID = item.grid.element[0].id;
                 var attr = $("#"+gridID+" "+ ".moveFocus0").first().attr('firstCell');
@@ -532,11 +540,18 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
                             break;
                         case 13:
                             this.setFocus($(t).children().first(), prevElement);
-                            if(!$(t).children().first().is('select')){
-                                $scope.$$postDigest(function () {
-                                    $(t).children().first().click();
+                            $scope.$$postDigest(function () {
+                                var firstChild = $(t).children().first();
+                                firstChild.click();
+                                event.preventDefault();
+                                firstChild.not('.bound').addClass('bound').on('keypress', function (e) {
+                                    var keyinternalCode =  e.keyCode ? e.keyCode : e.which;
+                                    if(keyinternalCode==13){
+                                        $(this).click()
+                                        e.preventDefault();
+                                    }
                                 })
-                            }
+                            })
                             break;
                         case 9:
                             $('.ngFooterPanel').focus();
