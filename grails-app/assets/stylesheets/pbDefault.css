@@ -240,6 +240,9 @@ label.dispInline{
 
 select.per-page-select, select.per-page-select:focus, select.per-page-select:hover {
     border: 1px solid #026BC8 !important;
+    background-image: none !important;
+    appearance: auto !important;
+    padding-right: 0em !important;
 }
 
 .modal-body{
