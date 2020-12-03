@@ -106,6 +106,12 @@ div[ng-grid] {
     }
 }
 
+@media screen and (max-height: 450px) {
+    #popupContainerDiv .xe-popup-container  {
+        height:21em !important;
+    }
+}
+
 #popupContainerDiv .pagination-container .pagination-controls button {
     width: 2.5em;
     height: 2.5em;
