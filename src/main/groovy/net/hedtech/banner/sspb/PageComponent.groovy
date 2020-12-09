@@ -382,14 +382,14 @@ class PageComponent {
                    |<div class="pagination-container">
                    |    <div ${idAttribute('-pagination-container')} class="pagination-controls" ng-show='${dataSet}.totalCount > ${dataSet}.pagingOptions.pageSize'>
                    |        <$button ${idAttribute('-pagination-next-button')} class="secondary next" ng-disabled="${dataSet}.pagingOptions.currentPage >= ${dataSet}.totalCount/${dataSet}.pagingOptions.pageSize "
-                   |            ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1" type="button">
+                   |            ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1" type="button" title="Next">
                    |        </button>
                    |        <span ${idAttribute('-pagination-page-count')}>
                    |        {{${dataSet}.numberOfPages()}}/{{${dataSet}.pagingOptions.currentPage}}
                    |        </span>
                    |        
                    |      <$button ${idAttribute('-pagination-prev-button')} class="secondary previous" ng-disabled="${dataSet}.pagingOptions.currentPage == 1"
-                   |            ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1" type="button">
+                   |            ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1" type="button" title="Previous">
                    |        </button>
                    |    </div>
                    |</div>
@@ -400,13 +400,13 @@ class PageComponent {
                    |<div class="pagination-container">
                    |    <div ${idAttribute('-pagination-container')} class="pagination-controls" ng-show='${dataSet}.totalCount > ${dataSet}.pagingOptions.pageSize'>
                    |        <$button ${idAttribute('-pagination-prev-button')} class="secondary previous" ng-disabled="${dataSet}.pagingOptions.currentPage == 1"
-                   |            ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1" type="button" aria-label="Previous Page">
+                   |            ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage - 1" type="button" aria-label="Previous Page"  title="Previous Page">
                    |        </button>
                    |        <span ${idAttribute('-pagination-page-count')}>
                    |        {{${dataSet}.pagingOptions.currentPage}}/{{${dataSet}.numberOfPages()}}
                    |        </span>
                    |        <$button ${idAttribute('-pagination-next-button')} class="secondary next" ng-disabled="${dataSet}.pagingOptions.currentPage >= ${dataSet}.totalCount/${dataSet}.pagingOptions.pageSize "
-                   |            ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1" type="button" aria-label="Next Page">
+                   |            ng-click="${dataSet}.pagingOptions.currentPage=${dataSet}.pagingOptions.currentPage + 1" type="button" aria-label="Next Page"  title="Next Page">
                    |        </button>
                    |    </div>
                    |</div>
@@ -416,15 +416,15 @@ class PageComponent {
         def btnLabel
         if (allowNew) {
             btnLabel=newRecordLabel?tran("newRecordLabel"):tranGlobal("newRecord.label","Add New")
-            changeData += """ <$button ${idAttribute('-new-button')} class="primary" ng-click="${dataSet}.add(${newRecordName()}())"  type="button"> $btnLabel </button>"""
+            changeData += """ <$button ${idAttribute('-new-button')} class="primary" ng-click="${dataSet}.add(${newRecordName()}())"  type="button" title="$btnLabel"> $btnLabel </button>"""
         }
         if (allowModify || allowDelete) {
             btnLabel=saveDataLabel?tran("saveDataLabel"):tranGlobal("save.label","Save")
-            changeData += """ <$button ${idAttribute('-save-button')} class="primary" ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()"  type="button"> $btnLabel </button>"""
+            changeData += """ <$button ${idAttribute('-save-button')} class="primary" ng-click="${dataSet}.save()" ng-disabled="!${dataSet}.dirty()"  type="button" title="$btnLabel"> $btnLabel </button>"""
         }
         if (allowReload) {
             btnLabel=refreshDataLabel?tran("refreshDataLabel"):tranGlobal("refresh.label","Refresh")
-            changeData += """ <$button ${idAttribute('-reload-button')} class="secondary" ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})" type="button"> $btnLabel </button> """
+            changeData += """ <$button ${idAttribute('-reload-button')} class="secondary" ng-click="${dataSet}.load({all:false,paging:true,clearCache:true})" type="button" title="$btnLabel"> $btnLabel </button> """
         }
         if (changeData) {
             changeData = "<span ${idAttribute('-change-data-container')} class=\"pb-change-data-control\" > $changeData </span>"
@@ -460,19 +460,19 @@ class PageComponent {
         def btnLabel
         if (allowNew) {
             btnLabel=newRecordLabel?tran("newRecordLabel",ESC_JS):tranGlobal("newRecord.label","Add New",[], ESC_JS)
-            result += """ <button class="primary" $styleStr ng-click="grid.appScope.${dataSet}.add(grid.appScope.${newRecordName()}())" type="button"> $btnLabel  </button>"""
+            result += """ <button class="primary" $styleStr ng-click="grid.appScope.${dataSet}.add(grid.appScope.${newRecordName()}())" type="button" title="$btnLabel"> $btnLabel  </button>"""
         }
         if (allowDelete) {
             btnLabel=deleteRecordLabel?tran("deleteRecordLabel",ESC_JS):tranGlobal("deleteRecord.label","Delete selected",[], ESC_JS)
-            result += """ <button class="secondary" $styleStr ng-click="grid.appScope.${dataSet}.deleteRecords(grid.appScope.${dataSet}.selectedRecords)" ng-disabled="grid.appScope.${dataSet}.selectedRecords.length==0" type="button"> $btnLabel  </button>"""
+            result += """ <button class="secondary" $styleStr ng-click="grid.appScope.${dataSet}.deleteRecords(grid.appScope.${dataSet}.selectedRecords)" ng-disabled="grid.appScope.${dataSet}.selectedRecords.length==0" type="button" title="$btnLabel"> $btnLabel  </button>"""
         }
         if (allowModify || allowDelete) {
             btnLabel=saveDataLabel?tran("saveDataLabel",ESC_JS):tranGlobal("save.label","Save",[], ESC_JS)
-            result += """ <button class="primary" $styleStr ng-click="grid.appScope.${dataSet}.save()" ng-disabled="!grid.appScope.${dataSet}.dirty()" type="button"> $btnLabel </button>"""
+            result += """ <button class="primary" $styleStr ng-click="grid.appScope.${dataSet}.save()" ng-disabled="!grid.appScope.${dataSet}.dirty()" type="button" title="$btnLabel"> $btnLabel </button>"""
         }
         if (allowReload) {
             btnLabel=refreshDataLabel?tran("refreshDataLabel",ESC_JS):tranGlobal("refresh.label","Refresh",[], ESC_JS)
-            result += """ <button class="secondary" $styleStr ng-click="grid.appScope.${dataSet}.load({all:false,paging:true,clearCache:true})" type="button"> $btnLabel </button> """
+            result += """ <button class="secondary" $styleStr ng-click="grid.appScope.${dataSet}.load({all:false,paging:true,clearCache:true})" type="button" title="$btnLabel"> $btnLabel </button> """
         }
         // alas, but cannot dynamically toggle multiSelect property of grid
         //result += "<input type=\"checkbox\" ng-model=\"${name}Grid.multiSelect\">Select multiple</input>"
@@ -534,11 +534,11 @@ class PageComponent {
             return window.uiGridI18n[label];
         }
          \$scope.${name}Grid.onRegisterApi= function(gridApi) {
-            \$scope.gridApi = gridApi;
-            \$scope.gridApi.core.on.sortChanged( \$scope, \$scope.sortChanged );
-            \$scope.sortChanged(\$scope.gridApi.grid, [ \$scope.${name}Grid.columnDefs[1] ] );
-             gridApi.selection.on.rowSelectionChanged(\$scope,function(row){
-                \$scope.${dataSet}.selectedRecords = \$scope.gridApi.selection.getSelectedRows();
+            \$scope.${name}gridApi = gridApi;
+            \$scope.${name}gridApi.core.on.sortChanged( \$scope, \$scope.sortChanged );
+            \$scope.sortChanged(\$scope.${name}gridApi.grid, [ \$scope.${name}Grid.columnDefs[1] ] );
+            \$scope.${name}gridApi.selection.on.rowSelectionChanged(\$scope,function(row){
+                \$scope.${dataSet}.selectedRecords = \$scope.${name}gridApi.selection.getSelectedRows();
               });
           }
         ${dataSetWatches()}
@@ -632,7 +632,7 @@ class PageComponent {
             initTabIndex = "tabindex=\"0\""
         }
         def onkeypress="ng-keydown=\"[37,38,39,40,9,27,13].includes(\$event.keyCode)?grid.appScope.${parent.name}DS.gridKeyPress(\$event, this):return \"  class=\"$moveFocus\" $initTabIndex"
-        tagStart = "<span "+onkeypress+"> "+tagStart
+        tagStart = "<span role=\"application\" "+onkeypress+"> "+tagStart
         tagEnd = tagEnd+"</span>"
         if (type == COMP_TYPE_NUMBER ) {
             //angular-ui doesn't use localized validators - use own (but rather limited still)
@@ -652,7 +652,7 @@ class PageComponent {
                 readonlyAt = (parent.allowModify && !ro)?"":"disabled" //select doesn't have readonly
                 ngChange="ng-change=\""+(onUpdate?"grid.appScope.${name}DS.onUpdate(row.entity);":"")+"grid.appScope.${parent.name}DS.setModified(row.entity);grid.appScope.${name}DS.setCurrentRecord(row.entity.$model);\""
                 placeholderAt = placeholder?"""<option value="" role="menuitem">${tran("placeholder")}</option>""":""
-                return """<span $onkeypress ><select ${idForAttribute(idTxtParam+"-label")} role="menu" $ariaLabel ${styleAt} $ngModel $readonlyAt $ngChange $ngClick ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in grid.appScope.$arrayName" tabindex="-1"> $placeholderAt </select> </span>"""
+                return """<span role="application" $onkeypress ><select ${idForAttribute(idTxtParam+"-label")} role="menu" $ariaLabel ${styleAt} $ngModel $readonlyAt $ngChange $ngClick ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in grid.appScope.$arrayName" tabindex="-1"> $placeholderAt </select> </span>"""
             case [COMP_TYPE_TEXT, COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER, COMP_TYPE_DATETIME, COMP_TYPE_EMAIL, COMP_TYPE_TEL] :
                 validateAt = validationAttributes()
                 disabled = "${readonly?"disabled=\"disabled\"":""}"
@@ -668,7 +668,7 @@ class PageComponent {
             case COMP_TYPE_DISPLAY:
                 typeAt=""
                 if (asHtml) {
-                    tagStart="<span $onkeypress"
+                    tagStart="<span role=\"application\" $onkeypress"
                     tagEnd="></span>"
                     ngModel="ng-bind-html=\"MODEL_COL_FIELD | to_trusted\""
                 }
@@ -677,7 +677,7 @@ class PageComponent {
                 }
                 break
             case COMP_TYPE_LITERAL:
-                return "<span $styleAt $ngClick $onkeypress>" + tran(propertiesBaseKey()+".value",compileDOMDisplay(value).replaceAll("item.","row.entity.") ) + "</span>"
+                return "<span role=\"application\" $styleAt $ngClick $onkeypress>" + tran(propertiesBaseKey()+".value",compileDOMDisplay(value).replaceAll("item.","row.entity.") ) + "</span>"
                 break
             case COMP_TYPE_LINK:
                 def desc = description?tran("description"):url
@@ -689,7 +689,7 @@ class PageComponent {
                     targetStr = """target="_blank" """
                 // set url to empty string if it is null, otherwise the page is re-directed to a non-existing page
                 url = (url==null)?"":url
-                return """<a ng-href="${compileDOMDisplay(url)}" $targetStr $clickStr $onkeypress aria-label="$desc"> <span $autoStyleStr > $desc </span></a>"""
+                return """<span role="application"><a ng-href="${compileDOMDisplay(url)}" $targetStr $clickStr $onkeypress aria-label="$desc"> <span $autoStyleStr > $desc </span></a></span>"""
 
                 break;
             default :
@@ -1065,7 +1065,7 @@ class PageComponent {
                 break;
             case COMP_TYPE_DISPLAY: //migrated to use template engine
                 if (type != COMP_TYPE_DATETIME) {
-                    return "<span>*** ERROR This code should now be handled in template. Item=$name ***</span>"
+                    return "<span role=\"application\">*** ERROR This code should now be handled in template. Item=$name ***</span>"
                 }
                 def modelTxt_unsafe = ""
                 def modelTxt_safe = ""
@@ -1086,7 +1086,7 @@ class PageComponent {
                         return "<span>*** ERROR model is expected to be populated Item=$name ***</span>"
                     }
                 }
-                result = """<span ${idAttribute(idTxtParam)} $ngClick ${defaultValue(false)} $autoStyleStr $modelTxt_unsafe> $modelTxt_safe </span>""";
+                result = """<span ${idAttribute(idTxtParam)} $ngClick ${defaultValue(false)} $autoStyleStr $modelTxt_unsafe role="application"> $modelTxt_safe </span>""";
                 break;
         // TODO handle value in details for display
         // TODO consolidate value and sourceModel?
@@ -1166,7 +1166,7 @@ class PageComponent {
                 }
                 def spid = "pbid-"+name+"-label"
                 def span = "<span class=\"xe-checkmark\" tabindex=\"-1\" onclick=\"clickEvent(function(){\$('#$spid').click()})\"></span>"
-                result ="""<div role="application" class="xe-container"><input ${idAttribute(idTxtParam)} $autoStyleStr  type="checkbox" tabindex="-1" name="${name?name:model}"
+                result ="""<div class="xe-container"><input ${idAttribute(idTxtParam)} $autoStyleStr  type="checkbox" tabindex="-1" name="${name?name:model}"
                            ${booleanTrueValue?"ng-true-value=\"${htmlValue(booleanTrueValue,"'")}\"":""} ${booleanFalseValue?"ng-false-value=\"${htmlValue(booleanFalseValue,"'")}\"":""}
                            $ngChange $ngClick $tabIndexFocus
                            """
@@ -1200,7 +1200,7 @@ class PageComponent {
                         |$labelTxt $result
                         |</div>""".stripMargin()
         } else {
-            result = """|<div ${idAttribute("-container"+idTxtParam)} $styleStr class="pb-${parent.type}-item-container pb-$type">
+            result = """|<div ${idAttribute("-container"+idTxtParam)} $styleStr class="pb-${parent.type}-item-container pb-$type" role="application">
                         | $labelTxt $result
                         |</div> """.stripMargin()
         }
@@ -1227,10 +1227,10 @@ class PageComponent {
                 //headerRowHeight doesn't work in {{ expression }} - assume same as rowHeight hence pageSize+1
                 //style="...{{expression }}..."  does not evaluate properly in IE8 - fixed using ng-style
                 return """
-                        \n$heading\n<div role="application"><div ${idAttribute(idTxtParam)} class="gridStyle" role="grid" ui-grid="${name}Grid"
+                        \n$heading\n<div ${idAttribute(idTxtParam)} class="gridStyle" role="grid" ui-grid="${name}Grid"
                          $styleStr 
                          external-scopes="externalScope"
-                         ui-grid-selection ui-grid-resize-columns ui-grid-auto-resize class="grid"></div></div>\n"""
+                         ui-grid-selection ui-grid-resize-columns ui-grid-auto-resize class="grid"></div>\n"""
             case COMP_TYPE_DATATABLE:
                 return dataTableCompile(depth+1)
             case COMP_TYPE_DETAIL:

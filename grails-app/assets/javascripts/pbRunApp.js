@@ -161,22 +161,22 @@ appModule.run(['$templateCache', function($templateCache )  {
     console.log("App module.run started" );
     $templateCache.put('gridFooter.html',
         "<div class=\"ngFooterPanel  pagination-container\" ng-class=\"{'ui-widget-content': jqueryUITheme, 'ui-corner-bottom': jqueryUITheme}\" ng-style=\"getFooterStyles()\" style='font-size: 0.65em'>" +
-        "    <div id=\"paging-container-#gridName#\" class=\"pagination-controls align-left\" >" +
+        "    <div id=\"paging-container-#gridName#\" class=\"pagination-controls align-left\"  role=\"navigation\">" +
         "           {{grid.appScope.#gridName#DS.enableDisablePagination()}}"+
         /*"        <div class=\"paging-control first {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageToFirst()\"></div>"+
         "        <div class=\"paging-control previous {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageBackward()\"></div>"+*/
-        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"first\" xe-aria-label=\"{{::'pagination.first.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageToFirst()\" xe-disabled=\"grid.appScope.#gridName#DS.firstPrev\" tabindex='0' ng-cloak></xe-button>\n" +
-        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"previous\" xe-aria-label=\"{{::'pagination.previous.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageBackward()\" xe-disabled=\"grid.appScope.#gridName#DS.firstPrev\" tabindex='0' ng-cloak></xe-button>\n"+
+        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"first\" xe-aria-label=\"{{::'pagination.first.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageToFirst()\" title=\"{{grid.appScope.geti18n('first')}}\" xe-disabled=\"grid.appScope.#gridName#DS.firstPrev\" tabindex='0' ng-cloak></xe-button>\n" +
+        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"previous\" xe-aria-label=\"{{::'pagination.previous.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageBackward()\" title=\"{{grid.appScope.geti18n('previous')}}\" xe-disabled=\"grid.appScope.#gridName#DS.firstPrev\" tabindex='0' ng-cloak></xe-button>\n"+
         "        <span class=\"paging-text page\" id=\"pbid-Grid-Page\"> {{grid.appScope.geti18n('pageLabel')}}</span>"+
         "        <input class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"1\" max=\"{{grid.appScope.#gridName#DS.maxPages()}}\" type=\"number\" ng-model=\"grid.appScope.#gridName#DS.pagingOptions.currentPage\" tabindex='0' style=\"width: 50px; display: inline; height: 3.5em;\" aria-labelledby=\"pbid-Grid-Page\"/>" +
         "        <span class=\"paging-text page-of\"> {{grid.appScope.geti18n('maxPageLabel')}} </span> <span class=\"paging-text total-pages\"> {{grid.appScope.#gridName#DS.maxPages()}}  </span>"+
       /*  "        <div class=\"paging-control next {{!cantPageForward() && 'enabled'||''}}\" ng-click=\"pageForward()\"></div>" +
         "        <div class=\"paging-control last {{!cantPageToLast()  && 'enabled'||''}}\" ng-click=\"pageToLast()\" ></div>"+*/
-        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"next\" xe-aria-label=\"{{::'pagination.next.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageForward()\"  xe-disabled=\"grid.appScope.#gridName#DS.nextLast\" tabindex='0' ng-cloak></xe-button>\n" +
-        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"last\" xe-aria-label=\"{{::'pagination.last.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageToLast()\"  xe-disabled=\"grid.appScope.#gridName#DS.nextLast\" tabindex='0' ng-cloak></xe-button>\n"+
+        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"next\" xe-aria-label=\"{{::'pagination.next.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageForward()\" title=\"{{grid.appScope.geti18n('next')}}\"  xe-disabled=\"grid.appScope.#gridName#DS.nextLast\" tabindex='0' ng-cloak></xe-button>\n" +
+        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"last\" xe-aria-label=\"{{::'pagination.last.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageToLast()\" title=\"{{grid.appScope.geti18n('last')}}\" xe-disabled=\"grid.appScope.#gridName#DS.nextLast\" tabindex='0' ng-cloak></xe-button>\n"+
         "        <div class=\"divider dispInline\"></div>" +
         "        <span class=\"paging-text page-per\" id=\"pbid-Grid-RecordsPerPage\"> {{grid.appScope.geti18n('ngPageSizeLabel')}} </span>" +
-        "        <div class=\"page-size-select-wrapper dispInline\" >" +
+        "        <div class=\"page-size-select-wrapper dispInline\" alt='{{grid.appScope.geti18n('ngPageSizeLabel')}}'>" +
         "            <select page-size-select  class=\"per-page-select\" ng-model=\"grid.appScope.#gridName#DS.pagingOptions.pageSize\" ng-options=\"s as s for s in grid.appScope.#gridName#DS.pagingOptions.pageSizes\" tabindex='0' aria-labelledby=\"pbid-Grid-RecordsPerPage\"> "+
         "             </select>" +
         "        </div>"+
@@ -640,9 +640,9 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
 
         //delete selected record(s)
         this.deleteRecords = function(items) {
-            if($scope.gridApi) {
+            /*if($scope.gridApi) {
                 items = $scope.gridApi.selection.getSelectedRows();
-            }
+            }*/
             $scope.changed = true;
             if (this.data.remove(items) ) {
                 // we got a single record
