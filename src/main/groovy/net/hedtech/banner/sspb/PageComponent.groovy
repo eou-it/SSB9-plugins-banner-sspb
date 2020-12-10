@@ -569,9 +569,10 @@ class PageComponent {
                 sortColumns.forEach(function(it){
                     fields[count]=it.name;
                     directions[count]=it.sort?it.sort.direction:'asc';
+                    count++;
                 });
-                grid.options.sortInfo.fields =[fields];
-                grid.options.sortInfo.directions= [directions]
+                grid.options.sortInfo.fields = fields;
+                grid.options.sortInfo.directions = directions;
             }
             
         }
