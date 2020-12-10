@@ -726,7 +726,7 @@ class PageComponent {
             def deleteLabel=deleteRecordLabel?tran("deleteRecordLabel"):tranGlobal("delete.label","Delete")
             thead = "<th ${idAttribute('delete-column-header')} tabindex=\"0\">$deleteLabel</th>"
             items = """
-                  |<td ${idAttribute('delete-column-data'+idTxtParam)} role="gridcell">
+                  |<td ${idAttribute('delete-column-data'+idTxtParam)} role="cell">
                   |<input ${idAttribute('delete-column-checkbox'+idTxtParam)} ng-click="${dataSet}.deleteRecords($GRID_ITEM)" type="checkbox" aria-label="Delete Record" tabindex="-1" />
                   |</td>
                   |""".stripMargin()
@@ -746,7 +746,7 @@ class PageComponent {
                 thead+="<th ${idAttribute('data-header-'+child.name)} $labelStyleStr role=\"columnheader\"  tabindex=\"0\">${child.tran("label")}</th>"
                 //get the child components
                 child.label=""
-                items+="<td ${idAttribute('-td-' + child.name + idTxtParam )} role=\"gridcell\" >${child.compileComponent("", depth)}</td>\n"
+                items+="<td ${idAttribute('-td-' + child.name + idTxtParam )} role=\"cell\" >${child.compileComponent("", depth)}</td>\n"
             }
         }
         def click_txt=""
@@ -754,7 +754,7 @@ class PageComponent {
             click_txt = "ng-click=${name}_onClick($GRID_ITEM)"
 
         def result =  """
-                   |  <table ${idAttribute()} $styleStr role="grid" aria-labelledby="pbid-$name-label">
+                   |  <table ${idAttribute()} $styleStr role="table" aria-labelledby="pbid-$name-label">
                    |    <caption>$heading</caption>
                    |    <thead ${idAttribute('-th')} role="rowgroup"><tr ${idAttribute('-thr')} role="row">$thead</tr></thead>
                    |    <tbody ${idAttribute('-tb')} role="rowgroup">

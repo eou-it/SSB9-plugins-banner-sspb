@@ -1117,12 +1117,12 @@ $(document).ready(function () {
                 }
                 break;
             case 37:
-                var sibling = start.previousElementSibling;
+                var sibling = isPreviousSiblingPresent(start.previousElementSibling);
                 $(sibling).attr('tabindex', '0');
                 sibling ? sibling.focus() : '';
                 break;
             case 39:
-                var sibling = start.nextElementSibling;
+                var sibling= isNextSiblingPresent(start.nextElementSibling);
                 $(sibling).attr('tabindex', '0');
                 sibling ? sibling.focus() : '';
                 break;
@@ -1149,3 +1149,25 @@ $(document).ready(function () {
         }
     });
 });
+
+function isNextSiblingPresent(sib){
+    if($(sib).is(':visible')) {
+        return sib;
+    }else{
+        var nextSib = sib.nextElementSibling;
+        if(nextSib)
+            sib= isNextSiblingPresent(nextSib)
+    }
+    return sib;
+}
+
+function isPreviousSiblingPresent(sib){
+    if($(sib).is(':visible')) {
+        return sib;
+    }else{
+        var prevSib = sib.previousElementSibling;
+        if(prevSib)
+            sib= isNextSiblingPresent(prevSib)
+    }
+    return sib;
+}
