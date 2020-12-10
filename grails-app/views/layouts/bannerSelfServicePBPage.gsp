@@ -155,7 +155,11 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 styleLeft:                 '${message(code:'default.language.direction')=='ltr'?'left':'right'}',
                 styleRight:                '${message(code:'default.language.direction')=='ltr'?'right':'left'}',
                 maxPageLabel:              '${message(code:'nggrid.maxPageLabel'             , encodeAs: 'JavaScript')}',
-                pageLabel:                 '${message(code:'nggrid.pageLabel'                , encodeAs: 'JavaScript')}'
+                pageLabel:                 '${message(code:'nggrid.pageLabel'                , encodeAs: 'JavaScript')}',
+                next:                      '${message(code:'pagination.next.label'          , encodeAs: 'JavaScript')}',
+                last:                      '${message(code:'pagination.last.label'          , encodeAs: 'JavaScript')}',
+                previous:                  '${message(code:'pagination.previous.label'      , encodeAs: 'JavaScript')}',
+                first:                     '${message(code:'pagination.first.label'        , encodeAs: 'JavaScript')}'
             };
             yepnope({
                 test : window.JSON,
