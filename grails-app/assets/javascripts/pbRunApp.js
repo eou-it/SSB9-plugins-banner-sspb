@@ -103,6 +103,10 @@ function clickEvent(element){
     }
 }
 
+function checkboxClick(element){
+    $(element).next().click();
+}
+
 
 /* App Module */
 
