@@ -968,9 +968,17 @@ class PageComponent {
             autoStyleStr = """class="pb-${parent.type} pb-$type pb-item $valueStyle"  """
         }
         def tranLabel = ( !(label) || parent.type == COMP_TYPE_HTABLE)?"&#x2007;&#x2007;":tran("label")
+        def requiredTranLabel = tranLabel
+
+        if(required) {
+            requiredTranLabel = "<g:if test=\"$tranLabel\"> $tranLabel * </g:if>"
+        }
         def tindex
         def tabIndexFocus="tabindex=\"0\""
         if(parent.type == COMP_TYPE_HTABLE){
+            tabIndexFocus="tabindex=\"-1\""
+        }
+        if(readonly){
             tabIndexFocus="tabindex=\"-1\""
         }
         if([COMP_TYPE_BOOLEAN].contains(t)){
@@ -979,7 +987,9 @@ class PageComponent {
                 """;
             //aria-checked="{{${htmlValue(booleanTrueValue, "'")}==${model}}}"
         }
-        def labelTxt = "<label class=\"pb-${parent.type} pb-$type pb-item pb-label $labelStyle \" ${idAttribute("-label"+idTxtParam)} $tindex ${idForAttribute(idTxtParam)} /*aria-labelledby=\"pbid-$name\"*/>$tranLabel</label>"
+
+
+        def labelTxt = "<label class=\"pb-${parent.type} pb-$type pb-item pb-label $labelStyle \" ${idAttribute("-label"+idTxtParam)} $tindex ${idForAttribute(idTxtParam)} /*aria-labelledby=\"pbid-$name\"*/>$requiredTranLabel</label>"
 
         //Use empty labels for radio and boolean to support xeStyle
         labelTxt = ( !label && ![COMP_TYPE_RADIO,COMP_TYPE_BOOLEAN].contains(t))?"":labelTxt
@@ -1052,7 +1062,7 @@ class PageComponent {
                 def radioLabelStyleStr= """class="pb-${parent.type} pb-item pb-radiolabel $labelStyle" """
 
                 result = """
-                  | <fieldset> <legend>$label</legend>
+                  | <fieldset> <legend>$requiredTranLabel</legend>
                   |<div class="$valueStyle" ng-repeat="$SELECT_ITEM in $arrayName" $initTxt role="radiogroup">
                   |    <label ${idAttribute("-label-$idxStr")} ${idForAttribute("-radio-$idxStr")} $radioLabelStyleStr>
                   |    <input ${required?"required":""} ${idAttribute("-radio-$idxStr")} type="radio" number-to-string ng-model=$ngModel name="$nameTxt" $ngChange value="{{$SELECT_ITEM.$valueKey}}" aria-checked="false"/>
