@@ -2,7 +2,7 @@
    "constantName": "pbadm.VirtualDomainRoles",
    "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2020-12-10T06:35:53Z",
+   "fileTimestamp": "2020-12-21T06:35:53Z",
    "modelView": {
       "components": [
          {
@@ -41,6 +41,12 @@
                   "labelKey": "SERVICE_NAME",
                   "valueKey": "VID",
                   "onUpdate": "$editVirtualDomainRoles.$load();\n$EditRolesForm.$visible=$selectVirtualDomain;\n $roleName.$populateSource();\n$allowModify = window.localStorage['allowModify'];\nwindow.localStorage['allowModify'] = \"\";"
+               },
+               {
+                  "name": "domainRolesEmptyBlockForLineBreak",
+                  "type": "block",
+                  "style": "divAlign",
+                  "showInitially": true
                },
                {
                   "valueStyle": "primary",

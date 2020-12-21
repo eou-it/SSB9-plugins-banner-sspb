@@ -168,6 +168,23 @@ div[ng-grid] {
     text-align: right;
 }
 
+@media screen and (min-width: 435px) and (max-width: 768px) {
+    .divAlign::after{
+        content: '\a';
+        white-space: pre;
+    }
+}
+@media screen and (max-width: 434px) {
+    .divAlign::after {
+        content: '\a';
+        white-space: pre;
+    }
+    .divAlign::before {
+        content: '\a';
+        white-space: pre;
+    }
+}
+
 /* validation */
 input.ng-invalid.ng-touched, input.ng-invalid.ng-invalid-maxlength {
     background-color: #FFFFFF;
