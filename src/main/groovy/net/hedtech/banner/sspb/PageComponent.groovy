@@ -514,7 +514,7 @@ class PageComponent {
             showGridFooter:true,
             useCustomPagination: true,
             useExternalPagination : true,
-            gridFooterTemplate: \$templateCache.get('gridFooter.html').replace('#gridControlPanel#',${name}GridControlPanel).replaceAll('#gridName#','${name}'),
+            gridFooterTemplate: \$templateCache.get('gridFooter.html').replace('#gridControlPanel#',${name}GridControlPanel).replace(/#gridName#/g,'${name}'),
             jqueryUIDraggable:true,
             pagingOptions: \$scope.${dataSet}.pagingOptions,
             selectedItems: \$scope.${dataSet}.selectedRecords,
