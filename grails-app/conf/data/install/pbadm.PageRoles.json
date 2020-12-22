@@ -2,7 +2,7 @@
   "constantName": "pbadm.PageRoles",
   "developerSecurity": [],
   "extendsPage": null,
-  "fileTimestamp": "2020-12-10T06:35:53Z",
+  "fileTimestamp": "2020-12-21T06:35:53Z",
   "modelView": {
     "components": [
       {
@@ -53,6 +53,12 @@
             "labelKey": "CONSTANT_NAME",
             "valueKey": "PID",
             "onUpdate": "$editPageRoles.$load();\n$EditRolesForm.$visible=$selectPage;\n$roleName.$populateSource();\n$ApplyRolesForm.$visible=$selectPage;\n$appliedPageRoles.$load();\n$allowModify = window.localStorage['allowModify'];\nwindow.localStorage['allowModify'] = \"\";"
+          },
+          {
+            "name": "PageRolesEmptyBlockForLineBreak",
+            "type": "block",
+            "style": "divAlign",
+            "showInitially": true
           },
           {
             "valueStyle": "primary",
