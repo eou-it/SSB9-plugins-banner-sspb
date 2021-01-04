@@ -2,7 +2,7 @@
    "constantName": "pbadm.LandingPage",
    "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2020-12-21T03:41:30Z",
+   "fileTimestamp": "2020-12-29T03:30:08Z",
    "modelView": {
       "components": [
          {
@@ -255,28 +255,12 @@
                         "allowDelete": false,
                         "components": [
                            {
-                              "valueStyle": "",
-                              "name": "EditPage",
-                              "style": "edit-page",
-                              "type": "literal",
-                              "value": "<a href=\"{{$$contextRoot}}visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}\" aria-label=\"Edit {{$item.CONSTANT_NAME}} Page\"></a>"
-                           },
-                           {
-                              "valueStyle": "",
-                              "labelStyle": "",
-                              "name": "RunPage",
-                              "style": "run-page",
-                              "label": "",
-                              "type": "literal",
-                              "value": "<a href=\"{{$$contextRoot}}customPage/page/{{$item.CONSTANT_NAME}}\" aria-label=\"Run {{$item.CONSTANT_NAME}} Page\"></a>"
-                           },
-                           {
                               "asHtml": false,
                               "valueStyle": "",
                               "labelStyle": "",
                               "name": "CONSTANT_NAME",
                               "model": "CONSTANT_NAME",
-                              "style": "page-id",
+                              "style": "page-id item1",
                               "loadInitially": true,
                               "type": "display"
                            },
@@ -284,12 +268,29 @@
                               "readonly": true,
                               "name": "LAST_UPDATED",
                               "model": "LAST_UPDATED",
+                              "style": "item2",
                               "label": "Last Updated:",
                               "loadInitially": true,
                               "type": "datetime",
                               "parameters": {},
                               "required": false,
                               "validation": {}
+                           },
+                           {
+                              "valueStyle": "",
+                              "name": "EditPage",
+                              "style": "edit-page item3",
+                              "type": "literal",
+                              "value": "<a href=\"{{$$contextRoot}}visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}\" aria-label=\"Edit {{$item.CONSTANT_NAME}} Page\"></a>"
+                           },
+                           {
+                              "valueStyle": "",
+                              "labelStyle": "",
+                              "name": "RunPage",
+                              "style": "run-page item4",
+                              "label": "",
+                              "type": "literal",
+                              "value": "<a href=\"{{$$contextRoot}}customPage/page/{{$item.CONSTANT_NAME}}\" aria-label=\"Run {{$item.CONSTANT_NAME}} Page\"></a>"
                            }
                         ],
                         "allowNew": false,
@@ -330,28 +331,12 @@
                         "allowDelete": false,
                         "components": [
                            {
-                              "valueStyle": "",
-                              "name": "EditPage2",
-                              "style": "edit-page",
-                              "type": "literal",
-                              "value": "<a href=\"{{$$contextRoot}}visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}\" aria-label=\"Edit {{$item.CONSTANT_NAME}} Page\"></a>"
-                           },
-                           {
-                              "valueStyle": "",
-                              "labelStyle": "",
-                              "name": "RunPage2",
-                              "style": "run-page",
-                              "label": "",
-                              "type": "literal",
-                              "value": "<a href=\"{{$$contextRoot}}customPage/page/{{$item.CONSTANT_NAME}}\" aria-label=\"Run {{$item.CONSTANT_NAME}} Page\"></a>"
-                           },
-                           {
                               "asHtml": false,
                               "valueStyle": "",
                               "labelStyle": "",
                               "name": "CONSTANT_NAME2",
                               "model": "CONSTANT_NAME",
-                              "style": "page-id",
+                              "style": "page-id item1",
                               "loadInitially": true,
                               "type": "display"
                            },
@@ -359,12 +344,29 @@
                               "readonly": true,
                               "name": "LAST_UPDATED2",
                               "model": "LAST_UPDATED",
+                              "style": "item2",
                               "label": "Last Updated:",
                               "loadInitially": true,
                               "type": "datetime",
                               "parameters": {},
                               "required": false,
                               "validation": {}
+                           },
+                           {
+                              "valueStyle": "",
+                              "name": "EditPage2",
+                              "style": "edit-page item3",
+                              "type": "literal",
+                              "value": "<a href=\"{{$$contextRoot}}visualPageModelComposer/loadComposerPage?constantName={{$item.CONSTANT_NAME}}\" aria-label=\"Edit {{$item.CONSTANT_NAME}} Page\"></a>"
+                           },
+                           {
+                              "valueStyle": "",
+                              "labelStyle": "",
+                              "name": "RunPage2",
+                              "style": "run-page item4",
+                              "label": "",
+                              "type": "literal",
+                              "value": "<a href=\"{{$$contextRoot}}customPage/page/{{$item.CONSTANT_NAME}}\" aria-label=\"Run {{$item.CONSTANT_NAME}} Page\"></a>"
                            }
                         ],
                         "allowNew": false,
