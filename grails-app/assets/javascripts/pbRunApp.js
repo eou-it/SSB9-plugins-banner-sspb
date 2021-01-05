@@ -1001,9 +1001,13 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
 
         link : function (scope,element,attrs) {
             onLoadEventData();
-            scope.onClickData = function (event) {
+            scope.onClickData = function (event, cusomAttr) {
                 //scope.pageName = null;
-                scope.options = $parse(attrs.pbPopupDataGrid)() || {};
+                if(cusomAttr){
+                    scope.options =$parse(cusomAttr.pbPopupDataGrid)() || {};
+                }else {
+                    scope.options = $parse(attrs.pbPopupDataGrid)() || {};
+                }
                 if (scope.options.id == 'extendsPage') {
                     scope.options.excludePage = scope.pageName;
                 }
@@ -1020,6 +1024,8 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
                 if (keycode != '9') {
                     event.preventDefault();
                     event.stopPropagation();
+                }else{
+                    return;
                 }
 
             }
@@ -1076,7 +1082,12 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
 
             element.on('enter',scope.onClickData);
           //  element.on('keyup', scope.onClickData);
-            element.on('keydown', scope.onClickData);
+            //element.on('keydown', scope.onClickData);
+            element.keypress(function (e) {
+                if (e.key === 'Enter' || e.keyCode === 13 ||  e.which === 13) {
+                    scope.onClickData(e, attrs);
+                }
+            })
             element.on('change', scope.changeData);
             element.on('click', scope.onClickData);
             element.on('mousedown',scope.onClickData);
