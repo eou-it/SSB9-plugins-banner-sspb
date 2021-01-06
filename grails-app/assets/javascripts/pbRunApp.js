@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2013-2020 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2021 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 
 /*
@@ -169,15 +169,15 @@ appModule.run(['$templateCache', function($templateCache )  {
         "           {{grid.appScope.#gridName#DS.enableDisablePagination()}}"+
         /*"        <div class=\"paging-control first {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageToFirst()\"></div>"+
         "        <div class=\"paging-control previous {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageBackward()\"></div>"+*/
-        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"first\" xe-aria-label=\"{{::'pagination.first.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageToFirst()\" title=\"{{grid.appScope.geti18n('first')}}\" xe-disabled=\"grid.appScope.#gridName#DS.firstPrev\" tabindex='0' ng-cloak></xe-button>\n" +
-        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"previous\" xe-aria-label=\"{{::'pagination.previous.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageBackward()\" title=\"{{grid.appScope.geti18n('previous')}}\" xe-disabled=\"grid.appScope.#gridName#DS.firstPrev\" tabindex='0' ng-cloak></xe-button>\n"+
+        "        <xe-button xe-type=\"secondary\" id='pbid-first-page-button' xe-btn-class=\"first\" xe-aria-label=\"{{::'pagination.first.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageToFirst()\" title=\"{{grid.appScope.geti18n('first')}}\" xe-disabled=\"grid.appScope.#gridName#DS.firstPrev\" tabindex='0' ng-cloak></xe-button>\n" +
+        "        <xe-button xe-type=\"secondary\" id='pbid-previous-page-button' xe-btn-class=\"previous\" xe-aria-label=\"{{::'pagination.previous.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageBackward()\" title=\"{{grid.appScope.geti18n('previous')}}\" xe-disabled=\"grid.appScope.#gridName#DS.firstPrev\" tabindex='0' ng-cloak></xe-button>\n"+
         "        <span class=\"paging-text page\" for=\"pbid-Grid-Page\"> {{grid.appScope.geti18n('pageLabel')}}</span>"+
         "        <input class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"1\" max=\"{{grid.appScope.#gridName#DS.maxPages()}}\" type=\"number\" ng-model=\"grid.appScope.#gridName#DS.pagingOptions.currentPage\" tabindex='0' style=\"width: 50px; display: inline; height: 3.5em;\" aria-labelledby=\"pbid-Grid-Page\"/>" +
         "        <span class=\"paging-text page-of\"> {{grid.appScope.geti18n('maxPageLabel')}} </span> <span class=\"paging-text total-pages\"> {{grid.appScope.#gridName#DS.maxPages()}}  </span>"+
       /*  "        <div class=\"paging-control next {{!cantPageForward() && 'enabled'||''}}\" ng-click=\"pageForward()\"></div>" +
         "        <div class=\"paging-control last {{!cantPageToLast()  && 'enabled'||''}}\" ng-click=\"pageToLast()\" ></div>"+*/
-        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"next\" xe-aria-label=\"{{::'pagination.next.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageForward()\" title=\"{{grid.appScope.geti18n('next')}}\"  xe-disabled=\"grid.appScope.#gridName#DS.nextLast\" tabindex='0' ng-cloak></xe-button>\n" +
-        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"last\" xe-aria-label=\"{{::'pagination.last.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageToLast()\" title=\"{{grid.appScope.geti18n('last')}}\" xe-disabled=\"grid.appScope.#gridName#DS.nextLast\" tabindex='0' ng-cloak></xe-button>\n"+
+        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"next\" id='pbid-next-page-button' xe-aria-label=\"{{::'pagination.next.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageForward()\" title=\"{{grid.appScope.geti18n('next')}}\"  xe-disabled=\"grid.appScope.#gridName#DS.nextLast\" tabindex='0' ng-cloak></xe-button>\n" +
+        "        <xe-button xe-type=\"secondary\" xe-btn-class=\"last\" id='pbid-last-page-button' xe-aria-label=\"{{::'pagination.last.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageToLast()\" title=\"{{grid.appScope.geti18n('last')}}\" xe-disabled=\"grid.appScope.#gridName#DS.nextLast\" tabindex='0' ng-cloak></xe-button>\n"+
         "        <div class=\"divider dispInline\"></div>" +
         "        <span class=\"paging-text page-per\" for=\"pbid-Grid-RecordsPerPage\"> {{grid.appScope.geti18n('ngPageSizeLabel')}} </span>" +
         "        <div class=\"page-size-select-wrapper dispInline\" alt='{{grid.appScope.geti18n('ngPageSizeLabel')}}'>" +
@@ -842,6 +842,10 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
                 this.nextLast = curPage >= maxPages;
             } else {
                 this.nextLast = this.data?this.data.length < 1:true;
+                if (this.nextLast == true){
+                    document.getElementById("pbid-next-page-button").removeAttribute("tabindex");
+                    document.getElementById("pbid-last-page-button").removeAttribute("tabindex");
+                }
             }
             return this.nextLast;
 
@@ -851,6 +855,8 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
                 return this.cantPageForward();
             } else {
                 this.nextLast=true;
+                document.getElementById("pbid-next-page-button").removeAttribute("tabindex");
+                document.getElementById("pbid-last-page-button").removeAttribute("tabindex");
                 return true;
             }
 
@@ -858,6 +864,10 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
         this.cantPageBackward = function() {
             var curPage = this.pagingOptions.currentPage;
             this.firstPrev=(curPage? curPage<= 1:true);
+            if(this.firstPrev == true){
+                document.getElementById("pbid-first-page-button").removeAttribute("tabindex");
+                document.getElementById("pbid-previous-page-button").removeAttribute("tabindex");
+            }
             return this.firstPrev;
         };
 
