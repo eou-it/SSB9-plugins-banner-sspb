@@ -172,7 +172,14 @@ appModule.run(['$templateCache', function($templateCache )  {
         "        <xe-button xe-type=\"secondary\" xe-btn-class=\"first\" xe-aria-label=\"{{::'pagination.first.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageToFirst()\" title=\"{{grid.appScope.geti18n('first')}}\" xe-disabled=\"grid.appScope.#gridName#DS.firstPrev\" tabindex='0' ng-cloak></xe-button>\n" +
         "        <xe-button xe-type=\"secondary\" xe-btn-class=\"previous\" xe-aria-label=\"{{::'pagination.previous.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageBackward()\" title=\"{{grid.appScope.geti18n('previous')}}\" xe-disabled=\"grid.appScope.#gridName#DS.firstPrev\" tabindex='0' ng-cloak></xe-button>\n"+
         "        <span class=\"paging-text page\" for=\"pbid-Grid-Page\"> {{grid.appScope.geti18n('pageLabel')}}</span>"+
-        "        <input class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"1\" max=\"{{grid.appScope.#gridName#DS.maxPages()}}\" type=\"number\" ng-model=\"grid.appScope.#gridName#DS.pagingOptions.currentPage\" tabindex='0' style=\"width: 50px; display: inline; height: 3.5em;\" aria-labelledby=\"pbid-Grid-Page\"/>" +
+        "        <span title=\"{{::'pagination.page.shortcut.label' | xei18n}}\" role=\"presentation\" >" +
+        "        <input id='gridPageInput' class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"{{!grid.appScope.#gridName#DS.maxPages() ? 0 : 1}}\" max=\"{{grid.appScope.#gridName#DS.maxPages()}}\" " +
+        "               type=\"number\" ng-model=\"grid.appScope.#gridName#DS.pagingOptions.currentPage\" " +
+        "               aria-valuenow=\"{{grid.appScope.#gridName#DS.pagingOptions.currentPage}}\" aria-valuemax=\"{{grid.appScope.#gridName#DS.maxPages()}}\" " +
+        "               aria-valuemin=\"{{!grid.appScope.#gridName#DS.maxPages() ? 0 : 1}}\"  " +
+        "               aria-label=\"{{::'pagination.page.aria.label' | xei18n}}.{{::'pagination.page.label' | xei18n}} {{grid.appScope.#gridName#DS.pagingOptions.currentPage}} {{::'pagination.page.of.label' | xei18n}} {{grid.appScope.#gridName#DS.maxPages()}}\" "+
+        "               tabindex='0' style=\"width: 50px; display: inline; height: 3.5em;\" />" +
+        "       </span> "+
         "        <span class=\"paging-text page-of\"> {{grid.appScope.geti18n('maxPageLabel')}} </span> <span class=\"paging-text total-pages\"> {{grid.appScope.#gridName#DS.maxPages()}}  </span>"+
       /*  "        <div class=\"paging-control next {{!cantPageForward() && 'enabled'||''}}\" ng-click=\"pageForward()\"></div>" +
         "        <div class=\"paging-control last {{!cantPageToLast()  && 'enabled'||''}}\" ng-click=\"pageToLast()\" ></div>"+*/
