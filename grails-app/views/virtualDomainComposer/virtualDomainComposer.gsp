@@ -118,35 +118,37 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
         </div>
 
 
-        <table role="grid">
-            <thead role="rowgroupw">
+        <table role="table">
+            <thead role="rowgroup">
                 <tr role="row">
-                    <th align = left id="vdQueryStatement" ><g:message code="sspb.page.virtualdomain.query.heading"/></th> <th align = left id="vdDeleteStatement"><g:message code="sspb.page.virtualdomain.delete.heading" /></th>
+                    <th role="columnheader" align = left id="vdQueryStatement" ><g:message code="sspb.page.virtualdomain.query.heading"/></th>
+                    <th role="columnheader" align = left id="vdDeleteStatement"><g:message code="sspb.page.virtualdomain.delete.heading" /></th>
                 </tr>
             </thead>
             <tbody role="rowgroup">
                 <tr role="row">
-                    <td role="gridcell">
+                    <td role="cell">
                         <g:textArea  id="selectIndex" name="vdQueryView" aria-labelledby="vdQueryStatement" value="${pageInstance?.vdQueryView}" rows="20" cols="60" style="width:100%" required="true" tabindex="0"/>
                     </td>
-                    <td role="gridcell">
+                    <td role="cell">
                         <g:textArea name="vdDeleteView" aria-labelledby="vdDeleteStatement" value="${pageInstance?.vdDeleteView}" rows="20" cols="60" style="width:100%" tabindex="0"/>
                     </td>
                 </tr>
             </tbody>
         </table>
-        <table role="grid">
+        <table role="table">
             <thead role="rowgroup">
                 <tr role="row">
-                    <th align = left id="vdPostStatement"><g:message code="sspb.page.virtualdomain.post.heading" /></th> <th align = left id="vdPutStatement"><g:message code="sspb.page.virtualdomain.put.heading" /></th>
+                    <th role="columnheader" align = left id="vdPostStatement"><g:message code="sspb.page.virtualdomain.post.heading" /></th>
+                    <th role="columnheader" align = left id="vdPutStatement"><g:message code="sspb.page.virtualdomain.put.heading" /></th>
                 </tr>
             </thead>
             <tbody role="rowgroup">
                 <tr role="row">
-                    <td role="gridcell">
+                    <td role="cell">
                         <g:textArea name="vdPostView" aria-labelledby="vdPostStatement" value="${pageInstance?.vdPostView}" rows="20" cols="60" style="width:100%"  tabindex="0"/>
                     </td>
-                    <td role="gridcell">
+                    <td role="cell">
                         <g:textArea name="vdPutView" aria-labelledby="vdPutStatement" value="${pageInstance?.vdPutView}" rows="20" cols="60" style="width:100%" tabindex="0"/>
                     </td>
                 </tr>
