@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
+ Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
 *******************************************************************************/
 
 input, textarea, select {
@@ -106,9 +106,19 @@ div[ng-grid] {
     }
 }
 
-@media screen and (max-height: 450px) {
+@media screen and (min-height: 350px) and (max-height: 450px) {
     #popupContainerDiv .xe-popup-container  {
         height:21em !important;
+    }
+}
+@media screen and (min-height: 250px) and (max-height: 350px) {
+    #popupContainerDiv .xe-popup-container  {
+        height:16em !important;
+    }
+}
+@media screen and (min-height: 150px) and (max-height: 250px) {
+    #popupContainerDiv .xe-popup-container  {
+        height:12em !important;
     }
 }
 
