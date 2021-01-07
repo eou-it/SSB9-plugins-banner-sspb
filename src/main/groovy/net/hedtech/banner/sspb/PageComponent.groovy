@@ -975,7 +975,7 @@ class PageComponent {
         }
         def tindex
         def tabIndexFocus="tabindex=\"0\""
-        if(parent.type == COMP_TYPE_HTABLE){
+        if(parent.type == COMP_TYPE_HTABLE || [COMP_TYPE_LITERAL].contains(t)){
             tabIndexFocus="tabindex=\"-1\""
         }
         if(readonly){
