@@ -293,25 +293,27 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
         </select>
 
     </div>
-    <div class="btn-section-2">
-        <button tabindex="0" class="primary" ng-click='newCssSource();resetCssNameData();' ng-disabled="${!isProductionReadOnlyMode}" ><g:message code="sspb.css.cssManager.newCss.label" /></button>
-        <button tabindex="0" class="secondary" ng-click='submitCssSource()' ng-disabled="${!isProductionReadOnlyMode} || !(allowModify == null ? true :allowModify)"><g:message code="sspb.css.cssManager.save.label" /></button>
-        <span ng-show="${isProductionReadOnlyMode}">
-            <pb-Upload  label='Upload Stylesheet' status='cssStatus' pb-change=''></pb-Upload>
-        </span>
-        <button tabindex="0" class="secondary" ng-click="getCssSource()"><g:message code="sspb.css.cssManager.reload.label" /></button>
-        <button tabindex="0" class="secondary" ng-click='deleteCssSource()' ng-disabled="${!isProductionReadOnlyMode} || !(allowModify == null ? true :allowModify) "><g:message code="sspb.css.cssManager.delete.label" /></button>
-        <span  ng-show="cssName.length>0">
-            <button tabindex="0" class="secondary" ng-click='getDeveloperSecurityPage()'><g:message code="sspb.css.cssManager.developer.label" /></button>
-        </span>
+    <div class="btn-section-2 cssGrid">
+        <div>
+            <button tabindex="0" class="primary" ng-click='newCssSource();resetCssNameData();' ng-disabled="${!isProductionReadOnlyMode}" ><g:message code="sspb.css.cssManager.newCss.label" /></button>
+            <button tabindex="0" class="secondary" ng-click='submitCssSource()' ng-disabled="${!isProductionReadOnlyMode} || !(allowModify == null ? true :allowModify)"><g:message code="sspb.css.cssManager.save.label" /></button>
+            <span ng-show="${isProductionReadOnlyMode}">
+                <pb-Upload  label='Upload Stylesheet' status='cssStatus' pb-change=''></pb-Upload>
+            </span>
+            <button tabindex="0" class="secondary" ng-click="getCssSource()"><g:message code="sspb.css.cssManager.reload.label" /></button>
+            <button tabindex="0" class="secondary" ng-click='deleteCssSource()' ng-disabled="${!isProductionReadOnlyMode} || !(allowModify == null ? true :allowModify) "><g:message code="sspb.css.cssManager.delete.label" /></button>
+            <span  ng-show="cssName.length>0">
+                <button tabindex="0" class="secondary" ng-click='getDeveloperSecurityPage()'><g:message code="sspb.css.cssManager.developer.label" /></button>
+            </span>
 
-        <span ng-show="cssName" class="alignRight">
-            <label class="vpc-name-label dispInline" for="pbid-cssOwner"><g:message code="sspb.css.visualbuilder.cssowner.label" /></label>
-            <input tabindex="0" style="display: none" ng-model="allowUpdateOwner" aria-label="Allow Update Owner"/>
-            <select tabindex="0" id="pbid-cssOwner" class="owner-select alignRight" ng-model="cssOwner"  ng-disabled="!allowUpdateOwner">
-                <option ng-repeat="owner in pbUserList" value="{{owner}}" ng-selected="{{owner == pageOwner}}">{{owner}}</option>
-            </select>
-        </span>
+            <span ng-show="cssName" class="alignRight">
+                <label class="vpc-name-label dispInline" for="pbid-cssOwner"><g:message code="sspb.css.visualbuilder.cssowner.label" /></label>
+                <input tabindex="0" style="display: none" ng-model="allowUpdateOwner" aria-label="Allow Update Owner"/>
+                <select tabindex="0" id="pbid-cssOwner" class="owner-select alignRight" ng-model="cssOwner"  ng-disabled="!allowUpdateOwner">
+                    <option ng-repeat="owner in pbUserList" value="{{owner}}" ng-selected="{{owner == pageOwner}}">{{owner}}</option>
+                </select>
+            </span>
+        </div>
     </div>
     <div class="form-horizontal" ng-form="cssform">
         <div class="control-group">
