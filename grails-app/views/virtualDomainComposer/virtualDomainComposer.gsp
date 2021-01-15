@@ -54,6 +54,12 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
     %>
 
     <Script type="text/javascript">
+
+        function preventDefault() {
+            if(event.which==13 || event.keyCode==13){
+                event.preventDefault();
+            }
+        }
         function showDomainRoles(id, name){
             var allowModify ="${!pageInstance?.allowModify}"
 
@@ -103,13 +109,11 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             <g:if test="${pageInstance?.vdServiceName}">
                 <input type="button" class="secondary" role="button" value="${message(code:"sspb.page.virtualdomain.roles.label")}" onclick="showDomainRoles('${pageInstance?.id}','${pageInstance?.vdServiceName}')"/>
                 <input type="button" class="secondary" role="button" value="${message(code:"sspb.css.cssManager.developer.label")}" onclick="getDeveloperSecurityPage('${pageInstance?.id}','${pageInstance?.vdServiceName}')"/>
-                <span class="alignRight">
+                <span class="alignRight" id="ownersec">
                     <label class="vpc-name-label dispInline" for="vdOwner"><g:message code="sspb.vd.visualbuilder.vdowner.label" /></label>
                     <g:select id="vdOwner" class="owner-select alignRight" name="owner" ng-disabled="${!(pageInstance?.allowUpdateOwner==null ? true: pageInstance?.allowUpdateOwner)}" noSelection="${['null':'']}"
-                              value="${pageInstance?.owner?:''}" from="${userDetailsInList}" optionKey="USER_ID" optionValue="USER_ID">
+                              value="${pageInstance?.owner?:''}" from="${userDetailsInList}" optionKey="USER_ID" optionValue="USER_ID" onKeyPress="preventDefault()">
                     </g:select>
-                   %{-- <select class="owner-select vd-select-width" id="pageOwner" onchange="onChangeOfOwner()">
-                    </select>--}%
                 </span>
 %{--
                 <g:textField name="owner" id="vdowner"  style="display:none;" />
