@@ -1105,6 +1105,9 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
 $(document).ready(function () {
     $('table').on('keydown',function (e) {
         e = e || window.event;
+        if (e && $(this).context.id === "visualComposer-table") {
+            return;
+        }
         var firstCell = $(this).children('tbody').find('tr:first').find('td:first');
         if($(e.target).attr("role")!=="columnheader" && !$(e.target).attr('firstCell')){
             $(e.target).attr('tabindex','-1');
