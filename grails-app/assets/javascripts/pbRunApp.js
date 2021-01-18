@@ -1,5 +1,5 @@
 /******************************************************************************
- *  Copyright 2013-2020 Ellucian Company L.P. and its affiliates.             *
+ *  Copyright 2013-2021 Ellucian Company L.P. and its affiliates.             *
  ******************************************************************************/
 
 /*
@@ -171,9 +171,9 @@ appModule.run(['$templateCache', function($templateCache )  {
         "        <div class=\"paging-control previous {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageBackward()\"></div>"+*/
         "        <xe-button xe-type=\"secondary\" xe-btn-class=\"first\" xe-aria-label=\"{{::'pagination.first.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageToFirst()\" title=\"{{grid.appScope.geti18n('first')}}\" xe-disabled=\"grid.appScope.#gridName#DS.firstPrev\" tabindex='0' ng-cloak></xe-button>\n" +
         "        <xe-button xe-type=\"secondary\" xe-btn-class=\"previous\" xe-aria-label=\"{{::'pagination.previous.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageBackward()\" title=\"{{grid.appScope.geti18n('previous')}}\" xe-disabled=\"grid.appScope.#gridName#DS.firstPrev\" tabindex='0' ng-cloak></xe-button>\n"+
-        "        <span class=\"paging-text page\" for=\"pbid-Grid-Page\"> {{grid.appScope.geti18n('pageLabel')}}</span>"+
+        "        <span class=\"paging-text page\" for=\"pbid-#gridName#-Page\"> {{grid.appScope.geti18n('pageLabel')}}</span>"+
         "        <span title=\"{{::'pagination.page.shortcut.label' | xei18n}}\" role=\"presentation\" >" +
-        "        <input id='gridPageInput' class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"{{!grid.appScope.#gridName#DS.maxPages() ? 0 : 1}}\" max=\"{{grid.appScope.#gridName#DS.maxPages()}}\" " +
+        "        <input id=\"pbid-#gridName#-PageInput\" class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"{{!grid.appScope.#gridName#DS.maxPages() ? 0 : 1}}\" max=\"{{grid.appScope.#gridName#DS.maxPages()}}\" " +
         "               type=\"number\" ng-model=\"grid.appScope.#gridName#DS.pagingOptions.currentPage\" " +
         "               aria-valuenow=\"{{grid.appScope.#gridName#DS.pagingOptions.currentPage}}\" aria-valuemax=\"{{grid.appScope.#gridName#DS.maxPages()}}\" " +
         "               aria-valuemin=\"{{!grid.appScope.#gridName#DS.maxPages() ? 0 : 1}}\"  " +
@@ -186,9 +186,9 @@ appModule.run(['$templateCache', function($templateCache )  {
         "        <xe-button xe-type=\"secondary\" xe-btn-class=\"next\" xe-aria-label=\"{{::'pagination.next.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageForward()\" title=\"{{grid.appScope.geti18n('next')}}\"  xe-disabled=\"grid.appScope.#gridName#DS.nextLast\" tabindex='0' ng-cloak></xe-button>\n" +
         "        <xe-button xe-type=\"secondary\" xe-btn-class=\"last\" xe-aria-label=\"{{::'pagination.last.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageToLast()\" title=\"{{grid.appScope.geti18n('last')}}\" xe-disabled=\"grid.appScope.#gridName#DS.nextLast\" tabindex='0' ng-cloak></xe-button>\n"+
         "        <div class=\"divider dispInline\"></div>" +
-        "        <span class=\"paging-text page-per\" for=\"pbid-Grid-RecordsPerPage\"> {{grid.appScope.geti18n('ngPageSizeLabel')}} </span>" +
+        "        <span class=\"paging-text page-per\" for=\"pbid-#gridName#-RecordsPerPage\"> {{grid.appScope.geti18n('ngPageSizeLabel')}} </span>" +
         "        <div class=\"page-size-select-wrapper dispInline\" alt='{{grid.appScope.geti18n('ngPageSizeLabel')}}'>" +
-        "            <select page-size-select aria-label=\"{{grid.appScope.geti18n('ngPageSizeLabel')}}\" class=\"per-page-select\" ng-model=\"grid.appScope.#gridName#DS.pagingOptions.pageSize\" ng-options=\"s as s for s in grid.appScope.#gridName#DS.pagingOptions.pageSizes\" tabindex='0' aria-labelledby=\"pbid-Grid-RecordsPerPage\"> "+
+        "            <select page-size-select aria-label=\"{{grid.appScope.geti18n('ngPageSizeLabel')}}\" class=\"per-page-select\" ng-model=\"grid.appScope.#gridName#DS.pagingOptions.pageSize\" ng-options=\"s as s for s in grid.appScope.#gridName#DS.pagingOptions.pageSizes\" tabindex='0' aria-labelledby=\"pbid-#gridName#-RecordsPerPage\"> "+
         "             </select>" +
         "        </div>"+
         "       <span class=\"ngLabel\">{{grid.appScope.geti18n('ngTotalItemsLabel')}} {{grid.appScope.#gridName#DS.maxRows()}}</span>" +
