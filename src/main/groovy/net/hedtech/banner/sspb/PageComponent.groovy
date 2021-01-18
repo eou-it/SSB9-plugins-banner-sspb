@@ -757,8 +757,8 @@ class PageComponent {
         def result =  """
                    |  <table ${idAttribute()} $styleStr role="table" aria-labelledby="pbid-$name-label">
                    |    <caption>$heading</caption>
-                   |    <thead ${idAttribute('-th')} role="rowgroup"><tr ${idAttribute('-thr')} role="row">$thead</tr></thead>
-                   |    <tbody ${idAttribute('-tb')} role="rowgroup">
+                   |    <thead ${idAttribute('-th')}><tr ${idAttribute('-thr')} role="row">$thead</tr></thead>
+                   |    <tbody ${idAttribute('-tb')}>
                    |      <!-- Do this for every object in objects -->
                    |      <tr ${idAttribute('-tr'+idTxtParam)}  ng-repeat="$repeat" $click_txt role="row">
                    |        $items
@@ -975,7 +975,7 @@ class PageComponent {
         }
         def tindex
         def tabIndexFocus="tabindex=\"0\""
-        if(parent.type == COMP_TYPE_HTABLE){
+        if(parent.type == COMP_TYPE_HTABLE || [COMP_TYPE_LITERAL].contains(t)){
             tabIndexFocus="tabindex=\"-1\""
         }
         if(readonly){
@@ -1237,7 +1237,7 @@ class PageComponent {
                 //headerRowHeight doesn't work in {{ expression }} - assume same as rowHeight hence pageSize+1
                 //style="...{{expression }}..."  does not evaluate properly in IE8 - fixed using ng-style
                 return """
-                        \n$heading\n<div ${idAttribute(idTxtParam)} class="gridStyle" role="grid" ui-grid="${name}Grid"
+                        \n$heading\n<div ${idAttribute(idTxtParam)} class="gridStyle" ui-grid="${name}Grid"
                          $styleStr 
                          external-scopes="externalScope"
                          ui-grid-selection ui-grid-resize-columns ui-grid-auto-resize class="grid"></div>\n"""

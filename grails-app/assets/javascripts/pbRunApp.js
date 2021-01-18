@@ -171,17 +171,24 @@ appModule.run(['$templateCache', function($templateCache )  {
         "        <div class=\"paging-control previous {{!cantPageBackward() && 'enabled'||''}}\" ng-click=\"pageBackward()\"></div>"+*/
         "        <xe-button xe-type=\"secondary\" xe-btn-class=\"first\" xe-aria-label=\"{{::'pagination.first.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageToFirst()\" title=\"{{grid.appScope.geti18n('first')}}\" xe-disabled=\"grid.appScope.#gridName#DS.firstPrev\" tabindex=\"{{grid.appScope.#gridName#DS.firstPrev ? -1:0}}\" ng-cloak></xe-button>\n" +
         "        <xe-button xe-type=\"secondary\" xe-btn-class=\"previous\" xe-aria-label=\"{{::'pagination.previous.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageBackward()\" title=\"{{grid.appScope.geti18n('previous')}}\" xe-disabled=\"grid.appScope.#gridName#DS.firstPrev\" tabindex=\"{{grid.appScope.#gridName#DS.firstPrev ? -1:0}}\" ng-cloak></xe-button>\n"+
-        "        <span class=\"paging-text page\" for=\"pbid-Grid-Page\"> {{grid.appScope.geti18n('pageLabel')}}</span>"+
-        "        <input class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"1\" max=\"{{grid.appScope.#gridName#DS.maxPages()}}\" type=\"number\" ng-model=\"grid.appScope.#gridName#DS.pagingOptions.currentPage\" tabindex='0' style=\"width: 50px; display: inline; height: 3.5em;\" aria-labelledby=\"pbid-Grid-Page\"/>" +
+        "        <span class=\"paging-text page\" for=\"pbid-#gridName#-Page\"> {{grid.appScope.geti18n('pageLabel')}}</span>"+
+        "        <span title=\"{{::'pagination.page.shortcut.label' | xei18n}}\" role=\"presentation\" >" +
+        "        <input id=\"pbid-#gridName#-PageInput\" class=\"page-number\" ng-disabled=\"totalServerItems==0\" min=\"{{!grid.appScope.#gridName#DS.maxPages() ? 0 : 1}}\" max=\"{{grid.appScope.#gridName#DS.maxPages()}}\" " +
+        "               type=\"number\" ng-model=\"grid.appScope.#gridName#DS.pagingOptions.currentPage\" " +
+        "               aria-valuenow=\"{{grid.appScope.#gridName#DS.pagingOptions.currentPage}}\" aria-valuemax=\"{{grid.appScope.#gridName#DS.maxPages()}}\" " +
+        "               aria-valuemin=\"{{!grid.appScope.#gridName#DS.maxPages() ? 0 : 1}}\"  " +
+        "               aria-label=\"{{::'pagination.page.aria.label' | xei18n}}.{{::'pagination.page.label' | xei18n}} {{grid.appScope.#gridName#DS.pagingOptions.currentPage}} {{::'pagination.page.of.label' | xei18n}} {{grid.appScope.#gridName#DS.maxPages()}}\" "+
+        "               tabindex='0' style=\"width: 50px; display: inline; height: 3.5em;\" />" +
+        "       </span> "+
         "        <span class=\"paging-text page-of\"> {{grid.appScope.geti18n('maxPageLabel')}} </span> <span class=\"paging-text total-pages\"> {{grid.appScope.#gridName#DS.maxPages()}}  </span>"+
       /*  "        <div class=\"paging-control next {{!cantPageForward() && 'enabled'||''}}\" ng-click=\"pageForward()\"></div>" +
         "        <div class=\"paging-control last {{!cantPageToLast()  && 'enabled'||''}}\" ng-click=\"pageToLast()\" ></div>"+*/
         "        <xe-button xe-type=\"secondary\" xe-btn-class=\"next\" xe-aria-label=\"{{::'pagination.next.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageForward()\" title=\"{{grid.appScope.geti18n('next')}}\"  xe-disabled=\"grid.appScope.#gridName#DS.nextLast\" tabindex=\"{{grid.appScope.#gridName#DS.nextLast ? -1:0}}\" ng-cloak></xe-button>\n" +
         "        <xe-button xe-type=\"secondary\" xe-btn-class=\"last\" xe-aria-label=\"{{::'pagination.last.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageToLast()\" title=\"{{grid.appScope.geti18n('last')}}\" xe-disabled=\"grid.appScope.#gridName#DS.nextLast\" tabindex=\"{{grid.appScope.#gridName#DS.nextLast ? -1:0}}\" ng-cloak></xe-button>\n"+
         "        <div class=\"divider dispInline\"></div>" +
-        "        <span class=\"paging-text page-per\" for=\"pbid-Grid-RecordsPerPage\"> {{grid.appScope.geti18n('ngPageSizeLabel')}} </span>" +
+        "        <span class=\"paging-text page-per\" for=\"pbid-#gridName#-RecordsPerPage\"> {{grid.appScope.geti18n('ngPageSizeLabel')}} </span>" +
         "        <div class=\"page-size-select-wrapper dispInline\" alt='{{grid.appScope.geti18n('ngPageSizeLabel')}}'>" +
-        "            <select page-size-select aria-label=\"{{grid.appScope.geti18n('ngPageSizeLabel')}}\" class=\"per-page-select\" ng-model=\"grid.appScope.#gridName#DS.pagingOptions.pageSize\" ng-options=\"s as s for s in grid.appScope.#gridName#DS.pagingOptions.pageSizes\" tabindex='0' aria-labelledby=\"pbid-Grid-RecordsPerPage\"> "+
+        "            <select page-size-select aria-label=\"{{grid.appScope.geti18n('ngPageSizeLabel')}}\" class=\"per-page-select\" ng-model=\"grid.appScope.#gridName#DS.pagingOptions.pageSize\" ng-options=\"s as s for s in grid.appScope.#gridName#DS.pagingOptions.pageSizes\" tabindex='0' aria-labelledby=\"pbid-#gridName#-RecordsPerPage\"> "+
         "             </select>" +
         "        </div>"+
         "       <span class=\"ngLabel\">{{grid.appScope.geti18n('ngTotalItemsLabel')}} {{grid.appScope.#gridName#DS.maxRows()}}</span>" +
@@ -1001,9 +1008,13 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
 
         link : function (scope,element,attrs) {
             onLoadEventData();
-            scope.onClickData = function (event) {
+            scope.onClickData = function (event, cusomAttr) {
                 //scope.pageName = null;
-                scope.options = $parse(attrs.pbPopupDataGrid)() || {};
+                if(cusomAttr){
+                    scope.options =$parse(cusomAttr.pbPopupDataGrid)() || {};
+                }else {
+                    scope.options = $parse(attrs.pbPopupDataGrid)() || {};
+                }
                 if (scope.options.id == 'extendsPage') {
                     scope.options.excludePage = scope.pageName;
                 }
@@ -1020,6 +1031,8 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
                 if (keycode != '9') {
                     event.preventDefault();
                     event.stopPropagation();
+                }else{
+                    return;
                 }
 
             }
@@ -1076,7 +1089,12 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
 
             element.on('enter',scope.onClickData);
           //  element.on('keyup', scope.onClickData);
-            element.on('keydown', scope.onClickData);
+            //element.on('keydown', scope.onClickData);
+            element.keypress(function (e) {
+                if (e.key === 'Enter' || e.keyCode === 13 ||  e.which === 13) {
+                    scope.onClickData(e, attrs);
+                }
+            })
             element.on('change', scope.changeData);
             element.on('click', scope.onClickData);
             element.on('mousedown',scope.onClickData);
