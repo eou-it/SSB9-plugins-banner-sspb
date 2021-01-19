@@ -598,6 +598,12 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 }
             };
 
+            $scope.switchToParentField = function (e) {
+                if (e.which === 27) {
+                    $scope.focusOnLastElement();
+                }
+            };
+
             $scope.typeSelectionModalOpts = {
                 backdropFade: true,
                 dialogFade:true
@@ -1175,16 +1181,16 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             </select>
         </span>
     </div>
-    <table style="height:80%; min-width: 60em" role="grid">
+    <table style="height:80%; min-width: 60em" role="table" id="visualComposer-table">
         <thead role="rowgroup">
             <tr role="row">
-                <th style="width:50%" id="visualPageView"><g:message code="sspb.page.visualbuilder.page.view.label"/></th>
-                <th style="width:50%" id="visualPageComponentView"><g:message code="sspb.page.visualbuilder.component.propertyview.label"/></th>
+                <th role="rowheader" style="width:50%" id="visualPageView"><g:message code="sspb.page.visualbuilder.page.view.label"/></th>
+                <th role="rowheader" style="width:50%" id="visualPageComponentView"><g:message code="sspb.page.visualbuilder.component.propertyview.label"/></th>
             </tr>
         </thead>
         <tbody role="rowgroup">
         <tr height="99%" role="row">
-            <td aria-labelledby="visualPageView" role="gridcell">
+            <td aria-labelledby="visualPageView" role="cell">
                 <span ng-show="pageCurName != '' && pageCurName != 'null'">
                     <div>
                         <button class="btn btn-xs" ng-click='toggleSourceView()' ng-disabled='showTree || sourceEditEnabled'><g:message code="sspb.page.visualbuilder.page.treeview.label" /></button>
@@ -1211,13 +1217,13 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                     </div>
                 </span>
             </td>
-            <td aria-labelledby="visualPageComponentView" role="gridcell">
+            <td aria-labelledby="visualPageComponentView" role="cell" >
                 <div ng-show="dataHolder.selectedComponent!=undefined" ng-mouseover="mouseOver($event)">
                     <!--
                     <div>Selected Component = {{dataHolder.selectedComponent.type}}</div>
                     -->
 
-                    <div ng-repeat="attr in dataHolder.allAttrs">
+                    <div ng-repeat="attr in dataHolder.allAttrs" ng-keydown="switchToParentField($event)">
                         <%--span ng-if="!(attr.name=='name' && dataHolder.selectedComponent.type=='page') "--%>
                         <span ng-switch on="attrRenderProps[attr.name].inputType" >
                             <input ng-switch-when="hidden" type="hidden"/>
