@@ -310,5 +310,9 @@ select.per-page-select, select.per-page-select:focus, select.per-page-select:hov
     left: 4px;
     top: 0;
 }
+.cssGrid{
+    display: grid;
+    grid-auto-columns: auto;
+}
 
 
