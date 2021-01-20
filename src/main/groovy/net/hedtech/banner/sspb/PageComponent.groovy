@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2018-2020 Ellucian Company L.P. and its affiliates.
+ * Copyright 2018-2021 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 
 package net.hedtech.banner.sspb
@@ -982,7 +982,8 @@ class PageComponent {
             tabIndexFocus="tabindex=\"-1\""
         }
         if([COMP_TYPE_BOOLEAN].contains(t)){
-            tindex = """$tabIndexFocus onkeypress="clickEvent(this)" role="checkbox" 
+            def elementId = "pbid-$name"
+            tindex = """$tabIndexFocus onkeypress="clickEvent('$elementId',this)" role="checkbox" 
             ${booleanTrueValue ?"ng-true-value=\" ${htmlValue(booleanTrueValue, "'") } \" aria-checked=\"{{${htmlValue(booleanTrueValue, "'")}==${model}}}\" " : " aria-checked=\"false\""}  
                 """;
             //aria-checked="{{${htmlValue(booleanTrueValue, "'")}==${model}}}"
@@ -1066,7 +1067,7 @@ class PageComponent {
                   |<div class="$valueStyle" ng-repeat="$SELECT_ITEM in $arrayName" $initTxt role="radiogroup">
                   |    <label ${idAttribute("-label-$idxStr")} ${idForAttribute("-radio-$idxStr")} $radioLabelStyleStr>
                   |    <input ${required?"required":""} ${idAttribute("-radio-$idxStr")} type="radio" number-to-string ng-model=$ngModel name="$nameTxt" $ngChange value="{{$SELECT_ITEM.$valueKey}}" aria-checked="false"/>
-                  |    <span $tabIndexFocus onkeypress="clickEvent(this)">{{$SELECT_ITEM.$labelKey}}</span></label>
+                  |    <span $tabIndexFocus onkeypress="clickEventRadio(this)">{{$SELECT_ITEM.$labelKey}}</span></label>
                   |</div></fieldset>""".stripMargin()
                 result = """<div ${idAttribute(idTxtParam)} $autoStyleStr> $result </div>"""
                 break;
