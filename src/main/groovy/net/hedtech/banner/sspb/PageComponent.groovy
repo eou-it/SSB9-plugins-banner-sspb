@@ -987,9 +987,12 @@ class PageComponent {
                 """;
             //aria-checked="{{${htmlValue(booleanTrueValue, "'")}==${model}}}"
         }
-
-
-        def labelTxt = "<label class=\"pb-${parent.type} pb-$type pb-item pb-label $labelStyle \" ${idAttribute("-label"+idTxtParam)} $tindex ${idForAttribute(idTxtParam)} /*aria-labelledby=\"pbid-$name\"*/>$requiredTranLabel</label>"
+        def ariaLab
+        if(readonly){
+            ariaLab = "aria-label=\"disabled\""
+        }
+        def labelTxt = "<label class=\"pb-${parent.type} pb-$type pb-item pb-label $labelStyle \" ${idAttribute("-label"+idTxtParam)} $ariaLab" +
+                " $tindex ${idForAttribute(idTxtParam)} /*aria-labelledby=\"pbid-$name\"*/>$requiredTranLabel</label>"
 
         //Use empty labels for radio and boolean to support xeStyle
         labelTxt = ( !label && ![COMP_TYPE_RADIO,COMP_TYPE_BOOLEAN].contains(t))?"":labelTxt
@@ -1175,7 +1178,7 @@ class PageComponent {
                 if(value){
                     checked = "checked=\"checked\""
                 }
-                def span = "<span class=\"xe-checkmark\" tabindex=\"-1\" onclick=\"checkboxClick(this)\"></span>"
+                def span = "<span class=\"xe-checkmark\" tabindex=\"-1\" aria-label=${readonly ? "disabled":"Checkbox"} role=\"checkbox\" onclick=\"checkboxClick(this)\"></span>"
                 result ="""<div class="xe-container"><input ${idAttribute(idTxtParam)} $autoStyleStr  type="checkbox" tabindex="-1" name="${name?name:model}"
                            ${booleanTrueValue?"ng-true-value=\"${htmlValue(booleanTrueValue,"'")}\"":""} ${booleanFalseValue?"ng-false-value=\"${htmlValue(booleanFalseValue,"'")}\"":""}
                            $ngChange $ngClick $tabIndexFocus
