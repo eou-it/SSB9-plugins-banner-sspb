@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2018-2020 Ellucian Company L.P. and its affiliates.
+ * Copyright 2018-2021 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 
 package net.hedtech.banner.sspb
@@ -632,7 +632,7 @@ class PageComponent {
         if(moveCount==0){
             initTabIndex = "tabindex=\"0\""
         }
-        def onkeypress="ng-keydown=\"[37,38,39,40,9,27,13].includes(\$event.keyCode)?grid.appScope.${parent.name}DS.gridKeyPress(\$event, this):return \"  class=\"$moveFocus\" $initTabIndex"
+        def onkeypress="ng-keydown=\"[37,38,39,40,9,27,13].includes(\$event.keyCode)?grid.appScope.${parent.name}DS.gridKeyPress(\$event, this):return \"  class=\"$moveFocus\" $initTabIndex rowid=\"{{rowRenderIndex}}\""
         tagStart = "<span role=\"application\" "+onkeypress+"> "+tagStart
         tagEnd = tagEnd+"</span>"
         if (type == COMP_TYPE_NUMBER ) {
