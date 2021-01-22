@@ -27,6 +27,10 @@ h6,
     color: inherit;
 }
 
+caption h4 {
+    color: #151618;
+}
+
 #content{
     font: 14px "Open Sans", sans-serif;
 	/* Next 3 selectors are needed when common-platform.css is not used (to enable vertical scroll bar) */

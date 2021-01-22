@@ -2,7 +2,7 @@
    "constantName": "pbadm.AdminSecurity",
    "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2021-01-21T03:41:22Z",
+   "fileTimestamp": "2021-01-19T15:19:54Z",
    "modelView": {
       "components": [
          {
@@ -99,63 +99,73 @@
                         ],
                         "name": "pbadmAdminSecurityConfiguration",
                         "showInitially": true,
-                        "style": "div-float",
+                        "style": "div-float-right",
                         "type": "block"
                      },
                      {
                         "components": [
                            {
-                              "valueStyle": "",
-                              "label": "Type",
-                              "loadInitially": true,
-                              "type": "select",
-                              "required": false,
-                              "sourceParameters": {},
-                              "name": "sourceType",
-                              "onLoad": "",
-                              "sourceModel": "sourceTypeData",
+                              "components": [
+                                 {
+                                    "valueStyle": "",
+                                    "label": "Type",
+                                    "loadInitially": true,
+                                    "type": "select",
+                                    "required": false,
+                                    "sourceParameters": {},
+                                    "name": "sourceType",
+                                    "onLoad": "",
+                                    "sourceModel": "sourceTypeData",
+                                    "style": "",
+                                    "placeholder": "Select",
+                                    "labelKey": "label",
+                                    "valueKey": "value",
+                                    "onUpdate": "if ($sourceType){\n$filters_visible= true;\n$data_visible=true;\n}else {\n$filters_visible= false;\n$data_visible=false;\n}\n$nameFilter='';\n$ownerFilter='';\n$dataGrid.$load();"
+                                 }
+                              ],
+                              "name": "TypeBlock",
+                              "showInitially": true,
                               "style": "",
-                              "placeholder": "Select",
-                              "labelKey": "label",
-                              "valueKey": "value",
-                              "onUpdate": "if ($sourceType){\n$filters_visible= true;\n$data_visible=true;\n}else {\n$filters_visible= false;\n$data_visible=false;\n}\n$nameFilter='';\n$ownerFilter='';\n$dataGrid.$load();"
-                           }
-                        ],
-                        "name": "TypeBlock",
-                        "showInitially": true,
-                        "type": "block"
-                     },
-                     {
-                        "components": [
-                           {
-                              "valueStyle": "",
-                              "readonly": false,
-                              "name": "nameFilter",
-                              "label": "Name",
-                              "loadInitially": true,
-                              "type": "text",
-                              "onUpdate": "$dataGrid.$load();",
-                              "parameters": {},
-                              "required": false,
-                              "validation": {}
+                              "type": "block"
                            },
                            {
-                              "valueStyle": "",
-                              "readonly": false,
-                              "name": "ownerFilter",
-                              "label": "Owner",
-                              "loadInitially": true,
-                              "type": "text",
-                              "onUpdate": "$dataGrid.$load();",
-                              "parameters": {},
-                              "required": false,
-                              "validation": {}
+                              "components": [
+                                 {
+                                    "valueStyle": "",
+                                    "readonly": false,
+                                    "name": "nameFilter",
+                                    "label": "Name",
+                                    "loadInitially": true,
+                                    "type": "text",
+                                    "onUpdate": "$dataGrid.$load();",
+                                    "parameters": {},
+                                    "required": false,
+                                    "validation": {}
+                                 },
+                                 {
+                                    "valueStyle": "",
+                                    "readonly": false,
+                                    "name": "ownerFilter",
+                                    "label": "Owner",
+                                    "loadInitially": true,
+                                    "type": "text",
+                                    "onUpdate": "$dataGrid.$load();",
+                                    "parameters": {},
+                                    "required": false,
+                                    "validation": {}
+                                 }
+                              ],
+                              "role": "search",
+                              "name": "filters",
+                              "showInitially": false,
+                              "style": "",
+                              "label": "Search By",
+                              "type": "block"
                            }
                         ],
-                        "role": "search",
-                        "name": "filters",
-                        "showInitially": false,
-                        "label": "Search By",
+                        "name": "pbadmAdminSecurityForm_Left",
+                        "style": "div-float-left",
+                        "showInitially": true,
                         "type": "block"
                      },
                      {
@@ -205,7 +215,7 @@
                               "name": "dataGrid",
                               "allowModify": true,
                               "model": "artifactsData",
-                              "style": "div-data-grid",
+                              "style": "",
                               "allowReload": true,
                               "parameters": {
                                  "owner": "$ownerFilter?\"%\"+$ownerFilter+\"%\":\"\"",
@@ -216,7 +226,7 @@
                         ],
                         "name": "data",
                         "showInitially": false,
-                        "style": "",
+                        "style": "div-data-grid",
                         "type": "block"
                      }
                   ],

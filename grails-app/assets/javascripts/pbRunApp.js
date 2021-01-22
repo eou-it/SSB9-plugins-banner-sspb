@@ -88,13 +88,27 @@ function getControllerScopeById(id) {
     return scope;
 }
 
-function clickEvent(element){
+function clickEvent(id,element){
     var keycode = (event.keyCode ? event.keyCode : event.which);
     if($(element).attr("ng-true-value")) {
         var isChecked = $(element).attr("aria-checked") == 'true';
         $(element).attr("aria-checked", !isChecked);
     }
-    if(keycode == 32 || keycode==13){
+    if(keycode==13 || keycode==32){
+        $("#"+id).click();
+        event.preventDefault();
+    }else if(event.originalEvent != undefined){
+        $("#"+id).click();
+        event.preventDefault();
+    }
+}
+function clickEventRadio(element){
+    var keycode = (event.keyCode ? event.keyCode : event.which);
+    if($(element).attr("ng-true-value")) {
+        var isChecked = $(element).attr("aria-checked") == 'true';
+        $(element).attr("aria-checked", !isChecked);
+    }
+    if(keycode==13 || keycode==32){
         element.click();
         event.preventDefault();
     }else if(event.originalEvent != undefined){
@@ -1112,6 +1126,9 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
 $(document).ready(function () {
     $('table').on('keydown',function (e) {
         e = e || window.event;
+        if (e && $(this).context.id === "visualComposer-table") {
+            return;
+        }
         var firstCell = $(this).children('tbody').find('tr:first').find('td:first');
         if($(e.target).attr("role")!=="columnheader" && !$(e.target).attr('firstCell')){
             $(e.target).attr('tabindex','-1');
