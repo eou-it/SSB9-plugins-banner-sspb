@@ -102,7 +102,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
     <g:form name="ComposeVDForm" action="saveVirtualDomain">
         <div class="vd-section-2">
             <label for="pbid-saveVD"><g:message code="sspb.page.virtualdomain.servicename.label" /></label>
-            <input id="pbid-saveVD" maxlength="60"  pattern="^[a-zA-Z]+[a-zA-Z0-9_-]*$" type="text" name="vdServiceName" value="${pageInstance?.vdServiceName}" required />
+            <input id="pbid-saveVD" maxlength="60" type="text" name="vdServiceName" value="${pageInstance?.vdServiceName}" required onblur="validateName(this)" />
 
             <g:actionSubmit action="saveVirtualDomain" role="button" ng-disabled="${!isProductionReadOnlyMode || !(pageInstance?.allowModify==null ? true: pageInstance?.allowModify)}" class="primary" value="${message(code:"sspb.page.virtualdomain.save.label")}" />
             <g:actionSubmit action="deleteVirtualDomain" role="button" ng-disabled="${!isProductionReadOnlyMode || !(pageInstance?.allowModify==null ? true: pageInstance?.allowModify)}"  class="secondary" value="${message(code:"sspb.page.virtualdomain.delete.label")}" />

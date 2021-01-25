@@ -1118,6 +1118,9 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                angular.element(document.getElementById($scope.lastFocusedElementId)).focus();
             }
 
+            $scope.validatePageName = function(valObj) {
+                validateName(valObj);
+            }
         }
 
         function upperCaseF(e) {
@@ -1149,12 +1152,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
         <span ng-hide="pageCurName == pageName && !saveAs">
             <label class="vpc-name-label" for="saveAsInput"><g:message code="sspb.page.visualbuilder.name.label" /></label>
             <input tabindex="0"  id="saveAsInput" class="vpc-name-input" type="text" name="constantNameEdit" ng-model="pageCurName" required maxlength="60"
-                   placeholder='<g:message code="sspb.page.visualbuilder.new.page.label" />' ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/">
-
-            <span ng-messages="pagemodelform.constantNameEdit.$error"  class="fieldValidationMessage">
-                <span ng-message="pattern" style="color: red"><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" /></span>
-                <span ng-message="required" style="color: red"> <g:message code="sspb.page.visualbuilder.name.required.message" /></span>
-            </span>
+                   ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/" placeholder='<g:message code="sspb.page.visualbuilder.new.page.label" />' ng-blur="validatePageName($event.target);">
         </span>
     </div>
 
