@@ -86,6 +86,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             // populate the css list initially
             //  $scope.loadCssNames();
 
+            $scope.cssCurName = "";
             $scope.getCssSource = function() {
                 //TODO prompt for unsaved data
                 if ($scope.cssSource != undefined)   {
@@ -105,6 +106,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                         $scope.cssOwner = data.owner;
                         $scope.allowUpdateOwner = data.allowUpdateOwner;
                         $scope.allowModify = data.allowModify;
+                        $scope.cssCurName = data.constantName;
                         $scope.resetCssNameData();
                     } catch(ex) {
                         alert($scope.i18nGet("${message(code:'sspb.css.cssManager.parsing.error.message')}",[ex]),{type:"error"});
@@ -151,7 +153,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                     if (!r)
                         return;
                 }
-
+                $scope.cssCurName = "";
                 $scope.cssName= "${message( code:'sspb.css.cssManager.newCss.default', encodeAs: 'JavaScript')}";
                 $scope.cssSource = "";
                 $scope.description="";
@@ -187,6 +189,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                         note = {type: "success", flash: true};
                         $scope.allowUpdateOwner = response.allowUpdateOwner;
                         $scope.allowModify = response.allowModify;
+                        $scope.cssCurName = $scope.cssName;
                         $scope.resetCssNameData();
                     } else {
                         var msg="${message(code:'sspb.css.cssManager.validation.error.message', encodeAs: 'JavaScript')}";
@@ -237,6 +240,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                     $scope.cssName = "";
                     $scope.description = "";
                     $scope.cssSource= undefined;
+                    $scope.cssCurName = "";
                     $scope.resetCssNameData();
                     // $scope.loadCssNames();
 
@@ -279,6 +283,10 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 });
             }
 
+            $scope.validateCssName = function(valObj) {
+                validateName(valObj);
+            }
+
         }
     </script>
 </head>
@@ -302,11 +310,11 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             </span>
             <button tabindex="0" class="secondary" ng-click="getCssSource()"><g:message code="sspb.css.cssManager.reload.label" /></button>
             <button tabindex="0" class="secondary" ng-click='deleteCssSource()' ng-disabled="${!isProductionReadOnlyMode} || !(allowModify == null ? true :allowModify) "><g:message code="sspb.css.cssManager.delete.label" /></button>
-            <span  ng-show="cssName.length>0">
+            <span  ng-show="cssName && cssCurName">
                 <button tabindex="0" class="secondary" ng-click='getDeveloperSecurityPage()'><g:message code="sspb.css.cssManager.developer.label" /></button>
             </span>
 
-            <span ng-show="cssName" class="alignRight">
+            <span ng-show="cssName && cssCurName" class="alignRight">
                 <label class="vpc-name-label dispInline" for="pbid-cssOwner"><g:message code="sspb.css.visualbuilder.cssowner.label" /></label>
                 <input tabindex="0" style="display: none" ng-model="allowUpdateOwner" aria-label="Allow Update Owner"/>
                 <select tabindex="0" id="pbid-cssOwner" class="owner-select alignRight" ng-model="cssOwner"  ng-disabled="!allowUpdateOwner">
@@ -319,11 +327,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
         <div class="control-group">
             <label class="col-sm-3 control-label"  for='cssName'><g:message code="sspb.css.cssManager.cssName.label" /></label>
             <div class="col-sm-9">
-                <input tabindex="0" name="cssName" id='cssName' class="form-control" ng-model='cssName' required maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/" />
-                <span ng-messages="cssform.cssName.$error" role="alert" class="fieldValidationMessage">
-                    <span ng-show="cssform.cssName.$touched" tabindex="0" ng-message="pattern" ><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" /></span>
-                    <span ng-show="cssform.cssName.$touched" tabindex="0" ng-message="required" > <g:message code="sspb.page.visualbuilder.name.required.message" /></span>
-                </span>
+                <input tabindex="0" name="cssName" id='cssName' class="form-control" ng-model='cssName' required maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/" ng-blur="validateCssName($event.target);" />
             </div>
         </div>
         <div class="control-group">

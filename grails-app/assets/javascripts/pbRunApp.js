@@ -1206,3 +1206,15 @@ function isPreviousSiblingPresent(sib){
     }
     return sib;
 }
+
+function validateName(valObj) {
+    let pageNameRegExpr = /^[a-zA-Z]+[a-zA-Z0-9\._-]*$/;
+    let params = {type: "error", id: valObj.id, flash: true, component: $("#"+valObj.id)}
+    if (!valObj.value) {
+        alert($.i18n.prop("sspb.page.visualbuilder.name.required.message"), params);
+        return;
+    } else if (!pageNameRegExpr.test(valObj.value)) {
+        alert($.i18n.prop("sspb.page.visualbuilder.name.invalid.pattern.message"), params);
+        return;
+    }
+};
