@@ -518,13 +518,9 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                         $scope.statusHolder.noDirtyCheck = false;
                     }, 100); //Give some time to digest and enable the dirty checki
                     $scope.lastFocusedElementId = "pbid-" + data.name;
-                    if ($("#pbid-cmpView").length === 0) {
-                        setTimeout(function () {
-                            $("#pbid-cmpView").focus();
-                        }, 0);
-                    } else {
+                    $scope.$$postDigest(function () {
                         $("#pbid-cmpView").focus();
-                    }
+                    });
                 }
             };
 
