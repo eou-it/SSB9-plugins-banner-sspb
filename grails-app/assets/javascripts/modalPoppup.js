@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2019 Ellucian Company L.P. and its affiliates.
+ Copyright 2019-2021 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 
 (function () {
@@ -12,7 +12,7 @@
                 link: function (scope, ele) {
                     ele.on('keydown', function (event) {
                         var currentPagescope = angular.element(document.getElementById('popupContainerDiv')).scope();
-                        if((event.keyCode === 27 ||  (document.activeElement.className === "xe-popup-close" && e.keyCode === 13) ) && currentPagescope) {
+                        if((event.keyCode === 27 ||  (document.activeElement.className === "xe-popup-close" && event.keyCode === 13) ) && currentPagescope) {
                             angular.element("#" + currentPagescope.inputTypeFieldID).focus();
                         }
                         if(event.keyCode === 13 && document.activeElement.className === 'width-animate ng-scope sortable focus-ring'){
