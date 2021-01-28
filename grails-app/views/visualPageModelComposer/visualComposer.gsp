@@ -1,5 +1,5 @@
 <%--
-Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page import="net.hedtech.banner.sspb.PageComponent" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
@@ -518,7 +518,9 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                         $scope.statusHolder.noDirtyCheck = false;
                     }, 100); //Give some time to digest and enable the dirty checki
                     $scope.lastFocusedElementId = "pbid-" + data.name;
-                    $("#pbid-cmpView").focus();
+                    $scope.$$postDigest(function () {
+                        $("#pbid-cmpView").focus();
+                    });
                 }
             };
 

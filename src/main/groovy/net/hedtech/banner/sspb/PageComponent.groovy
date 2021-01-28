@@ -1127,7 +1127,7 @@ class PageComponent {
             case COMP_TYPE_EMAIL:
             case COMP_TYPE_TEL:
             case COMP_TYPE_HIDDEN:
-                def tag = "input"
+                def tag = "input tabindex=\"${readonly?-1 : 0}\" "
                 def endTag = "/>"
                 def disabled = "${readonly?"disabled=\"disabled\"":""}"
                 def attributes = "${validationAttributes()} ${required?"required":""} ${placeholder?"placeholder=\"${tran("placeholder")}\"":""} ${labelTxt?"":"aria-label=\"${tran("placeholder")}\""}".trim()
