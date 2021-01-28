@@ -33,8 +33,8 @@
                     <div>{{$parent.i18nGet('pb.template.map.value.select.label')}}
                         <div role="radiogroup" aria-labelledby="pbid-SelectNewValue-label">
                             <input type="radio" ng-model="newType" value="text" id="pbid-text-r1" name="inputType" aria-checked="false"/> <label for="pbid-text-r1">{{$parent.i18nGet('type.text')}}</label>
-                            <input type="radio" ng-model="newType" value="number" id="pbid-number-r2" name="inputType" aria-checked="false"/> <label for="pbid-text-r1">{{$parent.i18nGet('type.number')}}</label>
-                            <input type="radio" ng-model="newType" value="checkbox" ng-click='newValue=true' id="pbid-checkbox-r3" name="inputType" aria-checked="false"/> <label for="pbid-text-r1">{{$parent.i18nGet('type.boolean')}}</label>
+                            <input type="radio" ng-model="newType" value="number" id="pbid-number-r2" name="inputType" aria-checked="false"/> <label for="pbid-number-r2">{{$parent.i18nGet('type.number')}}</label>
+                            <input type="radio" ng-model="newType" value="checkbox" ng-click='newValue=true' id="pbid-checkbox-r3" name="inputType" aria-checked="false"/> <label for="pbid-checkbox-r3">{{$parent.i18nGet('type.boolean')}}</label>
                         </div>
                         <div id="Pbid-NewValue-label">{{$parent.i18nGet('pb.template.map.value.enter.label')}}
                              <input ng-show='newType=="text"' type='text' ng-model="newValue" required aria-labelledby="Pbid-NewValue-label"/>
