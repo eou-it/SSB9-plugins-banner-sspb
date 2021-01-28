@@ -1,5 +1,5 @@
 <%--
-Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page import="net.hedtech.banner.sspb.PageComponent" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
