@@ -2,7 +2,7 @@
    "constantName": "pbadm.AdminTasks",
    "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2021-01-19T03:41:23Z",
+   "fileTimestamp": "2021-01-27T11:07:53Z",
    "modelView": {
       "components": [
          {
@@ -45,11 +45,14 @@
                      },
                      {
                         "readonly": false,
+                        "booleanTrueValue": "true",
+                        "booleanFalseValue": "false",
                         "name": "copyOwner",
                         "model": "copyOwner",
                         "label": "Copy Owner on Import",
                         "loadInitially": true,
-                        "type": "boolean"
+                        "type": "boolean",
+                        "value": "false"
                      },
                      {
                         "name": "textDispDevSec",
@@ -58,11 +61,14 @@
                      },
                      {
                         "readonly": false,
+                        "booleanTrueValue": "true",
+                        "booleanFalseValue": "false",
                         "name": "copyDevSec",
                         "model": "copyDevSec",
                         "label": "Copy all Developers permissions on import",
                         "loadInitially": true,
-                        "type": "boolean"
+                        "type": "boolean",
+                        "value": "false"
                      }
                   ],
                   "name": "securityBlock",
@@ -159,8 +165,8 @@
             "components": [
                {
                   "readonly": false,
-                  "booleanTrueValue": "",
-                  "booleanFalseValue": "",
+                  "booleanTrueValue": "true",
+                  "booleanFalseValue": "false",
                   "name": "pages",
                   "label": "Pages",
                   "loadInitially": true,
@@ -169,6 +175,8 @@
                },
                {
                   "readonly": false,
+                  "booleanTrueValue": "true",
+                  "booleanFalseValue": "false",
                   "name": "virtualDomains",
                   "label": "Virtual Domains",
                   "loadInitially": true,
@@ -177,6 +185,8 @@
                },
                {
                   "readonly": false,
+                  "booleanTrueValue": "true",
+                  "booleanFalseValue": "false",
                   "name": "css",
                   "label": "CSS",
                   "loadInitially": true,
@@ -200,11 +210,14 @@
             "components": [
                {
                   "readonly": false,
+                  "booleanTrueValue": "true",
+                  "booleanFalseValue": "false",
                   "name": "viewArtifacts",
                   "label": "View Existing Page Builder Artifacts (% wildcard can be used in the filter)",
                   "loadInitially": true,
                   "type": "boolean",
-                  "onUpdate": "$ShowPages.$visible=$viewArtifacts;\n$ShowVirtualDomains.$visible=$viewArtifacts;\n$ShowCss.$visible=$viewArtifacts;"
+                  "onUpdate": "$ShowPages.$visible=$viewArtifacts;\n$ShowVirtualDomains.$visible=$viewArtifacts;\n$ShowCss.$visible=$viewArtifacts;",
+                  "value": "false"
                },
                {
                   "components": [

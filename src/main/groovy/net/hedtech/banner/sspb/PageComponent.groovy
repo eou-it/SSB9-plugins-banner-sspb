@@ -1066,12 +1066,12 @@ class PageComponent {
                 def radioLabelStyleStr= """class="pb-${parent.type} pb-item pb-radiolabel $labelStyle" """
 
                 result = """
-                  | <fieldset> <legend>$requiredTranLabel</legend>
-                  |<div class="$valueStyle" ng-repeat="$SELECT_ITEM in $arrayName" $initTxt role="radiogroup">
-                  |    <label ${idAttribute("-label-$idxStr")} ${idForAttribute("-radio-$idxStr")} $radioLabelStyleStr>
-                  |    <input ${required?"required":""} ${idAttribute("-radio-$idxStr")} type="radio" number-to-string ng-model=$ngModel name="$nameTxt" $ngChange value="{{$SELECT_ITEM.$valueKey}}" aria-checked="false"/>
-                  |    <span $tabIndexFocus onkeypress="clickEventRadio(this)">{{$SELECT_ITEM.$labelKey}}</span></label>
-                  |</div></fieldset>""".stripMargin()
+                      | <fieldset> <legend>$requiredTranLabel</legend>
+                      |<div class="$valueStyle" ng-repeat="$SELECT_ITEM in $arrayName" $initTxt role="radiogroup">
+                      |    <label ${idAttribute("-label-$idxStr")} $radioLabelStyleStr>
+                      |    <input ${required?"required":""} ${idAttribute("-radio-$idxStr")} type="radio" number-to-string ng-model=$ngModel name="$nameTxt" $ngChange value="{{$SELECT_ITEM.$valueKey}}" aria-checked={{$ngModel==$SELECT_ITEM.$valueKey?"true":"false"}} />
+                      |    <span tabindex="-1" onkeypress="clickEventRadio(this)" ${idForAttribute("-radio-$idxStr")} role="radio">{{$SELECT_ITEM.$labelKey}}</span></label>
+                      |</div></fieldset>""".stripMargin()
                 result = """<div ${idAttribute(idTxtParam)} $autoStyleStr> $result </div>"""
                 break;
             case COMP_TYPE_LITERAL:
