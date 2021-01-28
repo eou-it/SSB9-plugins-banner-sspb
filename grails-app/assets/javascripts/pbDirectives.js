@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
+ Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 
 'use strict';
@@ -59,8 +59,11 @@ pagebuilderModule.directive('pbArrayofmap', function() {
                 $scope.newValue=undefined;
 
                 // modal dialog functions
-                $scope.openArrayOfMapEditModal = function (array) {
+                $scope.openArrayOfMapEditModal = function (array, $event) {
                     $scope.arrayOfMapEditShouldBeOpen = true;
+                    $scope.arrayOfMapElement = $event.target;
+                    $scope.arrayOfMapElement.blur();
+                    setTimeout(function(){$("#pbid-arrayOfMapTable").focus(); },0);
                 };
 
                 $scope.closeArrayOfMapEditModal = function () {
@@ -68,10 +71,12 @@ pagebuilderModule.directive('pbArrayofmap', function() {
                     // cause ng-change function passed to the directive to be applied
                     $scope.pbChange();
                     //$scope.handlePageTreeChange();
+                    $scope.arrayOfMapElement.focus();
                 };
 
                 $scope.cancelArrayOfMapEditModal = function() {
                     $scope.arrayOfMapEditShouldBeOpen = false;
+                    $scope.arrayOfMapElement.focus();
                 };
 
                 $scope.arrayOfMapEditModalOpts = {
@@ -133,8 +138,12 @@ pagebuilderModule.directive('pbMap', function() {
                 $scope.newValue=undefined;
 
                 // modal dialog functions
-                $scope.openMapEditModal = function (map) {
+                $scope.openMapEditModal = function (map, $event) {
                     $scope.mapEditShouldBeOpen = true;
+                    $scope.mapClickedElement = $event.target;
+                    $scope.mapClickedElement.blur();
+                    setTimeout(function(){$("#pbid-MapTable").focus(); },0);
+
                 };
 
                 $scope.closeMapEditModal = function () {
@@ -142,10 +151,12 @@ pagebuilderModule.directive('pbMap', function() {
                     // cause ng-change function passed to the directive to be applied
                     $scope.pbChange();
                     //$scope.handlePageTreeChange();
+                    $scope.mapClickedElement.focus();
                 };
 
                 $scope.cancelMapEditModal = function() {
                     $scope.mapEditShouldBeOpen = false;
+                    $scope.mapClickedElement.focus();
                 };
 
                 $scope.mapEditModalOpts = {
@@ -188,8 +199,10 @@ pagebuilderModule.directive('pbTextarea', function() {
                 };
 
                 // modal dialog functions
-                $scope.openTextareaModal = function () {
+                $scope.openTextareaModal = function ($event) {
                     $scope.textareaShouldBeOpen = true;
+                    $scope.clickedElement = $event.target;
+                    setTimeout(function(){$(".pbtextarea").focus(); },0);
                 };
 
                 $scope.closeTextareaModal = function () {
@@ -197,10 +210,12 @@ pagebuilderModule.directive('pbTextarea', function() {
                     // cause ng-change function passed to the directive to be applied
                     $scope.pbChange();
                     //$scope.handlePageTreeChange();
+                    $scope.clickedElement.focus();
                 };
 
                 $scope.cancelTextareaModal = function() {
                     $scope.textareaShouldBeOpen = false;
+                    $scope.clickedElement.focus();
                 };
 
                 $scope.textareaModalOpts = {
