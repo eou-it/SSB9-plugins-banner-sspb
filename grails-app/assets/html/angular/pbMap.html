@@ -1,8 +1,8 @@
 <span>
-    <!--Copyright 2013-2020 Ellucian Company L.P. and its affiliates.-->
+    <!--Copyright 2013-2021 Ellucian Company L.P. and its affiliates.-->
     <!--TODO referencing $parent.i18nGet, should not have this dependency-->
     <!--label>{{label}}</label-->
-    <input style="text-align:start;" aria-label="{{i18nGet('attribute.'+attr.name)}}" readonly value='{{map}}'></input> <button class="btn btn-xs" ng-click='openMapEditModal(map)'>...</button>
+    <input style="text-align:start;" aria-label="{{i18nGet('attribute.'+attr.name)}}" readonly value='{{map}}'></input> <button class="btn btn-xs" ng-click='openMapEditModal(map, $event)'>...</button>
 
     <!-- map editing modal body-->
     <div modal="mapEditShouldBeOpen"  options="mapEditModalOpts">
@@ -10,7 +10,7 @@
             <h4>{{label}}</h4>
         </div>
         <div class="modal-body">
-            <table>
+            <table id="pbid-MapTable" tabindex="0">
                 <tr><th>{{$parent.i18nGet('pb.template.map.name.label')}}</th><th>{{$parent.i18nGet('pb.template.map.value.label')}}</th></tr>
                 <!-- iterate through a separate index for the map (instead of using '(key,value) in map') to avoid an issue of the entire map got refreshed (and angular loses the input focus there after)
   every time a key is pressed that causes a change of a map value -->
@@ -27,14 +27,14 @@
             </table>
 
             <form>
-                <div><label for="label">{{$parent.i18nGet('pb.template.map.new.key.label') }}</label><input id="label" ng-model="newKey" required> </div>
+                <div><label for="pbid-newKey">{{$parent.i18nGet('pb.template.map.new.key.label') }}</label><input id="pbid-newKey" ng-model="newKey" required> </div>
                 <div role="region">
                     <label id="pbid-SelectNewValue-label">{{$parent.i18nGet('pb.template.map.new.value.label') }}</label>
                     <div>{{$parent.i18nGet('pb.template.map.value.select.label')}}
                         <div role="radiogroup" aria-labelledby="pbid-SelectNewValue-label">
                             <input type="radio" ng-model="newType" value="text" id="pbid-text-r1" name="inputType" aria-checked="false"/> <label for="pbid-text-r1">{{$parent.i18nGet('type.text')}}</label>
-                            <input type="radio" ng-model="newType" value="number" id="pbid-number-r2" name="inputType" aria-checked="false"/> <label for="pbid-text-r1">{{$parent.i18nGet('type.number')}}</label>
-                            <input type="radio" ng-model="newType" value="checkbox" ng-click='newValue=true' id="pbid-checkbox-r3" name="inputType" aria-checked="false"/> <label for="pbid-text-r1">{{$parent.i18nGet('type.boolean')}}</label>
+                            <input type="radio" ng-model="newType" value="number" id="pbid-number-r2" name="inputType" aria-checked="false"/> <label for="pbid-number-r2">{{$parent.i18nGet('type.number')}}</label>
+                            <input type="radio" ng-model="newType" value="checkbox" ng-click='newValue=true' id="pbid-checkbox-r3" name="inputType" aria-checked="false"/> <label for="pbid-checkbox-r3">{{$parent.i18nGet('type.boolean')}}</label>
                         </div>
                         <div id="Pbid-NewValue-label">{{$parent.i18nGet('pb.template.map.value.enter.label')}}
                              <input ng-show='newType=="text"' type='text' ng-model="newValue" required aria-labelledby="Pbid-NewValue-label"/>
