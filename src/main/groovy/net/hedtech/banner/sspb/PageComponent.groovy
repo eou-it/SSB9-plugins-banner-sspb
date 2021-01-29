@@ -1036,8 +1036,12 @@ class PageComponent {
                 }
                 ngChange += onUpdate?"${name}DS.onUpdate(item);":""
                 ngChange = ngChange?"ng-change=\"$ngChange\"":""
+                def dialogRole =""
+                if(valueStyle.contains('pbPopupDataGrid')){
+                    dialogRole = "role=\"dialog\" aria-label=\"press enter button to select a list of options\""
+                }
                 result = """
-                           |<select ${required?"required":""}  ${idAttribute(idTxtParam)} $keyPress $autoStyleStr ng-model="$ngModel" $ngChange  ${defaultValue()} 
+                           |<select ${required?"required":""}  ${idAttribute(idTxtParam)} $keyPress $autoStyleStr ng-model="$ngModel" $ngChange  ${defaultValue()} $dialogRole
                            |  ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in $arrayName" $tabIndexFocus> 
                            |  $placeholderStr
                            |</select>""".stripMargin()
