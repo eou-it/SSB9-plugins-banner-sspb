@@ -93,7 +93,7 @@ Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
                       optionValue="serviceName"
                       tabindex="0"
                       onChange="this.form.submit()"
-                      role="dialog" aria-labelledby="lookupMessage" aria-label="press enter button to select a list of options"
+                      role="dialog" aria-label="press enter button to select a list of options"
             />
         </g:form>
 
