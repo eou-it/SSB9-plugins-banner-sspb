@@ -652,8 +652,8 @@ class PageComponent {
                 def arrayName = "${name}DS.data"
                 readonlyAt = (parent.allowModify && !ro)?"":"disabled" //select doesn't have readonly
                 ngChange="ng-change=\""+(onUpdate?"grid.appScope.${name}DS.onUpdate(row.entity);":"")+"grid.appScope.${parent.name}DS.setModified(row.entity);grid.appScope.${name}DS.setCurrentRecord(row.entity.$model);\""
-                placeholderAt = placeholder?"""<option value="" role="menuitem">${tran("placeholder")}</option>""":""
-                return """<span role="application" $onkeypress ><select ${idForAttribute(idTxtParam+"-label")} role="menu" $ariaLabel ${styleAt} $ngModel $readonlyAt $ngChange $ngClick ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in grid.appScope.$arrayName" tabindex="-1"> $placeholderAt </select> </span>"""
+                placeholderAt = placeholder?"""<option value="" role="option">${tran("placeholder")}</option>""":""
+                return """<span role="application" $onkeypress ><select ${idForAttribute(idTxtParam+"-label")} role="listbox" $ariaLabel ${styleAt} $ngModel $readonlyAt $ngChange $ngClick ng-options="$SELECT_ITEM.$valueKey as $SELECT_ITEM.$labelKey for $SELECT_ITEM in grid.appScope.$arrayName" tabindex="-1"> $placeholderAt </select> </span>"""
             case [COMP_TYPE_TEXT, COMP_TYPE_TEXTAREA,COMP_TYPE_NUMBER, COMP_TYPE_DATETIME, COMP_TYPE_EMAIL, COMP_TYPE_TEL] :
                 validateAt = validationAttributes()
                 disabled = "${readonly?"disabled=\"disabled\"":""}"
