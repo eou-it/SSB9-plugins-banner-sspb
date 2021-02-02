@@ -297,7 +297,7 @@ Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
         <label for="cssConstantName"><g:message code="sspb.css.cssManager.load.label" /></label>
         <select tabindex="0" id="cssConstantName" name="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'csses','id':'cssConstantName'}"
                 ng-model="cssName"
-                ng-change="getCssSource()">
+                ng-change="getCssSource()" role="dialog" aria-label="press enter button to select a list of options">
         </select>
 
     </div>

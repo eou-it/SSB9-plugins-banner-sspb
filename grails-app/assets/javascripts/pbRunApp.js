@@ -689,7 +689,8 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
                 }
             } else {
                 // we got an array of records to delete
-                items.forEach(function(item) {
+                var tempArry = items.slice()
+                tempArry.forEach(function(item, index) {
                     if (this.data.remove(item) )  {
                         if (this.deleted.indexOf(item) == -1) {
                             this.deleted.push(item);

@@ -1147,7 +1147,7 @@ Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
 
     <div class="btn-section">
         <label class="vpc-name-label" for="constantName"><g:message code="sspb.page.visualbuilder.load.label" /> </label>
-        <select tabindex="0" id="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'constantName'}" name="constantName"
+        <select tabindex="0" id="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'constantName'}" name="constantName" role="dialog" aria-label="press enter button to select a list of options"
                 ng-model="pageName"
                 ng-change="getPageSource();saveAs=false;">
             <option label="{{pageName}}" value="{{pageName}}">{{pageName}}</option>
@@ -1165,7 +1165,7 @@ Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
 
     <div class="btn-section-2">
         <label class="vpc-name-label" for="extendsPage"><g:message code="sspb.page.visualbuilder.extends.label" /></label>
-        <select tabindex="0" id="extendsPage" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'extendsPage'}" name="extendsPage"
+        <select tabindex="0" id="extendsPage" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'extendsPage'}" name="extendsPage" role="dialog" aria-label="press enter button to select a list of options"
                 ng-model="extendsPageName"
                 ng-change="getExtendsPage();saveAs=false;">
             <option label="{{extendsPageName}}" value="{{extendsPageName}}">{{extendsPageName}}</option>
