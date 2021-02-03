@@ -1239,7 +1239,7 @@ Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
                                     map='dataHolder.selectedComponent[attr.name]' pb-parent="dataHolder.selectedComponent" pb-attrname="attr.name"
                             ></pb-Map>
                             <pb-Textarea ng-switch-when="textarea" label="{{i18nGet('sspb.page.visualbuilder.edit.textarea.title' , [i18nGet('attribute.'+attr.name),dataHolder.selectedComponent.name])}}"
-                                         value='dataHolder.selectedComponent[attr.name]' pb-Parent="dataHolder.selectedComponent" pb-Attrname="attr.name"
+                                         value='dataHolder.selectedComponent[attr.name]' pb-Parent="dataHolder.selectedComponent" pb-Attrname="attr.name" aria-label="{{i18nGet('attribute.'+attr.name)}}"
                             ></pb-Textarea>
                             <pb-Combo ng-switch-when="combo"
                                       value='dataHolder.selectedComponent[attr.name]' pb-Parent="dataHolder.selectedComponent" pb-Attrname="attr.name"
