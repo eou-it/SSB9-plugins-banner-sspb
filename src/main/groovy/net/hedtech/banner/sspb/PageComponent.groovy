@@ -1133,7 +1133,7 @@ class PageComponent {
             case COMP_TYPE_EMAIL:
             case COMP_TYPE_TEL:
             case COMP_TYPE_HIDDEN:
-                def tag = "input tabindex=\"${readonly?-1 : 0}\" "
+                def tag = "input $tabIndexFocus "
                 def endTag = "/>"
                 def ariaLabeldef="aria-label=\"$requiredTranLabel\""
                 if([COMP_TYPE_HTABLE].contains(parent.type)){
