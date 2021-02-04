@@ -173,6 +173,7 @@ class PageComponent {
     // boolean type properties
     String booleanTrueValue     // by default if these values are omitted JS will assume true and false (not quotes around) as they can be transferred in JSON as true/false
     String booleanFalseValue
+    def tempLabel               //templabel will be used to set aria-label value for text components inside html table.
 
     // display option
     def asHtml = false         // specify if the content should be render as innerHTML or text node
@@ -746,6 +747,7 @@ class PageComponent {
                 //get the labels from child components
                 thead+="<th ${idAttribute('data-header-'+child.name)} $labelStyleStr role=\"columnheader\"  tabindex=\"0\">${child.tran("label")}</th>"
                 //get the child components
+                child.tempLabel = child.label //setting value to temp so that it can be used to set for aria-label for text
                 child.label=""
                 items+="<td ${idAttribute('-td-' + child.name + idTxtParam )} role=\"cell\" >${child.compileComponent("", depth)}</td>\n"
             }
@@ -1131,11 +1133,16 @@ class PageComponent {
             case COMP_TYPE_EMAIL:
             case COMP_TYPE_TEL:
             case COMP_TYPE_HIDDEN:
-                def tag = "input tabindex=\"${readonly?-1 : 0}\" "
+                def tag = "input $tabIndexFocus "
                 def endTag = "/>"
+                def ariaLabeldef="aria-label=\"$requiredTranLabel\""
+                if([COMP_TYPE_HTABLE].contains(parent.type)){
+                    ariaLabeldef="aria-label=\"$tempLabel column\" "
+                }
                 def disabled = "${readonly?"disabled=\"disabled\"":""}"
-                def attributes = "${validationAttributes()} ${required?"required":""} ${placeholder?"placeholder=\"${tran("placeholder")}\"":""} ${labelTxt?"":"aria-label=\"${tran("placeholder")}\""}".trim()
+                def attributes = "${validationAttributes()} ${required?"required":""} ${placeholder?"placeholder=\"${tran("placeholder")}\"":""} ".trim()
                 def typeString= "type=\"$t\""
+
 
                 if (type == COMP_TYPE_NUMBER) {  // angular-ui doesn't use localized validators
                     typeString="""type="text" pb-number ${fractionDigits?"fraction-digits=\"$fractionDigits\"":""} """
@@ -1156,13 +1163,13 @@ class PageComponent {
                     //defaulValue() removed, now should be handled by initNewRecordJS() call in compileService.
                     result = """|<$tag $inputIdStr $typeString $autoStyleStr  name="${name?name:model}" ${parent.allowModify && !readonly?"":"readonly"}
                                 | ng-model="$GRID_ITEM.${model}"
-                                | $ngChange $attributes $ngClick $tabIndexFocus $disabled $endTag
+                                | $ngChange $attributes $ngClick $tabIndexFocus $disabled $ariaLabeldef $endTag
                                 |""".stripMargin()
                 } else {
                     // TODO do we need a value field if ng-model is defined?  //added defaultValue
                     attributes += " ${readonly?"readonly":""}"
                     result = """|<$tag $inputIdStr $typeString $autoStyleStr  name="${name?name:model}"
-                                |${defaultValue()} $ngChange $attributes 
+                                |${defaultValue()} $ngChange $attributes $ariaLabeldef
                                 |""".stripMargin()
                     if (model && !readonly) {
                         if (binding != BINDING_PAGE) // use DataSet current record

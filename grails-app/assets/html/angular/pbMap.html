@@ -2,7 +2,7 @@
     <!--Copyright 2013-2021 Ellucian Company L.P. and its affiliates.-->
     <!--TODO referencing $parent.i18nGet, should not have this dependency-->
     <!--label>{{label}}</label-->
-    <input style="text-align:start;" aria-label="{{i18nGet('attribute.'+attr.name)}}" readonly value='{{map}}'></input> <button class="btn btn-xs" ng-click='openMapEditModal(map, $event)'>...</button>
+    <input style="text-align:start;" aria-label="{{::pbAttrname}}" readonly value='{{map}}'></input> <button class="btn btn-xs" ng-click='openMapEditModal(map, $event)'>...</button>
 
     <!-- map editing modal body-->
     <div modal="mapEditShouldBeOpen"  options="mapEditModalOpts">
