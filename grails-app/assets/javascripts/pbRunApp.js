@@ -201,8 +201,8 @@ appModule.run(['$templateCache', function($templateCache )  {
         "        <xe-button xe-type=\"secondary\" xe-btn-class=\"last\" xe-aria-label=\"{{::'pagination.last.label' | xei18n}}\" xe-btn-click=\"grid.appScope.#gridName#DS.pageToLast()\" title=\"{{grid.appScope.geti18n('last')}}\" xe-disabled=\"grid.appScope.#gridName#DS.nextLast\" ng-cloak></xe-button>\n"+
         "        <div class=\"divider dispInline\"></div>" +
         "        <span class=\"paging-text page-per\" id=\"pbid-#gridName#-RecordsPerPage\"> {{grid.appScope.geti18n('ngPageSizeLabel')}} </span>" +
-        "        <div class=\"page-size-select-wrapper dispInline\" alt='{{grid.appScope.geti18n('ngPageSizeLabel')}}'>" +
-        "            <select page-size-select aria-label=\"{{grid.appScope.geti18n('ngPageSizeLabel')}}\" class=\"per-page-select\" ng-model=\"grid.appScope.#gridName#DS.pagingOptions.pageSize\" ng-options=\"s as s for s in grid.appScope.#gridName#DS.pagingOptions.pageSizes\" tabindex='0' aria-labelledby=\"pbid-#gridName#-RecordsPerPage\"> "+
+        "        <div role=\"application\" class=\"page-size-select-wrapper dispInline\" alt='{{grid.appScope.geti18n('ngPageSizeLabel')}}'>" +
+        "            <select page-size-select role=\"listbox\" aria-label=\"{{grid.appScope.geti18n('ngPageSizeLabel')}}\" class=\"per-page-select\" ng-model=\"grid.appScope.#gridName#DS.pagingOptions.pageSize\" ng-options=\"s as s for s in grid.appScope.#gridName#DS.pagingOptions.pageSizes\" tabindex='0' aria-labelledby=\"pbid-#gridName#-RecordsPerPage\"> "+
         "             </select>" +
         "        </div>"+
         "       <span class=\"ngLabel\">{{grid.appScope.geti18n('ngTotalItemsLabel')}} {{grid.appScope.#gridName#DS.maxRows()}}</span>" +
