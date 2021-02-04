@@ -2,7 +2,7 @@
    "constantName": "pbadm.DeveloperPageSecurity",
    "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2021-01-21T06:10:46Z",
+   "fileTimestamp": "2021-02-04T16:06:46Z",
    "modelView": {
       "components": [
          {
@@ -298,6 +298,11 @@
             "name": "securityBlock",
             "showInitially": false,
             "type": "block"
+         },
+         {
+            "name": "jsCode_DevSecurity",
+            "type": "literal",
+            "value": "<script>\n  var userGrid = document.getElementById(\"pbid-userRoleGrid-label\");\n  userGrid.outerHTML = userGrid.outerHTML.replace(/<h3/g, \"<h2\").replace(/<\\/h3>/g,\"</h2>\");\n  \n  var groupUserGrid = document.getElementById(\"pbid-profileGrid-label\");\n  groupUserGrid.outerHTML = groupUserGrid.outerHTML.replace(/<h3/g, \"<h2\").replace(/<\\/h3>/g,\"</h2>\");\n</script>"
          }
       ],
       "name": "pbadmDeveloperPageSecurity",

@@ -2,7 +2,7 @@
    "constantName": "pbadm.AdminTasks",
    "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2021-01-27T11:07:53Z",
+   "fileTimestamp": "2021-02-04T16:06:53Z",
    "modelView": {
       "components": [
          {
@@ -158,7 +158,7 @@
             ],
             "name": "UploadSources",
             "showInitially": true,
-            "label": "Import Page Builder Artifacts from local directory",
+            "label": "",
             "type": "block"
          },
          {
@@ -449,13 +449,13 @@
          {
             "name": "jsCode",
             "type": "literal",
-            "value": "<script>\nif(isImportPrevented && !user.isSuperUser) {\n$(\"input\", \"#pbid-securityBlock\").attr(\"disabled\", \"disabled\")\n$(\"input\", \"#pbid-uploadFileSelect-container\").attr(\"disabled\", \"disabled\")\n$(\"button\").attr(\"disabled\", \"disabled\")\n}\n</script>"
+            "value": "<script>\nif(isImportPrevented && !user.isSuperUser) {\n$(\"input\", \"#pbid-securityBlock\").attr(\"disabled\", \"disabled\")\n$(\"input\", \"#pbid-uploadFileSelect-container\").attr(\"disabled\", \"disabled\")\n$(\"button\").attr(\"disabled\", \"disabled\")\n}\n\nvar artifactsEle  = document.getElementById(\"pbid-securityBlock-label\");\nartifactsEle.outerHTML = artifactsEle.outerHTML.replace(/<h3/g, \"<h2\").replace(/<\\/h3>/g,\"</h2>\");\n\nvar showPages  = document.getElementById(\"pbid-ShowPages-label\");\nshowPages.outerHTML = showPages.outerHTML.replace(/<h4/g, \"<h3\").replace(/<\\/h4>/g,\"</h3>\");\n\nvar pagesGridEle  = document.getElementById(\"pbid-pageGrid-label\");\npagesGridEle.outerHTML = pagesGridEle.outerHTML.replace(/<h5/g, \"<h4\").replace(/<\\/h5>/g,\"</h4>\");\n\nvar showVD  = document.getElementById(\"pbid-ShowVirtualDomains-label\");\nshowVD.outerHTML = showVD.outerHTML.replace(/<h4/g, \"<h3\").replace(/<\\/h4>/g,\"</h3>\");\n\nvar vdGridEle  = document.getElementById(\"pbid-virtualDomainGrid-label\");\nvdGridEle.outerHTML = vdGridEle.outerHTML.replace(/<h5/g, \"<h4\").replace(/<\\/h5>/g,\"</h4>\");\n\nvar showCss  = document.getElementById(\"pbid-ShowCss-label\");\nshowCss.outerHTML = showCss.outerHTML.replace(/<h4/g, \"<h3\").replace(/<\\/h4>/g,\"</h3>\");\n\nvar cssGridEle = document.getElementById(\"pbid-cssGrid-label\");\ncssGridEle.outerHTML = cssGridEle.outerHTML.replace(/<h5/g, \"<h4\").replace(/<\\/h5>/g,\"</h4>\");\n</script>"
          }
       ],
       "documentation": "Miscellaneous tasks",
       "scriptingLanguage": "JavaScript",
       "name": "pbadmAdminTasks",
-      "label": "",
+      "label": "Import Page Builder Artifacts from local directory",
       "title": "Admin tasks",
       "type": "page",
       "importCSS": "xeStyle,pbadm.adminTasksCss"
