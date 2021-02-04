@@ -6,6 +6,7 @@
 
     <!-- textarea editing modal body-->
     <div modal="textareaShouldBeOpen"  options="textareaModalOpts">
+        <div ng-keydown="closeTextArea_Popup($event)">
         <div class="modal-header">
             <h4>{{label}}</h4>
         </div>
@@ -22,6 +23,7 @@
             <!--
             <button class="btn btn-warning cancel" ng-click="cancelMapEditModal()">Cancel</button>
             -->
+        </div>
         </div>
     </div>
 

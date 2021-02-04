@@ -83,7 +83,11 @@ pagebuilderModule.directive('pbArrayofmap', function() {
                     backdropFade: true,
                     dialogFade:true
                 };
-
+                $scope.closePBArrayMap_Popup = function ($event){
+                    if($event.keyCode === 27 || $event.which === 27){
+                        $scope.arrayOfMapElement.focus();
+                    }
+                };
             }],
         replace:true
     }
@@ -143,7 +147,6 @@ pagebuilderModule.directive('pbMap', function() {
                     $scope.mapClickedElement = $event.target;
                     $scope.mapClickedElement.blur();
                     setTimeout(function(){$("#pbid-MapTable").focus(); },0);
-
                 };
 
                 $scope.closeMapEditModal = function () {
@@ -157,6 +160,12 @@ pagebuilderModule.directive('pbMap', function() {
                 $scope.cancelMapEditModal = function() {
                     $scope.mapEditShouldBeOpen = false;
                     $scope.mapClickedElement.focus();
+                };
+
+                $scope.closePBMap_Popup = function ($event){
+                     if($event.keyCode === 27 || $event.which === 27){
+                         $scope.mapClickedElement.focus();
+                     }
                 };
 
                 $scope.mapEditModalOpts = {
@@ -216,6 +225,12 @@ pagebuilderModule.directive('pbTextarea', function() {
                 $scope.cancelTextareaModal = function() {
                     $scope.textareaShouldBeOpen = false;
                     $scope.clickedElement.focus();
+                };
+
+                $scope.closeTextArea_Popup = function ($event){
+                    if($event.keyCode === 27 || $event.which === 27){
+                        $scope.clickedElement.focus();
+                    }
                 };
 
                 $scope.textareaModalOpts = {
