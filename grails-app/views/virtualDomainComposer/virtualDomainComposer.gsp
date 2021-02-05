@@ -80,7 +80,7 @@ Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
 </head>
 <body>
 <div id="content"  class="customPage container-fluid vdPage" role="main">
-    <h3><g:message code="sspb.page.virtualdomain.heading" /></h3>
+    <h1><g:message code="sspb.page.virtualdomain.heading" /></h1>
     <div class="vd-section">
         <g:form name="LoadVDForm" action="loadVirtualDomain" aria-label="Load Virtual Domain">
             <label for="vdServiceName"><g:message code="sspb.page.virtualdomain.select.label" /></label>

@@ -2,7 +2,7 @@
    "constantName": "pbadm.VirtualDomainRoles",
    "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2021-01-29T06:35:53Z",
+   "fileTimestamp": "2021-02-04T16:06:53Z",
    "modelView": {
       "components": [
          {
@@ -153,7 +153,6 @@
                   "allowNew": true,
                   "onSaveSuccess": "var saveAction = \"saved\";\n\nif (action == 'D')\n  {\n    saveAction = \"deleted\";\n  }\nalert( \"Virtual Domain role \" + response.ROLE_NAME  + ' ' + saveAction,{type:\"success\", flash:true});",
                   "pageSize": 5,
-                  "label": "Edit Roles for selected virtual domain",
                   "loadInitially": true,
                   "type": "grid",
                   "name": "editVirtualDomainRoles",
@@ -168,6 +167,7 @@
             ],
             "name": "EditRolesForm",
             "showInitially": false,
+            "label": "Edit Roles for selected virtual domain",
             "type": "block"
          }
       ],

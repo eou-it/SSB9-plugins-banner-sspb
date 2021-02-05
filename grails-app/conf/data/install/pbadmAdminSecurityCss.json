@@ -1,6 +1,6 @@
 {
    "constantName": "pbadmAdminSecurityCss",
-   "css": ".div-float-right {\nfloat: $end;\n}\n.div-float-left {\nfloat: $start;\n}\n.div-data-grid {\n    padding-top: 27em;\n}\n\n@media (min-width: 736px) {\n.div-data-grid {\n    padding-top: 17em;\n}\n}",
+   "css": ".div-float-right {\nfloat: $end;\n}\n.div-float-left {\nfloat: $start;\n}\n.div-data-grid {\n    padding-top: 27em;\n}\n\n@media (min-width: 736px) {\n.div-data-grid {\n    padding-top: 19em;\n}\n}",
    "description": "securityAdminPage",
-   "fileTimestamp": "2021-01-20T10:05:30Z"
+   "fileTimestamp": "2021-02-04T10:05:30Z"
 }

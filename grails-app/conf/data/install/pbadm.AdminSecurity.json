@@ -2,7 +2,7 @@
    "constantName": "pbadm.AdminSecurity",
    "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2021-01-19T15:19:54Z",
+   "fileTimestamp": "2021-02-04T16:06:54Z",
    "modelView": {
       "components": [
          {
@@ -239,6 +239,11 @@
             "showInitially": true,
             "label": "",
             "type": "block"
+         },
+         {
+            "name": "jsCode_SecurityConf",
+            "type": "literal",
+            "value": "<script>\n  var searchEle = document.getElementById(\"pbid-filters-label\");\n  searchEle.outerHTML = searchEle.outerHTML.replace(/<h5/g, \"<h2\").replace(/<\\/h5>/g,\"</h2>\");\n  \n  var ownerDetails = document.getElementById(\"pbid-dataGrid-label\");\n  ownerDetails.outerHTML = ownerDetails.outerHTML.replace(/<h5/g, \"<h3\").replace(/<\\/h5>/g,\"</h3>\");\n  \n</script>"
          }
       ],
       "name": "pbadmAdminSecurity",
