@@ -1040,7 +1040,7 @@ class PageComponent {
                 ngChange = ngChange?"ng-change=\"$ngChange\"":""
                 def dialogRole =""
                 if(valueStyle.contains('pbPopupDataGrid')){
-                    dialogRole = "role=\"dialog\" aria-label=\"press enter button to select a list of options\""
+                    dialogRole = "role=\"group\" aria-label=\"\${message(code: \"sspb.general.lookup.title\")}\"\""
                 }
                 result = """
                            |<select ${required?"required":""}  ${idAttribute(idTxtParam)} $keyPress $autoStyleStr ng-model="$ngModel" $ngChange  ${defaultValue()} $dialogRole

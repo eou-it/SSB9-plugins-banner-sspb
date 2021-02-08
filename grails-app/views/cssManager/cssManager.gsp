@@ -294,12 +294,13 @@ Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
     <asset:javascript src="modules/pageBuilderDev-mf.js"/>
     <div id="content" ng-controller="CssManagerController" class="customPage container-fluid cssPage" role="main">
     <div class="btn-section">
-        <label for="cssConstantName"><g:message code="sspb.css.cssManager.load.label" /></label>
-        <select tabindex="0" id="cssConstantName" name="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'csses','id':'cssConstantName'}"
-                ng-model="cssName"
-                ng-change="getCssSource()" role="dialog" aria-label="press enter button to select a list of options">
-        </select>
-
+        <span role="application">
+            <label for="cssConstantName"><g:message code="sspb.css.cssManager.load.label" /></label>
+            <select tabindex="0" id="cssConstantName" name="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'csses','id':'cssConstantName'}"
+                    ng-model="cssName"
+                    ng-change="getCssSource()" role="group" aria-label="${message(code:"sspb.general.lookup.title")}">
+            </select>
+        </span>
     </div>
     <div class="btn-section-2 cssGrid">
         <div>
