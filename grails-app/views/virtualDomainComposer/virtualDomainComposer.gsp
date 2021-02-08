@@ -123,7 +123,7 @@ Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
         </div>
 
 
-        <table role="table">
+        <table role="table" id="virtualDomain-table1">
             <thead role="rowgroup">
                 <tr role="row">
                     <th role="columnheader" align = left id="vdQueryStatement" ><g:message code="sspb.page.virtualdomain.query.heading"/></th>
@@ -141,7 +141,7 @@ Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
                 </tr>
             </tbody>
         </table>
-        <table role="table">
+        <table role="table" id="virtualDomain-table2">
             <thead role="rowgroup">
                 <tr role="row">
                     <th role="columnheader" align = left id="vdPostStatement"><g:message code="sspb.page.virtualdomain.post.heading" /></th>
