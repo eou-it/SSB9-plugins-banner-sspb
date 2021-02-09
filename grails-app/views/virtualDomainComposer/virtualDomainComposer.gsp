@@ -3,7 +3,7 @@ Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page import="net.hedtech.banner.virtualDomain.VirtualDomain" %>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/html">
+<html>
 <head>
     <title><g:message code="sspb.page.virtualdomain.pagetitle" /></title>
 
