@@ -1146,13 +1146,15 @@ Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
 <div id="content" role="main" ng-controller="VisualPageComposerController" class="customPage container-fluid" ng-form="pagemodelform">
 
     <div class="btn-section">
+        <span role="application">
         <label class="vpc-name-label" for="constantName"><g:message code="sspb.page.visualbuilder.load.label" /> </label>
-        <select tabindex="0" id="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'constantName'}" name="constantName" role="dialog" aria-label="press enter button to select a list of options"
+        <select tabindex="0" id="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'constantName'}" name="constantName"
                 ng-model="pageName"
-                ng-change="getPageSource();saveAs=false;">
+                ng-change="getPageSource();saveAs=false;" role="group" aria-label="${message(code:"sspb.general.lookup.title")}" >
             <option label="{{pageName}}" value="{{pageName}}">{{pageName}}</option>
 
         </select>
+        </span>
 
         <button tabindex="0" id="newPageBtn" ng-click='newPageSource();resetPageNameData();' ng-disabled="${!isProductionReadOnlyMode}" class="primary" ><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
         <button tabindex="0" id="saveAsPageBtn" ng-click='resetOwner(); saveAs=true;' ng-show="pageName && pageName!=newPageName" ng-disabled="${!isProductionReadOnlyMode}" class="secondary"> <g:message code="sspb.page.visualbuilder.save.as.label" /></button>
@@ -1164,12 +1166,14 @@ Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
     </div>
 
     <div class="btn-section-2">
+        <span role="application">
         <label class="vpc-name-label" for="extendsPage"><g:message code="sspb.page.visualbuilder.extends.label" /></label>
-        <select tabindex="0" id="extendsPage" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'extendsPage'}" name="extendsPage" role="dialog" aria-label="press enter button to select a list of options"
+        <select tabindex="0" id="extendsPage" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'extendsPage'}" name="extendsPage"
                 ng-model="extendsPageName"
-                ng-change="getExtendsPage();saveAs=false;">
+                ng-change="getExtendsPage();saveAs=false;" role="group" aria-label="${message(code:"sspb.general.lookup.title")}" >
             <option label="{{extendsPageName}}" value="{{extendsPageName}}">{{extendsPageName}}</option>
         </select>
+        </span>
 
         <button tabindex="0" id="saveBtn" ng-show="pageName && pageCurName && pageCurName != newPageName" ng-click='validateAndSubmitPageSource(); saveAs=false;updatePageName();'
                 ng-disabled='sourceEditEnabled || !pagemodelform.$valid || !allowModify' class="primary"><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>

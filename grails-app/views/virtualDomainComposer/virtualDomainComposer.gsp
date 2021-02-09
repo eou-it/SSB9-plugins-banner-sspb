@@ -83,8 +83,8 @@ Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
     <h1><g:message code="sspb.page.virtualdomain.heading" /></h1>
     <div class="vd-section">
         <g:form name="LoadVDForm" action="loadVirtualDomain" aria-label="Load Virtual Domain">
+            <span role="application">
             <label for="vdServiceName"><g:message code="sspb.page.virtualdomain.select.label" /></label>
-
             <g:select id="vdServiceName" name="vdServiceName" from="${[['serviceName': (pageInstance?.vdServiceName?:'')]]}"
                       class="popupSelectBox pbPopupDataGrid:{'serviceNameType':'virtualdomains','id':'vdServiceName'}"
                       value="${pageInstance?.vdServiceName}"
@@ -93,9 +93,11 @@ Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
                       optionValue="serviceName"
                       tabindex="0"
                       onChange="this.form.submit()"
-                      role="dialog" aria-label="press enter button to select a list of options"
+                      role="group" aria-label="${message(code:"sspb.general.lookup.title")}"
             />
+        </span>
         </g:form>
+
 
 
     </div>

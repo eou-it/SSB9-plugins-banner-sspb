@@ -1115,6 +1115,8 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
             element.keypress(function (e) {
                 if (e.key === 'Enter' || e.keyCode === 13 ||  e.which === 13) {
                     scope.onClickData(e, attrs);
+                }else if ((e.keyCode === 32 ||  e.which === 32)){
+                    e.target.click();
                 }
             })
             element.on('change', scope.changeData);

@@ -624,7 +624,7 @@ class PageComponent {
         def onClickCode=parent.onClick?"grid.appScope.${parent.name}_onClick(row.entity, col);":""
         //Do not remove setCurrentRecord without checking all is good (may be done 2x but need to make sure it is before onClickCode)
         def ngClick="""ng-click="grid.appScope.${parent.name}DS.setCurrentRecord(row.entity);$onClickCode" """
-        def ariaLabel = "aria-label=\"MODEL_COL_FIELD\""
+        def ariaLabel = "aria-label=\"$label\""
         def role = ""
         def disabled = ""
         def typeInternal = type
@@ -1040,7 +1040,7 @@ class PageComponent {
                 ngChange = ngChange?"ng-change=\"$ngChange\"":""
                 def dialogRole =""
                 if(valueStyle.contains('pbPopupDataGrid')){
-                    dialogRole = "role=\"dialog\" aria-label=\"press enter button to select a list of options\""
+                    dialogRole = "role=\"group\" aria-label=\"\${message(code: \"sspb.general.lookup.title\")}\"\""
                 }
                 result = """
                            |<select ${required?"required":""}  ${idAttribute(idTxtParam)} $keyPress $autoStyleStr ng-model="$ngModel" $ngChange  ${defaultValue()} $dialogRole
