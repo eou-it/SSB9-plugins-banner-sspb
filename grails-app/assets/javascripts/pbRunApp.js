@@ -1129,7 +1129,7 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
 $(document).ready(function () {
     $('table').on('keydown',function (e) {
         e = e || window.event;
-        if (e && $(this).context.id === "visualComposer-table") {
+        if (e && ($(this).context.id === "visualComposer-table" || $(this).context.id === "virtualDomain-table1" || $(this).context.id === "virtualDomain-table2")) {
             return;
         }
         var firstCell = $(this).children('tbody').find('tr:first').find('td:first');
