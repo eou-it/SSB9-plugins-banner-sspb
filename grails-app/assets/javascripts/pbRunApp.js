@@ -663,7 +663,7 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
 
         this.setDateCompFocus = function (colIndexId) {
             setTimeout(function () {
-                if ($("[id$=" + colIndexId + "]  span") > 0) {
+                if ($("[id$=" + colIndexId + "]  span").length > 0) {
                     $("[id$=" + colIndexId + "]  span").focus();
                 } else {
                     $("#" + colIndexId).focus();
