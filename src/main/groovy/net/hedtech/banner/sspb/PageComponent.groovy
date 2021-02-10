@@ -608,6 +608,7 @@ class PageComponent {
         }
         // No supported by a template, go with the old method
         def ro= readonly || COMP_DISPLAY_TYPES.contains(type)
+        def dateFocus = COMP_TYPE_DATETIME.contains(type) && !readonly
         def tagStart="<input"
         def tagEnd="/>"
         def moveFocus="moveFocus"+moveCount
@@ -620,7 +621,7 @@ class PageComponent {
         def validateAt = ""
         def placeholderAt=""
         def ngModel="ng-model=\"MODEL_COL_FIELD\""    // shorthand for  row.entity[col.field]
-        def ngChange=ro?"":"ng-change=\""+(onUpdate?"grid.appScope.${parent.ID}_${name}_onUpdate(row.entity);":"")+"grid.appScope.${parent.name}DS.setModified(row.entity)\""
+        def ngChange=ro?"":"ng-change=\""+(onUpdate?"grid.appScope.${parent.ID}_${name}_onUpdate(row.entity);":"")+"grid.appScope.${parent.name}DS.setModified(row.entity)"+ (dateFocus?";grid.appScope.${parent.name}DS.setDateCompFocus(rowRenderIndex + \\'-\\' + col.uid + \\'-cell\\')":"" )+"\""
         def onClickCode=parent.onClick?"grid.appScope.${parent.name}_onClick(row.entity, col);":""
         //Do not remove setCurrentRecord without checking all is good (may be done 2x but need to make sure it is before onClickCode)
         def ngClick="""ng-click="grid.appScope.${parent.name}DS.setCurrentRecord(row.entity);$onClickCode" """
@@ -961,11 +962,14 @@ class PageComponent {
     }
 
     String compileItem(String t, int ignoreDepth=0){
+        def dateFocus
         def autoStyleStr //generate class attributes from model
         // handle ID generation for items in a dataset
         // append -$index to each rendered items
-        if(isDataSetEditControl(parent) || isDataSetEditControl(this))
+        if(isDataSetEditControl(parent) || isDataSetEditControl(this)) {
             idTxtParam = "-{{\$index}}"
+            dateFocus = COMP_TYPE_DATETIME.contains(type) && !readonly
+        }
         if (t != COMP_TYPE_HIDDEN) {
             autoStyleStr = """class="pb-${parent.type} pb-$type pb-item $valueStyle"  """
         }
@@ -1009,7 +1013,11 @@ class PageComponent {
                 if (onUpdate)  {
                     ngChange="\$parent.${parent.ID}_${name}_onUpdate($GRID_ITEM);"  //
                 }
-                ngChange="""ng-change="$ngChange\$parent.${parent.name}DS.setModified($GRID_ITEM)"  """
+                if(parent.type == COMP_TYPE_HTABLE) {
+                    ngChange = ngChange + (dateFocus?"\$parent.${parent.name}DS.setDateCompFocus(\'pbid-$parent.name-td-$name$idTxtParam\');":"" )
+                }
+
+                ngChange="""ng-change="$ngChange\$parent.${parent.name}DS.setModified($GRID_ITEM)  "  """
                 ngClick="""ng-click="\$parent.${parent.name}DS.setCurrentRecord($GRID_ITEM)" """
             } else {
                 if (onUpdate)  {
