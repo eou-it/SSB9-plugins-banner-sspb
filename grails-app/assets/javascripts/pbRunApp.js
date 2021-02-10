@@ -661,6 +661,16 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
             }
         };
 
+        this.setDateCompFocus = function (colIndexId) {
+            setTimeout(function () {
+                if ($("[id$=" + colIndexId + "]  span") > 0) {
+                    $("[id$=" + colIndexId + "]  span").focus();
+                } else {
+                    $("#" + colIndexId).focus();
+                }
+            });
+        };
+
         this.add = function(item) {
             var newItem = new this.Resource(item);
             this.added.push(newItem);
