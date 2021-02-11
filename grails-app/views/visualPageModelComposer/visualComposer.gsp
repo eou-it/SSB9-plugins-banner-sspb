@@ -1182,10 +1182,10 @@ Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
         <button tabindex="0" id="deleteBtn" ng-show="pageName && pageCurName && pageName != newPageName"  ng-disabled="!allowModify"  ng-click='deletePageSource(); saveAs=false;' class="secondary"><g:message code="sspb.page.visualbuilder.delete.label" /></button>
         <button tabindex="0" id="pageRoleId" value="" ng-show="pageName && pageName != newPageName"  ng-click="showRolesPage(); saveAs=false;" class="secondary"><g:message code="sspb.page.visualbuilder.roles.label" /></button>
         <button tabindex="0" id="developerPageBtn" value="" ng-show="pageName && pageName != newPageName" ng-click="getDeveloperSecurityPage(); saveAs=false;" class="secondary"><g:message code="sspb.css.cssManager.developer.label" /></button>
-        <span ng-show="pageName && pageCurName && pageName != newPageName" class="alignRight">
+        <span ng-show="pageName && pageCurName && pageName != newPageName" class="alignRight" role="application">
             <label class="vpc-name-label dispInline" for="visualPageOwner"><g:message code="sspb.page.visualbuilder.pageowner.label" /></label>
             <input style="display: none" ng-model="allowUpdateOwner" aria-label="Allow Update Owner"/>
-            <select tabindex="0" id="visualPageOwner" class="owner-select" ng-model="pageOwner"  ng-disabled="!allowUpdateOwner">
+            <select tabindex="0" role="listbox" id="visualPageOwner" class="owner-select" ng-model="pageOwner"  ng-disabled="!allowUpdateOwner">
                 <option ng-repeat="owner in pbUserList" value="{{owner}}" ng-selected="{{owner == pageOwner}}">{{owner}}</option>
             </select>
         </span>
