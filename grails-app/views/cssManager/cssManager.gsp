@@ -315,10 +315,10 @@ Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
                 <button tabindex="0" class="secondary" ng-click='getDeveloperSecurityPage()'><g:message code="sspb.css.cssManager.developer.label" /></button>
             </span>
 
-            <span ng-show="cssName && cssCurName" class="alignRight">
+            <span ng-show="cssName && cssCurName" class="alignRight" role="application">
                 <label class="vpc-name-label dispInline" for="pbid-cssOwner"><g:message code="sspb.css.visualbuilder.cssowner.label" /></label>
                 <input tabindex="0" style="display: none" ng-model="allowUpdateOwner" aria-label="Allow Update Owner"/>
-                <select tabindex="0" id="pbid-cssOwner" class="owner-select alignRight" ng-model="cssOwner"  ng-disabled="!allowUpdateOwner">
+                <select tabindex="0" role="listbox" id="pbid-cssOwner" class="owner-select alignRight" ng-model="cssOwner"  ng-disabled="!allowUpdateOwner">
                     <option ng-repeat="owner in pbUserList" value="{{owner}}" ng-selected="{{owner == pageOwner}}">{{owner}}</option>
                 </select>
             </span>
