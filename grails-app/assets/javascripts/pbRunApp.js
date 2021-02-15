@@ -1182,7 +1182,7 @@ $(document).ready(function () {
                 sibling ? sibling.focus() : '';
                 break;
             case 13:
-                var editablElement = $(start).find('input, select, span, a').first();
+                var editablElement = $(start).find('input, select, span, a, textarea').first();
                 editablElement.attr('tabindex','0').click();
                 editablElement.focus();
                 editablElement.bind("keydown",function (e) {
@@ -1209,7 +1209,7 @@ function isNextSiblingPresent(sib){
     if($(sib).is(':visible')) {
         return sib;
     }else{
-        var nextSib = sib.nextElementSibling;
+        var nextSib = sib?sib.nextElementSibling:null;
         if(nextSib)
             sib= isNextSiblingPresent(nextSib)
     }
@@ -1220,7 +1220,7 @@ function isPreviousSiblingPresent(sib){
     if($(sib).is(':visible')) {
         return sib;
     }else{
-        var prevSib = sib.previousElementSibling;
+        var prevSib = sib?sib.previousElementSibling:null;
         if(prevSib)
             sib= isNextSiblingPresent(prevSib)
     }
