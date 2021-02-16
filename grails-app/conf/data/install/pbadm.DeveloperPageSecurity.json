@@ -2,7 +2,7 @@
    "constantName": "pbadm.DeveloperPageSecurity",
    "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2021-02-04T16:06:46Z",
+   "fileTimestamp": "2021-02-16T11:22:23Z",
    "modelView": {
       "components": [
          {
@@ -127,7 +127,7 @@
                         "sourceParameters": {},
                         "name": "USERDETAILS",
                         "sourceModel": "userDetails",
-                        "model": "USER",
+                        "model": "USER_DESC",
                         "label": "User",
                         "loadInitially": true,
                         "valueKey": "USER_ID",
@@ -216,7 +216,7 @@
                         "sourceParameters": {},
                         "name": "profileGridAllowSelect",
                         "sourceModel": "getBusinessProfile",
-                        "model": "USER",
+                        "model": "USER_DESC",
                         "label": "Business Profile",
                         "loadInitially": true,
                         "valueKey": "PROFILE",
