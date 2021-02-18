@@ -664,9 +664,9 @@ appModule.factory('pbDataSet', ['$cacheFactory', '$parse', function( $cacheFacto
         this.setDateCompFocus = function (colIndexId) {
             setTimeout(function () {
                 if ($("[id$=" + colIndexId + "]  span").length > 0) {
-                    $("[id$=" + colIndexId + "]  span").focus();
+                    $("[id$=" + colIndexId + "]  span input").focus();
                 } else {
-                    $("#" + colIndexId).focus();
+                    $("#" + colIndexId + " input").focus();
                 }
             });
         };
