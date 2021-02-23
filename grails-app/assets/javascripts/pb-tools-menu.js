@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2021 Ellucian Company L.P. and its affiliates.
+ Copyright 2019-2021 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 
 /* global notifications */
