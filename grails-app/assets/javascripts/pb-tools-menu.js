@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2019 Ellucian Company L.P. and its affiliates.
+ Copyright 2021 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 
 /* global notifications */
@@ -14,7 +14,7 @@ $(function(){
                 ToolsMenu.addSection("extensibility", $.i18n.prop("xe.menu.section.extensibility"));
             }
 
-            ToolsMenu.addItem("themeEditor", $.i18n.prop("xe.menu.extensibility.SecurityConfiguration"), "extensibility",
+            ToolsMenu.addItem("securityConfiguration", $.i18n.prop("xe.menu.extensibility.SecurityConfiguration"), "extensibility",
                 function () {
                     url =  requestContext + '/customPage/page/pbadm.AdminSecurity';
                     return location.href = url;
