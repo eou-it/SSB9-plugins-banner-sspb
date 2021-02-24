@@ -1097,22 +1097,22 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
 
             }
             function onLoadEventData(){
-                var page_Name = window.localStorage['pageName'];
+                var pageName = window.localStorage['pageName'];
                 var pageId = window.localStorage['pageId'];
                 var pbDataOptions = $parse(attrs.pbPopupDataGrid)() || {};
 
-                if(page_Name && pbDataOptions.isPbPage== 'true'){
-                    pbPagesChangeEvent(pbDataOptions.id,page_Name,pageId)
+                if(pageName && pbDataOptions.isPbPage== 'true'){
+                    pbPagesChangeEvent(pbDataOptions.id,pageName,pageId)
                 }
 
-                if(page_Name && pbDataOptions.isPbPage != 'true' && pbDataOptions.id == 'vdServiceName'){
+                if(pageName && pbDataOptions.isPbPage != 'true' && pbDataOptions.id == 'vdServiceName'){
                     $("#"+pbDataOptions.id+" option:selected").remove();
-                    $("#"+pbDataOptions.id).append("<option label='"+page_Name+"' selected='selected' value="+page_Name+">"+page_Name+"</option>");
+                    $("#"+pbDataOptions.id).append("<option label='"+pageName+"' selected='selected' value="+pageName+">"+pageName+"</option>");
                     $("#LoadVDForm").submit();
                 }
 
-                if(page_Name && pbDataOptions.isPbPage != 'true' && pbDataOptions.id == 'constantName'){
-                    scope.pageName = page_Name;
+                if(pageName && pbDataOptions.isPbPage != 'true' && pbDataOptions.id == 'constantName'){
+                    scope.pageName = pageName;
                     scope.getPageSource();
                 }
 
