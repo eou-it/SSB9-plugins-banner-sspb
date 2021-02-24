@@ -8,16 +8,13 @@ $(function(){
     if (user && user.isSuperUser) {
         try {
             var extensibilityMenu = $($('#extensibility_title'), $('#toolsList'));
-            var requestContext = window.location.pathname.substring(0, window.location.pathname.indexOf("/",2)).replace(/(javascript:|#).*$/, '')
-            var url;
             if (extensibilityMenu.length === 0) {
                 ToolsMenu.addSection("extensibility", $.i18n.prop("xe.menu.section.extensibility"));
             }
 
             ToolsMenu.addItem("themeEditor", $.i18n.prop("xe.menu.extensibility.SecurityConfiguration"), "extensibility",
                 function () {
-                    url =  requestContext + '/customPage/page/pbadm.AdminSecurity';
-                    return location.href = url;
+                    return location.href =  window.location.pathname.substring(0, window.location.pathname.indexOf("/",2)) + '/customPage/page/pbadm.AdminSecurity';
                 }
             );
         } catch (e) {
