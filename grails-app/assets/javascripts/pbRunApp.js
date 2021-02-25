@@ -1097,7 +1097,7 @@ appModule.directive('pbPopupDataGrid', ['$parse', function($parse)  {
 
             }
             function onLoadEventData(){
-                var pageName = window.localStorage['pageName'];
+                var pageName = sanitize(window.localStorage['pageName']);
                 var pageId = window.localStorage['pageId'];
                 var pbDataOptions = $parse(attrs.pbPopupDataGrid)() || {};
 
@@ -1238,3 +1238,7 @@ function validateName(valObj) {
         return;
     }
 };
+
+function sanitize(input) {
+    return input.replace(/(javascript:|#).*$/, '');
+}
