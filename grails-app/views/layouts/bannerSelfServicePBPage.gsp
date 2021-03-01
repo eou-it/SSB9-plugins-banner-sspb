@@ -49,6 +49,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
     <meta name="contextPath" content="${request.contextPath}"/>
     <meta name="headerAttributes" content=""/>
     <meta name="privacyPolicyUrl" content="${!privacyPolicyUrl ? '' : privacyPolicyUrl}"/>
+    <meta name="requestContext" content="${request.contextPath}" />
 
     <asset:link rel="apple-touch-icon" sizes="57x57" href="eds/apple-touch-icon-57x57.png"/>
     <asset:link rel="apple-touch-icon" sizes="60x60" href="eds/apple-touch-icon-60x60.png"/>
