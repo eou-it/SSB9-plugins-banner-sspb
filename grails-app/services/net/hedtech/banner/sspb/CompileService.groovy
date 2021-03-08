@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
+ * Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
  ******************************************************************************/
 
 package net.hedtech.banner.sspb
@@ -105,7 +105,7 @@ class CompileService {
         def common = CompileService.class.classLoader.getResourceAsStream('data/sspbCommon.js').text
 
         result = """
-               |function (\$scope ,\$locale,\$q,\$templateCache,pbDataSet,pbResource,pbAddCommon) {
+               |function (\$scope ,\$locale,\$q,\$templateCache,pbDataSet,pbResource,pbAddCommon,uiGridConstants) {
                |    \$scope._controllerId = controllerId;
                |    \$scope._user = user;
                |    \$scope._params = params;

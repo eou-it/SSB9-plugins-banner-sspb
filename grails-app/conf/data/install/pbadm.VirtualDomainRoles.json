@@ -2,7 +2,7 @@
    "constantName": "pbadm.VirtualDomainRoles",
    "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2021-02-04T16:06:53Z",
+   "fileTimestamp": "2021-03-08T11:49:16Z",
    "modelView": {
       "components": [
          {
@@ -44,9 +44,9 @@
                },
                {
                   "name": "domainRolesEmptyBlockForLineBreak",
-                  "type": "block",
                   "style": "divAlign",
-                  "showInitially": true
+                  "showInitially": true,
+                  "type": "block"
                },
                {
                   "valueStyle": "primary",
@@ -157,7 +157,7 @@
                   "type": "grid",
                   "name": "editVirtualDomainRoles",
                   "allowModify": true,
-                  "onLoad": "setTimeout(function(){ \nif($allowModify === 'true'){\n$('#pbid-EditRolesForm :input').attr('disabled', true);\n$editVirtualDomainRolesGrid.enableCellSelection=false;\n$editVirtualDomainRolesGrid.ngGrid.config.enableRowSelection=false;\n}\n }, 0);",
+                  "onLoad": "setTimeout(function(){ \nif($allowModify === 'true'){\n$('#pbid-EditRolesForm :input').attr('disabled', true);\n$editVirtualDomainRolesGrid.enableCellSelection=false;\n$editVirtualDomainRolesGrid.enableRowSelection=false;\n$editVirtualDomainRolesgridApi.core.notifyDataChange( uiGridConstants.dataChange.OPTIONS);   \n}\n }, 0);",
                   "model": "virtualDomainRoles",
                   "allowReload": true,
                   "parameters": {
