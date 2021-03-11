@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
+ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 *******************************************************************************/
 
 button.button_edit {
@@ -78,7 +78,48 @@ button.button_edit:active {
 }
 
 .modal.fade.in {
-  top: 50%;
+    position: relative;
+    top: 20em;
+}
+
+.pbtextarea {
+    width: 530px;
+}
+@media screen and (min-width: 330px) and (max-width: 600px) {
+    .modal.fade.in {
+        width: auto !important;
+        left: auto !important;
+        position: absolute;
+        top: 19em;
+        right: 1em;
+    }
+    #pbid-uploadStylesheet-popup {
+        width: 24em !important;
+    }
+    .pbtextarea {
+        width: 320px !important;
+    }
+}
+
+
+@media screen and (max-width: 330px) {
+    .modal.fade.in {
+        width: 18em !important;
+        left: auto !important;
+        position: absolute;
+        right: 2em;
+    }
+    #pbid-uploadStylesheet-popup {
+        width: 18em !important;
+    }
+    .pbtextarea {
+        width: 245px !important;
+    }
+}
+@media screen and (max-height: 450px) {
+    #pbid-uploadStylesheet-popup  {
+        top:78% !important;
+    }
 }
 
 /* End ui-bootstrap modal fix - needed since upgrade to bootstrap.css version 3.0.2 */

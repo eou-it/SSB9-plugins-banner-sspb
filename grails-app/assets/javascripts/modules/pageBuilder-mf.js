@@ -1,7 +1,7 @@
 //= require modules/angularApp-mf.js
+//= require angular/angular-aria.min.js
 //= require modules/min-bannerWeb-mf.js
-//= require lib/ng-grid/ng-grid.js
-//= require lib/jquery/jquery-ui-1.8.24.custom.js
+//= require lib/angular-ui-grid/ui-grid.js
 //= require lib/angular-ui/angular-ui.js
 //= require pbRunDirectives.js
 //= require xe-components/xe-ui-components.js

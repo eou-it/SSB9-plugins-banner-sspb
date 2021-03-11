@@ -2,7 +2,7 @@
    "constantName": "pbadm.AdminTasks",
    "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2020-07-23T06:35:53Z",
+   "fileTimestamp": "2021-02-04T16:06:53Z",
    "modelView": {
       "components": [
          {
@@ -45,11 +45,14 @@
                      },
                      {
                         "readonly": false,
+                        "booleanTrueValue": "true",
+                        "booleanFalseValue": "false",
                         "name": "copyOwner",
                         "model": "copyOwner",
                         "label": "Copy Owner on Import",
                         "loadInitially": true,
-                        "type": "boolean"
+                        "type": "boolean",
+                        "value": "false"
                      },
                      {
                         "name": "textDispDevSec",
@@ -58,11 +61,14 @@
                      },
                      {
                         "readonly": false,
+                        "booleanTrueValue": "true",
+                        "booleanFalseValue": "false",
                         "name": "copyDevSec",
                         "model": "copyDevSec",
                         "label": "Copy all Developers permissions on import",
                         "loadInitially": true,
-                        "type": "boolean"
+                        "type": "boolean",
+                        "value": "false"
                      }
                   ],
                   "name": "securityBlock",
@@ -78,7 +84,7 @@
                {
                   "name": "uploadFileSelect",
                   "type": "literal",
-                  "value": "<input type=\"file\" id=\"filesElem\" name=\"files[]\" multiple accept=\".json\" aria-label=\"Select files from local directories for import\"/><br/>\n\n<script>\n\n  function handleFileSelect(evt) {\n  \tvar files = evt.target.files;\n        var scope = getControllerScopeById(controllerId);\n        var count = files.length;\n        //scope.artifactsGrid.enablePaging = false;\n\n        scope.artifactsDS.data.removeAll();\n        scope.\\$apply();\n  \t\n\tfunction addFile(event, file) {\n            var jsonData = JSON.parse(event.target.result)\n            if(!scope.copyOwner) {\n                    jsonData.owner = user.oracleUserName\n                    file.owner = user.oracleUserName\n                 } else {\n                     file.owner = jsonData.owner\n                 }\n                if(!scope.copyDevSec) {\n                    jsonData.developerSecurity = [];\n                 }\n  \t\tfile.domain =JSON.stringify(jsonData)  \n           \tscope.artifactsDS.data.push(file);\n \t\tscope.\\$apply(); //Update the UI\t\n\t}\n\tfor (var i = 0, f; f = files[i]; i++) {\n                f.index = i;\n                f.count = count;\n  \t\tvar reader = new FileReader();\n\t\treader.onloadend = (function(file) {\n\t\t  return function(evt) {\n\t\t\taddFile(evt, file);\n\t\t  };\n\t\t})(f);\t\t\n  \t\treader.readAsText(f);\n  \t}\n  }\n  document.getElementById('filesElem').addEventListener('change', handleFileSelect, false);\n\n</script>"
+                  "value": "<input type=\"file\" id=\"filesElem\" name=\"files[]\" multiple accept=\".json\" aria-label=\"Select files from local directories for import\"/><br/>\n\n<script>\n\n  function handleFileSelect(evt) {\n  \tvar files = evt.target.files;\n        var scope = getControllerScopeById(controllerId);\n        var count = files.length;\n        //scope.artifactsGrid.enablePaging = false;\n\n        scope.artifactsDS.data.removeAll();\n        scope.\\$apply();\n  \t\n\tfunction addFile(event, file) {\n            var jsonData = JSON.parse(event.target.result)\n            if(!scope.copyOwner) {\n                    jsonData.owner = user.oracleUserName\n                    file.owner = user.oracleUserName\n                 } else {\n                     file.owner = jsonData.owner\n                 }\n                if(!scope.copyDevSec) {\n                    jsonData.developerSecurity = [];\n                 }\n  \t\tfile.domain =JSON.stringify(jsonData)  \n           \tscope.artifactsDS.data.push(file);\n \t\tscope.\\$apply(); //Update the UI\t\n\t}\n\tfor (var i = 0, f; f = files[i]; i++) {\n                f.index = i;\n                f.count = count;\n  \t\tvar reader = new FileReader();\n\t\treader.onloadend = (function(file) {\n\t\t  return function(evt) {\n\t\t\taddFile(evt, file);\n\t\t  };\n\t\t})(f);\t\t\n  \t\treader.readAsText(f);\n  \t}\n  }\n  document.getElementById('filesElem').addEventListener('change', handleFileSelect, false);\n document.getElementById('pbid-uploadFileSelect').removeAttribute('tabindex');\n\n</script>"
                },
                {
                   "allowDelete": false,
@@ -152,15 +158,15 @@
             ],
             "name": "UploadSources",
             "showInitially": true,
-            "label": "Import Page Builder Artifacts from local directory",
+            "label": "",
             "type": "block"
          },
          {
             "components": [
                {
                   "readonly": false,
-                  "booleanTrueValue": "",
-                  "booleanFalseValue": "",
+                  "booleanTrueValue": "true",
+                  "booleanFalseValue": "false",
                   "name": "pages",
                   "label": "Pages",
                   "loadInitially": true,
@@ -169,6 +175,8 @@
                },
                {
                   "readonly": false,
+                  "booleanTrueValue": "true",
+                  "booleanFalseValue": "false",
                   "name": "virtualDomains",
                   "label": "Virtual Domains",
                   "loadInitially": true,
@@ -177,6 +185,8 @@
                },
                {
                   "readonly": false,
+                  "booleanTrueValue": "true",
+                  "booleanFalseValue": "false",
                   "name": "css",
                   "label": "CSS",
                   "loadInitially": true,
@@ -200,11 +210,14 @@
             "components": [
                {
                   "readonly": false,
+                  "booleanTrueValue": "true",
+                  "booleanFalseValue": "false",
                   "name": "viewArtifacts",
                   "label": "View Existing Page Builder Artifacts (% wildcard can be used in the filter)",
                   "loadInitially": true,
                   "type": "boolean",
-                  "onUpdate": "$ShowPages.$visible=$viewArtifacts;\n$ShowVirtualDomains.$visible=$viewArtifacts;\n$ShowCss.$visible=$viewArtifacts;"
+                  "onUpdate": "$ShowPages.$visible=$viewArtifacts;\n$ShowVirtualDomains.$visible=$viewArtifacts;\n$ShowCss.$visible=$viewArtifacts;",
+                  "value": "false"
                },
                {
                   "components": [
@@ -212,15 +225,15 @@
                         "readonly": false,
                         "name": "pageFilter",
                         "model": "",
-                        "placeholder": "Filter pages by name",
                         "label": "",
                         "loadInitially": false,
+                        "placeholder": "Filter pages by name",
                         "type": "text",
                         "value": "",
                         "parameters": {},
                         "onUpdate": "$pageGrid.$load();",
-                        "validation": {},
-                        "required": false
+                        "required": false,
+                        "validation": {}
                      },
                      {
                         "allowDelete": false,
@@ -275,6 +288,7 @@
                         }
                      }
                   ],
+                  "role": "search",
                   "nextButtonLabel": "",
                   "name": "ShowPages",
                   "showInitially": false,
@@ -347,6 +361,7 @@
                         }
                      }
                   ],
+                  "role": "search",
                   "nextButtonLabel": "Next",
                   "name": "ShowVirtualDomains",
                   "showInitially": false,
@@ -419,6 +434,7 @@
                         }
                      }
                   ],
+                  "role": "search",
                   "nextButtonLabel": "Next",
                   "name": "ShowCss",
                   "showInitially": false,
@@ -433,13 +449,13 @@
          {
             "name": "jsCode",
             "type": "literal",
-            "value": "<script>\nif(isImportPrevented && !user.isSuperUser) {\n$(\"input\", \"#pbid-securityBlock\").attr(\"disabled\", \"disabled\")\n$(\"input\", \"#pbid-uploadFileSelect-container\").attr(\"disabled\", \"disabled\")\n$(\"button\").attr(\"disabled\", \"disabled\")\n}\n</script>"
+            "value": "<script>\nif(isImportPrevented && !user.isSuperUser) {\n$(\"input\", \"#pbid-securityBlock\").attr(\"disabled\", \"disabled\")\n$(\"input\", \"#pbid-uploadFileSelect-container\").attr(\"disabled\", \"disabled\")\n$(\"button\").attr(\"disabled\", \"disabled\")\n}\n\nvar artifactsEle  = document.getElementById(\"pbid-securityBlock-label\");\nartifactsEle.outerHTML = artifactsEle.outerHTML.replace(/<h3/g, \"<h2\").replace(/<\\/h3>/g,\"</h2>\");\n\nvar showPages  = document.getElementById(\"pbid-ShowPages-label\");\nshowPages.outerHTML = showPages.outerHTML.replace(/<h4/g, \"<h3\").replace(/<\\/h4>/g,\"</h3>\");\n\nvar pagesGridEle  = document.getElementById(\"pbid-pageGrid-label\");\npagesGridEle.outerHTML = pagesGridEle.outerHTML.replace(/<h5/g, \"<h4\").replace(/<\\/h5>/g,\"</h4>\");\n\nvar showVD  = document.getElementById(\"pbid-ShowVirtualDomains-label\");\nshowVD.outerHTML = showVD.outerHTML.replace(/<h4/g, \"<h3\").replace(/<\\/h4>/g,\"</h3>\");\n\nvar vdGridEle  = document.getElementById(\"pbid-virtualDomainGrid-label\");\nvdGridEle.outerHTML = vdGridEle.outerHTML.replace(/<h5/g, \"<h4\").replace(/<\\/h5>/g,\"</h4>\");\n\nvar showCss  = document.getElementById(\"pbid-ShowCss-label\");\nshowCss.outerHTML = showCss.outerHTML.replace(/<h4/g, \"<h3\").replace(/<\\/h4>/g,\"</h3>\");\n\nvar cssGridEle = document.getElementById(\"pbid-cssGrid-label\");\ncssGridEle.outerHTML = cssGridEle.outerHTML.replace(/<h5/g, \"<h4\").replace(/<\\/h5>/g,\"</h4>\");\n</script>"
          }
       ],
       "documentation": "Miscellaneous tasks",
       "scriptingLanguage": "JavaScript",
       "name": "pbadmAdminTasks",
-      "label": "",
+      "label": "Import Page Builder Artifacts from local directory",
       "title": "Admin tasks",
       "type": "page",
       "importCSS": "xeStyle,pbadm.adminTasksCss"

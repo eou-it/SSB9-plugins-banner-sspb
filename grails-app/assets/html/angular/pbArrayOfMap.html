@@ -1,5 +1,5 @@
 <span>
-    <!--Copyright 2013-2018 Ellucian Company L.P. and its affiliates.-->
+    <!--Copyright 2013-2021 Ellucian Company L.P. and its affiliates.-->
     <span style="text-align:start;">
         {{keys[0]}} = {{keys[1]}}:[
         <span ng-show='array.length>0' ng-repeat='item in array'>
@@ -7,15 +7,16 @@
         </span>
         ]
     </span>
-    <button class="btn btn-xs" ng-click='openArrayOfMapEditModal(array)'>...</button>
+    <button class="btn btn-xs" ng-click='openArrayOfMapEditModal(array, $event)'>...</button>
 
     <!-- map editing modal body-->
     <div modal="arrayOfMapEditShouldBeOpen"  options="arrayOfMapEditModalOpts">
+        <div ng-keydown="closePBArrayMap_Popup($event)">
         <div class="modal-header">
             <h4>{{label}}</h4>
         </div>
         <div class="modal-body">
-            <table>
+            <table id="pbid-arrayOfMapTable" tabindex="0">
                 <tr><th><input ng-model='keys[0]'/></th><th><input ng-model='keys[1]'/></th></tr>
                 <!-- iterate through a separate index for the map (instead of using '(key,value) in map') to avoid an issue of the entire map got refreshed (and angular loses the input focus there after)
   every time a key is pressed that causes a change of a map value -->
@@ -29,8 +30,8 @@
             </table>
 
             <form>
-                <div><label >{{$parent.i18nGet('pb.template.arraymap.new.value.label',[keys[0]])}} </label><input id="value1" ng-model="newValue1" required> </div>
-                <div><label >{{$parent.i18nGet('pb.template.arraymap.new.value.label',[keys[1]])}} </label><input id='value2' ng-model="newValue2" required> </div>
+                <div><label for="value1">{{$parent.i18nGet('pb.template.arraymap.new.value.label',[keys[0]])}} </label><input id="value1" ng-model="newValue1" required> </div>
+                <div><label for="value2">{{$parent.i18nGet('pb.template.arraymap.new.value.label',[keys[1]])}} </label><input id='value2' ng-model="newValue2" required> </div>
                 <div><button class="primary" ng-click='add(newValue1, newValue2)'>{{$parent.i18nGet('pb.template.arraymap.add.label')}}</button></div>
             </form>
 
@@ -40,6 +41,7 @@
             <!--
             <button class="btn btn-warning cancel" ng-click="cancelMapEditModal()">Cancel</button>
             -->
+        </div>
         </div>
     </div>
 

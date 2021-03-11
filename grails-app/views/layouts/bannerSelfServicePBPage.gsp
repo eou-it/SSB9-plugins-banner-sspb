@@ -16,7 +16,9 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
     %>
 
     <g:set var="mep" value="${org.springframework.web.context.request.RequestContextHolder.currentRequestAttributes()?.request?.session?.getAttribute('ssbMepDesc')}"/>
-    <g:set var="hideSSBHeaderComps" value="${session.hideSSBHeaderComps ? session.hideSSBHeaderComps : (Boolean.parseBoolean(params?.hideSSBHeaderComps)) ? params.hideSSBHeaderComps : false}" scope="session"/>
+    <g:set var="hideSSBHeaderComps"
+           value="${session.hideSSBHeaderComps == 'true' ? session.hideSSBHeaderComps : params?.hideSSBHeaderComps == 'true' ? params.hideSSBHeaderComps : 'false'}"
+           scope="session"/>
 
     <meta charset="${message(code: 'default.character.encoding')}"/>
     <meta name="dir" content="${message(code:'default.language.direction')}"/>
@@ -47,6 +49,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
     <meta name="contextPath" content="${request.contextPath}"/>
     <meta name="headerAttributes" content=""/>
     <meta name="privacyPolicyUrl" content="${!privacyPolicyUrl ? '' : privacyPolicyUrl}"/>
+    <meta name="requestContext" content="${request.contextPath}" />
 
     <asset:link rel="apple-touch-icon" sizes="57x57" href="eds/apple-touch-icon-57x57.png"/>
     <asset:link rel="apple-touch-icon" sizes="60x60" href="eds/apple-touch-icon-60x60.png"/>
@@ -78,6 +81,8 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
         <asset:stylesheet href="modules/pageBuilderLTR-mf.css"/>
     </g:else>
     <asset:javascript src="modules/jquery-mf.js"/>
+    <asset:javascript src="modules/pageBuilderJQuery-mf.js"/>
+
     <asset:script>
         var extensibilityInfo = ${extensibilityInfo.encodeAsRaw()}
         window.mepCode='${session.mep}';
@@ -96,7 +101,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             console = {log: function() {}};
         }
         // inject services and controller modules to be registered with the global ng-app
-        var myCustomServices = ['ngResource','ngGrid','ui', 'pbrun.directives', 'ngSanitize', 'xe-ui-components'];
+        var myCustomServices = ['ngResource', 'ui.grid', 'ui.grid.i18n','ui.grid.edit','ui.grid.selection','ui.grid.resizeColumns', 'ui.grid.cellNav','ui', 'pbrun.directives', 'ngSanitize', 'xe-ui-components','ui.grid.autoResize'];
         var pageControllers = {};
 
         var transactionTimeoutMeta    = $( "meta[name=transactionTimeout]" ),
@@ -109,6 +114,8 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
           document.getElementsByName('headerAttributes')[0].content = JSON.stringify({
             "pageTitle": "<g:layoutTitle/>"
         });
+
+        var dateTimeLocale = "${localeBrowserFull}" ;
     </g:javascript>
 
 
@@ -131,7 +138,8 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
         <asset:javascript src="modules/pageBuilder-mf.js"/>
 
         <asset:script type="text/javascript">
-            window.ngGrid.i18n[gridLocale] = {
+            window.uiGridI18n={}
+            window.uiGridI18n = {
                 ngAggregateLabel:          '${message(code: 'nggrid.ngAggregateLabel'         , encodeAs: 'JavaScript')}',
                 ngGroupPanelDescription:   '${message(code: 'nggrid.ngGroupPanelDescription'  , encodeAs: 'JavaScript')}',
                 ngSearchPlaceHolder:       '${message(code: 'nggrid.ngSearchPlaceHolder'      , encodeAs: 'JavaScript')}',
@@ -148,7 +156,11 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 styleLeft:                 '${message(code:'default.language.direction')=='ltr'?'left':'right'}',
                 styleRight:                '${message(code:'default.language.direction')=='ltr'?'right':'left'}',
                 maxPageLabel:              '${message(code:'nggrid.maxPageLabel'             , encodeAs: 'JavaScript')}',
-                pageLabel:                 '${message(code:'nggrid.pageLabel'                , encodeAs: 'JavaScript')}'
+                pageLabel:                 '${message(code:'nggrid.pageLabel'                , encodeAs: 'JavaScript')}',
+                next:                      '${message(code:'pagination.next.label'          , encodeAs: 'JavaScript')}',
+                last:                      '${message(code:'pagination.last.label'          , encodeAs: 'JavaScript')}',
+                previous:                  '${message(code:'pagination.previous.label'      , encodeAs: 'JavaScript')}',
+                first:                     '${message(code:'pagination.first.label'        , encodeAs: 'JavaScript')}'
             };
             yepnope({
                 test : window.JSON,
@@ -159,6 +171,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 _.defer( function() {
                     $( "#splash" ).remove();
                 });
+                $('#content').find('button, a, input:not([class~="pb-boolean"]), select, textarea, label, [tabindex]:not([tabindex="-1"])').eq(0).focus();
             });
             <g:i18nJavaScript/>
             <g:pageAccessAudit/>
@@ -176,6 +189,8 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
         <g:customJavaScriptIncludes/>
         <asset:javascript src="lib/jquery/i18n/jquery.ui.datepicker-${localeBrowserFull.toLowerCase()}.js" />
         <asset:javascript src="lib/angular/i18n/angular-locale_${localeBrowserFull.toLowerCase()}.js" />
+        <asset:javascript src="modules/pageBuilderDate-mf.js"/>
+
     </body>
 </html>
 

@@ -1,5 +1,5 @@
 <%--
-Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html xmlns="http://www.w3.org/1999/html">
@@ -86,6 +86,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             // populate the css list initially
             //  $scope.loadCssNames();
 
+            $scope.cssCurName = "";
             $scope.getCssSource = function() {
                 //TODO prompt for unsaved data
                 if ($scope.cssSource != undefined)   {
@@ -105,6 +106,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                         $scope.cssOwner = data.owner;
                         $scope.allowUpdateOwner = data.allowUpdateOwner;
                         $scope.allowModify = data.allowModify;
+                        $scope.cssCurName = data.constantName;
                         $scope.resetCssNameData();
                     } catch(ex) {
                         alert($scope.i18nGet("${message(code:'sspb.css.cssManager.parsing.error.message')}",[ex]),{type:"error"});
@@ -151,20 +153,29 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                     if (!r)
                         return;
                 }
-
+                $scope.cssCurName = "";
                 $scope.cssName= "${message( code:'sspb.css.cssManager.newCss.default', encodeAs: 'JavaScript')}";
                 $scope.cssSource = "";
                 $scope.description="";
                 $scope.cssOwner = user.oracleUserName;
                 $scope.allowUpdateOwner = true;
                 $scope.allowModify = true;
+                setTimeout(function () {
+                    $("#cssName").focus();
+                }, 0);
+
             };
 
 
             $scope.submitCssSource = function() {
                 //check if page name is set
                 if ($scope.cssName== undefined || $scope.cssName == '') {
-                    alert("${message(code:'sspb.css.cssManager.cssName.prompt.message', encodeAs: 'JavaScript')}");
+                    notifications.addNotification(new Notification({
+                        message: '${message(code: "sspb.css.cssManager.cssName.prompt.message")}',
+                        type: "error",
+                        flash: true,
+                        component:$('#cssName')
+                    }));
                     return;
                 }
 
@@ -178,6 +189,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                         note = {type: "success", flash: true};
                         $scope.allowUpdateOwner = response.allowUpdateOwner;
                         $scope.allowModify = response.allowModify;
+                        $scope.cssCurName = $scope.cssName;
                         $scope.resetCssNameData();
                     } else {
                         var msg="${message(code:'sspb.css.cssManager.validation.error.message', encodeAs: 'JavaScript')}";
@@ -186,6 +198,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                         else
                             $scope.cssStatus.message = $scope.i18nGet(msg, [$scope.i18nGet(response.statusMessage), ""]);
                     }
+                    note.elementToFocus = $('#cssConstantName');
                     alert($scope.cssStatus.message, note );
 
                     // refresh the page list in case new page is added
@@ -211,17 +224,23 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             $scope.deleteCssSource = function () {
                 //check if page name is set
                 if ($scope.cssName== undefined || $scope.cssName == '') {
-                    alert("${message(code:'sspb.css.cssManager.cssName.prompt.message')}",{type: "warning"});
+                    notifications.addNotification(new Notification({
+                        message: '${message(code: "sspb.css.cssManager.cssName.prompt.message")}',
+                        type: "error",
+                        flash: true,
+                        component:$('#cssName')
+                    }));
                     return;
                 }
 
                 Css.delete({constantName:$scope.cssName }, function() {
                     // on success
-                    alert("${message(code:'sspb.css.cssManager.deletion.success.message')}",{flash:true});
+                    alert("${message(code:'sspb.css.cssManager.deletion.success.message')}",{flash:true,elementToFocus : $('#cssConstantName')});
                     // clear the page name field and page source
                     $scope.cssName = "";
                     $scope.description = "";
                     $scope.cssSource= undefined;
+                    $scope.cssCurName = "";
                     $scope.resetCssNameData();
                     // $scope.loadCssNames();
 
@@ -264,6 +283,10 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 });
             }
 
+            $scope.validateCssName = function(valObj) {
+                validateName(valObj);
+            }
+
         }
     </script>
 </head>
@@ -271,60 +294,58 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
     <asset:javascript src="modules/pageBuilderDev-mf.js"/>
     <div id="content" ng-controller="CssManagerController" class="customPage container-fluid cssPage" role="main">
     <div class="btn-section">
-        <label for="cssConstantName"><g:message code="sspb.css.cssManager.load.label" /></label>
-        <select id="cssConstantName" name="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'csses','id':'cssConstantName'}"
-                ng-model="cssName"
-                ng-change="getCssSource()">
-        </select>
-
-        <button class="secondary" ng-click='loadCssNames()' ng-show="false" ><g:message code="sspb.css.cssManager.reload.pages.label" /></button>
-    </div>
-    <div class="btn-section-2">
-        <button class="primary" ng-click='newCssSource();resetCssNameData();' ng-disabled="${!isProductionReadOnlyMode}" ><g:message code="sspb.css.cssManager.newCss.label" /></button>
-        <button class="secondary" ng-click='submitCssSource()' ng-disabled="${!isProductionReadOnlyMode} || !(allowModify == null ? true :allowModify)"><g:message code="sspb.css.cssManager.save.label" /></button>
-        <span ng-show="${isProductionReadOnlyMode}">
-            <pb-Upload label='Upload Stylesheet' status='cssStatus' pb-change=''></pb-Upload>
-        </span>
-        <button class="secondary" ng-click="getCssSource()"><g:message code="sspb.css.cssManager.reload.label" /></button>
-        <button class="secondary" ng-click='deleteCssSource()' ng-disabled="${!isProductionReadOnlyMode} || !(allowModify == null ? true :allowModify) "><g:message code="sspb.css.cssManager.delete.label" /></button>
-        <span  ng-show="cssName.length>0">
-            <button class="secondary" ng-click='getDeveloperSecurityPage()'><g:message code="sspb.css.cssManager.developer.label" /></button>
-        </span>
-
-        <span ng-show="cssName" class="alignRight">
-            <label class="vpc-name-label dispInline" for="pbid-cssOwner"><g:message code="sspb.css.visualbuilder.cssowner.label" /></label>
-            <input style="display: none" ng-model="allowUpdateOwner" aria-label="Allow Update Owner"/>
-            <select id="pbid-cssOwner" class="owner-select alignRight" ng-model="cssOwner"  ng-disabled="!allowUpdateOwner">
-                <option ng-repeat="owner in pbUserList" value="{{owner}}" ng-selected="{{owner == pageOwner}}">{{owner}}</option>
+        <span role="application">
+            <label for="cssConstantName"><g:message code="sspb.css.cssManager.load.label" /></label>
+            <select tabindex="0" id="cssConstantName" name="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'csses','id':'cssConstantName'}"
+                    ng-model="cssName"
+                    ng-change="getCssSource()" role="group" aria-label="${message(code:"sspb.general.lookup.title")}">
             </select>
         </span>
+    </div>
+    <div class="btn-section-2 cssGrid">
+        <div>
+            <button tabindex="0" class="primary" ng-click='newCssSource();resetCssNameData();' ng-disabled="${!isProductionReadOnlyMode}" ><g:message code="sspb.css.cssManager.newCss.label" /></button>
+            <button tabindex="0" class="secondary" ng-click='submitCssSource()' ng-disabled="${!isProductionReadOnlyMode} || !(allowModify == null ? true :allowModify)"><g:message code="sspb.css.cssManager.save.label" /></button>
+            <span ng-show="${isProductionReadOnlyMode}">
+                <pb-Upload  label='Upload Stylesheet' status='cssStatus' pb-change=''></pb-Upload>
+            </span>
+            <button tabindex="0" class="secondary" ng-click="getCssSource()"><g:message code="sspb.css.cssManager.reload.label" /></button>
+            <button tabindex="0" class="secondary" ng-click='deleteCssSource()' ng-disabled="${!isProductionReadOnlyMode} || !(allowModify == null ? true :allowModify) "><g:message code="sspb.css.cssManager.delete.label" /></button>
+            <span  ng-show="cssName && cssCurName">
+                <button tabindex="0" class="secondary" ng-click='getDeveloperSecurityPage()'><g:message code="sspb.css.cssManager.developer.label" /></button>
+            </span>
+
+            <span ng-show="cssName && cssCurName" class="alignRight" role="application">
+                <label class="vpc-name-label dispInline" for="pbid-cssOwner"><g:message code="sspb.css.visualbuilder.cssowner.label" /></label>
+                <input tabindex="0" style="display: none" ng-model="allowUpdateOwner" aria-label="Allow Update Owner"/>
+                <select tabindex="0" role="listbox" id="pbid-cssOwner" class="owner-select alignRight" ng-model="cssOwner"  ng-disabled="!allowUpdateOwner">
+                    <option ng-repeat="owner in pbUserList" value="{{owner}}" ng-selected="{{owner == pageOwner}}">{{owner}}</option>
+                </select>
+            </span>
+        </div>
     </div>
     <div class="form-horizontal" ng-form="cssform">
         <div class="control-group">
             <label class="col-sm-3 control-label"  for='cssName'><g:message code="sspb.css.cssManager.cssName.label" /></label>
             <div class="col-sm-9">
-                <input name="cssName" id='cssName' class="form-control" ng-model='cssName' required maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/" />
-                <span ng-messages="cssform.cssName.$error" role="alert" class="fieldValidationMessage">
-                    <span ng-message="pattern" ><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" /></span>
-                    <span ng-message="required" > <g:message code="sspb.page.visualbuilder.name.required.message" /></span>
-                </span>
+                <input tabindex="0" name="cssName" id='cssName' class="form-control" ng-model='cssName' required maxlength="60" ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/" ng-blur="validateCssName($event.target);" />
             </div>
         </div>
         <div class="control-group">
             <label class="col-sm-3 control-label"  for='desc'><g:message code="sspb.css.cssManager.description.label" /></label>
             <div class="col-sm-9">
-                <input name="description" id='desc' class="form-control" ng-model='description' maxlength="255"/>
+                <input tabindex="0" name="description" id='desc' class="form-control" ng-model='description' maxlength="255"/>
             </div>
         </div>
 
         <div class="control-group">
             <label class="col-sm-3 control-label" for='source'><g:message code="sspb.css.cssManager.cssSource.label" /></label>
             <div class="col-sm-9">
-                <textarea ng-model='cssSource' class="form-control" rows="9" id='source'></textarea>
+                <textarea tabindex="0" ng-model='cssSource' class="form-control" rows="9" id='source'></textarea>
             </div>
         </div>
     </div>
-    <textArea name="statusMessage" readonly="true" ng-model="cssStatus.message" aria-label="Status Message"
+    <textArea tabindex="0" name="statusMessage" readonly="true" ng-model="cssStatus.message" aria-label="Status Message"
               rows="3" cols="120" style="width:99%; height:10%"></textArea>
 </div>
 

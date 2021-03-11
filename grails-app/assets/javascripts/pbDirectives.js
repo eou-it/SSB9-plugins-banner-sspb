@@ -1,5 +1,5 @@
 /*******************************************************************************
- Copyright 2013-2018 Ellucian Company L.P. and its affiliates.
+ Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
  *******************************************************************************/
 
 'use strict';
@@ -59,8 +59,11 @@ pagebuilderModule.directive('pbArrayofmap', function() {
                 $scope.newValue=undefined;
 
                 // modal dialog functions
-                $scope.openArrayOfMapEditModal = function (array) {
+                $scope.openArrayOfMapEditModal = function (array, $event) {
                     $scope.arrayOfMapEditShouldBeOpen = true;
+                    $scope.arrayOfMapElement = $event.target;
+                    $scope.arrayOfMapElement.blur();
+                    setTimeout(function(){$("#pbid-arrayOfMapTable").focus(); },0);
                 };
 
                 $scope.closeArrayOfMapEditModal = function () {
@@ -68,17 +71,23 @@ pagebuilderModule.directive('pbArrayofmap', function() {
                     // cause ng-change function passed to the directive to be applied
                     $scope.pbChange();
                     //$scope.handlePageTreeChange();
+                    $scope.arrayOfMapElement.focus();
                 };
 
                 $scope.cancelArrayOfMapEditModal = function() {
                     $scope.arrayOfMapEditShouldBeOpen = false;
+                    $scope.arrayOfMapElement.focus();
                 };
 
                 $scope.arrayOfMapEditModalOpts = {
                     backdropFade: true,
                     dialogFade:true
                 };
-
+                $scope.closePBArrayMap_Popup = function ($event){
+                    if($event.keyCode === 27 || $event.which === 27){
+                        $scope.arrayOfMapElement.focus();
+                    }
+                };
             }],
         replace:true
     }
@@ -133,8 +142,11 @@ pagebuilderModule.directive('pbMap', function() {
                 $scope.newValue=undefined;
 
                 // modal dialog functions
-                $scope.openMapEditModal = function (map) {
+                $scope.openMapEditModal = function (map, $event) {
                     $scope.mapEditShouldBeOpen = true;
+                    $scope.mapClickedElement = $event.target;
+                    $scope.mapClickedElement.blur();
+                    setTimeout(function(){$("#pbid-MapTable").focus(); },0);
                 };
 
                 $scope.closeMapEditModal = function () {
@@ -142,10 +154,18 @@ pagebuilderModule.directive('pbMap', function() {
                     // cause ng-change function passed to the directive to be applied
                     $scope.pbChange();
                     //$scope.handlePageTreeChange();
+                    $scope.mapClickedElement.focus();
                 };
 
                 $scope.cancelMapEditModal = function() {
                     $scope.mapEditShouldBeOpen = false;
+                    $scope.mapClickedElement.focus();
+                };
+
+                $scope.closePBMap_Popup = function ($event){
+                     if($event.keyCode === 27 || $event.which === 27){
+                         $scope.mapClickedElement.focus();
+                     }
                 };
 
                 $scope.mapEditModalOpts = {
@@ -188,8 +208,10 @@ pagebuilderModule.directive('pbTextarea', function() {
                 };
 
                 // modal dialog functions
-                $scope.openTextareaModal = function () {
+                $scope.openTextareaModal = function ($event) {
                     $scope.textareaShouldBeOpen = true;
+                    $scope.clickedElement = $event.target;
+                    setTimeout(function(){$(".pbtextarea").focus(); },0);
                 };
 
                 $scope.closeTextareaModal = function () {
@@ -197,10 +219,18 @@ pagebuilderModule.directive('pbTextarea', function() {
                     // cause ng-change function passed to the directive to be applied
                     $scope.pbChange();
                     //$scope.handlePageTreeChange();
+                    $scope.clickedElement.focus();
                 };
 
                 $scope.cancelTextareaModal = function() {
                     $scope.textareaShouldBeOpen = false;
+                    $scope.clickedElement.focus();
+                };
+
+                $scope.closeTextArea_Popup = function ($event){
+                    if($event.keyCode === 27 || $event.which === 27){
+                        $scope.clickedElement.focus();
+                    }
                 };
 
                 $scope.textareaModalOpts = {
@@ -224,7 +254,7 @@ pagebuilderModule.directive('pbCombo', function() {
             "<select ng-show='showSelect' ng-model='value'  ng-options='val for val in sourceList' ng-change='processInput()'></select>" +
             "<button ng-show='showSelect' class='btn btn-xs' ng-click='loadSourceList()'>{{loadSourceLabel}}</button>" +
             "<button ng-show='showSelect' class='btn btn-xs' ng-click='showSelect=false'>{{editValueLabel}}</button>" +
-            "<input ng-show='!showSelect' type='text' ng-model='value' ng-change='processInput()'/>" +
+            "<input ng-show='!showSelect' type='text' ng-model='value' ng-change='processInput()' aria-label='{{pbAttrname}}'/>" +
             "<button ng-show='!showSelect' class='btn btn-xs' ng-click='showSelect=true'>{{selectLabel}}</button>" +
             "</span>",
         controller: ['$scope', '$element', '$attrs', '$transclude',
@@ -263,6 +293,11 @@ pagebuilderModule.directive('pbUpload', function() {
         templateUrl: '../assets/angular/pbUpload.html',
         controller: ['$scope', '$element', '$attrs', '$transclude',
             function($scope, $element, $attrs, $transclude) {
+                $scope.handledEscapeKey = function (e){
+                    if (e.which === 27) {
+                        $("#pbid-upload-stylesheet").focus();
+                    }
+                };
                 $scope.complete = function(content, completed) {
                     $scope.uploadResponse = content;
 
@@ -274,19 +309,28 @@ pagebuilderModule.directive('pbUpload', function() {
                 // modal dialog functions
                 $scope.openUploadModal = function () {
                     $scope.uploadShouldBeOpen = true;
+                    setTimeout(function(){$("#pbid-cssName-upload").focus(); },0);
+
+                  /*  $("#pbid-upload-stylesheet").blur(function () {
+                        $("#pbid-cssName-upload").focus();
+                    });*/
+
                 };
 
                 $scope.closeUploadModal = function () {
                     $scope.uploadShouldBeOpen = false;
+                    $("#pbid-upload-stylesheet").focus();
                 };
 
                 $scope.cancelUploadModal = function() {
                     $scope.uploadShouldBeOpen = false;
+                    $("#pbid-upload-stylesheet").focus();
                 };
 
                 $scope.uploadModalOpts = {
                     backdropFade: true,
                     dialogFade:true
+
                 };
 
                 $scope.i18n = {

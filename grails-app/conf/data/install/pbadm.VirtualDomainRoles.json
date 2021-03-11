@@ -2,7 +2,7 @@
    "constantName": "pbadm.VirtualDomainRoles",
    "developerSecurity": [],
    "extendsPage": null,
-   "fileTimestamp": "2020-07-23T06:35:53Z",
+   "fileTimestamp": "2021-03-08T11:49:16Z",
    "modelView": {
       "components": [
          {
@@ -36,17 +36,23 @@
                   "onLoad": "$editVirtualDomainRoles.$load();$EditRolesForm.$visible=$selectVirtualDomain; $roleName.$populateSource();",
                   "model": "selectVirtualDomain",
                   "sourceModel": "virtualDomainLookup1",
-                  "style": "rTableCell",
+                  "style": "col-sm-6 rTableCell",
                   "placeholder": "Select...",
                   "labelKey": "SERVICE_NAME",
                   "valueKey": "VID",
                   "onUpdate": "$editVirtualDomainRoles.$load();\n$EditRolesForm.$visible=$selectVirtualDomain;\n $roleName.$populateSource();\n$allowModify = window.localStorage['allowModify'];\nwindow.localStorage['allowModify'] = \"\";"
                },
                {
+                  "name": "domainRolesEmptyBlockForLineBreak",
+                  "style": "divAlign",
+                  "showInitially": true,
+                  "type": "block"
+               },
+               {
                   "valueStyle": "primary",
                   "onClick": "var baseUrl = location.origin; \nvar path = \"/BannerExtensibility/virtualDomainComposer/loadVirtualDomain\";\nvar url = baseUrl + path;\nif($selectVirtualDomain && $CONSTANT_NAME){\nupdateLocalStorage($CONSTANT_NAME, $selectVirtualDomain);\n}\nlocation.assign(url);",
                   "name": "virtualDomainComposerButton",
-                  "style": "col-sm-6 rTableCell divAlignToRight",
+                  "style": "col-sm-6 divAlignToRight",
                   "label": "Virtual Domain Composer",
                   "type": "button"
                }
@@ -147,12 +153,11 @@
                   "allowNew": true,
                   "onSaveSuccess": "var saveAction = \"saved\";\n\nif (action == 'D')\n  {\n    saveAction = \"deleted\";\n  }\nalert( \"Virtual Domain role \" + response.ROLE_NAME  + ' ' + saveAction,{type:\"success\", flash:true});",
                   "pageSize": 5,
-                  "label": "Edit Roles for selected virtual domain",
                   "loadInitially": true,
                   "type": "grid",
                   "name": "editVirtualDomainRoles",
                   "allowModify": true,
-                  "onLoad": "setTimeout(function(){ \nif($allowModify === 'true'){\n$('#pbid-EditRolesForm :input').attr('disabled', true);\n$editVirtualDomainRolesGrid.enableCellSelection=false;\n$editVirtualDomainRolesGrid.ngGrid.config.enableRowSelection=false;\n}\n }, 0);",
+                  "onLoad": "setTimeout(function(){ \nif($allowModify === 'true'){\n$('#pbid-EditRolesForm :input').attr('disabled', true);\n$editVirtualDomainRolesGrid.enableCellSelection=false;\n$editVirtualDomainRolesGrid.enableRowSelection=false;\n$editVirtualDomainRolesgridApi.core.notifyDataChange( uiGridConstants.dataChange.OPTIONS);   \n}\n }, 0);",
                   "model": "virtualDomainRoles",
                   "allowReload": true,
                   "parameters": {
@@ -162,6 +167,7 @@
             ],
             "name": "EditRolesForm",
             "showInitially": false,
+            "label": "Edit Roles for selected virtual domain",
             "type": "block"
          }
       ],

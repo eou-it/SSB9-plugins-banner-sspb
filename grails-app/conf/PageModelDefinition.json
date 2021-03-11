@@ -1,7 +1,7 @@
 {
     "name":"ellucian Page Builder Model",
-    "date":"2016-06-30",
-    "version":"0.3",
+    "date":"2020-11-11",
+    "version":"0.3.1",
     "definitions": {
         "componentTypeDefinition": [
             {
@@ -21,14 +21,14 @@
             {
                 "componentType":["block"],
                 "requiredAttributes":[],
-                "optionalAttributes":["label", "style", "showInitially"],
+                "optionalAttributes":["label", "style", "showInitially", "role"],
                 "requiredChildren":[],
                 "optionalChildren":["form", "block", "grid", "htable", "detail",  "select", "radio", "list", "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
             },
             {
                 "componentType":["form"],
                 "requiredAttributes":[],
-                "optionalAttributes":["label", "style", "submit","submitLabel", "nextButtonLabel", "showInitially"],
+                "optionalAttributes":["label", "style", "submit","submitLabel", "nextButtonLabel", "showInitially", "role"],
                 "requiredChildren":[],
                 "optionalChildren":["block", "grid", "htable", "detail",  "select", "radio", "list",  "data", "literal", "display", "text", "textArea", "number", "datetime", "email", "tel", "link", "boolean", "button" ]
             },
@@ -169,7 +169,7 @@
         "sourceRenderDefinitions" : [
             {"AttributeType":[  "title", "label", "style", "objectName", "importCSS", "submitLabel", "model", "placeholder", "labelKey", "valueKey", "sourceModel",
                 "booleanTrueValue", "booleanFalseValue", "imageUrl", "url", "labelStyle", "valueStyle","newRecordLabel","deleteRecordLabel","saveDataLabel",
-                "refreshDataLabel" ,"pageURL"], "renderProperty":{"inputType":"text"}},
+                "refreshDataLabel" ,"pageURL", "role"], "renderProperty":{"inputType":"text"}},
             {"AttributeType":["type"], "renderProperty":{"inputType":"select"}},
             {"AttributeType":["submit", "value", "onUpdate", "onBlur", "onFocus", "onClick", "onLoad", "onSave", "onSaveSuccess", "onError", "sequence", "description", "documentation"], "renderProperty":{"inputType":"textarea"}},
             {"AttributeType":["validation"],"renderProperty":{"inputType":"map"}},

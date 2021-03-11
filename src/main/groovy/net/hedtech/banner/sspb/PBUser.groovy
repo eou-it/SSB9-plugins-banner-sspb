@@ -21,12 +21,13 @@ class PBUser {
 
     static def get() {
         def userIn = SecurityContextHolder?.context?.authentication?.principal
-        if (userIn && PBSessionTracker.cachedMap.containsKey(userIn?.username)) {
+        def username = userIn ? userIn?.username : "_anonymousUser"
+        if (userIn && PBSessionTracker.cachedMap.containsKey(username)) {
             LogFactory.getLog(this).info "Getting cache PB User $userIn"
-            return PBSessionTracker.cachedMap.get(userIn?.username)
+            return PBSessionTracker.cachedMap.get(username)
         }
         LogFactory.getLog(this).info "Getting new PB User $userIn"
-        PBSessionTracker.cachedMap.put(userIn?.username, [:])
+        PBSessionTracker.cachedMap.put(username, [:])
         Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>()
         //avoid direct dependency on BannerUser
         if (userIn?.class?.name?.endsWith('BannerUser')) {
@@ -37,19 +38,19 @@ class PBUser {
                     authorities << [objectName: it.objectName, roleName: it.roleName]
                 }
             }
-            PBSessionTracker.cachedMap.get(userIn?.username) << [authenticated : true, pidm: userIn.pidm, gidm: userIn.gidm, loginName: userIn.username,
+            PBSessionTracker.cachedMap.get(username) << [authenticated : true, pidm: userIn.pidm, gidm: userIn.gidm, loginName: userIn.username,
                                                                  fullName: userIn.fullName,
                                                                  oracleUserName: userIn?.oracleUserName?.toUpperCase() ?: '', authorities: authorities]
 
         } else {
-            PBSessionTracker.cachedMap.get(userIn?.username) << [authenticated : false, pidm: null, gidm: null, loginName: userIn ? userIn?.username : "_anonymousUser",
+            PBSessionTracker.cachedMap.get(username) << [authenticated : false, pidm: null, gidm: null, loginName: userIn ? userIn?.username : "_anonymousUser",
                                                                  oracleUserName: '',
                                                                  fullName      : localizer(code: "sspb.renderer.page.anonymous.full.name"), authorities: authorities]
         }
         //give user guest role to be consistent with ability to view pages with IS_AUTHENTICATED_ANONYMOUSLY role
-        PBSessionTracker.cachedMap.get(userIn?.username).authorities << [objectName: "SELFSERVICE-GUEST", roleName: "BAN_DEFAULT_M"]
+        PBSessionTracker.cachedMap.get(username).authorities << [objectName: "SELFSERVICE-GUEST", roleName: "BAN_DEFAULT_M"]
 
-        return PBSessionTracker.cachedMap.get(userIn?.username)
+        return PBSessionTracker.cachedMap.get(username)
     }
 
     //Dont include data that should not be exposed

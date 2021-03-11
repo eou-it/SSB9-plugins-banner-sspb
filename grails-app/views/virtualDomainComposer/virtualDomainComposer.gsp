@@ -1,5 +1,5 @@
 <%--
-Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page import="net.hedtech.banner.virtualDomain.VirtualDomain" %>
 <!DOCTYPE html>
@@ -18,25 +18,48 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 
     <%
         if (pageInstance?.submitted) {
-            out << "<script>"
+            out << "<script> \$(window).load(function() { setTimeout(function(){ "
             if (pageInstance?.saveSuccess) {
-                out << """alert('${message(code:"sspb.page.virtualdomain.save.ok.message", args:[pageInstance.id,pageInstance.version])}');"""
+                out << """
+                    notifications.addNotification(new Notification({
+                        message: '${message(code:"sspb.page.virtualdomain.save.ok.message", args:[pageInstance.id,pageInstance.version])}',
+                        type: "success",
+                        flash: true
+                    }));"""
             } else {
-                out << """alert('${message(code:"sspb.page.virtualdomain.save.fail.message", args:[pageInstance?.error?.replaceAll('[\r\n]','')])}');"""
+                out << """
+                    notifications.addNotification(new Notification({
+                        message: '${message(code: "sspb.page.virtualdomain.save.fail.message", args: [pageInstance?.error?.replaceAll('[\\r\\n]', '')])}',
+                        type: "error",
+                        flash: true,
+                        component:\$('#selectIndex')
+                    }));"""
             }
-            out << "</script>"
+            out << "}, 100)})</script>"
         }
     %>
     <%
         if (pageInstance?.loadSubmitted) {
-            out << "<script>"
+            out << "<script>  \$(window).load(function() { setTimeout(function(){"
             if (!pageInstance?.loadSuccess)
-                out << """alert('${message(code:"sspb.page.virtualdomain.load.fail.message", args:[pageInstance?.error?.replaceAll('[\r\n]','')])}');"""
-            out << "</script>"
+                out << """
+                notifications.addNotification(new Notification({
+                        message: '${message(code: "sspb.page.virtualdomain.load.fail.message", args: [pageInstance?.error?.replaceAll('[\\r\\n]', '')])}',
+                        type: "error",
+                        flash: true,
+                        component:\$('#selectIndex')
+                    }));"""
+            out << " }, 100)})</script>"
         }
     %>
 
     <Script type="text/javascript">
+
+        function preventDefault() {
+            if(event.which==13 || event.keyCode==13){
+                event.preventDefault();
+            }
+        }
         function showDomainRoles(id, name){
             var allowModify ="${!pageInstance?.allowModify}"
 
@@ -57,20 +80,24 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 </head>
 <body>
 <div id="content"  class="customPage container-fluid vdPage" role="main">
-    <h3><g:message code="sspb.page.virtualdomain.heading" /></h3>
+    <h1><g:message code="sspb.page.virtualdomain.heading" /></h1>
     <div class="vd-section">
         <g:form name="LoadVDForm" action="loadVirtualDomain" aria-label="Load Virtual Domain">
+            <span role="application">
             <label for="vdServiceName"><g:message code="sspb.page.virtualdomain.select.label" /></label>
-
             <g:select id="vdServiceName" name="vdServiceName" from="${[['serviceName': (pageInstance?.vdServiceName?:'')]]}"
                       class="popupSelectBox pbPopupDataGrid:{'serviceNameType':'virtualdomains','id':'vdServiceName'}"
                       value="${pageInstance?.vdServiceName}"
                       noSelection="${['null':message(code:"sspb.page.virtualdomain.select.noselection.label")]}"
                       optionKey="serviceName"
                       optionValue="serviceName"
+                      tabindex="0"
                       onChange="this.form.submit()"
+                      role="group" aria-label="${message(code:"sspb.general.lookup.title")}"
             />
+        </span>
         </g:form>
+
 
 
     </div>
@@ -78,20 +105,18 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
     <g:form name="ComposeVDForm" action="saveVirtualDomain">
         <div class="vd-section-2">
             <label for="pbid-saveVD"><g:message code="sspb.page.virtualdomain.servicename.label" /></label>
-            <input id="pbid-saveVD" maxlength="60"  pattern="^[a-zA-Z]+[a-zA-Z0-9_-]*$" type="text" name="vdServiceName" value="${pageInstance?.vdServiceName}" required />
+            <input id="pbid-saveVD" maxlength="60" type="text" name="vdServiceName" value="${pageInstance?.vdServiceName}" required onblur="validateName(this)" />
 
             <g:actionSubmit action="saveVirtualDomain" role="button" ng-disabled="${!isProductionReadOnlyMode || !(pageInstance?.allowModify==null ? true: pageInstance?.allowModify)}" class="primary" value="${message(code:"sspb.page.virtualdomain.save.label")}" />
             <g:actionSubmit action="deleteVirtualDomain" role="button" ng-disabled="${!isProductionReadOnlyMode || !(pageInstance?.allowModify==null ? true: pageInstance?.allowModify)}"  class="secondary" value="${message(code:"sspb.page.virtualdomain.delete.label")}" />
             <g:if test="${pageInstance?.vdServiceName}">
                 <input type="button" class="secondary" role="button" value="${message(code:"sspb.page.virtualdomain.roles.label")}" onclick="showDomainRoles('${pageInstance?.id}','${pageInstance?.vdServiceName}')"/>
                 <input type="button" class="secondary" role="button" value="${message(code:"sspb.css.cssManager.developer.label")}" onclick="getDeveloperSecurityPage('${pageInstance?.id}','${pageInstance?.vdServiceName}')"/>
-                <span class="alignRight">
+                <span class="alignRight" id="ownersec" role="application">
                     <label class="vpc-name-label dispInline" for="vdOwner"><g:message code="sspb.vd.visualbuilder.vdowner.label" /></label>
-                    <g:select id="vdOwner" class="owner-select alignRight" name="owner" ng-disabled="${!(pageInstance?.allowUpdateOwner==null ? true: pageInstance?.allowUpdateOwner)}" noSelection="${['null':'']}"
-                              value="${pageInstance?.owner?:''}" from="${userDetailsInList}" optionKey="USER_ID" optionValue="USER_ID">
+                    <g:select id="vdOwner" role="listbox" class="owner-select alignRight" name="owner" ng-disabled="${!(pageInstance?.allowUpdateOwner==null ? true: pageInstance?.allowUpdateOwner)}" noSelection="${['null':'']}"
+                              value="${pageInstance?.owner?:''}" from="${userDetailsInList}" optionKey="USER_ID" optionValue="USER_ID" onKeyPress="preventDefault()">
                     </g:select>
-                   %{-- <select class="owner-select vd-select-width" id="pageOwner" onchange="onChangeOfOwner()">
-                    </select>--}%
                 </span>
 %{--
                 <g:textField name="owner" id="vdowner"  style="display:none;" />
@@ -100,35 +125,37 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
         </div>
 
 
-        <table role="grid">
-            <thead role="rowgroupw">
+        <table role="table" id="virtualDomain-table1">
+            <thead role="rowgroup">
                 <tr role="row">
-                    <th align = left id="vdQueryStatement" ><g:message code="sspb.page.virtualdomain.query.heading"/></th> <th align = left id="vdDeleteStatement"><g:message code="sspb.page.virtualdomain.delete.heading" /></th>
+                    <th role="columnheader" align = left id="vdQueryStatement" ><g:message code="sspb.page.virtualdomain.query.heading"/></th>
+                    <th role="columnheader" align = left id="vdDeleteStatement"><g:message code="sspb.page.virtualdomain.delete.heading" /></th>
                 </tr>
             </thead>
             <tbody role="rowgroup">
                 <tr role="row">
-                    <td role="gridcell">
-                        <g:textArea name="vdQueryView" aria-labelledby="vdQueryStatement" value="${pageInstance?.vdQueryView}" rows="20" cols="60" style="width:100%" required="true" tabindex="0"/>
+                    <td role="cell">
+                        <g:textArea  id="selectIndex" name="vdQueryView" aria-labelledby="vdQueryStatement" value="${pageInstance?.vdQueryView}" rows="20" cols="60" style="width:100%" required="true" tabindex="0"/>
                     </td>
-                    <td role="gridcell">
+                    <td role="cell">
                         <g:textArea name="vdDeleteView" aria-labelledby="vdDeleteStatement" value="${pageInstance?.vdDeleteView}" rows="20" cols="60" style="width:100%" tabindex="0"/>
                     </td>
                 </tr>
             </tbody>
         </table>
-        <table role="grid">
+        <table role="table" id="virtualDomain-table2">
             <thead role="rowgroup">
                 <tr role="row">
-                    <th align = left id="vdPostStatement"><g:message code="sspb.page.virtualdomain.post.heading" /></th> <th align = left id="vdPutStatement"><g:message code="sspb.page.virtualdomain.put.heading" /></th>
+                    <th role="columnheader" align = left id="vdPostStatement"><g:message code="sspb.page.virtualdomain.post.heading" /></th>
+                    <th role="columnheader" align = left id="vdPutStatement"><g:message code="sspb.page.virtualdomain.put.heading" /></th>
                 </tr>
             </thead>
             <tbody role="rowgroup">
                 <tr role="row">
-                    <td role="gridcell">
+                    <td role="cell">
                         <g:textArea name="vdPostView" aria-labelledby="vdPostStatement" value="${pageInstance?.vdPostView}" rows="20" cols="60" style="width:100%"  tabindex="0"/>
                     </td>
-                    <td role="gridcell">
+                    <td role="cell">
                         <g:textArea name="vdPutView" aria-labelledby="vdPutStatement" value="${pageInstance?.vdPutView}" rows="20" cols="60" style="width:100%" tabindex="0"/>
                     </td>
                 </tr>
@@ -183,7 +210,9 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                            var n = new Notification( {
                                 message: msg,
                                 type:"error",
-                                promptMessage: \$.i18n.prop("js.net.hedtech.banner.ajax.reload.prompt")
+                                promptMessage: \$.i18n.prop("js.net.hedtech.banner.ajax.reload.prompt"),
+                                id : 'vdPostView',
+                                component :'textarea'
                            });
 
                            n.addPromptAction( \$.i18n.prop("js.net.hedtech.banner.ajax.reload.button"),

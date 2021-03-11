@@ -1,5 +1,5 @@
 <%--
-Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
+Copyright 2013-2021 Ellucian Company L.P. and its affiliates.
 --%>
 <%@ page import="net.hedtech.banner.sspb.PageComponent" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
@@ -53,6 +53,9 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 note.type = note.type||noteType.success;
                 note.flash = note.flash||true;
                 note.message = note.message.replace(/\n/g, "<br />");
+                if(note.type=='error'){
+                    note.component = $('#constantName');
+                }
                 notifications.addNotification(new Notification(note));
             };
 
@@ -62,6 +65,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 if (!stay){
                     note.flash = true;
                 }
+                note.component = $('#constantName');
                 notifications.addNotification(new Notification(note));
             };
 
@@ -309,6 +313,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 tr['attribute.labelStyle'       ]="${message(code:'sspb.model.attribute.labelStyle')}";
                 tr['attribute.valueStyle'       ]="${message(code:'sspb.model.attribute.valueStyle')}";
                 tr['attribute.pageURL'          ]="${message(code:'sspb.model.attribute.pageUrl')}";
+                tr['attribute.role'             ]="${message(code:'sspb.model.attribute.role')}";
 
                 tr['attribute.newRecordLabel'   ]="${message(code:'sspb.model.attribute.newRecordLabel')}";
                 tr['attribute.deleteRecordLabel']="${message(code:'sspb.model.attribute.deleteRecordLabel')}";
@@ -471,11 +476,12 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             };
 
 
-            $scope.addChild = function(parent) {
+            $scope.addChild = function(parent,event) {
                 //console.log("addChild");
                 $scope.validChildTypes = $scope.findAllChildrenTypes(parent.type);
                 // TODO make sure the children are expanded if appending a new component
                 //$scope.showChildren = true;
+                $scope.backdropElementId = event.target.id
                 $scope.openTypeSelectionModal(parent, -1);
                 // delay adding node until the type selection is made
             };
@@ -483,9 +489,10 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             /*
                 Insert a new child component to 'data' at location 'index'
              */
-            $scope.insertSibling = function(parent, index) {
+            $scope.insertSibling = function(parent, index, event) {
                 //console.log("addChild");
                 $scope.validChildTypes = $scope.findAllChildrenTypes(parent.type);
+                $scope.backdropElementId = event.target.id
                 $scope.openTypeSelectionModal(parent, index);
             };
 
@@ -511,7 +518,14 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                         $scope.statusHolder.noDirtyCheck = false;
                     }, 100); //Give some time to digest and enable the dirty checki
                     $scope.lastFocusedElementId = "pbid-" + data.name;
-                    $("#pbid-cmpView").focus();
+
+                    if ($("#pbid-cmpView").length === 0) {
+                        setTimeout(function () {
+                            $("#pbid-cmpView").focus();
+                        }, 0);
+                    } else {
+                        $("#pbid-cmpView").focus();
+                    }
                 }
             };
 
@@ -556,6 +570,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                 $scope.shouldBeOpen = true;
                 $scope.newParent = parent;
                 $scope.newIndex = index;
+                setTimeout(function(){$("#pbid-selectCmpt").focus(); },0);
             };
 
             $scope.closeTypeSelectionModal = function (event) {
@@ -581,6 +596,19 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 
             $scope.cancelTypeSelectionModal = function() {
                 $scope.shouldBeOpen = false;
+                $("#"+$scope.backdropElementId).focus();
+            };
+
+            $scope.handledEscapeKey = function (e){
+                if (e.which === 27) {
+                    $("#"+$scope.backdropElementId).focus();
+                }
+            };
+
+            $scope.switchToParentField = function (e) {
+                if (e.which === 27) {
+                    $scope.focusOnLastElement();
+                }
             };
 
             $scope.typeSelectionModalOpts = {
@@ -813,6 +841,9 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                     //$scope.handlePageTreeChange();
                     $scope.statusHolder.isPageModified = false;
                 }
+                setTimeout(function () {
+                    $("#saveAsInput").focus();
+                }, 0);
             };
 
             //check if page name is changed, display confirmation msg.
@@ -894,7 +925,8 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                             note.type  = noteType.error;
                             $scope.pageStatus.message = $scope.i18nGet(msg, [response.statusMessage, err]);
                         }
-                        note.message = $scope.pageStatus.message
+                        note.message = $scope.pageStatus.message;
+                        note.elementToFocus = $('#constantName');
                         $scope.alertNote(note);
                         $scope.pageStatus.message = $filter('date')(new Date(), 'medium') + ': ' + $scope.pageStatus.message;
                         // refresh the page list in case new page is added
@@ -966,7 +998,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
             $scope.deletePage = function () {
                 Page.remove({constantName:$scope.pageCurName }, function() {
                     // on success
-                    $scope.alertNote({message: "${message(code:'sspb.page.visualbuilder.deletion.success.message', encodeAs: 'JavaScript')}"});
+                    $scope.alertNote({message: "${message(code:'sspb.page.visualbuilder.deletion.success.message', encodeAs: 'JavaScript')}", elementToFocus: $('#constantName')});
 
                     // clear the page name field and page source
                     $scope.pageCurName = "";
@@ -1075,12 +1107,16 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                     $(this).attr('selected', 'selected');
 
                 });
+
             }
 
             $scope.resetOwner = function (){
                 $scope.pageOwner = user.oracleUserName;
                 $scope.allowUpdateOwner = true;
                 $scope.allowModify = true;
+                setTimeout(function () {
+                    $("#saveAsInput").focus();
+                }, 0);
             }
             //run initialize when the controller is ready
             $scope.initialize();
@@ -1089,6 +1125,9 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                angular.element(document.getElementById($scope.lastFocusedElementId)).focus();
             }
 
+            $scope.validatePageName = function(valObj) {
+                validateName(valObj);
+            }
         }
 
         function upperCaseF(e) {
@@ -1107,67 +1146,65 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
 <div id="content" role="main" ng-controller="VisualPageComposerController" class="customPage container-fluid" ng-form="pagemodelform">
 
     <div class="btn-section">
+        <span role="application">
         <label class="vpc-name-label" for="constantName"><g:message code="sspb.page.visualbuilder.load.label" /> </label>
-        <select id="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'constantName'}" name="constantName"
+        <select tabindex="0" id="constantName" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'constantName'}" name="constantName"
                 ng-model="pageName"
-                ng-change="getPageSource();saveAs=false;">
+                ng-change="getPageSource();saveAs=false;" role="group" aria-label="${message(code:"sspb.general.lookup.title")}" >
             <option label="{{pageName}}" value="{{pageName}}">{{pageName}}</option>
 
         </select>
+        </span>
 
-        <button id="reload-btn" ng-click='loadPageNames(); saveAs=false;' title="${message( code:'sspb.page.visualbuilder.reload.pages.label')}" ng-show="false" aria-label="Reload"/> </i> </button>
-        <button ng-click='newPageSource();resetPageNameData();' ng-disabled="${!isProductionReadOnlyMode}" class="primary" ><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
-        <button ng-click='resetOwner(); saveAs=true;' ng-show="pageName && pageName!=newPageName" ng-disabled="${!isProductionReadOnlyMode}" class="secondary"> <g:message code="sspb.page.visualbuilder.save.as.label" /></button>
+        <button tabindex="0" id="newPageBtn" ng-click='newPageSource();resetPageNameData();' ng-disabled="${!isProductionReadOnlyMode}" class="primary" ><g:message code="sspb.page.visualbuilder.new.page.label" /></button>
+        <button tabindex="0" id="saveAsPageBtn" ng-click='resetOwner(); saveAs=true;' ng-show="pageName && pageName!=newPageName" ng-disabled="${!isProductionReadOnlyMode}" class="secondary"> <g:message code="sspb.page.visualbuilder.save.as.label" /></button>
         <span ng-hide="pageCurName == pageName && !saveAs">
             <label class="vpc-name-label" for="saveAsInput"><g:message code="sspb.page.visualbuilder.name.label" /></label>
-            <input id="saveAsInput" class="vpc-name-input" type="text" name="constantNameEdit" ng-model="pageCurName" required maxlength="60"
-                   placeholder='<g:message code="sspb.page.visualbuilder.new.page.label" />' ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/">
-
-            <span ng-messages="pagemodelform.constantNameEdit.$error" role="alert" class="fieldValidationMessage">
-                <span ng-message="pattern" ><g:message code="sspb.page.visualbuilder.name.invalid.pattern.message" /></span>
-                <span ng-message="required" > <g:message code="sspb.page.visualbuilder.name.required.message" /></span>
-            </span>
+            <input tabindex="0"  id="saveAsInput" class="vpc-name-input" type="text" name="constantNameEdit" ng-model="pageCurName" required maxlength="60"
+                   ng-pattern="/^[a-zA-Z]+[a-zA-Z0-9\._-]*$/" placeholder='<g:message code="sspb.page.visualbuilder.new.page.label" />' ng-blur="validatePageName($event.target);">
         </span>
     </div>
 
     <div class="btn-section-2">
+        <span role="application">
         <label class="vpc-name-label" for="extendsPage"><g:message code="sspb.page.visualbuilder.extends.label" /></label>
-        <select id="extendsPage" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'extendsPage'}" name="extendsPage"
+        <select tabindex="0" id="extendsPage" class="popupSelectBox vpc-name-input pbPopupDataGrid:{'serviceNameType':'pages','id':'extendsPage'}" name="extendsPage"
                 ng-model="extendsPageName"
-                ng-change="getExtendsPage();saveAs=false;">
+                ng-change="getExtendsPage();saveAs=false;" role="group" aria-label="${message(code:"sspb.general.lookup.title")}" >
             <option label="{{extendsPageName}}" value="{{extendsPageName}}">{{extendsPageName}}</option>
         </select>
+        </span>
 
-        <button ng-show="pageName && pageCurName && pageCurName != newPageName" ng-click='validateAndSubmitPageSource(); saveAs=false;updatePageName();'
+        <button tabindex="0" id="saveBtn" ng-show="pageName && pageCurName && pageCurName != newPageName" ng-click='validateAndSubmitPageSource(); saveAs=false;updatePageName();'
                 ng-disabled='sourceEditEnabled || !pagemodelform.$valid || !allowModify' class="primary"><g:message code="sspb.page.visualbuilder.compile.save.label" /></button>
-        <button ng-show="pageName && pageName != newPageName" ng-click="getPageSource(); saveAs=false;" class="secondary"><g:message code="sspb.page.visualbuilder.reload.label" /></button>
-        <button ng-show="pageName && pageCurName && pageName != newPageName"    ng-click="previewPageSource()" class="secondary"><g:message code="sspb.page.visualbuilder.preview.label" /></button>
-        <button ng-show="pageName && pageCurName && pageName != newPageName"  ng-disabled="!allowModify"  ng-click='deletePageSource(); saveAs=false;' class="secondary"><g:message code="sspb.page.visualbuilder.delete.label" /></button>
-        <button id="pageRoleId" value="" ng-show="pageName && pageName != newPageName"  ng-click="showRolesPage(); saveAs=false;" class="secondary"><g:message code="sspb.page.visualbuilder.roles.label" /></button>
-        <button value="" ng-show="pageName && pageName != newPageName" ng-click="getDeveloperSecurityPage(); saveAs=false;" class="secondary"><g:message code="sspb.css.cssManager.developer.label" /></button>
-        <span ng-show="pageName && pageCurName && pageName != newPageName" class="alignRight">
+        <button tabindex="0" id="reloadBtn" ng-show="pageName && pageName != newPageName" ng-click="getPageSource(); saveAs=false;" class="secondary"><g:message code="sspb.page.visualbuilder.reload.label" /></button>
+        <button tabindex="0" id="previewBtn" ng-show="pageName && pageCurName && pageName != newPageName"    ng-click="previewPageSource()" class="secondary"><g:message code="sspb.page.visualbuilder.preview.label" /></button>
+        <button tabindex="0" id="deleteBtn" ng-show="pageName && pageCurName && pageName != newPageName"  ng-disabled="!allowModify"  ng-click='deletePageSource(); saveAs=false;' class="secondary"><g:message code="sspb.page.visualbuilder.delete.label" /></button>
+        <button tabindex="0" id="pageRoleId" value="" ng-show="pageName && pageName != newPageName"  ng-click="showRolesPage(); saveAs=false;" class="secondary"><g:message code="sspb.page.visualbuilder.roles.label" /></button>
+        <button tabindex="0" id="developerPageBtn" value="" ng-show="pageName && pageName != newPageName" ng-click="getDeveloperSecurityPage(); saveAs=false;" class="secondary"><g:message code="sspb.css.cssManager.developer.label" /></button>
+        <span ng-show="pageName && pageCurName && pageName != newPageName" class="alignRight" role="application">
             <label class="vpc-name-label dispInline" for="visualPageOwner"><g:message code="sspb.page.visualbuilder.pageowner.label" /></label>
             <input style="display: none" ng-model="allowUpdateOwner" aria-label="Allow Update Owner"/>
-            <select id="visualPageOwner" class="owner-select" ng-model="pageOwner"  ng-disabled="!allowUpdateOwner">
+            <select tabindex="0" role="listbox" id="visualPageOwner" class="owner-select" ng-model="pageOwner"  ng-disabled="!allowUpdateOwner">
                 <option ng-repeat="owner in pbUserList" value="{{owner}}" ng-selected="{{owner == pageOwner}}">{{owner}}</option>
             </select>
         </span>
     </div>
-    <table style="height:80%; min-width: 60em" role="grid">
+    <table style="height:80%; min-width: 60em" role="table" id="visualComposer-table">
         <thead role="rowgroup">
             <tr role="row">
-                <th style="width:50%" id="visualPageView"><g:message code="sspb.page.visualbuilder.page.view.label"/></th>
-                <th style="width:50%" id="visualPageComponentView"><g:message code="sspb.page.visualbuilder.component.propertyview.label"/></th>
+                <th role="rowheader" style="width:50%" id="visualPageView"><g:message code="sspb.page.visualbuilder.page.view.label"/></th>
+                <th role="rowheader" style="width:50%" id="visualPageComponentView"><g:message code="sspb.page.visualbuilder.component.propertyview.label"/></th>
             </tr>
         </thead>
         <tbody role="rowgroup">
         <tr height="99%" role="row">
-            <td aria-labelledby="visualPageView" role="gridcell">
+            <td aria-labelledby="visualPageView" role="cell">
                 <span ng-show="pageCurName != '' && pageCurName != 'null'">
                     <div>
                         <button class="btn btn-xs" ng-click='toggleSourceView()' ng-disabled='showTree || sourceEditEnabled'><g:message code="sspb.page.visualbuilder.page.treeview.label" /></button>
                         <button class="btn btn-xs" ng-click='toggleSourceView()' ng-disabled='!showTree'><g:message code="sspb.page.visualbuilder.page.sourceview.label" /></button>
-                        <span ng-show="!showTree" class="alignRight">
+                        <span ng-show="!showTree" >
                             <button class="btn btn-xs" ng-click='enableSourceEdit()' ng-disabled='sourceEditEnabled'><g:message code="sspb.page.visualbuilder.page.enable.edit.label" /></button>
                             <button class="btn btn-xs" ng-click='applySourceEdit()' ng-disabled='!sourceEditEnabled'><g:message code="sspb.page.visualbuilder.page.apply.change.label" /></button>
                             <button class="btn btn-xs" ng-click='discardSourceEdit()' ng-disabled='!sourceEditEnabled'><g:message code="sspb.page.visualbuilder.page.discard.change.label" /></button>
@@ -1189,13 +1226,13 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                     </div>
                 </span>
             </td>
-            <td aria-labelledby="visualPageComponentView" role="gridcell">
+            <td aria-labelledby="visualPageComponentView" role="cell" >
                 <div ng-show="dataHolder.selectedComponent!=undefined" ng-mouseover="mouseOver($event)">
                     <!--
                     <div>Selected Component = {{dataHolder.selectedComponent.type}}</div>
                     -->
 
-                    <div ng-repeat="attr in dataHolder.allAttrs">
+                    <div ng-repeat="attr in dataHolder.allAttrs" ng-keydown="switchToParentField($event)">
                         <%--span ng-if="!(attr.name=='name' && dataHolder.selectedComponent.type=='page') "--%>
                         <span ng-switch on="attrRenderProps[attr.name].inputType" >
                             <input ng-switch-when="hidden" type="hidden"/>
@@ -1206,7 +1243,7 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
                                     map='dataHolder.selectedComponent[attr.name]' pb-parent="dataHolder.selectedComponent" pb-attrname="attr.name"
                             ></pb-Map>
                             <pb-Textarea ng-switch-when="textarea" label="{{i18nGet('sspb.page.visualbuilder.edit.textarea.title' , [i18nGet('attribute.'+attr.name),dataHolder.selectedComponent.name])}}"
-                                         value='dataHolder.selectedComponent[attr.name]' pb-Parent="dataHolder.selectedComponent" pb-Attrname="attr.name"
+                                         value='dataHolder.selectedComponent[attr.name]' pb-Parent="dataHolder.selectedComponent" pb-Attrname="attr.name" aria-label="{{i18nGet('attribute.'+attr.name)}}"
                             ></pb-Textarea>
                             <pb-Combo ng-switch-when="combo"
                                       value='dataHolder.selectedComponent[attr.name]' pb-Parent="dataHolder.selectedComponent" pb-Attrname="attr.name"
@@ -1270,13 +1307,13 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
     <span id="pbid-{{data.name}}" ng-init="index=nextIndex()" ng-click="selectData(data, index, $parent.$parent.data, $event)" ng-keypress="selectData(data, index, $parent.$parent.data, $event)"
           style="{{componentLabelStyle(index == statusHolder.selectedIndex)}}" tabindex="0">{{data.name}} &lrm;[{{i18nGet('type.'+data.type)}}]&lrm;</span>
 
-    <button  aria-label="${message(code:'sspb.page.visualbuilder.insert.sibling.title')}" title="${message(code:'sspb.page.visualbuilder.insert.sibling.title')}" class="button_insert button_edit" ng-click="insertSibling($parent.$parent.data, $index)" ng-show="data.type!='page'"></button>
-    <button  aria-label="${message(code:'sspb.page.visualbuilder.append.child.title')}" title="${message(code:'sspb.page.visualbuilder.append.child.title')}" class="button_edit button_add" ng-click="addChild(data)" ng-show="findAllChildrenTypes(data.type).length>0"></button>
-    <button  aria-label="${message(code:'sspb.page.visualbuilder.moveup.component.title')}" title="${message(code:'sspb.page.visualbuilder.moveup.component.title')}" class="button_sort_asc button_edit" ng-click="moveUpComponent($parent.$parent.data, $index, index)"  ng-show="!$first"></button>
-    <button  aria-label="${message(code:'sspb.page.visualbuilder.movedown.component.title')}" title="${message(code:'sspb.page.visualbuilder.movedown.component.title')}" class="button_sort_desc button_edit" ng-click="moveDownComponent($parent.$parent.data, $index, index)"  ng-show="!$last"></button>
-    <button  aria-label="${message(code:'sspb.page.visualbuilder.delete.component.title')}" title="${message(code:'sspb.page.visualbuilder.delete.component.title')}" class="button_delete button_edit" ng-click="deleteComponent($parent.$parent.data, $index, index)"  ng-show="data.type!='page'"></button>
-    <button  aria-label="${message(code:'sspb.page.visualbuilder.copy.component.title')}" title="${message(code:'sspb.page.visualbuilder.copy.component.title')}"  class="button_copy button_edit" ng-click="copyComponent(data)" ng-show="data.type!='page'"></button>
-    <button  aria-label="${message(code:'sspb.page.visualbuilder.paste.component.title')}" title="${message(code:'sspb.page.visualbuilder.paste.component.title')}"  class="button_paste button_edit" ng-click="pasteComponent(data)"  ng-show="dataHolder.copy!=undefined" ></button>
+    <button tabindex="0" id="pbid-insertSibling-{{data.name}}"  aria-label="${message(code:'sspb.page.visualbuilder.insert.sibling.title')}" title="${message(code:'sspb.page.visualbuilder.insert.sibling.title')}" class="button_insert button_edit" ng-click="insertSibling($parent.$parent.data, $index, $event)" ng-show="data.type!='page'"></button>
+    <button tabindex="0" id="pbid-appendChild-{{data.name}}"  aria-label="${message(code:'sspb.page.visualbuilder.append.child.title')}" title="${message(code:'sspb.page.visualbuilder.append.child.title')}" class="button_edit button_add" ng-click="addChild(data,$event)" ng-show="findAllChildrenTypes(data.type).length>0"></button>
+    <button tabindex="0" aria-label="${message(code:'sspb.page.visualbuilder.moveup.component.title')}" title="${message(code:'sspb.page.visualbuilder.moveup.component.title')}" class="button_sort_asc button_edit" ng-click="moveUpComponent($parent.$parent.data, $index, index)"  ng-show="!$first"></button>
+    <button tabindex="0" aria-label="${message(code:'sspb.page.visualbuilder.movedown.component.title')}" title="${message(code:'sspb.page.visualbuilder.movedown.component.title')}" class="button_sort_desc button_edit" ng-click="moveDownComponent($parent.$parent.data, $index, index)"  ng-show="!$last"></button>
+    <button tabindex="0" aria-label="${message(code:'sspb.page.visualbuilder.delete.component.title')}" title="${message(code:'sspb.page.visualbuilder.delete.component.title')}" class="button_delete button_edit" ng-click="deleteComponent($parent.$parent.data, $index, index)"  ng-show="data.type!='page'"></button>
+    <button tabindex="0" aria-label="${message(code:'sspb.page.visualbuilder.copy.component.title')}" title="${message(code:'sspb.page.visualbuilder.copy.component.title')}"  class="button_copy button_edit" ng-click="copyComponent(data)" ng-show="data.type!='page'"></button>
+    <button tabindex="0" aria-label="${message(code:'sspb.page.visualbuilder.paste.component.title')}" title="${message(code:'sspb.page.visualbuilder.paste.component.title')}"  class="button_paste button_edit" ng-click="pasteComponent(data)"  ng-show="dataHolder.copy!=undefined" ></button>
 
 
     <!--button  class="btn btn-xs" ng-click="deleteChildren(data)" ng-show="data.components.length > 0">--</button-->
@@ -1293,9 +1330,9 @@ Copyright 2013-2020 Ellucian Company L.P. and its affiliates.
         <div class="modal-header">
             <h4><g:message code="sspb.page.visualbuilder.select.type.prompt" /></h4>
         </div>
-        <div class="modal-body">
+        <div class="modal-body" ng-keydown="handledEscapeKey($event)">
 
-            <select  ng-model="$parent.selectedType" ng-options="i18nGet('type.'+type) for type in validChildTypes"></select>
+            <select id="pbid-selectCmpt" ng-model="$parent.selectedType" ng-options="i18nGet('type.'+type) for type in validChildTypes"></select>
         </div>
         <div class="modal-footer">
             <button class="btn btn-success ok primary" ng-click="closeTypeSelectionModal($event)"><g:message code="sspb.page.visualbuilder.create.component.label" /></button>
